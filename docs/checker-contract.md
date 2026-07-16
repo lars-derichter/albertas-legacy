@@ -83,8 +83,8 @@ een feedbacksleutel (zie §"Falen → feedback"). De kern-asserties:
 | `conditieStructuur(vorm)` | een `if`-conditie heeft de gevraagde vorm: `&&`, `\|\|`, `!`, een vergelijking, of een cascade `if/else if/else` |
 | `klemStructuur(veld, onder, boven)` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (de drie validatievarianten van scharnier 3) |
 | `lusKop(soort, variabele, start, grens, richting)` | een `for`/`while`-kop met de juiste grenzen; `<` vs `<=` telt (off-by-one van scharnier 6) |
-| `lusRomp(patroon)` | de romp volgt een patroonkaart: tellen, totaliseren, opbouwen, filteren, of het uiterste zoeken (scharnier 5) |
-| `zoeklus(retourType)` | een lus die door een `ArrayList` gaat, matcht op een voorwaarde, en het element of `null` teruggeeft (scharnier 7) |
+| `lusRomp(patroon)` | de romp volgt een patroonkaart (scharnier 5) — **niet als losse assertie gebouwd**; zie de noot onder de tabel |
+| `zoeklus(retourType)` | de zoeklus van scharnier 7 — **samengesteld** uit `lusVorm` + `lusGrenzen` + `heeftReturn` + `methodeSignatuur`, geen losse assertie |
 | `getterKeten(stappen[])` | een ketting `a.getX().getY()...` met het juiste aantal pijlen, eventueel null-veilig gewikkeld (scharnier 7) |
 | `roeptAan(methode)` | een bepaalde methode wordt aangeroepen (bv. `verbindKamers(...)`, scharnier 4) |
 | `bevatNiet(patroon)` | een verboden constructie ontbreekt (bv. geen `switch`, geen buiten-cursus-constructie) |
@@ -92,6 +92,15 @@ een feedbacksleutel (zie §"Falen → feedback"). De kern-asserties:
 Elke assertie is opzettelijk lokaal: ze zoekt één patroon, niet een hele
 programmabetekenis. Een puzzel stapelt er enkele zodat samen de bedoelde vorm
 wordt afgedwongen zonder de speler in een keurslijf te dwingen.
+
+> Noot bij de implementatie (WP 4): de gezaghebbende namenlijst van de
+> asserties staat bovenaan `js/logic/checker/asserts.js` (o.a.
+> `veldDeclaratie`, `methodeSignatuur`, `constructorToewijzing`,
+> `klemStructuur`-varianten). Een losstaande patroonkaart-classifier
+> (`lusRomp`) is bewust niet gebouwd: een fuzzy classifier draagt een hoog
+> risico op vals-negatieven, de ergste faalmodus. Het level-5-werkpakket
+> stelt de lus-controle samen uit de bestaande lus-asserties en breidt de
+> corpus dan mee uit.
 
 ## Tolerantieregels
 

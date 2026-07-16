@@ -22,6 +22,16 @@ export function laadLogica() {
   return globalThis.AL;
 }
 
+// Laad de checker-modules in de contractvolgorde: tokenizer → asserts →
+// javacsim (elke leunt op de vorige via globalThis.AL.checker). Geeft
+// globalThis.AL.checker terug.
+export function laadChecker() {
+  require(join(wortel, "js", "logic", "checker", "tokenizer.js"));
+  require(join(wortel, "js", "logic", "checker", "asserts.js"));
+  require(join(wortel, "js", "logic", "checker", "javacsim.js"));
+  return globalThis.AL.checker;
+}
+
 // Een neppe localStorage: een Map met getItem/setItem/removeItem. Zo kan een
 // Node-test de save-laag drijven zonder browser.
 export function nepStorage(initieel) {
