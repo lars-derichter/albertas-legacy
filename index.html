@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>The Legacy of Alberta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="scherm" width="320" height="200"></canvas>
+
+<!-- De gesimuleerde pc als DOM-overlay bovenop het canvas (zie
+     engine-architectuur.md, §"De gesimuleerde pc"). Verborgen tot de speler
+     aan de pc gaat zitten; WP 5 vult de editor/terminal/Parsons-inhoud in. -->
+<div id="pc-overlay" aria-hidden="true">
+  <div class="pc-kader">
+    <pre class="pc-scherm"></pre>
+  </div>
+</div>
+
+<!-- Laadvolgorde exact volgens engine-architectuur.md, §"Laadvolgorde in
+     index.html". Losse <script>-tags, geen ES-modules: alles hangt aan het
+     globale AL-object zodat het spel ook vanaf file:// werkt (dubbelklik).
+     De checker-, level-, pc-, sim- en extra scène-/spread-bestanden komen in
+     latere WP's; hun plaats in de volgorde staat hieronder in commentaar. -->
+
+<!-- 1–6: renderer, invoer, geluid, parser -->
+<script src="js/palette.js"></script>
+<script src="js/font.js"></script>
+<script src="js/gfx.js"></script>
+<script src="js/input.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/parser.js"></script>
+
+<!-- 7–12: DOM-vrije logica -->
+<script src="js/logic/strings.js"></script>
+<script src="js/logic/world.js"></script>
+<!-- 9–11: js/logic/checker/tokenizer.js, asserts.js, javacsim.js  (WP 4) -->
+<script src="js/logic/levels.js"></script>
+
+<!-- 13: js/levels/level1.js … level7.js  (level-WP's) -->
+<!-- 14: js/pc/editor.js, terminal.js, parsons.js  (WP 5) -->
+
+<!-- 15–16: scènes + sprites -->
+<script src="js/scenes/scene-zolder-west.js"></script>
+<script src="js/sprites/sprite-speler.js"></script>
+
+<!-- 17: js/sim/goats-strings.js, goats-world.js, goats-combat.js  (WP later) -->
+
+<!-- 18: de engine, als laatste -->
+<script src="js/engine.js"></script>
+</body>
+</html>

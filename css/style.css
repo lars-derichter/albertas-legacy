@@ -1,0 +1,64 @@
+/* Het canvas is 320×200 logisch en wordt met een geheel getal geschaald,
+   nearest-neighbor, gecentreerd op een zwart scherm — zoals een monitor uit
+   1990 dat zou doen. De schaalfactor zet engine.js via de CSS-variabele
+   --schaal (grootste gehele factor die in het venster past). */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#scherm {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: calc(320px * var(--schaal, 3));
+  height: calc(200px * var(--schaal, 3));
+}
+
+/* De gesimuleerde-pc-overlay: een full-screen VGA-kader in amber-CRT-stijl,
+   bovenop het canvas. Verborgen tot de engine hem toont (modus "pc").
+   De kleuren komen uit de gloed-ramp van het palet (art-stijlgids.md, 54–58):
+   een donkere kast met warm amber schermwit. WP 5 hangt hier de echte editor
+   en terminal in; dit is het scaffold. */
+
+#pc-overlay {
+  display: none;                 /* engine.js zet display:flex bij pc:open */
+  position: fixed;
+  inset: 0;
+  background: #1a1206;           /* donkere kast rond het scherm */
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+#pc-overlay .pc-kader {
+  width: min(90vw, 900px);
+  height: min(80vh, 620px);
+  background: #0c0900;           /* schermzwart met warme ondertoon */
+  border: 3px solid #7a4a00;     /* gloed schaduw (55) */
+  box-shadow: 0 0 0 6px #3a1f00, /* gloed diep (54) */
+              0 0 40px rgba(255, 191, 58, 0.25); /* amber halo */
+  border-radius: 6px;
+  padding: 18px 22px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+#pc-overlay .pc-scherm {
+  margin: 0;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffbf3a;                /* gloed licht (57), amber tekst */
+  text-shadow: 0 0 4px rgba(255, 191, 58, 0.5);
+  white-space: pre-wrap;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "albertas-legacy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Legacy of Alberta — een educatief browserspel (vanilla JS, geen build-stap). Dev-tooling only; niets hiervan ships naar de browser.",
+  "scripts": {
+    "test": "node --test test/test-*.mjs",
+    "lint:scene": "node tools/lint-scene.mjs",
+    "smoke": "node test/smoke-browser.mjs",
+    "screenshot": "node tools/screenshot.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}
