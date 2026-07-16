@@ -89,7 +89,7 @@ uit level 4 is de sequel-naam voor dat bedradingswerk (zie
 |---|---|---|
 | Geitenhuisje | `rode mantel`, `keukenmes`, `mandje` | start; de klokkast met het jongste geitje; Roodkapjes uitrusting |
 | Dorpsplein | `koek`, `koek` | spil-kamer; de markt; koeken (mandje nodig om te dragen) |
-| Molen | `bloem`; `kruik melk` (achter de jachthond) | bewijs van de truc; de **jachthond** bewaakt de +6-genezing |
+| Molen | `bloem`, `kruik melk` (beide achter de jachthond) | bewijs van de truc; de **jachthond** bewaakt de molen — beide voorwerpen zijn optioneel |
 | Kruidenier | `krijt` | bewijs van de truc (de zachte stem) |
 | Bospad | — | doorgang, weinig licht |
 | Oude eik | — (de raaf) | raaf-cameo: ruil een `koek` voor `gladde kiezels` |
@@ -172,7 +172,13 @@ herstellen, en de keten tracen (zie `levels-en-scharnieren.md`).
 
 ## Gevecht
 
-Overgenomen uit de predecessor, mechaniek identiek (`Gevecht.java`):
+Overgenomen uit de predecessor, mechaniek identiek (`Gevecht.java`), met
+één afwijking: een gevecht start niet automatisch bij het betreden van de
+kamer, maar met het expliciete commando `vecht`. Dat is nodig omdat de
+rivieroever losse stenen bevat die de speler vóór het wolfgevecht moet
+kunnen oprapen, en het maakt de jachthond werkelijk optioneel.
+
+Verder geldt:
 
 - Maximaal **vijf rondes**. De rondeteller loopt alleen door bij een geldige
   actie; `?`, `opties`, onzin en een mislukte `eet` kosten geen ronde en lokken
