@@ -22,6 +22,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
   var ctx = null;
   var el = {};
   var actieveHandler = null;      // verwerkt de volgende getypte regel
+  var rauwModus = false;          // in de sim: alle invoer (ook ?/sluit) naar de handler
   var def = null;                 // actieve terminal-puzzeldef
   var levelId = null;
   var traceWaarde = null;         // de seed-gekozen trace-invoer
@@ -105,15 +106,20 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     }
     if (e.key === "Escape") {
       e.preventDefault();
-      if (ctx) ctx.emit(["pc:sluit"]);
+      // In de sim-modus is Escape geen uitgang: de sim speelt naar een einde.
+      if (!rauwModus && ctx) ctx.emit(["pc:sluit"]);
     }
   }
 
   function opSubmit(waarde) {
     var w = String(waarde).trim();
-    echo(S().pc.prompt + waarde);
+    var promptTekst = (rauwModus && el.prompt) ? el.prompt.textContent : S().pc.prompt;
+    echo(promptTekst + waarde);
     el.invoer.value = "";
     if (w === "") return;
+    // Rauwe modus (de sim): elke regel — ook ?, sluit — gaat integraal naar de
+    // actieve handler; de puzzel-interceptie hieronder geldt alleen voor de pc.
+    if (rauwModus) { if (actieveHandler) actieveHandler(w); return; }
     var laag = w.toLowerCase();
     if (w === "?") { if (ctx) ctx.hint(); return; }
     if (laag === "menu") { if (ctx) ctx.terugNaarMenu(); return; }
@@ -135,6 +141,9 @@ globalThis.AL.pc = globalThis.AL.pc || {};
   }
   function echo(regel) { schrijf([regel]); }
   function zetHandler(fn) { actieveHandler = fn; }
+  // Zet de rauwe (sim-)modus aan met een handler die elke regel krijgt, of uit.
+  function zetRauw(fn) { rauwModus = true; actieveHandler = fn; }
+  function zetNormaal() { rauwModus = false; actieveHandler = null; }
   function zetPrompt(tekst) { if (el.prompt) el.prompt.textContent = tekst; }
   function toon() { if (el.wortel) el.wortel.style.display = "flex"; }
   function verberg() { if (el.wortel) el.wortel.style.display = "none"; }
@@ -228,6 +237,8 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     schrijf: schrijf,
     echo: echo,
     zetHandler: zetHandler,
+    zetRauw: zetRauw,
+    zetNormaal: zetNormaal,
     zetPrompt: zetPrompt,
     // debug/tests
     _verwacht: function () { return verwachtAntwoord; },

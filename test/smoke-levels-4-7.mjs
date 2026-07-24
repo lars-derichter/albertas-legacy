@@ -164,6 +164,17 @@ async function speelLevel(page, n, naarFragment) {
   const afgerond = await ev(page, (id) => window.AL.debugToestand.levels[id].afgerond, String(n));
   check("L" + n + ": level-af (het hoofdstuk is hersteld)", afgerond === true);
 
+  // Level 7 afronden "voltooit" Alberta's spel en start de endgame (WP 9):
+  // level-af:7 → sim:boot. Je keert dus NIET terug in de zolder maar belandt in
+  // de speelbare sim. De volledige endgame-keten wordt in smoke-sim.mjs getest.
+  if (n === 7) {
+    await page.waitForFunction(() => window.AL.debugState.modus === "sim",
+      null, { timeout: 15000 });
+    check("L7: level-af:7 boot de sim (endgame start)",
+      (await state(page)).modus === "sim");
+    return;
+  }
+
   await page.click(".pc-editor-invoer").catch(() => {});
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => window.AL.debugState.modus === "zolder",

@@ -83,7 +83,14 @@
 <script src="js/sprites/sprite-broncode-doos.js"></script>
 <script src="js/sprites/sprite-stoel.js"></script>
 
-<!-- 17: js/sim/goats-strings.js, goats-world.js, goats-combat.js  (WP later) -->
+<!-- 17: js/sim/*.js — de Seven Little Goats-simulatie (DOM-vrij: strings, world,
+     combat). Daarna de dunne DOM-controller die de sim in het terminalpaneel van
+     de pc-overlay draait (raakt de DOM, dus bij de pc-renderlaag; laadt ná pc.js
+     en ná de sim-logica). -->
+<script src="js/sim/goats-strings.js"></script>
+<script src="js/sim/goats-world.js"></script>
+<script src="js/sim/goats-combat.js"></script>
+<script src="js/pc/sim-terminal.js"></script>
 
 <!-- 18: de engine, als laatste -->
 <script src="js/engine.js"></script>

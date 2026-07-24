@@ -62,6 +62,7 @@ globalThis.AL = globalThis.AL || {};
 
   var gecachet = {};           // welke scènes al in de gfx-cache staan
   var pcOverlay = null;        // de DOM-overlay van de gesimuleerde pc
+  var pcCtx = null;            // engine-context voor de pc- en sim-controllers
 
   // ---- Storage-hulp (de enige localStorage-toegang) -----------------------
 
@@ -191,6 +192,18 @@ globalThis.AL = globalThis.AL || {};
         AL.sound.speel("ok"); bewaar();
       } else if (tag === "level-af") {
         AL.sound.speel("ok"); bewaar();
+        // Level 7 af "voltooit" Alberta's spel en boot de sim (spelontwerp-
+        // legacy.md, §"Endgame", stap 1→2). De rest van de keten (oordeel,
+        // epiloog) loopt vanuit de sim-controller. We stellen de boot één tik
+        // uit zodat de lopende puzzel-afronding (die na ctx.voltooi() nog
+        // zetHandler(null) doet) eerst volledig afwikkelt; anders zou dat de
+        // rauwe sim-handler meteen weer wissen.
+        if (arg === "7") {
+          var tBoot = toestand;
+          setTimeout(function () {
+            verwerkEffecten(AL.world.bootSim(tBoot).effecten, null);
+          }, 0);
+        }
       } else if (tag === "voortgang") {
         bewaar();
       } else if (tag === "oordeel") {
@@ -202,8 +215,9 @@ globalThis.AL = globalThis.AL || {};
 
       // --- Endgame en sim ---
       } else if (tag === "sim") {
-        if (arg === "boot") { AL.sound.speel("boot"); }
-        // sim:einde:<naam> — WP later.
+        if (arg === "boot") { AL.sound.speel("boot"); startSim(); }
+        // sim:einde:<naam> wordt door de sim-controller zelf afgehandeld (die
+        // roept AL.world.simVoltooid aan); hier is geen extra actie nodig.
       } else if (tag === "epiloog") {
         toonEpiloog();
 
@@ -320,10 +334,25 @@ globalThis.AL = globalThis.AL || {};
     betreedZolder(true);
   }
 
+  // Boot de Seven Little Goats-simulatie in het terminalpaneel van de pc-overlay
+  // (spelontwerp-legacy.md, §"Endgame", stap 2). Vervangt het WP-6-stub-pad: de
+  // sim-controller draait de echte sim en roept bij een einde AL.world.simVoltooid
+  // aan, wat via oordeel:<tier> en epiloog verder loopt.
+  function startSim() {
+    if (!(AL.sim && AL.sim.terminal && AL.pc && AL.pc.simView)) return;
+    toestand.modus = "sim";
+    if (pcOverlay) { pcOverlay.style.display = "flex"; }
+    // Alberta's aankondiging staat als voorwoord boven de bootende sim.
+    var voorwoord = [AL.strings.endgame.compleet, AL.strings.endgame.bootSim, ""];
+    AL.sim.terminal.start(pcCtx, voorwoord);
+    bewaar();
+  }
+
   function toonOordeel(tier) {
     toestand.modus = "oordeel";
     toestand.einde = tier;
     venster = null;
+    verbergOverlay();          // de sim/pc-overlay wijkt voor de oordeelkaart
     AL.input.blokkeer = true;
     bewaar();
   }
@@ -331,6 +360,7 @@ globalThis.AL = globalThis.AL || {};
   function toonEpiloog() {
     toestand.modus = "epiloog";
     venster = null;
+    verbergOverlay();
     AL.input.blokkeer = true;
     bewaar();
   }
@@ -671,12 +701,13 @@ globalThis.AL = globalThis.AL || {};
     AL.gfx.init(canvas);
     pcOverlay = document.getElementById("pc-overlay");
     injecteerPaletVars();
+    pcCtx = {
+      emit: function (eff) { verwerkEffecten(eff, null); },
+      bewaar: bewaar,
+      getToestand: function () { return toestand; }
+    };
     if (AL.pc && AL.pc.init) {
-      AL.pc.init(pcOverlay, {
-        emit: function (eff) { verwerkEffecten(eff, null); },
-        bewaar: bewaar,
-        getToestand: function () { return toestand; }
-      });
+      AL.pc.init(pcOverlay, pcCtx);
     }
     verbergOverlay();
     berekenSchaal();
@@ -719,6 +750,11 @@ globalThis.AL = globalThis.AL || {};
       wisselNaarScene(toestand.sceneId, "start");
     } else if (modus === "oordeel" || modus === "epiloog") {
       wisselNaarScene(toestand.sceneId, "start");
+    } else if (modus === "sim") {
+      // De sim-substaat wordt niet mee-opgeslagen (engine-architectuur.md); een
+      // reload midden in het eindspel herstart de sim gewoon van voren af.
+      wisselNaarScene(toestand.sceneId, "start");
+      startSim();
     } else {
       betreedZolder(false);
     }

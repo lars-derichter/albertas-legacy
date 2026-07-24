@@ -221,6 +221,21 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     elTerminal.style.display = (view === "terminal") ? "flex" : "none";
   }
 
+  // De sim (Seven Little Goats) leent het terminalpaneel: zorg dat de overlay
+  // open staat, toon enkel de terminal en zet de kop. De sim-controller
+  // (js/pc/sim-terminal.js) vult de inhoud en de invoerlus. Aangeroepen door de
+  // engine bij sim:boot.
+  function simView(kop) {
+    view = "terminal";
+    actieveDef = null;
+    actievePuzzelId = null;
+    overlay.style.display = "flex";
+    overlay.setAttribute("aria-hidden", "false");
+    elHeader.textContent = kop || S().pc.terminalTitel;
+    stelViewIn();
+    AL.pc.terminal.focus();
+  }
+
   // ---- Hint & voltooiing ---------------------------------------------------
 
   function vraagHint() {
@@ -259,6 +274,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
   AL.pc.init = init;
   AL.pc.open = open;
   AL.pc.close = close;
+  AL.pc.simView = simView;
 
   AL.pc.debug = {
     view: function () { return view; },
