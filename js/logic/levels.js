@@ -92,10 +92,18 @@ globalThis.AL = globalThis.AL || {};
     // registry (of blijven leeg tot hun WP ze registreert).
     verseLevels: function () {
       var lv = {};
-      for (var n = 1; n <= 7; n++) {
-        var sleutel = String(n);
+      // De vaste levels 1..7 plus eventueel geregistreerde dev-levels (bv. "0",
+      // de proefdruk uit js/levels/level0.js). Zo krijgt een dev-level ook een
+      // eigen puzzelstaat (status/hints/draft) zonder de save-vorm te breken;
+      // aantalAfgerond/alAf tellen enkel 1..7, dus level 0 telt niet mee.
+      var sleutels = {};
+      for (var n = 1; n <= 7; n++) sleutels[String(n)] = true;
+      var extra = Object.keys(registry);
+      for (var e = 0; e < extra.length; e++) sleutels[extra[e]] = true;
+
+      Object.keys(sleutels).forEach(function (sleutel) {
         var puzzels = {};
-        var defs = this.puzzelDefs(sleutel);
+        var defs = levels.puzzelDefs(sleutel);
         for (var i = 0; i < defs.length; i++) {
           var d = defs[i];
           var p = { status: "open", hints: 0 };
@@ -108,7 +116,7 @@ globalThis.AL = globalThis.AL || {};
           puzzels: puzzels,
           afgerond: false
         };
-      }
+      });
       return lv;
     },
 

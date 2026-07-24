@@ -12,11 +12,7 @@
 <!-- De gesimuleerde pc als DOM-overlay bovenop het canvas (zie
      engine-architectuur.md, §"De gesimuleerde pc"). Verborgen tot de speler
      aan de pc gaat zitten; WP 5 vult de editor/terminal/Parsons-inhoud in. -->
-<div id="pc-overlay" aria-hidden="true">
-  <div class="pc-kader">
-    <pre class="pc-scherm"></pre>
-  </div>
-</div>
+<div id="pc-overlay" aria-hidden="true"></div>
 
 <!-- Laadvolgorde exact volgens engine-architectuur.md, §"Laadvolgorde in
      index.html". Losse <script>-tags, geen ES-modules: alles hangt aan het
@@ -41,8 +37,27 @@
 <script src="js/logic/checker/javacsim.js"></script>
 <script src="js/logic/levels.js"></script>
 
-<!-- 13: js/levels/level1.js … level7.js  (level-WP's) -->
-<!-- 14: js/pc/editor.js, terminal.js, parsons.js  (WP 5) -->
+<!-- 13: js/levels/level1.js … level7.js  (level-WP's). level0.js is TESTINHOUD
+     ("de proefdruk") en wordt NIET in productie geladen: alleen bij ?dev=1
+     schrijft de loader hieronder de <script>-tag in (document.write draait
+     synchroon vóór de volgende tags, ook op file://). Zo blijft level 0
+     onbereikbaar in een gewone playthrough. -->
+<script>
+  (function () {
+    try {
+      if (/[?&]dev=1\b/.test(window.location.search)) {
+        document.write('<scr' + 'ipt src="js/levels/level0.js"></scr' + 'ipt>');
+      }
+    } catch (e) { /* niets */ }
+  })();
+</script>
+
+<!-- 14: js/pc/*.js — de gesimuleerde pc (DOM-overlay). editor/terminal/parsons
+     eerst, dan de coördinator pc.js. -->
+<script src="js/pc/editor.js"></script>
+<script src="js/pc/terminal.js"></script>
+<script src="js/pc/parsons.js"></script>
+<script src="js/pc/pc.js"></script>
 
 <!-- 15–16: scènes + sprites -->
 <script src="js/scenes/scene-zolder-west.js"></script>

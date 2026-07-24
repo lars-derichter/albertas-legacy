@@ -76,6 +76,17 @@ globalThis.AL = globalThis.AL || {};
     // De eerste toets ontgrendelt het geluid (browsers eisen een gebruikersactie).
     if (AL.sound && AL.sound.unlock) AL.sound.unlock();
 
+    // De pc-overlay bezit zijn eigen tekstinvoer (de editor-textarea en de
+    // terminal-input). Laat toetsen in een tekstveld volledig met rust, zodat
+    // typen, selecteren, plakken en de eigen sneltoetsen (F9, Esc) daar werken
+    // (engine-architectuur.md, §"De gesimuleerde pc"). De zolder gebruikt geen
+    // echte invoervelden, dus dit raakt het lopen/typen op de zolder niet.
+    var doel = e.target;
+    if (doel && (doel.tagName === "TEXTAREA" || doel.tagName === "INPUT" ||
+        doel.isContentEditable)) {
+      return;
+    }
+
     var k = e.key;
 
     // Escape: de engine sluit een open pc-overlay (of negeert het).

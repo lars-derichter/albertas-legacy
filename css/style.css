@@ -25,40 +25,255 @@ body {
 }
 
 /* De gesimuleerde-pc-overlay: een full-screen VGA-kader in amber-CRT-stijl,
-   bovenop het canvas. Verborgen tot de engine hem toont (modus "pc").
-   De kleuren komen uit de gloed-ramp van het palet (art-stijlgids.md, 54–58):
-   een donkere kast met warm amber schermwit. WP 5 hangt hier de echte editor
-   en terminal in; dit is het scaffold. */
+   bovenop het canvas. Verborgen tot de engine hem toont (modus "pc"). De
+   kleuren komen uit de gloed-/papier-ramp van het palet (art-stijlgids.md);
+   engine.js zet ze als CSS-variabelen (--pc-*) op :root. De fallbacks hier
+   houden de overlay ook zonder die brug leesbaar. Bewust één vaste look
+   (amber CRT), niet thema-afhankelijk: dit is een spelscherm uit 1990. */
+
+:root {
+  --pc-schrift: "Courier New", ui-monospace, "DejaVu Sans Mono", monospace;
+}
 
 #pc-overlay {
   display: none;                 /* engine.js zet display:flex bij pc:open */
   position: fixed;
   inset: 0;
-  background: #1a1206;           /* donkere kast rond het scherm */
+  background: var(--pc-kast, #3a1f00);
   align-items: center;
   justify-content: center;
   z-index: 10;
-}
-
-#pc-overlay .pc-kader {
-  width: min(90vw, 900px);
-  height: min(80vh, 620px);
-  background: #0c0900;           /* schermzwart met warme ondertoon */
-  border: 3px solid #7a4a00;     /* gloed schaduw (55) */
-  box-shadow: 0 0 0 6px #3a1f00, /* gloed diep (54) */
-              0 0 40px rgba(255, 191, 58, 0.25); /* amber halo */
-  border-radius: 6px;
-  padding: 18px 22px;
+  padding: max(2vh, 12px) max(2vw, 12px);
   box-sizing: border-box;
-  overflow: auto;
 }
 
-#pc-overlay .pc-scherm {
-  margin: 0;
-  font-family: "Courier New", ui-monospace, monospace;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #ffbf3a;                /* gloed licht (57), amber tekst */
-  text-shadow: 0 0 4px rgba(255, 191, 58, 0.5);
-  white-space: pre-wrap;
+.pc-chrome {
+  width: min(94vw, 920px);
+  height: min(92vh, 680px);
+  display: flex;
+  flex-direction: column;
+  background: #0c0900;           /* schermzwart met warme ondertoon */
+  border: 3px solid var(--pc-rand, #7a4a00);
+  box-shadow: 0 0 0 6px var(--pc-kast, #3a1f00),
+              0 0 42px rgba(255, 191, 58, 0.22);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: var(--pc-schrift);
+  color: var(--pc-amber-licht, #ffbf3a);
 }
+
+.pc-header {
+  flex: 0 0 auto;
+  background: var(--pc-rand, #7a4a00);
+  color: var(--pc-schermwit, #fff0b8);
+  font-size: clamp(13px, 2.2vw, 17px);
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  text-transform: uppercase;
+}
+/* Een knipperende blok-cursor, zoals een DOS-editor in rust. */
+.pc-header::after {
+  content: "\2588";
+  margin-left: 6px;
+  animation: pc-knipper 1.05s steps(1) infinite;
+}
+@keyframes pc-knipper { 50% { opacity: 0; } }
+
+.pc-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* Alle drie de weergaven vullen de body; de coördinator toont er één. */
+.pc-menu, .pc-editor, .pc-terminal {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px;
+  box-sizing: border-box;
+}
+
+/* Het amber-CRT-schermvlak (editor-uitvoer + terminal-scrollback). */
+.pc-scherm {
+  margin: 0;
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  line-height: 1.45;
+  color: var(--pc-amber-licht, #ffbf3a);
+  text-shadow: 0 0 4px rgba(255, 191, 58, 0.4);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---- Menu ---------------------------------------------------------------- */
+
+.pc-menu:focus { outline: none; }
+.pc-menu-onder {
+  color: var(--pc-amber, #c98400);
+  font-size: clamp(11px, 1.7vw, 14px);
+  margin-bottom: 12px;
+}
+.pc-menu-lijst {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+.pc-menu-lijst li { margin: 0 0 6px; }
+.pc-menu-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--pc-amber-licht, #ffbf3a);
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.pc-menu-item:hover,
+.pc-menu-item:focus {
+  outline: none;
+  border-color: var(--pc-amber, #c98400);
+  background: rgba(255, 191, 58, 0.08);
+}
+.pc-menu-nr { color: var(--pc-amber, #c98400); min-width: 1.5em; }
+.pc-menu-naam { flex: 1 1 auto; }
+.pc-menu-badge {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+.pc-menu-status-open .pc-menu-badge { color: var(--pc-amber, #c98400); }
+.pc-menu-status-bezig .pc-menu-badge { color: var(--pc-amber-licht, #ffbf3a); }
+.pc-menu-status-af { color: var(--pc-groen, #52a94a); }
+.pc-menu-status-af .pc-menu-badge { color: var(--pc-groen, #52a94a); }
+
+/* ---- Editor -------------------------------------------------------------- */
+
+.pc-editor-kop {
+  color: var(--pc-schermwit, #fff0b8);
+  font-size: clamp(12px, 1.9vw, 15px);
+  margin-bottom: 8px;
+}
+.pc-editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  border: 1px solid var(--pc-rand, #7a4a00);
+  background: #0a0700;
+}
+.pc-editor-gutter {
+  margin: 0;
+  padding: 8px 8px 8px 10px;
+  text-align: right;
+  color: var(--pc-amber, #c98400);
+  opacity: 0.7;
+  background: rgba(122, 74, 0, 0.18);
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  line-height: 1.45;
+  overflow: hidden;
+  user-select: none;
+  white-space: pre;
+}
+.pc-editor-invoer {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  border: 0;
+  resize: none;
+  background: transparent;
+  color: var(--pc-schermwit, #fff0b8);
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  line-height: 1.45;
+  white-space: pre;
+  overflow: auto;
+  caret-color: var(--pc-amber-licht, #ffbf3a);
+  caret-shape: block;            /* blok-cursor waar de browser het steunt */
+  tab-size: 4;
+}
+.pc-editor-invoer:focus { outline: none; }
+
+.pc-editor-knoppen {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+.pc-knop {
+  font-family: var(--pc-schrift);
+  font-size: clamp(11px, 1.7vw, 15px);
+  color: var(--pc-schermwit, #fff0b8);
+  background: var(--pc-rand, #7a4a00);
+  border: 1px solid var(--pc-amber, #c98400);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.pc-knop:hover,
+.pc-knop:focus {
+  outline: none;
+  background: var(--pc-amber, #c98400);
+  color: #0c0900;
+}
+.pc-knop-compileer { font-weight: bold; }
+
+.pc-editor-uitvoer {
+  flex: 0 1 34%;
+  min-height: 3em;
+  overflow: auto;
+  border-top: 1px solid var(--pc-rand, #7a4a00);
+  padding-top: 8px;
+}
+
+/* ---- Terminal ------------------------------------------------------------ */
+
+.pc-terminal-kop {
+  color: var(--pc-schermwit, #fff0b8);
+  font-size: clamp(12px, 1.9vw, 15px);
+  margin-bottom: 8px;
+}
+.pc-term-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.pc-term-rij {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  border-top: 1px solid var(--pc-rand, #7a4a00);
+  padding-top: 8px;
+}
+.pc-term-prompt {
+  color: var(--pc-amber, #c98400);
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  white-space: pre;
+}
+.pc-term-invoer {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: var(--pc-schermwit, #fff0b8);
+  font-family: var(--pc-schrift);
+  font-size: clamp(12px, 1.9vw, 16px);
+  caret-color: var(--pc-amber-licht, #ffbf3a);
+  caret-shape: block;
+}
+.pc-term-invoer:focus { outline: none; }

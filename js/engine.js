@@ -174,8 +174,8 @@ globalThis.AL = globalThis.AL || {};
         if (arg === "open") { opADePc(true); }
         else if (arg === "sluit") { opADePc(false); }
       } else if (tag === "editor" || tag === "terminal" || tag === "parsons") {
-        // WP 5 vult de editor/terminal/Parsons-overlay; nu enkel gemeld.
-        zetOverlayTekst("Laadt " + tag + " (" + arg + ")… (WP 5)");
+        // De pc-overlay heeft de puzzel al geladen; hier enkel de zachte cue.
+        AL.sound.speel("toets");
       } else if (tag === "compileer") {
         AL.sound.speel("compileer");
       } else if (tag === "javac") {
@@ -270,8 +270,9 @@ globalThis.AL = globalThis.AL || {};
     betreedZolder(false);
   }
 
-  // Toon of verberg de gesimuleerde-pc-overlay (DOM). WP 5 vult de inhoud; hier
-  // is het een stub die de div toont en de modus zet.
+  // Toon of verberg de gesimuleerde-pc-overlay (DOM). De echte editor/terminal/
+  // Parsons-inhoud leeft in js/pc/ (AL.pc); de engine schakelt de overlay in bij
+  // pc:open en uit bij pc:sluit, en tekent de zolder eronder als achtergrond.
   function opADePc(open) {
     if (open) {
       toestand.modus = "pc";
@@ -562,27 +563,32 @@ globalThis.AL = globalThis.AL || {};
     AL.gfx.tekenTekst(tekst, x, y, kleur, null);
   }
 
-  // ---- Pc-overlay (DOM-stub; WP 5 vult) -----------------------------------
+  // ---- Pc-overlay (delegatie naar AL.pc) ----------------------------------
 
   function toonOverlay() {
-    if (!pcOverlay) return;
-    var n = toestand ? toestand.levelActief : 1;
-    zetOverlayTekst(
-      "ALBERTA'S PC — terminal\n\n" +
-      "Level " + n + " — je zit aan Alberta's code.\n\n" +
-      "De editor en terminal komen in WP 5.\n\n" +
-      "Esc of 'sluit pc' — terug naar de zolder.");
-    pcOverlay.style.display = "flex";
+    if (AL.pc && AL.pc.open && toestand) AL.pc.open(toestand);
   }
 
   function verbergOverlay() {
-    if (pcOverlay) pcOverlay.style.display = "none";
+    if (AL.pc && AL.pc.close) AL.pc.close();
+    else if (pcOverlay) pcOverlay.style.display = "none";
   }
 
-  function zetOverlayTekst(tekst) {
-    if (!pcOverlay) return;
-    var scherm = pcOverlay.querySelector(".pc-scherm");
-    if (scherm) scherm.textContent = tekst;
+  // Zet de CSS-variabelen van de pc-chrome af uit het palet (AL.palet.HEX), zodat
+  // de DOM-overlay dezelfde kleuren draagt als de canvas-renderer (art-stijlgids.md,
+  // gloed-/papier-ramp). De brug leeft hier omdat de engine als enige de DOM raakt.
+  function injecteerPaletVars() {
+    if (!AL.palet || !AL.palet.HEX || !document.documentElement) return;
+    var H = AL.palet.HEX;
+    var stijl = document.documentElement.style;
+    var kaart = {
+      "--pc-kast": 54, "--pc-rand": 55, "--pc-amber": 56,
+      "--pc-amber-licht": 57, "--pc-schermwit": 58,
+      "--pc-papier-schaduw": 35, "--pc-papier": 37, "--pc-papier-hoog": 38,
+      "--pc-inkt": 41, "--pc-hout": 24, "--pc-hout-licht": 26,
+      "--pc-groen": 45, "--pc-rood": 12, "--pc-steen": 50
+    };
+    for (var k in kaart) { if (H[kaart[k]]) stijl.setProperty(k, H[kaart[k]]); }
   }
 
   // ---- Lus en boot ---------------------------------------------------------
@@ -623,6 +629,14 @@ globalThis.AL = globalThis.AL || {};
     var canvas = document.getElementById("scherm");
     AL.gfx.init(canvas);
     pcOverlay = document.getElementById("pc-overlay");
+    injecteerPaletVars();
+    if (AL.pc && AL.pc.init) {
+      AL.pc.init(pcOverlay, {
+        emit: function (eff) { verwerkEffecten(eff, null); },
+        bewaar: bewaar,
+        getToestand: function () { return toestand; }
+      });
+    }
     verbergOverlay();
     berekenSchaal();
     window.addEventListener("resize", berekenSchaal);
@@ -697,6 +711,24 @@ globalThis.AL = globalThis.AL || {};
     titelActief = false;
     if (!toestand) toestand = AL.world.nieuw(seedUitUrl === null ? undefined : seedUitUrl);
     betreedZolder(true);
+  };
+
+  // Testhulp (dev): spring rechtstreeks in de pc bij een gegeven level (0 = de
+  // proefdruk uit js/levels/level0.js). Ontgrendelt dat level, zet het actief en
+  // opent de overlay. Bedoeld voor de Playwright-smoketest met ?dev=1.
+  AL.debugStartPc = function (n) {
+    titelActief = false;
+    venster = null; naVenster = null;
+    if (!toestand) {
+      toestand = AL.world.laad(storage(), seedUitUrl === null ? undefined : seedUitUrl);
+      if (seedUitUrl !== null) toestand.seed = seedUitUrl;
+    }
+    n = (n === undefined || n === null) ? 0 : (n | 0);
+    var lvl = toestand.levels[String(n)];
+    if (lvl) lvl.ontgrendeld = true;
+    toestand.levelActief = n;
+    wisselNaarScene(toestand.sceneId, "start");
+    opADePc(true);
   };
 
   window.addEventListener("load", boot);
