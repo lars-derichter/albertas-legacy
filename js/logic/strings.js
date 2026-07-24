@@ -72,6 +72,38 @@ AL.strings = {
         "koffiemok.",
       hint: "Ga aan de pc zitten. Daar werk je aan Alberta's code — typ 'ga " +
         "zitten'."
+    },
+    "overloop": {
+      naam: "Zolder — overloop",
+      beschrijving: "De overloop, boven aan de trap. Kouder hier, en verder " +
+        "van het dakraam: het licht haalt de hoeken niet meer. Tegen de wand " +
+        "staan de latere dozen opgestapeld, dieper in Alberta's archief. Naar " +
+        "beneden loopt de trap terug naar de doorgang.",
+      hint: "De dozen hierboven dragen de latere hoofdstukken. Open er een als " +
+        "je aan het volgende fragment toe bent."
+    }
+  },
+
+  // De gemerkte dozen: de latere notitieboek-fragmenten (levels 2–7) zitten in
+  // dozen dieper in de zolder (zolder-midden en de overloop), zodat er lichte
+  // progressie is (spelontwerp-legacy.md, §"De lus per level", stap 1). De
+  // broncode-doos is een aparte prop en telt pas op het einde.
+  dozen: {
+    onderzoek: "Kartonnen dozen, dichtgeplakt en gemerkt in Alberta's hand. In " +
+      "één ervan zit het volgende blad van haar notitieboek — als je aan dat " +
+      "hoofdstuk toe bent.",
+    leeg: "Deze doos heb je al doorzocht. Het blad dat erin zat, ligt nu in het " +
+      "notitieboek.",
+    allesGevonden: "Je hebt elk fragment van het notitieboek gevonden. Alles wat " +
+      "je nog rest, ligt op de pc — en op het einde, in de broncode-doos.",
+    // Waar het eerstvolgende fragment ligt als het niet in deze kamer zit.
+    nietHier: {
+      "zolder-west": "Het eerstvolgende blad zit niet hier. Het notitieboek zelf " +
+        "ligt in de westhoek — begin daar.",
+      "zolder-midden": "Het eerstvolgende blad zit niet hier, maar in de doorgang " +
+        "in het midden. Zoek daar verder.",
+      "overloop": "Het eerstvolgende blad zit dieper in het archief: boven, op " +
+        "de overloop. Ga eerst de trap op."
     }
   },
 
@@ -458,9 +490,171 @@ AL.strings = {
     }
   },
 
-  // De epiloog (wijst naar de echte broncode; volledige tekst in WP 6/10).
-  epiloog: "De broncode ligt op zolder — neem ze mee. Ze staat in " +
-    "seven-little-goats/. Open ze in IntelliJ en draai ze zelf.",
+  // De endgame (spelontwerp-legacy.md, §"Endgame"). Level 7 af "voltooit"
+  // Alberta's spel; de pc boot Seven Little Goats als speelbare simulatie. De
+  // echte sim komt in WP 9; deze teksten dragen de aankondiging en de overgang.
+  endgame: {
+    compleet: "Het laatste hoofdstuk is hersteld. Op de monitor verschijnt, " +
+      "regel na regel, wat je al die tijd aan het herstellen was: Alberta's " +
+      "spel, compleet. Het compileert. Het draait.",
+    bootSim: "SEVEN LITTLE GOATS — de tekstversie boot in de terminal. Speel " +
+      "eindelijk het spel dat je grootmoeder nooit afkreeg.",
+    naarOordeel: "Je speelt Alberta's spel uit. De terminal wordt stil. En dan, " +
+      "in de kantlijn van het laatste scherm, staat er iets in haar hand."
+  },
+
+  // De epiloog (spelontwerp-legacy.md, §"Endgame", stap 5; achtergrond.md,
+  // §"Het einde geeft de prijs"). Wijst naar de echte Java-broncode in
+  // seven-little-goats/ en draagt de eenmalige opdracht aan Roberta Williams
+  // (roberta-williams.md, §Beslissing) — verbatim.
+  epiloog: {
+    titel: "Epiloog",
+    alineas: [
+      "Je hebt het afgemaakt. Zeven hoofdstukken, stuk voor stuk hersteld, tot " +
+        "Alberta's spel weer draaide. Zij kreeg het niet af; jij wel.",
+      "De broncode ligt op zolder — neem ze mee. Ze staat in " +
+        "seven-little-goats/. Open ze in IntelliJ, lees ze, draai ze zelf. " +
+        "Wat je in de terminal herstelde, is nu gewoon Java in jouw handen.",
+      "Dit is het soort spel dat je in Programming Fundamentals zelf schrijft. " +
+        "Dat is geen toeval. Dat is het punt.",
+      "Voor Roberta Williams, en voor iedereen die de spellen maakte waar dit " +
+        "vak vandaan komt."
+    ]
+  },
+
+  // De notitieboek-spreads (spelontwerp-legacy.md, §"De zolder-hub"; art-
+  // stijlgids.md, §"Het notitieboek-spread"). Eén spread per level plus een
+  // intro-spread. De inhoud is data (de spread-template-renderer leest ze uit;
+  // hij is niet per level hardgecodeerd). De puzzelbriefjes zijn hier nog
+  // teasers op basis van de scharniertitels uit levels-en-scharnieren.md; de
+  // volledige puzzelbriefjes komen in WP 7–8. De weekregel gebruikt de kolom
+  // "Na cursusweek" uit levels-en-scharnieren.md: 1, 2, 2, 3, 4, 5, 6.
+  spreads: (function () {
+    // Bouw één spread-teaser als een generiek pagina-object dat de renderer
+    // dom kan aflopen: elke pagina heeft een kop (inkt-titel), regels
+    // (handschrift) en optioneel een voet (de weekregel, rechtsonder).
+    function maakSpread(nr, scharnier, titel, week, briefA, briefB) {
+      return {
+        nr: nr,
+        scharnier: scharnier,
+        titel: titel,
+        week: week,
+        paginas: [
+          {
+            kop: "Hoofdstuk " + nr + " — " + scharnier,
+            regels: ["Voor jou die dit later leest:", ""].concat(briefA)
+          },
+          {
+            kop: titel,
+            regels: briefB,
+            voet: "Dit zou je moeten kunnen na week " + week + " van de cursus."
+          }
+        ]
+      };
+    }
+
+    return {
+      // De intro-spread (spelontwerp-legacy.md: titel → spread:intro → zolder).
+      // Draagt de kernfictie en — verplicht, verbatim — de prototype-regel uit
+      // achtergrond.md, §"Prototype-fase".
+      intro: {
+        nr: 0,
+        scharnier: "de zolder",
+        titel: "Zo begon ik altijd",
+        week: null,
+        paginas: [
+          {
+            kop: "The Legacy of Alberta",
+            regels: [
+              "Je grootmoeder Alberta was game-ontwerpster, lang geleden,",
+              "toen een spel nog op één zolder werd gemaakt. Ze verdween.",
+              "Wat ze naliet staat hier: dozen, stof, en een pc die nog",
+              "aanslaat. En, tussen alles, haar beschadigde notitieboek."
+            ]
+          },
+          {
+            kop: "Zo begon ik altijd",
+            regels: [
+              "Alberta bouwde elk spel eerst als tekstversie in de terminal.",
+              "Zo begon ze altijd. Pas als het tekstspel klopte, tekende ze",
+              "eroverheen. Wat jij herstelt is dus geen tekening, maar haar",
+              "code — stuk voor stuk, tot Seven Little Goats weer draait."
+            ],
+            voet: "Sla het notitieboek open. Daar begint het."
+          }
+        ]
+      },
+
+      l1: maakSpread(1, "De blauwdruk en de doos",
+        "Klasse, instantie, velden, constructor, this",
+        1,
+        ["Een klasse is een blauwdruk; een object is de doos die je",
+          "ernaar bouwt. De constructor vult de velden van zo'n verse doos.",
+          "'this' is gewoon: déze doos."],
+        ["Ik heb hier Voorwerp en Geitje geschetst, maar de waterschade",
+          "vrat de constructor half op. Herstel wat de doos hoort te vullen,",
+          "en schrijf Geitje uit wat er van mijn notities rest."]),
+
+      l2: maakSpread(2, "Trechters erin, goot eruit",
+        "Signaturen: return vs. void, attribuut / parameter / lokaal",
+        2,
+        ["Een methode is een machine: trechters erin (de parameters),",
+          "een goot eruit (return), of niets eruit (void). En drie soorten",
+          "dozen om in te bewaren: attribuut, parameter, lokale variabele."],
+        ["De signaturen van Speler zijn doorgelopen tot pap. Zet de koppen",
+          "recht: wat gaat erin, wat komt eruit? En let op welke doos je",
+          "gebruikt — een lokale schaduwt zo een attribuut."]),
+
+      l3: maakSpread(3, "De knikkerbaan",
+        "Voorwaarden: validatie ×3, cascade, && / || / !",
+        2,
+        ["Denk aan een knikkerbaan. De validatie klemt de knikker tussen",
+          "twee randen; de cascade splitst de baan; && / || / ! sturen",
+          "welke kant hij op rolt."],
+        ["Bij setLevenspunten liep de klem mis en in Gevecht stond een",
+          "&& waar een || hoort. Klem de waarde netjes tussen onder- en",
+          "bovengrens, en kies de juiste operator."]),
+
+      l4: maakSpread(4, "Twee pijlen, één doos",
+        "Referenties: twee pijlen, één doos; null",
+        3,
+        ["Twee variabelen kunnen naar dezelfde doos wijzen: twee pijlen,",
+          "één doos. Verander je de doos via de ene pijl, dan ziet de andere",
+          "het ook. En 'null' is een pijl die naar geen enkele doos wijst."],
+        ["De bedrading tussen de kamers is losgeraakt. Verbind de buren weer",
+          "zodat de pijlen kloppen, en let op waar een kamer nog naar null",
+          "wijst voor je erdoorheen loopt."]),
+
+      l5: maakSpread(5, "De patroonkaart",
+        "De lus-romp + patroonkeuze (tellen, opbouwen, filteren, uiterste)",
+        4,
+        ["Elke lus volgt een patroonkaart: tellen, totaliseren, opbouwen,",
+          "filteren, of het uiterste zoeken. Kies eerst de kaart, dan schrijf",
+          "je de romp bijna vanzelf."],
+        ["Twee lus-methoden ontbreken. Ik heb de kaarten in de kantlijn",
+          "getekend — schrijf de rompen eronder, en zet de string-builder",
+          "in de juiste volgorde."]),
+
+      l6: maakSpread(6, "De plankenbrug boven het ravijn",
+        "Index en off-by-one; welke lus kies ik",
+        5,
+        ["Een lijst is een plankenbrug boven een ravijn. De eerste plank is",
+          "nummer 0; de laatste is size() min één. Eén plank te ver en je",
+          "ligt in het water."],
+        ["In verwijderVoorwerp en de gevechtsrondes loopt een lus één plank",
+          "te ver. Zoek de off-by-one en kies de lus die bij de klus past."]),
+
+      l7: maakSpread(7, "De speurtocht en de dubbele pijl",
+        "Zoeken + de dubbele pijl (getCategorie().getNaam())",
+        6,
+        ["Een zoeklus is een speurtocht: hij geeft het gevonden object terug,",
+          "of null als er niets is. En soms volg je twee pijlen na elkaar:",
+          "artikel.getCategorie().getNaam() — een ketting van getters."],
+        ["zoekGeitje en de endgame-keten zijn het laatste stuk. Schrijf de",
+          "zoeklus die een Geitje of null teruggeeft, en maak de getter-",
+          "keten null-veilig voor je de tweede pijl volgt."])
+    };
+  })(),
 
   // Sjabloonhelpers.
   fragmentGevonden: function (levelId) {

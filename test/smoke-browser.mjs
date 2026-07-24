@@ -61,13 +61,25 @@ async function sluitVensters(page) {
   }
 }
 
-// Naar de zolder: Enter (titel → intro), dan de intro-vensters wegklikken.
+// Naar de zolder: Enter bladert door de titel, de intro-spread (meerdere
+// pagina's) en het openingsvenster tot de zolder-modus.
 async function naarZolder(page) {
-  await page.keyboard.press("Enter");
-  await page.waitForTimeout(60);
-  await sluitVensters(page);
+  for (let i = 0; i < 40; i++) {
+    const st = await state(page);
+    if (st.modus === "zolder" && !st.vensterOpen) return;
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(60);
+  }
   await page.waitForFunction(
     () => window.AL.debugState.modus === "zolder", null, { timeout: 15000 });
+}
+
+// Typ een zolder-commando en wacht kort; sluit eventuele vensters eerst.
+async function typCommando(page, cmd) {
+  await sluitVensters(page);
+  await page.keyboard.type(cmd, { delay: 6 });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(140);
 }
 
 async function main() {
@@ -96,10 +108,16 @@ async function main() {
   check("titelkaart actief bij de start", s0.titelActief === true);
   check("canvas is niet leeg op de titelkaart", await canvasNietLeeg(page));
 
-  // 2. Enter → intro → zolder.
+  // 2. Enter → intro-spread → zolder. De intro loopt via spread:intro.
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(90);
+  const sIntro = await state(page);
+  check("Enter opent de intro-spread (modus spread)", sIntro.modus === "spread",
+    "modus=" + sIntro.modus);
+  check("de intro-spread tekent (canvas niet leeg)", await canvasNietLeeg(page));
   await naarZolder(page);
   const s1 = await state(page);
-  check("Enter brengt de speler in de zolder", s1.modus === "zolder",
+  check("na de intro-spread sta je in de zolder", s1.modus === "zolder",
     "scene=" + s1.sceneId);
   check("zolder-scène tekent (canvas niet leeg)", await canvasNietLeeg(page));
 
@@ -120,16 +138,64 @@ async function main() {
   await wachtVenster(page, true);
   check("'kijk' opent een berichtvenster", (await state(page)).vensterOpen);
 
-  // 5. Voortgang: open het notitieboek → fragment ontgrendeld en opgeslagen.
-  await sluitVensters(page);
-  await page.keyboard.type("open notitieboek", { delay: 6 });
-  await page.keyboard.press("Enter");
-  await page.waitForTimeout(150);
+  // 5. De hub-wandeling: zolder-west → zolder-midden → zolder-oost.
+  await typCommando(page, "ga oost");
+  check("west → doorgang (over de rand naar zolder-midden)",
+    (await state(page)).sceneId === "zolder-midden",
+    "scene=" + (await state(page)).sceneId);
+  await typCommando(page, "ga oost");
+  check("doorgang → werkhoek (over de rand naar zolder-oost)",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
+
+  // 6. Terug naar de westhoek en het notitieboek openen → fragment + spread.
+  await typCommando(page, "ga west");
+  await typCommando(page, "ga west");
+  check("terug in de westhoek", (await state(page)).sceneId === "zolder-west");
+  await typCommando(page, "open notitieboek");
+  await page.waitForFunction(() => window.AL.debugState.modus === "spread",
+    null, { timeout: 15000 });
   const ontgrendeld = await page.evaluate(() =>
     window.AL.debugToestand.levels["1"].ontgrendeld);
-  check("open notitieboek ontgrendelt fragment 1", ontgrendeld === true);
+  check("open notitieboek ontgrendelt fragment 1 en opent de spread",
+    ontgrendeld === true && (await state(page)).modus === "spread");
 
-  // 6. Reload: de save wordt hersteld (geen titelkaart, fragment nog gevonden).
+  // 7. De spread doorbladeren; de laatste pagina leidt naar de pc (werkhoek).
+  await sluitVensters(page);      // sluit het fragment-venster boven de spread
+  const paginas = await page.evaluate(() =>
+    window.AL.spreads.aantalPaginas(window.AL.strings.spreads["l1"]));
+  check("de l1-spread telt meerdere pagina's", paginas >= 2, "n=" + paginas);
+  const p0 = (await state(page)).spreadPagina;
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(80);
+  const p1 = (await state(page)).spreadPagina;
+  check("spatie/Enter bladert de spread een pagina verder", p1 === p0 + 1,
+    p0 + " -> " + p1);
+  for (let i = 0; i < paginas + 2; i++) {
+    if ((await state(page)).modus !== "spread") break;
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(80);
+  }
+  await sluitVensters(page);
+  const naSpread = await state(page);
+  check("na de laatste spread-pagina sta je bij de pc (werkhoek)",
+    naSpread.modus === "zolder" && naSpread.sceneId === "zolder-oost",
+    "scene=" + naSpread.sceneId);
+
+  // 8. Aan de pc gaan zitten → pc:open; Escape keert terug naar de zolder.
+  await typCommando(page, "ga zitten");
+  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+    null, { timeout: 15000 });
+  const sPc = await state(page);
+  check("ga zitten aan de pc opent de overlay (pc:open)",
+    sPc.modus === "pc" && sPc.overlayOpen === true);
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => window.AL.debugState.modus === "zolder",
+    null, { timeout: 15000 });
+  check("Escape sluit de pc en keert terug naar de zolder",
+    (await state(page)).modus === "zolder");
+
+  // 9. Reload: de save wordt hersteld (geen titelkaart, fragment nog gevonden).
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState,
     { timeout: 15000 });

@@ -51,6 +51,7 @@ globalThis.AL = globalThis.AL || {};
   var naVenster = null;        // wat te doen als het venster wegvalt
 
   var spreadLevelId = null;    // welke spread nu open staat (modus "spread")
+  var spreadPagina = 0;        // huidige pagina binnen de open spread
 
   // Tijd en tellers.
   var animTijd = 0;
@@ -229,12 +230,12 @@ globalThis.AL = globalThis.AL || {};
     AL.sound.speel("titel");
   }
 
-  // Vanaf de titel: de intro als gepagineerd venster, dan de zolder.
+  // Vanaf de titel: de intro-spread (spelontwerp-legacy.md: titel → spread:intro
+  // → zolder). De intro-spread draagt de kernfictie en de verplichte prototype-
+  // regel; na de laatste pagina komt de speler in de zolder terecht.
   function titelVerder() {
-    toonVenster(AL.strings.intro, function () {
-      betreedZolder(true);
-    });
     titelActief = false;
+    opADeSpread("intro");
   }
 
   // Ga (of keer terug) naar de zolder-modus. beschrijf = toon de openings-
@@ -253,12 +254,13 @@ globalThis.AL = globalThis.AL || {};
     }
   }
 
-  // Open een notitieboek-spread (modus "spread"). Placeholder: WP 6 levert de
-  // echte spread-tekening en -prose; hier tonen we de kernnotitie en keren op
-  // "verder" terug naar de zolder (waar de speler naar de pc kan lopen).
+  // Open een notitieboek-spread (modus "spread"). De volledige spread-tekening en
+  // -prose komen uit scene-spread-template.js (AL.spreads) en AL.strings.spreads;
+  // de speler bladert met spatie/Enter en komt na de laatste pagina bij de pc.
   function opADeSpread(levelId) {
     toestand.modus = "spread";
     spreadLevelId = levelId;
+    spreadPagina = 0;
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
@@ -266,7 +268,32 @@ globalThis.AL = globalThis.AL || {};
     bewaar();
   }
 
+  // Hoeveel pagina's het huidige spread telt.
+  function spreadAantalPaginas() {
+    var data = AL.strings.spreads && AL.strings.spreads[spreadLevelId];
+    if (AL.spreads && data) return AL.spreads.aantalPaginas(data);
+    return 1;
+  }
+
+  // Blader één pagina verder; op de laatste pagina eindigt het spread.
+  function spreadBlader() {
+    if (spreadPagina < spreadAantalPaginas() - 1) {
+      spreadPagina++;
+      AL.sound.speel("pagina");
+    } else {
+      spreadVerder();
+    }
+  }
+
+  // Einde van het spread: de intro leidt naar de eerste zolderscène (met
+  // beschrijving); een level-spread leidt de speler naar de pc in de werkhoek
+  // (spelontwerp-legacy.md, §"De lus per level", stap 3).
   function spreadVerder() {
+    if (spreadLevelId === "intro") {
+      betreedZolder(true);
+      return;
+    }
+    toestand.sceneId = "zolder-oost";
     betreedZolder(false);
   }
 
@@ -341,8 +368,11 @@ globalThis.AL = globalThis.AL || {};
     }
     if (titelActief) { titelVerder(); return; }
     if (!toestand) return;
-    if (toestand.modus === "spread") { spreadVerder(); return; }
-    if (toestand.modus === "oordeel") { toonEpiloog(); return; }
+    if (toestand.modus === "spread") { spreadBlader(); return; }
+    if (toestand.modus === "oordeel") {
+      verwerkEffecten(AL.world.startEpiloog(toestand).effecten, null);
+      return;
+    }
     if (toestand.modus === "epiloog") { startTitel(); return; }
   }
 
@@ -523,38 +553,49 @@ globalThis.AL = globalThis.AL || {};
     if (!venster) gecentreerdeTekst(AL.strings.drukEnter, 168, 32);
   }
 
+  // De notitieboek-spread, full-screen. De papier-achtergrond komt uit
+  // scene-spread-template.js; AL.spreads legt de handschrift-inhoud van de
+  // huidige pagina erop, uit het data-object AL.strings.spreads[spreadLevelId].
   function tekenSpread() {
-    // Full-screen papier-spread (placeholder). Rug in het midden, kernnotitie.
-    AL.gfx.rect(37, 0, 0, 320, 200);
-    AL.gfx.rect(35, 0, 0, 10, 200);
-    AL.gfx.rect(35, 310, 0, 10, 200);
-    AL.gfx.rect(39, 158, 0, 4, 200);            // rugschaduw
-    var n = spreadLevelId ? spreadLevelId.replace(/^l/, "") : "1";
-    gecentreerdeTekst("Notitieboek — hoofdstuk " + n, 16, 41);
-    // De kernnotitie in een venster erop.
-    var v = AL.gfx.maakVenster([
-      AL.strings.notitieboek.onderzoek,
-      "(spatie: verder — dan loop je naar de pc)"
-    ], { maxTekens: 32 });
-    AL.gfx.tekenVenster(v);
+    AL.gfx.rect(35, 0, 0, 320, 200);            // vol-schermse papierschaduwrand
+    var tpl = AL.scenes && AL.scenes["spread-template"];
+    if (tpl) AL.gfx.tekenPicture(tpl.picture);
+    var data = AL.strings.spreads && AL.strings.spreads[spreadLevelId];
+    if (AL.spreads && data) {
+      AL.spreads.tekenInhoud(AL.gfx, data, spreadPagina, toestand.seed);
+    }
+    // Bladerhint onderaan rechts (de weekregel staat onderaan links).
+    var laatste = spreadPagina >= spreadAantalPaginas() - 1;
+    var hint = laatste ? "spatie: pc >" : "spatie >";
+    AL.gfx.tekenTekst(hint, 320 - hint.length * 8 - 6, 182, 40, null);
+  }
+
+  // De eindkaart draagt zowel Alberta's oordeel als de epiloog (één scène, twee
+  // teksten). De achtergrond komt uit scene-eindkaart.js; de tekst legt de engine
+  // erop in een papieren venster.
+  function tekenEindkaartAchtergrond() {
+    AL.gfx.rect(28, 0, 0, 320, 200);
+    var k = AL.scenes && AL.scenes["eindkaart"];
+    if (k) AL.gfx.tekenPicture(k.picture);
   }
 
   function tekenOordeelKaart() {
-    AL.gfx.rect(28, 0, 0, 320, 200);
-    AL.gfx.poly(33, [180, 8, 240, 8, 220, 190, 120, 190]);   // warme lichtwig
+    tekenEindkaartAchtergrond();
     var tier = toestand.einde || "vakvrouw";
     var o = AL.strings.oordeel[tier] || AL.strings.oordeel.vakvrouw;
-    gecentreerdeTekst(o.titel, 40, 34);
+    gecentreerdeTekst(o.titel, 20, 41);
     var v = AL.gfx.maakVenster([o.tekst, "(Enter: de epiloog)"],
       { maxTekens: 32 });
     AL.gfx.tekenVenster(v);
   }
 
   function tekenEpiloogKaart() {
-    AL.gfx.rect(28, 0, 0, 320, 200);
-    gecentreerdeTekst("Epiloog", 30, 34);
-    var v = AL.gfx.maakVenster([AL.strings.epiloog, "(Enter: naar de titel)"],
-      { maxTekens: 32 });
+    tekenEindkaartAchtergrond();
+    var ep = AL.strings.epiloog;
+    gecentreerdeTekst(ep.titel, 16, 41);
+    var alineas = ep.alineas.slice();
+    alineas.push("(Enter: naar de titel)");
+    var v = AL.gfx.maakVenster(alineas, { maxTekens: 34, maxRegels: 12 });
     AL.gfx.tekenVenster(v);
   }
 
@@ -674,6 +715,9 @@ globalThis.AL = globalThis.AL || {};
     if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
     else if (modus === "spread") { /* de spread hertekent uit spreadLevelId */
       spreadLevelId = "l" + (toestand.levelActief || 1);
+      spreadPagina = 0;
+      wisselNaarScene(toestand.sceneId, "start");
+    } else if (modus === "oordeel" || modus === "epiloog") {
       wisselNaarScene(toestand.sceneId, "start");
     } else {
       betreedZolder(false);
@@ -692,6 +736,9 @@ globalThis.AL = globalThis.AL || {};
         seed: toestand ? toestand.seed : null,
         levelActief: toestand ? toestand.levelActief : null,
         hintsTotaal: toestand ? toestand.hintsTotaal : null,
+        spreadLevelId: spreadLevelId,
+        spreadPagina: spreadPagina,
+        einde: toestand ? toestand.einde : null,
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
         vensterOpen: !!venster,
@@ -729,6 +776,15 @@ globalThis.AL = globalThis.AL || {};
     toestand.levelActief = n;
     wisselNaarScene(toestand.sceneId, "start");
     opADePc(true);
+  };
+
+  // Testhulp (dev): de endgame-sequence na level 7 zonder de echte sim (WP 9).
+  // Simuleert een "sim klaar"-trigger en toont Alberta's oordeel; van daaruit
+  // brengt Enter de speler naar de epiloog. Bedoeld voor de rooksmaaktest.
+  AL.debugSimVoltooid = function (eindeNaam) {
+    if (!toestand) return;
+    verwerkEffecten(AL.world.simVoltooid(toestand, eindeNaam || "wraak").effecten,
+      null);
   };
 
   window.addEventListener("load", boot);

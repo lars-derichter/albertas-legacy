@@ -31,8 +31,20 @@ globalThis.AL = globalThis.AL || {};
   // art-stijlgids.md.
   var KAMERS = {
     "zolder-west":   { oost: "zolder-midden" },
-    "zolder-midden": { west: "zolder-west", oost: "zolder-oost" },
-    "zolder-oost":   { west: "zolder-midden" }
+    "zolder-midden": { west: "zolder-west", oost: "zolder-oost", noord: "overloop" },
+    "zolder-oost":   { west: "zolder-midden" },
+    "overloop":      { zuid: "zolder-midden" }
+  };
+
+  // Waar het fragment van elk level ligt (spelontwerp-legacy.md, §"De lus per
+  // level", stap 1: "latere fragmenten zitten verder in de zolder"). Level 1 is
+  // het notitieboek in de westhoek; 2–4 zitten in dozen in de doorgang; 5–7
+  // dieper in het archief, op de overloop. Zo is er lichte, ruimtelijke
+  // progressie zonder harde sloten (save-en-hints.md: "zichtbaar, niet verplicht").
+  var FRAGMENT_LOCATIE = {
+    1: "zolder-west",
+    2: "zolder-midden", 3: "zolder-midden", 4: "zolder-midden",
+    5: "overloop", 6: "overloop", 7: "overloop"
   };
 
   // Van een looprichting naar de entry aan de overkant.
@@ -76,6 +88,7 @@ globalThis.AL = globalThis.AL || {};
     SAVE_SLEUTEL: SAVE_SLEUTEL,
     VERSIE: VERSIE,
     KAMERS: KAMERS,
+    FRAGMENT_LOCATIE: FRAGMENT_LOCATIE,
     genereerSeed: genereerSeed,
     verseLevels: verseLevels,
 
@@ -150,38 +163,76 @@ globalThis.AL = globalThis.AL || {};
       return { tekst: this.beschrijfScene(toestand), effecten: [] };
     },
 
-    // Onderzoek/bekijk een ding. Voor het framework kent alleen het notitieboek
-    // op zolder-west een echte beschrijving; de rest is sfeer.
+    // Onderzoek/bekijk een ding. De verteller beschrijft; alleen 'open' verandert
+    // de staat.
     onderzoek: function (toestand, ding) {
       ding = (ding || "").toLowerCase();
       if (toestand.sceneId === "zolder-west" && this._isNotitieboek(ding)) {
         return { tekst: [AL.strings.notitieboek.onderzoek], effecten: [] };
       }
-      if (toestand.sceneId === "zolder-oost" && this._isPc(ding)) {
-        return { tekst: [AL.strings.scenes["zolder-oost"].beschrijving],
-          effecten: [] };
+      if (toestand.sceneId === "zolder-oost") {
+        if (this._isPc(ding)) {
+          return { tekst: [AL.strings.scenes["zolder-oost"].beschrijving],
+            effecten: [] };
+        }
+        if (ding.indexOf("stoel") !== -1 || ding.indexOf("koffie") !== -1 ||
+            ding.indexOf("mok") !== -1) {
+          return { tekst: [AL.strings.scenes["zolder-oost"].beschrijving],
+            effecten: [] };
+        }
       }
-      if (toestand.sceneId === "zolder-midden" &&
-          (ding.indexOf("doos") !== -1 || ding.indexOf("broncode") !== -1)) {
+      if (this._isBroncodeDoos(toestand, ding)) {
         return { tekst: [AL.strings.scenes["zolder-midden"].beschrijving],
           effecten: [] };
+      }
+      if (this._isFragmentDoos(toestand, ding)) {
+        return { tekst: [AL.strings.dozen.onderzoek], effecten: [] };
       }
       return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
     },
 
     // Open een doos of het notitieboek. Het notitieboek op zolder-west
-    // ontgrendelt het fragment van level 1 (loop-stap "vind het fragment").
+    // ontgrendelt het fragment van level 1; de gemerkte dozen dieper in de
+    // zolder ontgrendelen de latere fragmenten (loop-stap "vind het fragment").
     open: function (toestand, ding) {
       ding = (ding || "").toLowerCase();
       if (toestand.sceneId === "zolder-west" && this._isNotitieboek(ding)) {
         return this.ontgrendelFragment(toestand, 1);
       }
-      if (toestand.sceneId === "zolder-midden" &&
-          (ding.indexOf("doos") !== -1 || ding.indexOf("broncode") !== -1)) {
-        // De broncode-doos telt pas op het einde (endgame, WP later).
+      if (this._isBroncodeDoos(toestand, ding)) {
+        // De broncode-doos telt pas op het einde (endgame, WP 9/10).
         return { tekst: [AL.strings.scenes["zolder-midden"].hint], effecten: [] };
       }
+      if (this._isFragmentDoos(toestand, ding)) {
+        return this._openFragmentDoos(toestand);
+      }
       return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
+    },
+
+    // Het eerstvolgende nog niet ontgrendelde level (1..7), of null als alles
+    // gevonden is. Bepaalt welk fragment een gemerkte doos onthult.
+    volgendFragment: function (toestand) {
+      for (var n = 1; n <= 7; n++) {
+        var lvl = toestand.levels[String(n)];
+        if (lvl && !lvl.ontgrendeld) return n;
+      }
+      return null;
+    },
+
+    // Open een gemerkte doos: onthult het eerstvolgende fragment als dat in deze
+    // kamer thuishoort, anders wijst het je naar de juiste plek (lichte
+    // ruimtelijke progressie, geen harde sloten).
+    _openFragmentDoos: function (toestand) {
+      var n = this.volgendFragment(toestand);
+      if (n === null) {
+        return { tekst: [AL.strings.dozen.allesGevonden], effecten: [] };
+      }
+      var loc = FRAGMENT_LOCATIE[n];
+      if (loc === toestand.sceneId) {
+        return this.ontgrendelFragment(toestand, n);
+      }
+      var wijs = AL.strings.dozen.nietHier[loc] || AL.strings.dozen.onderzoek;
+      return { tekst: [wijs], effecten: [] };
     },
 
     // Ontgrendel het fragment van level n: markeer het level en open de spread.
@@ -262,6 +313,66 @@ globalThis.AL = globalThis.AL || {};
     _isPc: function (ding) {
       return ding.indexOf("pc") !== -1 || ding.indexOf("computer") !== -1 ||
         ding.indexOf("monitor") !== -1 || ding.indexOf("scherm") !== -1;
+    },
+    // De broncode-doos: de prijs-doos op zolder-midden (aparte prop).
+    _isBroncodeDoos: function (toestand, ding) {
+      return toestand.sceneId === "zolder-midden" &&
+        ding.indexOf("broncode") !== -1;
+    },
+    // Een gemerkte fragment-doos: alleen op zolder-midden en de overloop, en
+    // enkel als het woord "broncode" er niet in staat (dat is de prijs-doos).
+    _isFragmentDoos: function (toestand, ding) {
+      if (toestand.sceneId !== "zolder-midden" &&
+          toestand.sceneId !== "overloop") return false;
+      if (ding.indexOf("broncode") !== -1) return false;
+      return ding.indexOf("doos") !== -1 || ding.indexOf("dozen") !== -1 ||
+        ding.indexOf("kist") !== -1;
+    },
+
+    // --- Endgame: sim → Alberta's oordeel → epiloog ---------------------------
+    //
+    // De sim (Seven Little Goats speelbaar in de terminal) komt in WP 9; hier
+    // staat de SEQUENCE eromheen, die na level-af:7 loopt en volledig testbaar
+    // is met een neppe "sim klaar"-trigger (spelontwerp-legacy.md, §"Endgame").
+
+    // Level 7 af: de pc kondigt aan dat het spel compleet is en boot de sim.
+    bootSim: function (toestand) {
+      return {
+        tekst: [AL.strings.endgame.compleet, AL.strings.endgame.bootSim],
+        effecten: ["sim:boot", "geluid:boot"]
+      };
+    },
+
+    // De sim bereikte een van de vier eindes → door naar Alberta's oordeel.
+    // (Neppe trigger voor de tests/engine tot WP 9 de echte sim levert.)
+    simVoltooid: function (toestand, eindeNaam) {
+      var r = this.startOordeel(toestand);
+      r.effecten.unshift("sim:einde:" + (eindeNaam || "onbekend"));
+      return r;
+    },
+
+    // Toon Alberta's oordeel: de tier volgt uit hintsTotaal (save-en-hints.md,
+    // §"Alberta's oordeel"). Zet de modus en bewaart de tier in einde.
+    startOordeel: function (toestand) {
+      var tier = (AL.levels && typeof AL.levels.oordeel === "function")
+        ? AL.levels.oordeel(toestand.hintsTotaal)
+        : "vakvrouw";
+      toestand.modus = "oordeel";
+      toestand.einde = tier;
+      var o = AL.strings.oordeel[tier] || AL.strings.oordeel.vakvrouw;
+      return {
+        tekst: [o.titel, o.tekst],
+        effecten: ["oordeel:" + tier, "voortgang:opgeslagen"]
+      };
+    },
+
+    // Van het oordeel naar de epiloog (wijst naar de echte broncode; sluit af).
+    startEpiloog: function (toestand) {
+      toestand.modus = "epiloog";
+      return {
+        tekst: AL.strings.epiloog.alineas.slice(),
+        effecten: ["epiloog", "voortgang:opgeslagen"]
+      };
     },
 
     // --- Save / load / herbegin (DOM-vrij; storage geïnjecteerd) --------------
