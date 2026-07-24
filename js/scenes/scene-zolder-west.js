@@ -63,21 +63,6 @@ AL.scenes["zolder-west"] = {
     ["line", 27, [197, 78, 272, 78]],
     ["line", 26, [197, 19, 197, 78]],
 
-    // ---- De lichtstraal ---------------------------------------------------
-    // In plakken, niet in één veelhoek. Eén vlak met vaste dichtheid leest als
-    // een schuine plank: licht hoort naar beneden toe breder én zwakker te
-    // worden. Vijf plakken met aflopende dichtheid geven die uitdoving; de
-    // ramp-kern loopt mee van heet bovenaan naar mauve onderaan.
-    ["ditherRamp", 33, 34, 0.55, [198, 78, 272, 78, 278, 100, 190, 100]],
-    ["ditherRamp", 32, 33, 0.45, [190, 100, 278, 100, 286, 124, 178, 124]],
-    ["ditherRamp", 31, 32, 0.34, [178, 124, 286, 124, 292, 146, 166, 146]],
-    ["ditherRamp", 30, 31, 0.24, [166, 146, 292, 146, 300, 168, 152, 168]],
-    ["ditherRamp", 29, 30, 0.16, [152, 168, 300, 168, 308, 189, 138, 189]],
-
-    // Waar de straal de vloer haalt, is het hout warmer — maar laag gehouden:
-    // de streep staat al bijna van de vloer af (zie de kamerbeschrijving).
-    ["ditherRamp", 25, 26, 0.30, [150, 168, 300, 168, 308, 189, 136, 189]],
-
     // ---- Dozen, links tot tegen de balken ---------------------------------
     // Drie stapels van afnemende hoogte, zodat het als een hoek vol leest en
     // niet als twee blokken. Elk met een lichtkant rechts (naar het raam toe)
@@ -121,7 +106,8 @@ AL.scenes["zolder-west"] = {
     // Beslag: twee banden en een slotplaat.
     ["rect", 23, 162, 150, 5, 26],
     ["rect", 23, 220, 150, 5, 26],
-    ["rect", 52, 190, 156, 8, 7],
+    ["rect", 55, 189, 155, 10, 9],
+    ["rect", 57, 191, 157, 6, 5],
     ["px", 22, [[193, 159], [194, 159]]],
     ["shadow", 2, [140, 176, 248, 176, 258, 186, 130, 186]],
 
@@ -130,7 +116,29 @@ AL.scenes["zolder-west"] = {
     // donkerder. Zo is te zien dat de zolder verder loopt.
     ["gradient", 29, 28, 288, 54, 32, 72, "h"],
     ["line", 23, [288, 54, 288, 126]],
-    ["shadow", 1, [292, 54, 319, 54, 319, 126, 292, 126]]
+    ["shadow", 1, [292, 54, 319, 54, 319, 126, 292, 126]],
+
+    // ---- De lichtstraal ---------------------------------------------------
+    // In plakken, niet in één veelhoek. Eén vlak met vaste dichtheid leest als
+    // een schuine plank: licht hoort naar beneden toe breder én zwakker te
+    // worden. Vijf plakken met aflopende kracht geven die uitdoving.
+    //
+    // Twee dingen zijn hier veranderd tegenover de eerste doorloop. De straal
+    // staat nu áchteraan in de picture in plaats van vooraan, en hij is met
+    // light getekend in plaats van met ditherRamp. Daarvóór werd hij als
+    // dekkende veelhoek onder de kist en de dozen door geschoven: hij lag dus
+    // achter de kamer in plaats van erop, en waar hij wél zichtbaar was, was
+    // hij een oranje plaat. Nu valt hij op de kist — precies wat de
+    // kamerbeschrijving belooft.
+    ["light", 3, 0.80, [198, 78, 272, 78, 278, 100, 190, 100]],
+    ["light", 3, 0.55, [190, 100, 278, 100, 286, 124, 178, 124]],
+    ["light", 2, 0.60, [178, 124, 286, 124, 292, 146, 166, 146]],
+    ["light", 2, 0.40, [166, 146, 292, 146, 300, 168, 152, 168]],
+    ["light", 1, 0.55, [152, 168, 300, 168, 308, 189, 138, 189]],
+
+    // Waar de straal de vloer haalt, is het hout warmer — maar laag gehouden:
+    // de streep staat al bijna van de vloer af (zie de kamerbeschrijving).
+    ["light", 1, 0.30, [150, 168, 300, 168, 308, 189, 136, 189]]
   ],
 
   // Beloopbare vloer. De strook loopt door tot de oostrand: dat is de uitgang.
@@ -155,7 +163,10 @@ AL.scenes["zolder-west"] = {
   // Stof in de lichtstraal — de stijlgids vraagt er al om. Het waren tot nu toe
   // acht stilstaande pixels in de gecachete achtergrond; nu zakken ze echt.
   sfeer: [
-    { soort: "stof", x: 110, y: 80, b: 96, h: 108, aantal: 22, kleur: 34,
+    // De doos moet binnen de straal blijven. Ze stond te ver naar links: het
+    // stof viel voor de helft op de donkere wand en las daar als vuil op het
+    // scherm in plaats van als stof in het licht.
+    { soort: "stof", x: 174, y: 82, b: 104, h: 104, aantal: 22, kleur: 34,
       seed: 3, snelheid: 0.018 }
   ],
 

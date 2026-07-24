@@ -23,6 +23,12 @@ globalThis.AL = globalThis.AL || {};
 AL.strings = {
 
   titel: "THE LEGACY OF ALBERTA",
+  // De titelkaart zet de titel in twee lagen: een kleine bovenregel en de naam
+  // groot eronder. Eén regel van 21 tekens past op geen enkele leesbare schaal
+  // binnen 320 px, en twee lagen is bovendien hoe een titelkaart uit die tijd
+  // er meestal uitzag.
+  titelBoven: "THE LEGACY OF",
+  titelGroot: "ALBERTA",
   ondertitel: "de zolder van grootmoeder",
   drukEnter: "Druk op Enter",
   openingOverslaan: "Esc: overslaan",

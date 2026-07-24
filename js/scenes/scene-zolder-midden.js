@@ -67,18 +67,6 @@ AL.scenes["zolder-midden"] = {
     ["line", 26, [199, 24, 199, 124]],
     ["line", 26, [140, 24, 199, 24]],
 
-    // ---- Het licht dat van west naar oost trekt ----------------------------
-    // Hier haalt het al minder: geen straal meer maar een veeg die links
-    // binnenvalt en halverwege de kamer opgeeft.
-    // In plakken met aflopende dichtheid, net als de straal in de westhoek: één
-    // vlak met vaste dichtheid leest als een oranje wig, en dat was precies wat
-    // er aan de oude tekening mis was.
-    ["ditherRamp", 31, 32, 0.34, [0, 76, 32, 76, 44, 110, 0, 110]],
-    ["ditherRamp", 30, 31, 0.26, [0, 110, 44, 110, 58, 144, 0, 144]],
-    ["ditherRamp", 29, 30, 0.18, [0, 144, 58, 144, 74, 189, 0, 189]],
-    ["ditherRamp", 29, 30, 0.10, [32, 76, 60, 76, 116, 189, 74, 189]],
-    ["ditherRamp", 24, 25, 0.20, [0, 168, 96, 168, 74, 189, 0, 189]],
-
     // ---- Wat er níét als sprite staat --------------------------------------
     // Een lage stapel tegen de rechterwand, puur als vulling: de kamer hoort
     // vol te staan, niet leeg met drie voorwerpen erin.
@@ -86,7 +74,32 @@ AL.scenes["zolder-midden"] = {
     ["shadow", 1, [286, 128, 298, 128, 298, 158, 286, 158]],
     ["line", 27, [286, 128, 319, 128]],
     ["line", 22, [286, 158, 319, 158]],
-    ["shadow", 2, [282, 156, 319, 156, 319, 166, 276, 166]]
+    ["shadow", 2, [282, 156, 319, 156, 319, 166, 276, 166]],
+
+    // ---- Het licht dat van west naar oost trekt ----------------------------
+    // Hier haalt het al minder: geen straal meer maar een veeg die links
+    // binnenvalt en halverwege de kamer opgeeft.
+    //
+    // Met light, en achteraan in de picture, zodat de veeg over de vloer valt in
+    // plaats van eronder te verdwijnen. Een dekkende veelhoek leest hier als een
+    // oranje wig, en dat was precies wat er aan de oude tekening mis was.
+    //
+    // Anders opgebouwd dan de straal in de westhoek: dáár liggen de plakken
+    // ónder elkaar, want een bundel wordt naar beneden toe zwakker. Hier liggen
+    // ze ín elkaar, want een veeg wordt naar bínnen toe zwakker. Vijf wiggen van
+    // één stap die elkaar overlappen: helemaal links tellen ze allemaal mee, naar
+    // rechts vallen ze een voor een weg, en de veeg dooft dus uit in plaats van
+    // op te houden. Met twee brede wiggen van drie stappen stond hier een
+    // lichtgevende rechthoek tegen de wand.
+    // De buitenste wig loopt bewust tot voorbij de staander op x44: bleef ze
+    // ervoor staan, dan hield het licht precies op de staander op en las het als
+    // een verlicht paneel tegen de wand in plaats van als licht dat naar binnen
+    // valt.
+    ["light", 1, 0.10, [0, 62, 110, 62, 168, 189, 0, 189]],
+    ["light", 1, 0.16, [0, 66, 88, 66, 132, 189, 0, 189]],
+    ["light", 1, 0.22, [0, 70, 66, 70, 100, 189, 0, 189]],
+    ["light", 1, 0.30, [0, 74, 46, 74, 72, 189, 0, 189]],
+    ["light", 1, 0.40, [0, 78, 28, 78, 46, 189, 0, 189]]
   ],
 
   // Beloopbare vloer (west↔oost) plus een corridor naar de trap (noord).

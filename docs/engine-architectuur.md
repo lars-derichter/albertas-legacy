@@ -51,12 +51,19 @@ Adapteren en crediteren; niet heruitvinden.
   De guard wordt `debugPalet`: hij controleert nu of elke pixel een geheel getal
   binnen de paletgrootte is (0 t/m `AL.palet.KLEUREN.length - 1`). Zo blijft de
   betrapping van buiten-palet-kleuren bestaan, aangepast aan het grotere palet.
-- **Vier ops erbij: `gradient`, `ditherRamp`, `shadow`, `noise`.** De
+- **Vijf ops erbij: `gradient`, `ditherRamp`, `shadow`, `light`, `noise`.** De
   overgenomen renderer kon alleen platte vullingen en één 50 %-schaakbord, en
   daarmee is de VGA-look uit `art-stijlgids.md` niet te tekenen: elk groot vlak
-  blijft dan één kleur. De vier nieuwe ops staan met hun signatuur en hun
+  blijft dan één kleur. De nieuwe ops staan met hun signatuur en hun
   gebruik in `art-stijlgids.md`, §"De draw-ops". `tools/lint-scene.mjs` kent ze
   en controleert hun ariteit en grenzen mee.
+
+  `light` kwam er een pakket later bij dan de andere vier, en om een reden die
+  het onthouden waard is: zonder die op werd elke lichtstraal met `ditherRamp`
+  getekend, en die vult élke pixel van zijn veelhoek. Licht was daardoor een
+  dekkende plaat over de kamer in plaats van iets dat op de kamer valt — precies
+  de klacht waar deze opwaardering mee begon. Zie
+  `workflow/21-de-kaarten-en-het-licht.md`.
 - **Ramps in het palet.** `js/palette.js` levert nu `RAMPEN`, `rampVan`,
   `verduister` en `verhelder`. Daarmee kan een kleur binnen zijn eigen familie
   een stap zakken, wat `shadow` en `gradient` mogelijk maakt zonder een tweede

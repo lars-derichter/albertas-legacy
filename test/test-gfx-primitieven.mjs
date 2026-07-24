@@ -164,6 +164,52 @@ test("shadow op een kleur zonder ramp laat ze staan", () => {
   assert.equal(pixel(buf, 10, 150), 6);
 });
 
+// ---- light -----------------------------------------------------------------
+//
+// De tegenhanger van shadow, en het gereedschap voor een lichtstraal. Waar het
+// om draait: light vúlt niet. Wat eronder ligt blijft staan en wordt alleen
+// lichter binnen zijn eigen ramp — anders wordt een straal weer de dekkende
+// oranje plaat die dit hele programma moest wegwerken.
+
+test("light verheldert wat eronder ligt binnen de eigen ramp", () => {
+  const helft = [0, 100, 320, 100, 320, 189, 0, 189];
+  const buf = tekenOps([
+    ["fill", 23],                 // hout schaduw
+    ["light", 2, 1, helft]
+  ]);
+  assert.equal(pixel(buf, 10, 50), 23, "boven het licht ongewijzigd");
+  assert.equal(pixel(buf, 10, 150), 25, "twee stappen lichter in de hout-ramp");
+});
+
+test("light laat de ondergrond staan waar de dichtheid het niet haalt", () => {
+  const vlak = [0, 20, 320, 20, 320, 180, 0, 180];
+  const buf = tekenOps([["fill", 23], ["light", 1, 0.5, vlak]]);
+  let geraakt = 0, totaal = 0;
+  for (let y = 20; y < 180; y++) {
+    for (let x = 0; x < 320; x++) {
+      totaal++;
+      const p = pixel(buf, x, y);
+      assert.ok(p === 23 || p === 24, "alleen de eigen ramp, kreeg " + p);
+      if (p === 24) geraakt++;
+    }
+  }
+  const aandeel = geraakt / totaal;
+  assert.ok(Math.abs(aandeel - 0.5) < 0.06,
+    "dichtheid 0,5 gaf aandeel " + aandeel.toFixed(3));
+});
+
+test("light klemt op de lichtste kleur van de ramp", () => {
+  const helft = [0, 100, 320, 100, 320, 189, 0, 189];
+  const buf = tekenOps([["fill", 27], ["light", 3, 1, helft]]);
+  assert.equal(pixel(buf, 10, 150), 27, "hout hooglicht kan niet lichter");
+});
+
+test("light op een kleur zonder ramp laat ze staan", () => {
+  const helft = [0, 100, 320, 100, 320, 189, 0, 189];
+  const buf = tekenOps([["fill", 14], ["light", 2, 1, helft]]);
+  assert.equal(pixel(buf, 10, 150), 14);
+});
+
 // ---- noise -----------------------------------------------------------------
 
 test("noise is deterministisch: twee keer tekenen geeft hetzelfde beeld", () => {

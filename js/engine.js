@@ -784,26 +784,37 @@ globalThis.AL = globalThis.AL || {};
 
   // ---- Titel-, spread-, oordeel- en epiloogkaart --------------------------
 
+  // De titelkaart. De tekening zelf is een gewone scène geworden
+  // (js/scenes/scene-titelkaart.js), zoals art-stijlgids.md hem al als bindende
+  // scène-id noemde; hier komt alleen het letterwerk erop, want dat moet op de
+  // donkere plaat vallen die in die scène al klaarligt.
   function tekenTitelKaart() {
-    // Stille zolder in silhouet, één gouden lichtstraal, het logo eroverheen.
-    AL.gfx.rect(28, 0, 0, 320, 200);
-    AL.gfx.poly(29, [0, 120, 320, 120, 320, 200, 0, 200]);   // vloer in schaduw
-    // Lichtstraal schuin.
-    AL.gfx.poly(33, [200, 8, 240, 8, 210, 160, 150, 160]);
-    AL.gfx.dither(34, 33, [206, 10, 234, 10, 205, 150, 168, 150]);
-    // Een donkere plaat achter het logo, zodat de lichtstraal eráchter door
-    // loopt. Zonder die plaat verdwijnt de titel waar de straal passeert: de
-    // titelkleur (34) is exact de hooglichtkleur van de straal zelf
-    // (art-stijlgids.md, avond-ramp) — gelijke kleur op gelijke kleur. Het is
-    // dus geen tekenvolgorde-probleem maar een contrastprobleem; de tekst stond
-    // altijd al bovenop.
-    AL.gfx.rect(28, 30, 40, 260, 60);
-    // Logo-kader in avondgoud.
-    AL.gfx.kader(30, 40, 260, 60, 33);
-    AL.gfx.kader(32, 42, 256, 56, 41);
-    gecentreerdeTekst(AL.strings.titel, 56, 34);
-    gecentreerdeTekst(AL.strings.ondertitel, 74, 33);
-    if (!venster) gecentreerdeTekst(AL.strings.drukEnter, 168, 32);
+    zorgVoorScene("titelkaart");
+    AL.gfx.blitScene("titelkaart");
+    tekenSfeer(haalScene("titelkaart"));
+
+    // De titel in twee lagen: een kleine bovenregel en de naam groot eronder.
+    // Op één regel past "THE LEGACY OF ALBERTA" op geen enkele leesbare schaal
+    // binnen 320 px — bij schaal 2 is het al 378 px breed en valt het er links
+    // en rechts af.
+    gecentreerdeTekst(AL.strings.titelBoven, 72, 33);
+    var logoOpts = { schaal: 3, boven: 34, onder: 32, rand: 22 };
+    var b = AL.gfx.logoBreedte(AL.strings.titelGroot, logoOpts);
+    AL.gfx.tekenLogo(AL.strings.titelGroot, Math.floor((320 - b) / 2), 86,
+      logoOpts);
+
+    gecentreerdeTekst(AL.strings.ondertitel, 116, 33);
+
+    // De "druk op Enter"-regel staat níét op de plaat maar op de vloer, dwars
+    // door de landing van de straal. Daar helpt geen kleurkeuze: die vloer is
+    // op de ene plek donker hout en op de andere belicht hout. Ze krijgt dus
+    // dezelfde omtreklijn als het logo — dan leest ze op allebei.
+    if (!venster) {
+      var enterOpts = { schaal: 1, boven: 33, onder: 32, rand: 22 };
+      var eb = AL.gfx.logoBreedte(AL.strings.drukEnter, enterOpts);
+      AL.gfx.tekenLogo(AL.strings.drukEnter, Math.floor((320 - eb) / 2), 166,
+        enterOpts);
+    }
   }
 
   // De notitieboek-spread, full-screen. De papier-achtergrond komt uit
@@ -830,9 +841,9 @@ globalThis.AL = globalThis.AL || {};
   // teksten). De achtergrond komt uit scene-eindkaart.js; de tekst legt de engine
   // erop in een papieren venster.
   function tekenEindkaartAchtergrond() {
-    AL.gfx.rect(28, 0, 0, 320, 200);
-    var k = AL.scenes && AL.scenes["eindkaart"];
-    if (k) AL.gfx.tekenPicture(k.picture);
+    zorgVoorScene("eindkaart");
+    AL.gfx.blitScene("eindkaart");
+    tekenSfeer(haalScene("eindkaart"));
   }
 
   // De kop van een eindkaart, op een papieren band over de volle breedte. De

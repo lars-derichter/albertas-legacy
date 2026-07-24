@@ -246,6 +246,27 @@ globalThis.AL = globalThis.AL || {};
     });
   }
 
+  // De andere helft van shadow: elke pixel binnen de veelhoek klimt n stappen in
+  // zijn eigen ramp, maar alleen waar de Bayer-drempel het toelaat. Dichtheid 1
+  // licht alles op, 0.3 alleen een derde van de pixels.
+  //
+  // Dit is het gereedschap voor een lichtstraal, en het bestond niet: een straal
+  // werd tot nu toe met ditherRamp getekend, en die vult élke pixel van de
+  // veelhoek met een van twee kleuren. Daardoor las licht als een dichte
+  // oranje plaat over de kamer heen — precies de klacht waar dit programma mee
+  // begon. Met light blijft de ondergrond staan en wordt hij alleen líchter:
+  // hout wordt lichter hout, de wand lichtere wand, een silhouet krijgt een rand
+  // mee in plaats van te verdwijnen. Eén lichtbron, en alles wat hij raakt
+  // antwoordt in zijn eigen kleurfamilie.
+  function ivLight(doel, stappen, dichtheid, punten) {
+    var n = Math.max(1, stappen | 0);
+    var d = Math.max(0, Math.min(1, dichtheid));
+    vulPolygoon(doel, punten, function (x, y) {
+      var huidig = doel[y * BREEDTE + x];
+      return bayer(x, y) < d ? AL.palet.verhelder(huidig, n) : huidig;
+    });
+  }
+
   // Spikkels binnen een veelhoek: houtnerf, stof, korrel op steen. Laat de
   // ondergrond staan waar niet gespikkeld wordt.
   function ivNoise(doel, c, dichtheid, seed, punten) {
@@ -300,6 +321,8 @@ globalThis.AL = globalThis.AL || {};
         ivDitherRamp(doel, op[1], op[2], op[3], op[4]);
       } else if (naam === "shadow") {
         ivShadow(doel, op[1], op[2]);
+      } else if (naam === "light") {
+        ivLight(doel, op[1], op[2], op[3]);
       } else if (naam === "noise") {
         ivNoise(doel, op[1], op[2], op[3], op[4]);
       } else if (naam === "ellipse") {
@@ -349,6 +372,9 @@ globalThis.AL = globalThis.AL || {};
       ivDitherRamp(buffer, c1, c2, dichtheid, punten);
     },
     shadow: function (stappen, punten) { ivShadow(buffer, stappen, punten); },
+    light: function (stappen, dichtheid, punten) {
+      ivLight(buffer, stappen, dichtheid, punten);
+    },
 
     // Dezelfde deterministische ruis die de noise-op gebruikt, publiek gemaakt
     // voor de sfeerlaag in de engine: stof moet elke run op dezelfde plek
@@ -479,6 +505,88 @@ globalThis.AL = globalThis.AL || {};
         }
         cx += font.breedte;
       }
+    },
+
+    // Tekst als logo: de 8×8-font op schaal, met een omtreklijn eromheen en een
+    // verticaal verloop over de letterhoogte. Daarmee wordt de speelfont
+    // letterwerk — groot, omlijnd, en met licht dat van boven komt, precies wat
+    // een titelkaart uit 1990 deed.
+    //
+    // Geeft de gebruikte breedte terug, zodat de aanroeper kan centreren.
+    //
+    // opts: { schaal, boven, onder, rand, spatie }
+    tekenLogo: function (tekst, x, y, opts) {
+      opts = opts || {};
+      var schaal = opts.schaal || 3;
+      var boven = (opts.boven === undefined) ? 34 : opts.boven;
+      var onder = (opts.onder === undefined) ? 32 : opts.onder;
+      var rand = (opts.rand === undefined) ? 22 : opts.rand;
+      var spatie = (opts.spatie === undefined) ? 1 : opts.spatie;
+      keurKleur(boven); keurKleur(onder); keurKleur(rand);
+
+      var font = AL.font;
+      var celB = font.breedte * schaal + spatie * schaal;
+      var breedte = tekst.length * celB;
+      var hoogte = font.hoogte * schaal;
+
+      // Eerst een masker van alle gezette pixels opbouwen. Pas daarna tekenen:
+      // zo kan de omtreklijn de héle vorm volgen in plaats van per letter, en
+      // vreten aangrenzende letters elkaars rand niet op.
+      var masker = {};
+      var i, row, col, sx, sy;
+      for (i = 0; i < tekst.length; i++) {
+        var glyph = font.glyphs[tekst.charAt(i)] || font.glyphs["?"];
+        for (row = 0; row < font.hoogte; row++) {
+          for (col = 0; col < font.breedte; col++) {
+            if (glyph[row].charAt(col) !== "1") continue;
+            for (sy = 0; sy < schaal; sy++) {
+              for (sx = 0; sx < schaal; sx++) {
+                var px = x + i * celB + col * schaal + sx;
+                var py = y + row * schaal + sy;
+                masker[px + "," + py] = true;
+              }
+            }
+          }
+        }
+      }
+
+      // De omtreklijn: elke buur van een gezette pixel die zelf niet gezet is.
+      var buren = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1],
+        [-1, 1], [1, 1]];
+      var sleutel, deel, mx, my, b;
+      for (sleutel in masker) {
+        deel = sleutel.split(",");
+        mx = +deel[0]; my = +deel[1];
+        for (b = 0; b < buren.length; b++) {
+          var nx = mx + buren[b][0], ny = my + buren[b][1];
+          if (!masker[nx + "," + ny]) zetPixel(buffer, nx, ny, rand);
+        }
+      }
+
+      // De vulling: een verloop over de letterhoogte, geordend geditherd zodat
+      // de overgangen niet als banden lezen.
+      var stappen = rampStappen(boven, onder);
+      var n = stappen.length;
+      for (sleutel in masker) {
+        deel = sleutel.split(",");
+        mx = +deel[0]; my = +deel[1];
+        var t = hoogte <= 1 ? 0 : (my - y) / (hoogte - 1);
+        var f = Math.max(0, Math.min(1, t)) * (n - 1);
+        var idx = Math.floor(f);
+        var frac = f - idx;
+        if (idx >= n - 1) { idx = n - 1; frac = 0; }
+        zetPixel(buffer, mx, my,
+          frac > bayer(mx, my) ? stappen[idx + 1] : stappen[idx]);
+      }
+      return breedte;
+    },
+
+    // Hoe breed tekenLogo zou uitkomen, zonder te tekenen. Voor centreren.
+    logoBreedte: function (tekst, opts) {
+      opts = opts || {};
+      var schaal = opts.schaal || 3;
+      var spatie = (opts.spatie === undefined) ? 1 : opts.spatie;
+      return tekst.length * (AL.font.breedte * schaal + spatie * schaal);
     },
 
     // Bitmaptekst met per-teken y-jitter (handschrift-benadering voor de

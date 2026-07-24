@@ -176,7 +176,7 @@ minderheid), en licht is rond (een halo uit trapezia leest als een tunnel).
 
 ### - [x] WP E deel 1 — De vier kamers hertekend
 
-Entry: `workflow/20-de-zolder-hertekend.md` · commit: (nog in te vullen)
+Entry: `workflow/20-de-zolder-hertekend.md` · commit: `386d9e3`
 
 - [x] Vier beloopbare kamers hertekend: gegradeerde wanden en vloeren, wijkend
       perspectief, één lichtbron met hooglicht en schaduw, outlines, korrel
@@ -199,24 +199,48 @@ sprite-schaling uit WP B ligt klaar, maar de loopstrook is 39 px hoog — daar
 valt geen zinnige diepte op te schalen zonder de walkboxes te herzien. Hoort
 bij **WP H**.
 
-### - [ ] WP E deel 2 — De titelkaart en de eindkaart
+### - [x] WP E deel 2 — De kaarten, en licht dat eindelijk licht is
 
-Entry: nog te schrijven · commit: —
+Entry: `workflow/21-de-kaarten-en-het-licht.md` · commit: (nog in te vullen)
 
 Afgesplitst omdat deel 1 al groot was en `CLAUDE.md` vraagt een half pakket te
 splitsen in plaats van het half te committen. Een logo is bovendien letterwerk
 en geen kamer: ander soort werk.
 
-- [ ] `titelkaart` als echte scène (`js/scenes/scene-titelkaart.js`) in plaats
+- [x] `titelkaart` als echte scène (`js/scenes/scene-titelkaart.js`) in plaats
       van zeven inline draw-ops in `js/engine.js`
-- [ ] Een getekend logo-bitmap in plaats van de titel in de speelfont
-- [ ] `eindkaart` hertekend met dezelfde woordenschat als de kamers
-- [ ] QC: `lint:scene` schoon; titel en oordeelkop blijven leesbaar — de
-      contrastfout uit WP A mag niet terugkomen
+- [x] Getekend logo: `gfx.tekenLogo` zet de 8×8-font op schaal met een
+      omtreklijn uit een masker (niet per letter) en een verloop over de
+      letterhoogte
+- [x] Tweelaags titel: "THE LEGACY OF" klein boven "ALBERTA" op schaal 3 — op
+      één regel past de titel op geen enkele leesbare schaal binnen 320 px
+- [x] `eindkaart` hertekend: dezelfde kamer als de titelkaart, maar licht
+- [x] **Nieuwe op `light`** — de andere helft van `shadow`: pixels omhóóg in hun
+      eigen ramp, gedoseerd met Bayer. Wijkt af van het plan (WP B was met vier
+      ops gesloten) en de reden staat in de entry: `ditherRamp` vult élke pixel,
+      dus élke lichtstraal in de repo was een dekkende plaat. Dat is P0-3 uit de
+      geprioriteerde lijst, en het was met het bestaande gereedschap niet op te
+      lossen
+- [x] Alle vijf de scènes met een lichtbron omgezet naar `light`, en hun licht
+      naar achteren in de picture verplaatst: licht valt op een kamer, het ligt
+      er niet onder. De kist in de westhoek staat nu écht in de straal
+- [x] Monitorgloed als vijf ín elkaar liggende koepels: één ring heeft een rand,
+      vijf oplopende ringen doven uit
+- [x] Stofdoos in de westhoek stond naast de straal; korrel op de overloopwand
+      stond twee stappen onder de ondergrond (las als sneeuw)
+- [x] QC: **263/263 groen** (vier nieuwe tests voor `light`), `lint:scene`
+      schoon op tien scènes, `check-assets` driftvrij, zes rooksmaaktesten groen
+      (229 controles), en de contrastfout uit WP A is op verse screenshots niet
+      teruggekomen
+
+Nog open, met adres: het trapgat in `overloop` (y140–189) overlapt de loopstrook
+(y152–189), dus wie via het zuiden binnenkomt staat ín het gat. Walkbox-werk,
+hoort bij **WP H**, waar de walkboxen toch al herzien worden voor de
+dieptescaling.
 
 ### - [ ] WP F — Typografie en UI-chrome
 
-Entry: `workflow/21-*.md` · commit: —
+Entry: `workflow/22-*.md` · commit: —
 
 - [ ] Proportionele prose; wrap van tekens naar pixels (ook
       `gecentreerdeTekst`)
@@ -228,7 +252,7 @@ Entry: `workflow/21-*.md` · commit: —
 
 ### - [ ] WP G — Het notitieboek
 
-Entry: `workflow/22-*.md` · commit: —
+Entry: `workflow/23-*.md` · commit: —
 
 - [ ] Per level een eigen papierachtergrond, beschadiging waar de puzzel zit
 - [ ] Schetsen per scharnier-metafoor (blauwdruk, trechters, knikkerbaan, twee
@@ -238,7 +262,7 @@ Entry: `workflow/22-*.md` · commit: —
 
 ### - [ ] WP H — Sprites en animatie
 
-Entry: `workflow/23-*.md` · commit: —
+Entry: `workflow/24-*.md` · commit: —
 
 - [ ] Ademende idle
 - [ ] Loopcyclus 4–6 frames met armzwaai; draaiframe
@@ -248,7 +272,7 @@ Entry: `workflow/23-*.md` · commit: —
 
 ### - [ ] WP I — Geluid
 
-Entry: `workflow/24-*.md` · commit: —
+Entry: `workflow/25-*.md` · commit: —
 
 - [ ] OPL-achtige stemmen in WebAudio, geen samples
 - [ ] Titelthema, zolder-ambience-loop, pc-laag, eindcue — koud register
@@ -260,7 +284,7 @@ Entry: `workflow/24-*.md` · commit: —
 
 ### - [ ] WP J — De gesimuleerde pc
 
-Entry: `workflow/25-*.md` · commit: —
+Entry: `workflow/26-*.md` · commit: —
 
 - [ ] Borland/Turbo-chrome: menubalk, dubbellijns kader, F-toetsen-statusbalk
 - [ ] Scanlines over het paneel; afgeronde hoeken en CSS-glow eruit

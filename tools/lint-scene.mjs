@@ -44,7 +44,7 @@ try {
 // Elk op-type met zijn vaste lengte (aantal array-elementen).
 const OP_LENGTE = {
   fill: 2, rect: 6, poly: 3, line: 3, dither: 4, ellipse: 6, px: 3,
-  gradient: 8, ditherRamp: 5, shadow: 3, noise: 5
+  gradient: 8, ditherRamp: 5, shadow: 3, light: 4, noise: 5
 };
 
 // ---- Hulp om een scènebestand te laden -----------------------------------
@@ -160,6 +160,20 @@ function keurOp(op, i, fouten) {
     const pts = op[2];
     if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
       fouten.push(waar + ": shadow vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "light") {
+    if (!Number.isInteger(op[1]) || op[1] < 1 || op[1] > 5) {
+      fouten.push(waar + ": stappen moet een geheel getal 1–5 zijn");
+    }
+    if (typeof op[2] !== "number" || op[2] < 0 || op[2] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    const pts = op[3];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": light vraagt minstens 3 punten");
     } else {
       keurPunten(pts, waar, fouten);
     }

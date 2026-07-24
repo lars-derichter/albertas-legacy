@@ -17,9 +17,12 @@ AL.scenes["overloop"] = {
 
   picture: [
     // ---- Wand: pleisterwerk, koel en kaal ----------------------------------
+    // De korrel blijft één stap van de wand af. Met 48 (de donkerste steen) over
+    // een verloop dat naar 50 loopt, stond de spikkel twee stappen lager dan de
+    // ondergrond, en met 51 erbij nog een derde stap eroverheen: samen las dat
+    // als sneeuw op een tv, niet als pleisterwerk.
     ["gradient", 48, 50, 0, 8, 320, 120, "v"],
-    ["noise", 48, 0.12, 41, [0, 8, 319, 8, 319, 128, 0, 128]],
-    ["noise", 51, 0.05, 42, [0, 8, 319, 8, 319, 128, 0, 128]],
+    ["noise", 49, 0.10, 41, [0, 8, 319, 8, 319, 128, 0, 128]],
     // Een paar barsten: de wand is oud en niemand heeft hem bijgehouden.
     ["line", 48, [58, 20, 64, 48]],
     ["line", 48, [64, 48, 60, 72]],
@@ -27,7 +30,7 @@ AL.scenes["overloop"] = {
 
     // ---- Vloer: planken, maar grijzer dan beneden --------------------------
     ["gradient", 49, 50, 0, 128, 320, 61, "v"],
-    ["noise", 48, 0.12, 43, [0, 128, 319, 128, 319, 189, 0, 189]],
+    ["noise", 48, 0.07, 43, [0, 128, 319, 128, 319, 189, 0, 189]],
     ["line", 48, [0, 128, 319, 128]],
     ["line", 48, [128, 128, 52, 189]],
     ["line", 48, [208, 128, 284, 189]],
@@ -92,8 +95,10 @@ AL.scenes["overloop"] = {
 
     // ---- Het licht haalt de hoeken niet ------------------------------------
     // Eén flauwe veeg van de trap-kant, en verder niets. De hoeken worden
-    // expliciet nog een stap donkerder gezet.
-    ["ditherRamp", 50, 51, 0.12, [140, 128, 190, 128, 214, 189, 116, 189]],
+    // expliciet nog een stap donkerder gezet. Met light, zodat de veeg de vloer
+    // oplicht in plaats van er een grijze vlek op te leggen — de overloop is
+    // steen-ramp, de vloer hout-ramp, en die twee mengden niet.
+    ["light", 1, 0.25, [140, 128, 190, 128, 214, 189, 116, 189]],
     ["shadow", 1, [0, 8, 30, 8, 46, 189, 0, 189]],
     ["shadow", 1, [292, 8, 319, 8, 319, 189, 278, 189]]
   ],

@@ -184,6 +184,7 @@ hierboven zonder hen niet uitvoerbaar waren — met alleen platte vullingen en
 | `gradient` | `["gradient", c1, c2, x, y, b, h, "h"\|"v"]` | **de werkpaardop.** Verloop over een rechthoek. Zitten c1 en c2 in dezelfde ramp, dan loopt het over de échte tussenkleuren (28→34 geeft zeven stappen); anders blijft het een menging van twee. De overgangen worden geordend geditherd, dus geen zichtbare banden |
 | `ditherRamp` | `["ditherRamp", c1, c2, dichtheid, punten]` | menging in een gekozen verhouding (0–1) in plaats van vast 50 %. Voor de zachte rand van een lichtveeg, of een sluier over een vlak |
 | `shadow` | `["shadow", stappen, punten]` | verduistert wat er al staat, 1–5 stappen omlaag in de eigen ramp van elke pixel. Dít is de op voor contactschaduwen: de schaduw krijgt de kleur van de ondergrond mee in plaats van er een grijze vlek overheen te leggen |
+| `light` | `["light", stappen, dichtheid, punten]` | de andere helft van `shadow`: 1–5 stappen omhóóg in de eigen ramp, maar alleen waar de Bayer-drempel het toelaat. Dít is de op voor licht — een straal, een gloed, een veeg door een deuropening. Ze vult niets: wat eronder ligt blijft staan en wordt alleen lichter |
 | `noise` | `["noise", kleur, dichtheid, seed, punten]` | deterministische spikkels: houtnerf, stof op een vloer, korrel op steen. De seed hoort bij de scène, niet bij de speler — hetzelfde beeld bij elke run |
 
 Een paar vuistregels die uit het gebruik volgen:
@@ -205,14 +206,27 @@ Een paar vuistregels die uit het gebruik volgen:
 - **Een gloed hoort in de ramp van het oppervlak, niet in die van de lamp.** De
   scherpere versie van de regel hierboven, na dezelfde fout nog eens gemaakt te
   hebben op de wand achter de monitor (`workflow/20-de-zolder-hertekend.md`).
-  Amberlicht op een paarse wand teken je met de avond-ramp, niet met de
-  gloed-ramp: één stap per ring (29, dan 30), met wat `noise` eroverheen om de
-  ovaalrand te breken. De echte felle kleur zit alleen daar waar de lichtbron
-  zelf is — in het scherm, in het raam.
-- **Licht is rond.** Een lichtkegel of halo als trapezium leest als een vórm —
-  je ziet de hoeken. Bouw een halo uit concentrische `ellipse`-stappen (donker
-  naar licht) en breek de randen met een beetje `noise`. Een lichtstraal uit een
-  raam mag wél een veelhoek zijn: die heeft in het echt ook rechte randen.
+  Amberlicht op een paarse wand teken je niet met de gloed-ramp. De echte felle
+  kleur zit alleen daar waar de lichtbron zelf is — in het scherm, in het raam.
+- **Teken licht met `light`, niet met een vulling.** De sterkste vorm van
+  dezelfde regel, en de reden dat de op bestaat
+  (`workflow/21-de-kaarten-en-het-licht.md`). `ditherRamp` vult élke pixel van
+  zijn veelhoek, dus een straal die ermee getekend is, is een dekkende plaat: ze
+  gaat óver de kist en de dozen heen in plaats van erop te vallen, en waar ze op
+  hout ligt verft ze het lavendel. Met `light` blijft de ondergrond staan en
+  wordt hij alleen lichter — hout wordt lichter hout, een silhouet krijgt een
+  rand mee. Zet de light-ops daarom ook achteráán in de picture: licht valt op
+  een kamer, het ligt er niet onder.
+- **Licht is rond, en het houdt niet op.** Een lichtkegel of halo als trapezium
+  leest als een vórm — je ziet de hoeken. Maar ook een ronde gloed van één of
+  twee ringen leest als een geschilderde koepel, want binnen de ring wordt een
+  vaste fractie opgelicht en erbuiten niets: die sprong is een rand. Bouw een
+  gloed uit vier of vijf ín elkaar liggende `light`-ringen van één stap met
+  oplopende dichtheid (0,12 → 0,55). Ze tellen op, dus het midden wordt vanzelf
+  het helderst en de buitenrand dooft uit in plaats van op te houden. Een
+  lichtstraal uit een raam mag wél rechte randen hebben — die heeft hij in het
+  echt ook — maar die bouw je in plakken ónder elkaar, met aflopende kracht naar
+  beneden toe.
 
 - **Een lichtbundel gaat in plakken.** Eén veelhoek met een vaste dichtheid
   leest als een schuine plank: licht wordt naar beneden toe breder én zwakker.
