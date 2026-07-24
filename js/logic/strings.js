@@ -1041,8 +1041,8 @@ AL.strings = {
       "De broncode ligt op zolder — neem ze mee. Ze staat in " +
         "seven-little-goats/. Open ze in IntelliJ, lees ze, draai ze zelf. " +
         "Wat je in de terminal herstelde, is nu gewoon Java in jouw handen.",
-      "Dit is het soort spel dat je in Programming Fundamentals zelf schrijft. " +
-        "Dat is geen toeval. Dat is het punt.",
+      "Het is ook precies het soort spel dat je zelf leert schrijven. " +
+        "Toeval is dat niet.",
       "Voor Roberta Williams, en voor iedereen die de spellen maakte waar dit " +
         "vak vandaan komt."
     ]
@@ -1117,9 +1117,9 @@ AL.strings = {
         ["Een klasse is een blauwdruk; een object is de doos die je",
           "ernaar bouwt. De constructor vult de velden van zo'n verse doos.",
           "'this' is gewoon: déze doos."],
-        ["Ik heb hier Voorwerp en Geitje geschetst, maar de waterschade",
-          "vrat de constructor half op. Herstel wat de doos hoort te vullen,",
-          "en schrijf Geitje uit wat er van mijn notities rest."]),
+        ["Ik heb hier Voorwerp en Geitje geschetst, maar de constructor",
+          "is nog maar half ingevuld. Herstel wat de doos hoort te krijgen,",
+          "en schrijf Geitje helemaal uit volgens de schets hieronder."]),
 
       l2: maakSpread(2, "Trechters erin, goot eruit",
         "Signaturen: return vs. void, attribuut / parameter / lokaal",
@@ -1127,9 +1127,10 @@ AL.strings = {
         ["Een methode is een machine: trechters erin (de parameters),",
           "een goot eruit (return), of niets eruit (void). En drie soorten",
           "dozen om in te bewaren: attribuut, parameter, lokale variabele."],
-        ["De signaturen van Speler zijn doorgelopen tot pap. Zet de koppen",
-          "recht: wat gaat erin, wat komt eruit? En let op welke doos je",
-          "gebruikt — een lokale schaduwt zo een attribuut."]),
+        ["De signaturen van Speler kloppen nog niet — ik heb zelf de koppen",
+          "door elkaar gehaald. Zet ze recht: wat gaat erin, wat komt eruit?",
+          "En let op welke doos je gebruikt — een lokale schaduwt zo een",
+          "attribuut."]),
 
       l3: maakSpread(3, "De knikkerbaan",
         "Voorwaarden: validatie ×3, cascade, && / || / !",

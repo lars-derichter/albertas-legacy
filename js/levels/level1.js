@@ -58,7 +58,8 @@ globalThis.AL = globalThis.AL || {};
 "// Alberta's notitie — Voorwerp:\n" +
 "//   Een voorwerp heeft een naam, een beschrijving en een kracht.\n" +
 "//   De constructor vult de velden van een verse doos: this.<veld> = <parameter>;\n" +
-"//   Een waterstreep vrat een verwijzing naar de doos zelf op. Herstel ze.\n" +
+"//   Deze is nog niet af — ergens ontbreekt een verwijzing naar de doos\n" +
+"//   zelf. Maak hem af.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +
