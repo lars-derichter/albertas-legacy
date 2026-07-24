@@ -201,7 +201,7 @@ bij **WP H**.
 
 ### - [x] WP E deel 2 — De kaarten, en licht dat eindelijk licht is
 
-Entry: `workflow/21-de-kaarten-en-het-licht.md` · commit: (nog in te vullen)
+Entry: `workflow/21-de-kaarten-en-het-licht.md` · commit: `cbdbf2b`
 
 Afgesplitst omdat deel 1 al groot was en `CLAUDE.md` vraagt een half pakket te
 splitsen in plaats van het half te committen. Een logo is bovendien letterwerk
@@ -238,17 +238,43 @@ Nog open, met adres: het trapgat in `overloop` (y140–189) overlapt de loopstro
 hoort bij **WP H**, waar de walkboxen toch al herzien worden voor de
 dieptescaling.
 
-### - [ ] WP F — Typografie en UI-chrome
+### - [x] WP F — Typografie en chroom
 
-Entry: `workflow/22-*.md` · commit: —
+Entry: `workflow/22-typografie-en-chroom.md` · commit: (nog in te vullen)
 
-- [ ] Proportionele prose; wrap van tekens naar pixels (ook
-      `gecentreerdeTekst`)
-- [ ] Handschriftfont voor het notitieboek
-- [ ] Berichtvenster: slagschaduw, papiertextuur, echt kader, dekt de eindkaart
-      niet meer af
-- [ ] Chrome op statusbalk en invoerbalk
-- [ ] QC: alle venster-tests groen; visuele diff van intro, kamer en epiloog
+- [x] Inktmaat per glyph in `js/font.js`; de glyphdata zelf ongemoeid. Óók de
+      linkerruimte wordt weggerekend — anders staat elke regel die met een "i"
+      begint twee pixels ingesprongen
+- [x] `tekenProse`/`proseBreedte` naast `tekenTekst`: monospace blijft waar een
+      raster hóórt (statusbalk, invoerbalk, terminal)
+- [x] `_wrap` breekt op pixels, met een meetfunctie; zonder die functie rekent
+      hij monospace, dus alles op een raster blijft werken
+- [x] `gecentreerdeTekst` en de overslaanhint meten in pixels
+- [x] Het venster krimpt naar zijn breedste régel, met `maxTekens × 8` als
+      bovengrens en 96 px als bodem
+- [x] Venster als blad papier: slagschaduw met de `shadow`-op (dus in de kleur
+      van de kamer eronder), korrel, belichting van boven, hoekornament, en één
+      pixel extra regelafstand
+- [x] Statusbalk en invoerbalk als lijstwerk: verloop in hout, korrel, lichte
+      bovenrand, donkere onderrand
+- [x] Handschrift met schuinstand, proportionele spatiëring mét variatie, en
+      deining per groepje van vier als driehoeksgolf — per teken en als hash
+      viel elk woord uit elkaar in losse letters
+- [x] De kop van een spread staat in dezélfde hand, alleen rechter en zonder
+      deining; de gedrukte prosefont las als twee schrijvers op één blad
+- [x] **De ASCII-kop is geschrapt, niet vervangen.** `"== naam =="` kwam uit
+      `js/logic/world.js` — opmaak in de laag die presentatievrij hoort te zijn,
+      en de statusbalk zei het twee regels hoger al. In de sim-terminal blijft
+      zo'n kop wél staan: dat is een tekstspel
+- [x] Kolommen van een spread worden verdeeld als alles op één spread past
+- [x] QC: **285/285 groen** (22 nieuwe tests), lint en check-assets schoon, zes
+      rooksmaaktesten groen (229 controles), en de epiloogkaart wordt niet meer
+      volledig afgedekt
+
+Bewust niet: een aparte pixel-handschriftfont (de stijlgids noemt die als
+polish-tícket bóven op de benadering, en op 8×8 is de winst marginaal tegenover
+honderd nieuwe glyphs). De vlekken die onder de spread-tekst liggen horen bij
+**WP G**, waar het papier per level opnieuw getekend wordt.
 
 ### - [ ] WP G — Het notitieboek
 

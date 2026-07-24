@@ -484,6 +484,48 @@ globalThis.AL = globalThis.AL || {};
       }
     },
 
+    // ---- Proportionele prose ------------------------------------------------
+    //
+    // Dezelfde glyphdata als tekenTekst, maar met de inktmaat uit font.js in
+    // plaats van een vaste cel van acht. De monospace-versie blijft bestaan en
+    // blijft in gebruik waar een raster hóórt: de statusbalk, de invoerbalk en
+    // de terminal van de gesimuleerde pc.
+    //
+    // Er is bewust geen achtergrondparameter. Een proportionele glyph vult zijn
+    // cel niet, dus een achtergrond per teken zou een rafelige band opleveren;
+    // wie een vlak achter prose wil, tekent dat eerst zelf.
+
+    // Hoe breed komt deze regel proportioneel uit? Zonder de spatiëring achter
+    // het laatste teken, zodat centreren klopt.
+    proseBreedte: function (tekst) {
+      var font = AL.font;
+      var b = 0;
+      for (var i = 0; i < tekst.length; i++) b += font.voortgang(tekst.charAt(i));
+      return b > 0 ? b - font.spatiering : 0;
+    },
+
+    // Prose op (x, y). "\n" begint een nieuwe regel onder de startpositie.
+    tekenProse: function (tekst, x, y, kleur) {
+      var font = AL.font;
+      var cx = x, cy = y;
+      for (var i = 0; i < tekst.length; i++) {
+        var ch = tekst.charAt(i);
+        if (ch === "\n") { cx = x; cy += font.hoogte; continue; }
+        var glyph = font.glyphs[ch] || font.glyphs["?"];
+        var m = font.maat(ch);
+        for (var row = 0; row < font.hoogte; row++) {
+          var rij = glyph[row];
+          for (var col = 0; col < m.breedte; col++) {
+            if (rij.charAt(m.links + col) === "1") {
+              zetPixel(buffer, cx + col, cy + row, kleur);
+            }
+          }
+        }
+        cx += m.breedte + font.spatiering;
+      }
+      return cx - x;
+    },
+
     // Bitmaptekst op (x, y) (linkerbovenhoek van de eerste cel). achtergrond
     // null = transparant. "\n" begint een nieuwe regel onder de startpositie.
     tekenTekst: function (tekst, x, y, kleur, achtergrond) {
@@ -589,28 +631,89 @@ globalThis.AL = globalThis.AL || {};
       return tekst.length * (AL.font.breedte * schaal + spatie * schaal);
     },
 
-    // Bitmaptekst met per-teken y-jitter (handschrift-benadering voor de
-    // notitieboek-spreads, zie art-stijlgids.md). versch(i) geeft de verticale
-    // verschuiving voor teken i; laat de aanroeper de jitter deterministisch
-    // (seed-gestuurd) leveren. Nieuw in AL; bouwt op tekenTekst voort.
-    tekenHandschrift: function (tekst, x, y, kleur, versch) {
+    // Handschrift: de notitieboek-stem. De stijlgids vraagt hier drie dingen —
+    // schuinstand, onregelmatige regelligging en spatievariatie — en tot nu toe
+    // was alleen het tweede er, als een y-sprong per teken op een monospace
+    // raster van acht. Dat las als getypte tekst die stond te wiebelen.
+    //
+    // Nu alle drie:
+    //
+    //   schuinstand   elke rij schuift met de hoogte mee naar rechts, dus de
+    //                 hele letter helt. De schuinte is per glyph gelijk, zodat
+    //                 een woord één hand blijft en geen verzameling losse
+    //                 letters wordt.
+    //   ligging       versch(i) blijft: één pixel op en neer per teken.
+    //   spatiëring    proportioneel (de inktmaat uit font.js) plus een
+    //                 deterministische variatie van een halve pixel per teken,
+    //                 zodat de letters niet op een raster staan.
+    //
+    // versch(i) levert de verticale verschuiving voor teken i; de aanroeper
+    // houdt die deterministisch (seed-gestuurd), want een spread moet er bij
+    // elke run hetzelfde uitzien.
+    //
+    // opts: { schuin, ruimte, seed }
+    tekenHandschrift: function (tekst, x, y, kleur, versch, opts) {
+      opts = opts || {};
+      var schuin = (opts.schuin === undefined) ? 0.25 : opts.schuin;
+      var ruimte = (opts.ruimte === undefined) ? 1 : opts.ruimte;
+      var seed = opts.seed || 1;
       var font = AL.font;
       var cx = x;
       for (var i = 0; i < tekst.length; i++) {
         var ch = tekst.charAt(i);
         if (ch === "\n") { cx = x; y += font.hoogte + 2; continue; }
         var dy = versch ? (versch(i) | 0) : 0;
-        this.tekenTekst(ch, cx, y + dy, kleur, null);
-        cx += font.breedte;
+        var glyph = font.glyphs[ch] || font.glyphs["?"];
+        var m = font.maat(ch);
+        for (var row = 0; row < font.hoogte; row++) {
+          // Bovenaan het meest naar rechts: dat is de kant die een pen opgaat.
+          var scheef = Math.round((font.hoogte - 1 - row) * schuin);
+          var rij = glyph[row];
+          for (var col = 0; col < m.breedte; col++) {
+            if (rij.charAt(m.links + col) === "1") {
+              zetPixel(buffer, cx + col + scheef, y + dy + row, kleur);
+            }
+          }
+        }
+        cx += m.breedte + ruimte + (ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
       }
+      return cx - x;
+    },
+
+    // Hoe breed wordt deze regel in handschrift? Zelfde rekensom als hierboven,
+    // inclusief de spatievariatie, want anders klopt het wrappen niet.
+    handschriftBreedte: function (tekst, opts) {
+      opts = opts || {};
+      var ruimte = (opts.ruimte === undefined) ? 1 : opts.ruimte;
+      var schuin = (opts.schuin === undefined) ? 0.25 : opts.schuin;
+      var seed = opts.seed || 1;
+      var font = AL.font;
+      var b = 0;
+      for (var i = 0; i < tekst.length; i++) {
+        b += font.maat(tekst.charAt(i)).breedte + ruimte +
+          (ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
+      }
+      // De schuinstand steekt rechtsboven uit; die overhang telt mee.
+      return b > 0 ? b - ruimte + Math.round((font.hoogte - 1) * schuin) : 0;
     },
 
     // ---- Berichtvenster (Sierra-stijl) -------------------------------------
 
-    // Breek een alinea in regels van hoogstens maxTekens tekens (woordbreuk op
-    // spaties). Een "\n" in de tekst is een harde regelafbreking: die delen
+    // Breek een alinea in regels die binnen maxBreedte pixels passen (woordbreuk
+    // op spaties). Een "\n" in de tekst is een harde regelafbreking: die delen
     // worden elk apart gewrapt. Retourneert een lijst regels.
-    _wrap: function (alinea, maxTekens) {
+    //
+    // Meten in pixels in plaats van tekens tellen: met proportionele prose is
+    // een regel van 34 tekens niet meer een vaste breedte, en met een raster van
+    // 8 px per teken zou een venster dat vol staat met smalle letters een derde
+    // van zijn ruimte weggooien.
+    //
+    // meet(tekst) geeft de breedte in pixels; laat je hem weg, dan wordt er
+    // monospace gerekend — zo blijft alles wat op een raster hoort (de terminal)
+    // werken zonder aanpassing.
+    _wrap: function (alinea, maxBreedte, meet) {
+      var font = AL.font;
+      var breedteVan = meet || function (t) { return t.length * font.breedte; };
       var harde = String(alinea).split("\n");
       var regels = [];
       for (var h = 0; h < harde.length; h++) {
@@ -620,7 +723,7 @@ globalThis.AL = globalThis.AL || {};
           var w = woorden[i];
           if (huidig === "") {
             huidig = w;
-          } else if ((huidig + " " + w).length <= maxTekens) {
+          } else if (breedteVan(huidig + " " + w) <= maxBreedte) {
             huidig += " " + w;
           } else {
             regels.push(huidig);
@@ -633,16 +736,22 @@ globalThis.AL = globalThis.AL || {};
     },
 
     // Bouw een pagineerbaar venster uit een lijst alinea's. opties.maxTekens
-    // (default 36) en opties.maxRegels (default 10) bepalen de vorm.
+    // (default 36) en opties.maxRegels (default 10) bepalen de vorm; maxTekens
+    // is de breedte in monospace-cellen, ook nu de inhoud proportioneel gezet
+    // wordt — zo blijft het venster even breed als altijd en past er alleen
+    // meer tekst in.
     maakVenster: function (alineas, opties) {
       opties = opties || {};
       var maxTekens = opties.maxTekens || 36;
       var maxRegels = opties.maxRegels || 10;
+      var breed = maxTekens * AL.font.breedte;
+      var zelf = this;
+      var meet = function (t) { return zelf.proseBreedte(t); };
       // Alle alinea's naar regels, met een lege regel tussen alinea's.
       var alleRegels = [];
       for (var a = 0; a < alineas.length; a++) {
         if (a > 0) alleRegels.push("");
-        var r = this._wrap(alineas[a], maxTekens);
+        var r = this._wrap(alineas[a], breed, meet);
         for (var k = 0; k < r.length; k++) alleRegels.push(r[k]);
       }
       // In pagina's snijden; een "(meer…)"-regel neemt plaats in, dus een
@@ -664,7 +773,12 @@ globalThis.AL = globalThis.AL || {};
         // "midden" (default) of "onder". Onderaan is voor beelden die zelf
         // iets te vertellen hebben: dan hoort de tekst een onderschrift te zijn
         // en niet een luik over de scène.
-        plaatsing: opties.plaatsing || "midden"
+        plaatsing: opties.plaatsing || "midden",
+        // Het venster krimpt normaal mee met zijn inhoud: een venster van drie
+        // regels is drie regels hoog. Zet krimp op false om altijd de volle
+        // maxRegels aan te houden — dat is voor een reeks vensters die na
+        // elkaar komen en niet mogen zitten springen.
+        krimp: opties.krimp !== false
       };
     },
 
@@ -679,37 +793,106 @@ globalThis.AL = globalThis.AL || {};
       return venster;
     },
 
-    // Teken de huidige pagina: papieren doos (37), inkttekst (41), dubbele rand
-    // in avondgoud (33), gecentreerd op het scherm. Aangepast uit remake-90s:
-    // daar wit/zwart/rood; hier de warme papier-look van Alberta's zolder.
-    tekenVenster: function (venster) {
+    // Waar komt dit venster te staan, en hoe groot is het? Apart van het
+    // tekenen, zodat de aanroeper kan weten hoeveel van de scène eronder
+    // verdwijnt — de eindkaart heeft daar een mening over.
+    vensterKader: function (venster) {
       var font = AL.font;
       var regels = venster.paginas[venster.huidige];
       var aantal = regels.length + (this.heeftMeer(venster) ? 1 : 0);
-      var tekstB = venster.maxTekens * font.breedte;
-      var tekstH = aantal * font.hoogte;
-      // Marges: 4 px binnenruimte + 2 px dubbele rand aan elke kant.
-      var marge = 4, rand = 2;
+      if (!venster.krimp) aantal = Math.max(aantal, venster.maxRegels);
+      var marge = 5, rand = 2;
+
+      // De doos is zo breed als haar breedste régel, niet zo breed als het
+      // maximum. Proportionele prose komt smaller uit dan het raster waarop ze
+      // gewrapt is, en zonder deze stap staat er rechts een handbreed papier
+      // waar niets op staat. Het maximum blijft de bovengrens.
+      var tekstB = 0;
+      for (var i = 0; i < regels.length; i++) {
+        var w = this.proseBreedte(regels[i]);
+        if (w > tekstB) tekstB = w;
+      }
+      if (this.heeftMeer(venster)) {
+        var m = this.proseBreedte("(meer…)");
+        if (m > tekstB) tekstB = m;
+      }
+      var max = venster.maxTekens * font.breedte;
+      if (!venster.krimp || tekstB > max) tekstB = max;
+      // Onder een zekere breedte leest een venster als een tooltip; een kamer
+      // beschrijven doe je niet in een doosje van vijftig pixels.
+      if (tekstB < 96) tekstB = 96;
+
       var boxB = tekstB + 2 * marge + 2 * rand;
-      var boxH = tekstH + 2 * marge + 2 * rand;
+      var boxH = aantal * (font.hoogte + 1) + 2 * marge + 2 * rand;
       var boxX = Math.floor((BREEDTE - boxB) / 2);
       var boxY = venster.plaatsing === "onder"
         ? (SPEELVELD_BOT - boxH - 4)
         : Math.floor((HOOGTE - boxH) / 2);
-      // Papieren vulling.
-      ivRect(buffer, 37, boxX, boxY, boxB, boxH);
-      // Dubbele rand: buitenste kader en één pixel naar binnen.
-      this._kader(boxX, boxY, boxB, boxH, 41);
-      this._kader(boxX + 1, boxY + 1, boxB - 2, boxH - 2, 33);
-      // Tekst.
-      var tx = boxX + rand + marge;
-      var ty = boxY + rand + marge;
+      return { x: boxX, y: boxY, b: boxB, h: boxH, marge: marge, rand: rand };
+    },
+
+    // Teken de huidige pagina: een blad papier op de zolder, geen dialoogvenster.
+    //
+    // Wat het venster tot papier maakt zijn vier dingen die er niet in zaten: de
+    // slagschaduw (het blad ligt érop, het is er niet in gestanst), de korrel in
+    // het papier, de belichting — licht van boven, dus een lichte bovenrand en
+    // een donkere onderrand — en de hoekjes die de rand onderbreken. Zonder die
+    // vier is het een beige rechthoek met een streepje eromheen.
+    tekenVenster: function (venster) {
+      var font = AL.font;
+      var regels = venster.paginas[venster.huidige];
+      var k = this.vensterKader(venster);
+      var x = k.x, y = k.y, b = k.b, h = k.h;
+
+      // Slagschaduw: de ondergrond zakt twee stappen in zijn eigen ramp, dus het
+      // blad werpt schaduw in de kleur van de kamer eronder in plaats van er een
+      // grijze rand naast te leggen.
+      ivShadow(buffer, 2, [x + 3, y + h, x + b + 2, y + h,
+        x + b + 2, y + h + 2, x + 3, y + h + 2]);
+      ivShadow(buffer, 2, [x + b, y + 3, x + b + 2, y + 3,
+        x + b + 2, y + h - 1, x + b, y + h - 1]);
+
+      // Het blad zelf, met korrel: papier is geen egale kleur.
+      ivRect(buffer, 37, x, y, b, h);
+      ivNoise(buffer, 36, 0.16, 71,
+        [x, y, x + b - 1, y, x + b - 1, y + h - 1, x, y + h - 1]);
+      ivNoise(buffer, 38, 0.08, 72,
+        [x, y, x + b - 1, y, x + b - 1, y + h - 1, x, y + h - 1]);
+
+      // Belichting: het licht komt van boven, dus de bovenrand vangt het en de
+      // onderrand ligt in zijn eigen schaduw.
+      hlijn(buffer, x + 1, x + b - 2, y + 1, 38);
+      hlijn(buffer, x + 1, x + b - 2, y + h - 2, 35);
+      for (var j = 2; j < h - 2; j++) {
+        zetPixel(buffer, x + 1, y + j, 38);
+        zetPixel(buffer, x + b - 2, y + j, 35);
+      }
+
+      // Het kader: een inktlijn buiten, een goudlijn binnen.
+      this._kader(x, y, b, h, 41);
+      this._kader(x + 2, y + 2, b - 4, h - 4, 33);
+      // Hoekjes die de goudlijn onderbreken — het ornament dat een kader een
+      // kader maakt in plaats van een selectiekast.
+      var hoeken = [[x + 2, y + 2, 1, 1], [x + b - 3, y + 2, -1, 1],
+        [x + 2, y + h - 3, 1, -1], [x + b - 3, y + h - 3, -1, -1]];
+      for (var c = 0; c < hoeken.length; c++) {
+        var hx = hoeken[c][0], hy = hoeken[c][1];
+        var sx = hoeken[c][2], sy = hoeken[c][3];
+        zetPixel(buffer, hx + sx * 2, hy, 41);
+        zetPixel(buffer, hx, hy + sy * 2, 41);
+        zetPixel(buffer, hx + sx, hy + sy, 33);
+      }
+
+      // De tekst, proportioneel gezet en met één pixel extra regelafstand: op
+      // acht pixels staan de regels van deze font tegen elkaar aan.
+      var tx = x + k.rand + k.marge;
+      var ty = y + k.rand + k.marge;
+      var regelH = font.hoogte + 1;
       for (var i = 0; i < regels.length; i++) {
-        this.tekenTekst(regels[i], tx, ty + i * font.hoogte, 41, null);
+        this.tekenProse(regels[i], tx, ty + i * regelH, 41);
       }
       if (this.heeftMeer(venster)) {
-        this.tekenTekst("(meer…)", tx, ty + regels.length * font.hoogte, 40,
-          null);
+        this.tekenProse("(meer…)", tx, ty + regels.length * regelH, 40);
       }
       return venster;
     },

@@ -340,10 +340,19 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   40) mogen als sfeer.
 - **Handschrift:** Alberta's notities in inkt (41) op de papierkleur. De
   handschriftbenadering is de 8×8-bitmapfont van de engine, maar **schuin en
-  onregelmatig gezet** (kleine y-jitter per teken, lichte spatie-variatie) zodat
-  het als handschrift leest zonder een handschriftfont nodig te hebben. Een
-  polish-ticket mag later een echte pixel-handschriftfont toevoegen; de jitter-
-  benadering is de MVP.
+  onregelmatig gezet** zodat het als handschrift leest zonder een aparte
+  handschriftfont nodig te hebben. `gfx.tekenHandschrift` doet dat met drie
+  dingen tegelijk: schuinstand (elke rij schuift met de hoogte mee, dus de
+  letter helt in plaats van te wiebelen), proportionele spatiëring met een
+  deterministische variatie van een pixel, en een verticale deining.
+  - Die deining gaat **per groepje van vier tekens en als driehoeksgolf**, niet
+    per teken en niet als hash. Een hand dwaalt van de lijn af en komt er weer
+    op terug; ze springt niet om de letter. Met een sprong per teken viel elk
+    woord uit elkaar in losse letters op eigen hoogte — met de schuinstand erbij
+    las dat als losgeraakte type, niet als schrift.
+  - De **kop staat in dezelfde hand**, alleen rechter en zonder deining: een
+    titel schrijft een mens trager op. Wat een kop níét mag zijn is de gedrukte
+    prosefont, want dan staan er twee schrijvers op één blad.
 - **Schetsen:** Alberta's diagrammen (een klasse als doos met velden, pijlen
   tussen dozen voor referenties, een lus als cirkelpijl) in inkt met spaarzame
   kleuraccenten (12 voor nadruk, 44 voor een groen vinkje). De schetsstijl

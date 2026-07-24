@@ -757,28 +757,41 @@ globalThis.AL = globalThis.AL || {};
   // als bij de titelkaart: contrast garandeer je, je hoopt er niet op.
   function tekenOverslaanHint() {
     var hint = AL.strings.openingOverslaan;
-    var b = hint.length * 8;
+    var b = AL.gfx.proseBreedte(hint);
     var x = 320 - b - 6;
     AL.gfx.rect(28, x - 3, 9, b + 6, 12);
-    AL.gfx.tekenTekst(hint, x, 11, 33, null);
+    AL.gfx.tekenProse(hint, x, 11, 33);
   }
 
   // Statusbalk (rij 0..7): scène-naam op avondblauw.
+  // Statusbalk (rij 0..7) en invoerbalk (rij 190..199). Ze waren allebei één
+  // platte strook in kleur 28 met tekst erop. Nu zijn het de twee lijsten van
+  // het beeldkader: gebeitst hout met een verloop, een lichte rand aan de kant
+  // waar het licht vandaan komt en een donkere aan de andere. Daardoor lijkt het
+  // speelveld erin te liggen in plaats van erboven te zweven.
+  //
+  // De kamernaam blijft monospace: hij hoort bij de chroom, niet bij de prose.
   function tekenStatusbalk() {
-    AL.gfx.rect(28, 0, 0, 320, 8);
+    AL.gfx.gradient(24, 23, 0, 0, 320, 8, "v");
+    AL.gfx.noise(22, 0.10, 81, [0, 0, 319, 0, 319, 7, 0, 7]);
+    AL.gfx.line(26, [0, 0, 319, 0]);
+    AL.gfx.line(22, [0, 7, 319, 7]);
     var scene = AL.strings.scenes[toestand.sceneId];
     var naam = scene ? scene.naam : "Zolder";
-    AL.gfx.tekenTekst(naam, 2, 0, 34, null);
+    AL.gfx.tekenTekst(naam, 3, 0, 34, null);
   }
 
-  // Invoerbalk (rij 190..199): "> " plus de getypte regel en een blokcursor.
+  // Invoerbalk: "> " plus de getypte regel en een blokcursor.
   function tekenInvoerbalk() {
-    AL.gfx.rect(28, 0, 190, 320, 10);
+    AL.gfx.gradient(23, 24, 0, 190, 320, 10, "v");
+    AL.gfx.noise(22, 0.10, 82, [0, 190, 319, 190, 319, 199, 0, 199]);
+    AL.gfx.line(26, [0, 190, 319, 190]);
+    AL.gfx.line(22, [0, 191, 319, 191]);
     var prompt = "> " + AL.input.regel;
-    AL.gfx.tekenTekst(prompt, 0, 191, 34, null);
+    AL.gfx.tekenTekst(prompt, 3, 192, 34, null);
     if (!AL.input.blokkeer && Math.floor(animTijd * 2) % 2 === 0) {
-      var cx = prompt.length * 8;
-      if (cx <= 312) AL.gfx.rect(34, cx, 191, 7, 8);
+      var cx = 3 + prompt.length * 8;
+      if (cx <= 312) AL.gfx.rect(34, cx, 192, 7, 7);
     }
   }
 
@@ -878,9 +891,12 @@ globalThis.AL = globalThis.AL || {};
     AL.gfx.tekenVenster(v);
   }
 
+  // Gecentreerde prose. Meet in pixels, niet in tekens × 8: sinds de prose
+  // proportioneel gezet wordt, is een regel van dertien tekens geen 104 px meer
+  // en zou de oude rekensom alles een stuk naar rechts schuiven.
   function gecentreerdeTekst(tekst, y, kleur) {
-    var x = Math.floor((320 - tekst.length * 8) / 2);
-    AL.gfx.tekenTekst(tekst, x, y, kleur, null);
+    var x = Math.floor((320 - AL.gfx.proseBreedte(tekst)) / 2);
+    AL.gfx.tekenProse(tekst, x, y, kleur);
   }
 
   // ---- Pc-overlay (delegatie naar AL.pc) ----------------------------------

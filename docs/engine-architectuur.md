@@ -29,7 +29,7 @@ met behoud van hun contract:
 | Bestand | Overname | Wijziging |
 |---|---|---|
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
-| `js/font.js` | 8×8-bitmapfont | ongewijzigd |
+| `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
 | `js/sound.js` | WebAudio-bliepjes, aan/uit-toggle | uitgebreide cue-lijst (zie effect-tags) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
@@ -74,6 +74,24 @@ Adapteren en crediteren; niet heruitvinden.
   `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
   gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
   zoals de hardware van toen het ook deed.
+- **Twee zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
+  gebruik waar een raster hóórt: de statusbalk, de invoerbalk en de terminal van
+  de gesimuleerde pc. Daarnaast staat `tekenProse`/`proseBreedte`, dat de
+  inktmaat per glyph uit `font.js` gebruikt. De glyphdata is niet veranderd; wat
+  erbij kwam is één keer uitrekenen waar de inkt van elke glyph begint en hoe
+  breed ze is.
+
+  Dat "waar ze begint" is niet overbodig. Verschillende glyphs starten op een
+  andere kolom — een `i` op kolom 2, een `K` op kolom 0 — dus zonder de
+  linkerruimte weg te rekenen krijgt elke regel die met een `i` begint een
+  inspringing van twee pixels die er niet hoort te staan.
+- **Wrappen meet, het telt niet meer.** `gfx._wrap(alinea, maxBreedte, meet)`
+  breekt op pixels; `meet` weglaten geeft de oude monospace-rekensom terug, en
+  alles wat op een raster hoort blijft dus ongemoeid. Het berichtvenster krimpt
+  bovendien naar zijn breedste régel in plaats van altijd zijn maximum te
+  gebruiken: proportionele prose komt smaller uit dan het raster waarop ze
+  gewrapt is, en zonder die stap stond er rechts een handbreed papier waar niets
+  op staat. `gfx.vensterKader(venster)` geeft die doos terug zonder te tekenen.
 
 ## De logica-laag
 
@@ -84,7 +102,12 @@ Zelfde vorm als remake-90s. Elke handler geeft overal dezelfde vorm terug:
 ```
 
 - `tekst` — alinea's voor het berichtvenster (mag leeg zijn). De renderer doet
-  de word-wrap; `\n` waar een regelafbreking betekenis heeft.
+  de word-wrap; `\n` waar een regelafbreking betekenis heeft. **Geen opmaak.**
+  De kamerbeschrijving droeg hier ooit een kop mee als `"== Zolder — westhoek
+  =="`, en dat was twee keer fout: opmaak hoort niet in een laag die
+  presentatievrij moet zijn, en de statusbalk zei twee regels hoger al precies
+  hetzelfde. In de terminal van _Seven Little Goats_ staat zo'n kop er nog wel —
+  dat is een tekstspel, daar ís de tekst de presentatie.
 - `effecten` — machineleesbare tags voor de engine (scènewissels, pc, geluid,
   voortgang). Woordenlijst hieronder.
 

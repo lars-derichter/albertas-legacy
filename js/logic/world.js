@@ -163,10 +163,16 @@ globalThis.AL = globalThis.AL || {};
 
     // --- Kamerbeschrijving -----------------------------------------------------
 
+    // Geeft alleen de beschrijving terug, zonder kop. De kamernaam stond hier
+    // als "== Zolder — westhoek ==" boven de tekst, en dat was twee keer fout:
+    // het is opmaak in de logica-laag (die hoort DOM-vrij én presentatievrij te
+    // zijn), en de statusbalk zegt precies hetzelfde al, twee regels hoger. Waar
+    // een kop wél hoort, zoals in de terminal van Seven Little Goats, staat hij
+    // er nog steeds — dat is een tekstspel, daar ís de tekst de presentatie.
     beschrijfScene: function (toestand) {
       var scene = AL.strings.scenes[toestand.sceneId];
       if (!scene) return [AL.strings.nietsBijzonders];
-      return ["== " + scene.naam + " ==", scene.beschrijving];
+      return [scene.beschrijving];
     },
 
     // --- Navigatie -------------------------------------------------------------

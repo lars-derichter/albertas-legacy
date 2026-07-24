@@ -136,7 +136,11 @@ test("help somt de zolder-commando's op", () => {
 
 test("parser dispatcht de zolder-commando's", () => {
   const t = world.nieuw();
-  assert.ok(AL.parser.verwerk(t, "kijk").tekst[0].includes("=="));
+  // "kijk" geeft de kamerbeschrijving terug, en niets anders: de kamernaam
+  // stond hier als "== naam ==" boven, maar dat is opmaak, en opmaak hoort niet
+  // in de logica-laag. De statusbalk draagt de naam.
+  assert.deepEqual(AL.parser.verwerk(t, "kijk").tekst,
+    [strings.scenes["zolder-west"].beschrijving]);
   assert.deepEqual(AL.parser.verwerk(t, "geluid uit").effecten, ["geluid:uit"]);
   assert.deepEqual(AL.parser.verwerk(t, "brabbel").tekst,
     [strings.datBegrijpJeNiet]);

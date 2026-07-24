@@ -72,11 +72,24 @@ AL.spreads = {
     return (data && data.paginas && data.paginas.length) ? data.paginas.length : 1;
   },
 
-  // Deterministische handschrift-jitter (kleine verticale verschuiving per teken),
+  // Deterministische handschrift-jitter (kleine verticale verschuiving),
   // seed-gestuurd zodat een spread er per playthrough consistent uitziet.
+  //
+  // Per gróépje van drie tekens, niet per teken. Een hand die schrijft dwaalt
+  // van de lijn af en komt er weer op terug; ze springt niet om de letter. Met
+  // een sprong per teken viel elk woord uit elkaar in losse letters op eigen
+  // hoogte — met de schuinstand erbij las dat als losgeraakte type, niet als
+  // schrift.
+  // En als een driehoeksgolf, niet als een hash: 0, +1, 0, −1 en weer van voor
+  // af aan. Twee opeenvolgende groepjes schelen dus hoogstens één pixel. Met een
+  // modulo-hash kon een woord van +1 naar −1 springen, en dat is geen deining
+  // meer maar een letter die eraf valt.
   _jitter: function (seed) {
+    var golf = [0, 1, 0, -1];
     var s = Math.abs(seed | 0);
-    return function (i) { return ((s + i * 7) % 3) - 1; };
+    return function (i) {
+      return golf[(s + Math.floor(i / 4)) % 4];
+    };
   },
 
   // De bladspiegel. Het sjabloon tekent een rugschaduw op x 157–162, dus tekst
@@ -101,15 +114,25 @@ AL.spreads = {
     var idx = Math.max(0, Math.min(p | 0, data.paginas.length - 1));
     var pag = data.paginas[idx];
     var jitter = this._jitter(seed);
-    var tekens = Math.floor(B.kolomB / 8);
     var perKolom = Math.floor((B.onderY - B.topY) / B.regelH);
     var i, j, stukken;
+
+    // De hand waarin dit blad geschreven staat. Eén object, want de maat waarmee
+    // gewrapt wordt en de maat waarmee getekend wordt moeten dezelfde zijn —
+    // anders loopt de tekst net over de kolomrand.
+    var hand = { schuin: 0.25, ruimte: 1, seed: (seed | 0) || 1 };
+    // De kop is dezelfde hand, maar rechter geschreven en zonder deining: een
+    // titel schrijft een mens trager op dan de tekst eronder. Wat het níét mag
+    // zijn is de gedrukte prosefont — dan staan er twee schrijvers op één blad.
+    var kopHand = { schuin: 0.10, ruimte: 1, seed: (seed | 0) || 1 };
+    var meetHand = function (t) { return gfx.handschriftBreedte(t, hand); };
+    var meetKop = function (t) { return gfx.handschriftBreedte(t, kopHand); };
 
     // Alles eerst tot één lijst regels maken, dan pas over de twee bladzijden
     // verdelen — zo loopt een kop die net onderaan links valt netjes door.
     var regels = [];
     if (pag.kop) {
-      stukken = gfx._wrap(pag.kop, tekens);
+      stukken = gfx._wrap(pag.kop, B.kolomB, meetKop);
       for (i = 0; i < stukken.length; i++) {
         regels.push({ tekst: stukken[i], kop: true });
       }
@@ -117,34 +140,44 @@ AL.spreads = {
     }
     var bron = pag.regels || [];
     for (i = 0; i < bron.length; i++) {
-      stukken = gfx._wrap(bron[i], tekens);
+      stukken = gfx._wrap(bron[i], B.kolomB, meetHand);
       for (j = 0; j < stukken.length; j++) {
         regels.push({ tekst: stukken[j], kop: false });
       }
     }
 
+    // Waar breekt de linkerbladzijde af? Past alles op één spread, dan wordt de
+    // helft links gezet en de helft rechts — anders staat het linkerblad vol en
+    // het rechter met drie regels erop, en dat leest als een fout in plaats van
+    // als een opengeslagen boek. Past het níét, dan gaat het linkerblad wél vol,
+    // want dan telt elke regel.
     var maxRegels = perKolom * 2;
+    var breuk = regels.length <= maxRegels
+      ? Math.min(perKolom, Math.ceil(regels.length / 2))
+      : perKolom;
+
     for (i = 0; i < regels.length && i < maxRegels; i++) {
-      var rechts = i >= perKolom;
+      var rechts = i >= breuk;
       var x = rechts ? B.rechtsX : B.linksX;
-      var y = B.topY + (i - (rechts ? perKolom : 0)) * B.regelH;
+      var y = B.topY + (i - (rechts ? breuk : 0)) * B.regelH;
       var r = regels[i];
       if (r.streep) {
         gfx.line(40, [x, y, x + B.kolomB - 8, y]);
       } else if (r.tekst === "") {
         continue;
       } else if (r.kop) {
-        gfx.tekenTekst(r.tekst, x, y, 41, null);
+        gfx.tekenHandschrift(r.tekst, x, y, 41, null, kopHand);
       } else {
-        gfx.tekenHandschrift(r.tekst, x, y, 41, jitter);
+        gfx.tekenHandschrift(r.tekst, x, y, 41, jitter, hand);
       }
     }
 
     // De weekregel onderaan de rechterbladzijde (Alberta's markering).
     if (pag.voet) {
-      var voet = gfx._wrap(pag.voet, tekens);
+      var voet = gfx._wrap(pag.voet, B.kolomB, meetHand);
       for (i = 0; i < voet.length && i < 2; i++) {
-        gfx.tekenTekst(voet[i], B.rechtsX, B.onderY + 6 + i * 9, 40, null);
+        gfx.tekenHandschrift(voet[i], B.rechtsX, B.onderY + 6 + i * 9, 40,
+          jitter, hand);
       }
     }
 
