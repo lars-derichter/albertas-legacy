@@ -249,6 +249,84 @@ AL.strings = {
       "Kijk wat de lus doet zodra ze iets vindt: telt ze, of stopt ze?",
       "De lus geeft meteen iets terug bij een treffer, en anders null.",
       "Een lus die één passend element opzoekt en teruggeeft, is de zoeklus."
+    ],
+
+    // Level 1 — De blauwdruk en de doos (scharnier 1).
+    "l1-editor-repair": [
+      "Denk aan de blauwdruk en de doos: de constructor vult de velden van een " +
+        "verse doos. Wat gaat waarheen?",
+      "Kijk naar de toewijzingen in de constructor. Bij één veld ontbreekt de " +
+        "verwijzing naar de doos zelf, of ze staat omgekeerd.",
+      "De vorm is: this.<veld> = <parameter>;  — links het veld van déze doos, " +
+        "rechts wat erin gaat."
+    ],
+    "l1-editor-write": [
+      "Een klasse is een blauwdruk: eerst de velden (wat een geitje heeft), dan " +
+        "de constructor die de verse doos vult, dan de getters.",
+      "Je mist nog een privaat veld, een toewijzing in de constructor, of een " +
+        "getter. Vergelijk met wat de notitie opsomt.",
+      "Vorm: private <type> <naam>;  in de constructor this.<naam> = <naam>;  " +
+        "(gered begint op false)  en een getter met return <naam>;"
+    ],
+    "l1-verklaar": [
+      "Denk aan de blauwdruk en de doos: het ene is het plan, het andere het " +
+        "ding dat je ermee bouwt.",
+      "Welk woord hoort bij het plan (je tekent het één keer), en welk bij het " +
+        "ding (je maakt er vele van)?",
+      "Klasse = de blauwdruk (het type); instantie = één doos die je ernaar " +
+        "bouwt (het object). Zeg dat verschil in je eigen zin."
+    ],
+
+    // Level 2 — Trechters erin, goot eruit (scharnier 2).
+    "l2-editor-repair": [
+      "Denk aan de machine: trechters erin (parameters), een goot eruit (return) " +
+        "of niets eruit (void).",
+      "Kijk naar de koppen van de methoden. Eén geeft iets terug maar zegt void, " +
+        "of een trechter is verdwenen.",
+      "Vorm: <returntype> <naam>(<type> <parameter>) { … }  — een getter geeft " +
+        "iets terug, een setter neemt een waarde aan."
+    ],
+    "l2-parsons": [
+      "Trechters erin, goot eruit: de methode begint met haar kop, werkt van " +
+        "boven naar onder, en sluit met een accolade.",
+      "Eén strook geeft de verkeerde doos terug — de parameter in plaats van het " +
+        "gevonden object.",
+      "Volgorde: kop → lus over de inventaris → het huidige voorwerp pakken → " +
+        "vergelijken → het gevonden voorwerp teruggeven → anders null."
+    ],
+    "l2-trace": [
+      "Drie dozen: attribuut, parameter, lokale variabele. Welke doos bedoelt de " +
+        "naam hier?",
+      "Zonder 'this' pakt de code de dichtstbijzijnde doos: de parameter. Met " +
+        "'this.' de doos van het object.",
+      "De eerste regel drukt de parameter af; this.levenspunten drukt het " +
+        "attribuut (20) af. Geef beide getallen."
+    ],
+
+    // Level 3 — De knikkerbaan (scharnier 3).
+    "l3-editor-repair": [
+      "Denk aan de knikkerbaan: de waarde moet tussen twee randen blijven, nooit " +
+        "onder de ene, nooit boven de andere.",
+      "Kijk naar de twee if-controles. Eén rand staat de verkeerde kant op, of " +
+        "een rand ontbreekt.",
+      "Vorm: if (waarde < ondergrens) { waarde = ondergrens; }  en  " +
+        "if (waarde > bovengrens) { waarde = bovengrens; }"
+    ],
+    "l3-vindfout": [
+      "De knikkerbaan stuurt met && (en) / || (of): welke van de twee laat de " +
+        "knikker door als béide sporen kloppen?",
+      "Lees de notitie: de poort mag maar open als álle voorwaarden waar zijn. " +
+        "Kijk naar de operator in de conditie.",
+      "'Beide moeten waar zijn' vraagt && (en), niet || (of). || opent al bij één " +
+        "van de twee."
+    ],
+    "l3-trace": [
+      "De cascade splitst de baan: de knikker rolt in de eerste tak die klopt, en " +
+        "dan niet meer verder.",
+      "Let op de randen: <= 0 pakt ook net 0, en < 10 pakt 10 net niet. Waar valt " +
+        "deze waarde?",
+      "Loop de takken van boven naar onder: de eerste conditie die waar is, wint. " +
+        "Typ de tekst die die tak afdrukt."
     ]
   },
 
@@ -356,6 +434,31 @@ AL.strings = {
     "l0.geitje.veldSchuilplaats": "veld 'schuilplaats' gedeclareerd",
     "l0.geitje.vulSchuilplaats": "constructor vult 'schuilplaats'",
     "l0.geitje.getterSchuilplaats": "getSchuilplaats geeft 'schuilplaats' terug",
+
+    // Level 1 — Voorwerp + Geitje.
+    "l1.voorwerp.veldNaam": "veld 'naam' gedeclareerd",
+    "l1.voorwerp.vulNaam": "constructor vult 'naam'",
+    "l1.voorwerp.vulBeschrijving": "constructor vult 'beschrijving'",
+    "l1.voorwerp.vulKracht": "constructor vult 'kracht'",
+    "l1.geitje.veldNaam": "veld 'naam' gedeclareerd",
+    "l1.geitje.veldSchuilplaats": "veld 'schuilplaats' gedeclareerd",
+    "l1.geitje.vulNaam": "constructor vult 'naam'",
+    "l1.geitje.vulSchuilplaats": "constructor vult 'schuilplaats'",
+    "l1.geitje.getterNaam": "getNaam geeft 'naam' terug",
+    "l1.geitje.getterSchuilplaats": "getSchuilplaats geeft 'schuilplaats' terug",
+
+    // Level 2 — Speler-signaturen.
+    "l2.speler.getLevenspunten": "getLevenspunten geeft een int terug",
+    "l2.speler.setLevenspunten": "setLevenspunten neemt een int, geeft niets terug",
+    "l2.speler.zoek": "zoek geeft een Voorwerp terug",
+    "l2.speler.verwijder": "verwijder geeft een boolean terug",
+    "l2.speler.zoekReturn": "zoek bevat een return",
+
+    // Level 3 — de klemmende setter.
+    "l3.clamp.geenVerboden": "geen buiten-cursus-constructies",
+    "l3.clamp.signatuur": "setLevenspunten heeft de juiste signatuur",
+    "l3.clamp.klem": "de waarde wordt tussen 0 en het maximum geklemd",
+
     generiek: "controle geslaagd"
   },
 
@@ -456,6 +559,127 @@ AL.strings = {
         "afleider en hoort er niet bij."
     }
   },
+
+  // Level 1 — De blauwdruk en de doos (scharnier 1: klasse/instantie, velden,
+  // constructor, this). De Java-fragmenten leven in js/levels/level1.js.
+  l1: {
+    naam: "Level 1 — De blauwdruk en de doos",
+    repairTitel: "Voorwerp.java — herstel de constructor",
+    writeTitel: "Geitje.java — schrijf de klasse",
+
+    verklaar: {
+      vraag: [
+        "Leg in één zin uit: wat is het verschil tussen een klasse en een " +
+        "instantie?",
+        "",
+        "Typ je zin en druk Enter (dit beoordeel je daarna zelf)."
+      ],
+      toon: "Alberta had het zo genoteerd:",
+      model: "Een klasse is de blauwdruk — het plan dat je één keer tekent; een " +
+        "instantie is één doos die je naar dat plan bouwt, met eigen waarden in " +
+        "de velden.",
+      bevestig: "Komt jouw uitleg in de kern overeen? Typ 'juist' of 'anders'.",
+      juist: "Mooi. Blauwdruk en doos — je hebt het vast.",
+      anders: "Geen probleem — nu je het model gezien hebt, klopt het beeld: het " +
+        "plan tegenover het ding dat je ermee maakt."
+    }
+  },
+
+  // Level 2 — Trechters erin, goot eruit (scharnier 2: signaturen, attribuut /
+  // parameter / lokaal). De Java-fragmenten leven in js/levels/level2.js.
+  l2: {
+    naam: "Level 2 — Trechters erin, goot eruit",
+    repairTitel: "Speler.java — herstel de signaturen",
+
+    parsons: {
+      vraag: [
+        "Zet de stroken in de juiste volgorde zodat zoek(...) klopt.",
+        "Typ de nummers in volgorde, bv. '3 1 4 2'. Let op: één strook hoort " +
+        "er NIET bij."
+      ],
+      ok: "Juist geordend. De zoekmethode klopt.",
+      fout: function (pos) {
+        return "Nog niet. De eerste strook die niet klopt, staat op positie " +
+          pos + " van jouw volgorde.";
+      },
+      foutAantal: "Je gaf niet het juiste aantal stroken op. Eén strook geeft de " +
+        "verkeerde doos terug en hoort er niet bij."
+    },
+
+    trace: {
+      vraag: function (n) {
+        return [
+          "Voorspel de uitvoer. In Speler staat een attribuut:",
+          "",
+          "    private int levenspunten = 20;",
+          "",
+          "En deze methode:",
+          "",
+          "    void toon(int levenspunten) {",
+          "        System.out.println(levenspunten);",
+          "        System.out.println(this.levenspunten);",
+          "    }",
+          "",
+          "Ergens roept de code toon(" + n + ") aan.",
+          "Wat verschijnt er? Typ de twee getallen (bv. \"" + n + " 20\")."
+        ];
+      },
+      ok: "Juist. De parameter schaduwt het attribuut: zonder 'this' de trechter, " +
+        "met 'this' de doos van het object.",
+      fout: "Nog niet. De eerste regel drukt de parameter af, de tweede " +
+        "this.levenspunten (het attribuut, 20)."
+    }
+  },
+
+  // Level 3 — De knikkerbaan (scharnier 3: voorwaarden, validatie, cascade,
+  // && / || / !). De Java-fragmenten leven in js/levels/level3.js.
+  l3: {
+    naam: "Level 3 — De knikkerbaan",
+    repairTitel: "Speler.java — herstel de klem",
+
+    vindfout: {
+      vraag: [
+        "De poort naar het volgende hoofdstuk mag alleen open als de wolf",
+        "verslagen is EN je de sleutel hebt. Toch klopt er iets niet:",
+        "",
+        "  1  if (wolfVerslagen || speler.heeft(\"sleutel\")) {",
+        "  2      System.out.println(\"De poort knarst open.\");",
+        "  3  } else {",
+        "  4      System.out.println(\"De poort blijft dicht.\");",
+        "  5  }",
+        "",
+        "Op welke regel zit de fout? Typ het regelnummer, of kort wat er mis is."
+      ],
+      ok: "Raak. 'Beide moeten waar zijn' vraagt && (en), niet || (of): met || " +
+        "gaat de poort al open bij alleen de sleutel.",
+      fout: "Nog niet daar. Kijk naar de logische operator in de conditie op " +
+        "regel 1."
+    },
+
+    trace: {
+      vraag: function (n) {
+        return [
+          "Voorspel de uitvoer van deze cascade:",
+          "",
+          "    int lp = " + n + ";",
+          "    if (lp <= 0) {",
+          "        System.out.println(\"verslagen\");",
+          "    } else if (lp < 10) {",
+          "        System.out.println(\"gewond\");",
+          "    } else {",
+          "        System.out.println(\"gezond\");",
+          "    }",
+          "",
+          "Welk woord verschijnt? Typ het."
+        ];
+      },
+      ok: "Juist. De eerste tak die klopt wint, en de randen tellen: <= 0 pakt 0, " +
+        "en < 10 laat 10 net vallen naar 'gezond'.",
+      fout: "Nog niet. Loop de takken van boven naar onder en let op de " +
+        "randwaarden (0 en 10)."
+    }
+  },
+
   // Vierde hint: geen nieuwe hint, wel een zachte aanmoediging in Alberta's stem.
   hintGeenMeer: "Meer hints heb ik niet voor je. Lees nog eens rustig wat er " +
     "staat — je bent dichterbij dan je denkt. (De volledige walkthrough ligt " +
