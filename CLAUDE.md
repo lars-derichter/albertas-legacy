@@ -67,3 +67,31 @@ package. Keep them in sync — the docs are the contract, not commentary.
   (opdracht, aanpak, beslissingen, QC-resultaat).
 - Commits are atomic: one per work package, only after QC passes. Worker
   agents create files; the manager commits.
+
+## Working agreements
+
+These bind every session, including one that has never seen the plan it is
+executing. The point is that the repo itself carries enough state to resume
+after a crash, a context reset, or a handover.
+
+- **Write the programme down before touching code.** A multi-package effort
+  starts with a kickoff entry in `workflow/` that records the prompt verbatim
+  (in its original language), the questions asked and the answers given, the
+  decisions with their reasons, and the approved plan in full as an appendix.
+  `workflow/15-opwaardering-kickoff.md` is the worked example.
+- **Keep a live checklist.** `workflow/voortgang.md` carries the current state:
+  one line per work package and per subtask, with the QC gate spelled out. It
+  is updated in the *same* commit as the work it describes, never afterwards.
+  A resuming session reads it first.
+- **One commit per work package, atomic, only after its QC gate passes.** Never
+  commit a package that is half done — split it into two packages instead.
+- **Log the decisions, especially the ones that deviate.** Every non-trivial
+  choice goes in the work package's entry with its reason. When the
+  implementation departs from what the plan said, that departure and its cause
+  are the most important thing in the entry.
+- **Verify before you claim.** Findings go in an entry only after they have
+  been reproduced — run the test, read the file, capture the screenshot. Report
+  what was measured, and say plainly when a gate did not pass.
+- **Docs move with the code that contradicts them**, in the same package (see
+  Design contracts above). That includes `walkthrough/` when game prose or
+  scene names change: both parts get rebuilt.
