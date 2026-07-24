@@ -109,6 +109,7 @@ globalThis.AL = globalThis.AL || {};
         levels: verseLevels(),
         hintsTotaal: 0,
         geluid: true,
+        crt: true,
         gestopt: false,
         einde: null
       };
@@ -331,9 +332,10 @@ globalThis.AL = globalThis.AL || {};
 
     // --- Endgame: sim → Alberta's oordeel → epiloog ---------------------------
     //
-    // De sim (Seven Little Goats speelbaar in de terminal) komt in WP 9; hier
-    // staat de SEQUENCE eromheen, die na level-af:7 loopt en volledig testbaar
-    // is met een neppe "sim klaar"-trigger (spelontwerp-legacy.md, §"Endgame").
+    // De sim zelf (Seven Little Goats speelbaar in de terminal) leeft in
+    // js/sim/; hier staat de SEQUENCE eromheen, die na level-af:7 loopt. Ze is
+    // los van de sim testbaar via simVoltooid (spelontwerp-legacy.md,
+    // §"Endgame").
 
     // Level 7 af: de pc kondigt aan dat het spel compleet is en boot de sim.
     bootSim: function (toestand) {
@@ -344,7 +346,8 @@ globalThis.AL = globalThis.AL || {};
     },
 
     // De sim bereikte een van de vier eindes → door naar Alberta's oordeel.
-    // (Neppe trigger voor de tests/engine tot WP 9 de echte sim levert.)
+    // Wordt aangeroepen door js/pc/sim-terminal.js, en rechtstreeks door de
+    // tests.
     simVoltooid: function (toestand, eindeNaam) {
       var r = this.startOordeel(toestand);
       r.effecten.unshift("sim:einde:" + (eindeNaam || "onbekend"));
@@ -427,7 +430,8 @@ globalThis.AL = globalThis.AL || {};
       var vers = this.nieuw(oud.seed);
       // Neem bekende, nog geldige velden over waar ze bestaan.
       var overdraagbaar = ["seed", "modus", "sceneId", "speler", "bezocht",
-        "levelActief", "levels", "hintsTotaal", "geluid", "gestopt", "einde"];
+        "levelActief", "levels", "hintsTotaal", "geluid", "crt", "gestopt",
+        "einde"];
       for (var i = 0; i < overdraagbaar.length; i++) {
         var k = overdraagbaar[i];
         if (oud[k] !== undefined && oud[k] !== null) vers[k] = oud[k];

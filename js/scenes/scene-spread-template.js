@@ -8,8 +8,6 @@
 //  2. AL.spreads — de renderer die de handschrift-INHOUD van één pagina bovenop
 //     die achtergrond zet. Hij is generiek: hij leest zijn inhoud uit een
 //     data-object (AL.strings.spreads[levelId]), niet per level hardgecodeerd.
-//     WP 7–8 leveren de echte puzzelbriefjes; voor WP 6 draagt de data de
-//     scharniertitels/teasers uit levels-en-scharnieren.md.
 //
 // Visuele taal uit art-stijlgids.md, §"Het notitieboek-spread": papier met een
 // rugschaduw in het midden, beschadiging als grillige vlekken, handschrift als
@@ -81,52 +79,78 @@ AL.spreads = {
     return function (i) { return ((s + i * 7) % 3) - 1; };
   },
 
+  // De bladspiegel. Het sjabloon tekent een rugschaduw op x 157–162, dus tekst
+  // die als één brede kolom over de volle breedte loopt, snijdt daar dwars
+  // doorheen — en leest dan niet als een opengeslagen boek maar als een fout.
+  // Vandaar twee kolommen: eerst de linkerbladzijde vol, dan de rechter.
+  BLAD: {
+    linksX: 16,
+    rechtsX: 166,
+    kolomB: 136,      // 17 tekens van 8 px
+    topY: 16,
+    regelH: 11,
+    onderY: 158       // hieronder komen de weekregel, de bladwijzer en de hint
+  },
+
   // Teken de inhoud van pagina p bovenop de al getekende papier-achtergrond.
-  // Wrapt elke regel op de bladbreedte en zet ze als handschrift; de weekregel
-  // (voet) komt onderaan de rechterbladzijde (art-stijlgids.md).
+  // De kop staat in inkt met een onderstreping, de regels als handschrift; de
+  // weekregel (voet) komt onderaan de rechterbladzijde (art-stijlgids.md).
   tekenInhoud: function (gfx, data, p, seed) {
     if (!data || !data.paginas || !gfx) return;
+    var B = this.BLAD;
     var idx = Math.max(0, Math.min(p | 0, data.paginas.length - 1));
     var pag = data.paginas[idx];
     var jitter = this._jitter(seed);
-    var x = 18, y = 16, i;
+    var tekens = Math.floor(B.kolomB / 8);
+    var perKolom = Math.floor((B.onderY - B.topY) / B.regelH);
+    var i, j, stukken;
 
-    // De kop in inkt (gewrapt op de bladbreedte), met een onderstreping.
+    // Alles eerst tot één lijst regels maken, dan pas over de twee bladzijden
+    // verdelen — zo loopt een kop die net onderaan links valt netjes door.
+    var regels = [];
     if (pag.kop) {
-      var kopregels = gfx._wrap(pag.kop, 36);
-      for (i = 0; i < kopregels.length; i++) {
-        gfx.tekenTekst(kopregels[i], x, y, 41, null);
-        y += 11;
+      stukken = gfx._wrap(pag.kop, tekens);
+      for (i = 0; i < stukken.length; i++) {
+        regels.push({ tekst: stukken[i], kop: true });
       }
-      var laatste = kopregels[kopregels.length - 1] || "";
-      gfx.line(40, [x, y, x + Math.min(laatste.length * 8, 284), y]);
-      y += 10;
+      regels.push({ streep: true });
     }
-
-    // De regels als handschrift, gewrapt op de bladbreedte (~34 tekens).
-    var regels = pag.regels || [];
-    for (var r = 0; r < regels.length; r++) {
-      var stukken = gfx._wrap(regels[r], 34);
-      for (var s = 0; s < stukken.length; s++) {
-        if (stukken[s] !== "") gfx.tekenHandschrift(stukken[s], x, y, 41, jitter);
-        y += 11;
+    var bron = pag.regels || [];
+    for (i = 0; i < bron.length; i++) {
+      stukken = gfx._wrap(bron[i], tekens);
+      for (j = 0; j < stukken.length; j++) {
+        regels.push({ tekst: stukken[j], kop: false });
       }
     }
 
-    // De weekregel onderaan de bladzijde (Alberta's markering), gewrapt zodat ze
-    // binnen het blad past.
+    var maxRegels = perKolom * 2;
+    for (i = 0; i < regels.length && i < maxRegels; i++) {
+      var rechts = i >= perKolom;
+      var x = rechts ? B.rechtsX : B.linksX;
+      var y = B.topY + (i - (rechts ? perKolom : 0)) * B.regelH;
+      var r = regels[i];
+      if (r.streep) {
+        gfx.line(40, [x, y, x + B.kolomB - 8, y]);
+      } else if (r.tekst === "") {
+        continue;
+      } else if (r.kop) {
+        gfx.tekenTekst(r.tekst, x, y, 41, null);
+      } else {
+        gfx.tekenHandschrift(r.tekst, x, y, 41, jitter);
+      }
+    }
+
+    // De weekregel onderaan de rechterbladzijde (Alberta's markering).
     if (pag.voet) {
-      var voetregels = gfx._wrap(pag.voet, 30);
-      var vy = 189 - voetregels.length * 11;
-      for (i = 0; i < voetregels.length; i++) {
-        gfx.tekenTekst(voetregels[i], 18, vy, 40, null);
-        vy += 11;
+      var voet = gfx._wrap(pag.voet, tekens);
+      for (i = 0; i < voet.length && i < 2; i++) {
+        gfx.tekenTekst(voet[i], B.rechtsX, B.onderY + 6 + i * 9, 40, null);
       }
     }
 
-    // Bladwijzer: welke pagina van hoeveel.
-    var totaal = data.paginas.length;
-    gfx.tekenTekst((idx + 1) + "/" + totaal, 296, 168, 40, null);
+    // Bladwijzer linksonder, binnen het blad — niet tegen de snit aan.
+    gfx.tekenTekst((idx + 1) + "/" + data.paginas.length, B.linksX, 178, 40,
+      null);
   }
 };
 

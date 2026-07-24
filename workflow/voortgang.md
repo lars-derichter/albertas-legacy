@@ -52,7 +52,7 @@ De pakketten F t/m J hebben onderling geen harde volgorde.
 
 ### - [x] WP 0 — Logboek, checklist en werkafspraken
 
-Entry: `workflow/15-opwaardering-kickoff.md` · commit: (nog in te vullen)
+Entry: `workflow/15-opwaardering-kickoff.md` · commit: `29d2a2b`
 
 - [x] Kickoff-entry met de prompts van Lars, de aanpak, de beslissingen en het
       bewijsmateriaal
@@ -61,22 +61,35 @@ Entry: `workflow/15-opwaardering-kickoff.md` · commit: (nog in te vullen)
 - [x] Werkafspraken in `CLAUDE.md`, §Working agreements
 - [x] QC: markdown op 80 tekens, code onaangeroerd, tests onveranderd 224/225
 
-### - [ ] WP A — Fundering en opruiming
+### - [x] WP A — Fundering en opruiming
 
-Entry: `workflow/16-*.md` · commit: —
+Entry: `workflow/16-fundering-en-opruiming.md` · commit: (nog in te vullen)
 
-- [ ] `berekenSchaal()` levert twee gehele factoren (`--schaal-x`,
+- [x] `berekenSchaal()` levert twee gehele factoren (`--schaal-x`,
       `--schaal-y`); beeldverhouding zo dicht bij 4:3 als past
-- [ ] CRT-overlay (scanlines + vignet), uitschakelbaar met `crt aan|uit`,
+- [x] CRT-overlay (scanlines + vignet), uitschakelbaar met `crt aan|uit`,
       bewaard in de save
-- [ ] Z-orde in `tekenTitelKaart` en `tekenOordeelKaart`: straal, kader, tekst
-- [ ] Spread-inhoud in twee kolommen; bladerhint en paginateller binnen het blad
-- [ ] `Main.java` schrijft UTF-8 naar stdout; notitie in de Java-README
-- [ ] Bouwpuin uit `index.html`, `js/logic/strings.js`, `js/logic/levels.js`
-- [ ] Vijf dode string-sleutels weg
-- [ ] Hardgecodeerd macOS-pad uit de vijf `test/smoke-*.mjs`
-- [ ] QC: **225/225 groen**, `lint:scene` schoon, screenshots leesbaar,
-      `file://` werkt nog
+- [x] Titelkaart en oordeelkaart leesbaar — bleek een **contrastfout**, geen
+      z-orde-fout; opgelost met een donkere plaat en een papieren band
+- [x] Spread-inhoud in twee kolommen; bladerhint en paginateller binnen het blad
+- [x] Codering van de Java-prijs opgelost via het bouwrecept
+      (`-encoding UTF-8` + `-Dstdout.encoding=UTF-8`), **niet** via `Main.java`
+      — een `PrintStream` in de bron laat de cursusgrens-grep struikelen én lost
+      de compileerkant niet op
+- [x] Bouwpuin uit `index.html`, `js/engine.js`, `js/logic/strings.js`,
+      `js/logic/world.js`, `js/scenes/scene-spread-template.js`
+- [x] Vier dode string-sleutels weg (`dozen.leeg`, `pc.puzzelAlAf`,
+      `hintPrefix`, `endgame.naarOordeel`)
+- [x] Het "placeholder-level" in `levels.js` **blijft**: het is de fixture waar
+      de headless tests op draaien; alleen het commentaar was misleidend
+- [x] Hardgecodeerd macOS-pad uit de vijf `test/smoke-*.mjs` (nu `AL_SCRATCH`
+      of `test-results/`)
+- [x] QC: **225/225 groen**, `lint:scene` schoon, `check-assets` driftvrij,
+      javac-poort schoon, zes rooksmaaktesten groen via `file://`
+
+Doorgeschoven met adres: de sjabloonvlekken onder de spread-tekst → WP G; de
+hardgerande lichtwiggen → WP B/E. `smoke-touch` kon hier niet draaien (geen
+WebKit in deze container).
 
 ### - [ ] WP B — Rendererkern
 
@@ -98,7 +111,9 @@ Entry: `workflow/17-*.md` · commit: —
 Entry: `workflow/18-*.md` · commit: —
 
 - [ ] Register kouder: intro, vier kamerbeschrijvingen, spreads, oordeel,
-      epiloog
+      epiloog. **Let op het bladbudget:** een spread-pagina telt hoogstens 24
+      gewrapte regels (17 tekens × 12 regels × 2 kolommen). De langste pagina nu
+      is `l4` p1 met 22. Wat eroverheen gaat, wordt afgekapt.
 - [ ] Duisternis met _Seven Little Goats_ als bron, zonder de sim aan te raken
 - [ ] Eigen `onderzoek`-tekst voor elk zelfstandig naamwoord in elke kamer
 - [ ] Parser: kale richtingen, lidwoord-stripping, `neem`/`pak`

@@ -6,9 +6,12 @@
 //
 // Toon en register volgen docs/achtergrond.md, §"Toon en register": Vlaams
 // Nederlands zonder hollandismen, Alberta's stem droog en warm, de verteller
-// rustig en King's-Quest-zuinig. De volledige level-prose komt in WP 6; dit is
-// het skelet met echte (geen lorem) tekst voor wat nu bestaat: de titel, de
-// intro, zolder-west, de placeholder-hints en de systeemmeldingen.
+// rustig en King's-Quest-zuinig.
+//
+// Let op bij het herschrijven van de spreads: de bladspiegel telt twee kolommen
+// van 17 tekens en 12 regels (zie AL.spreads.BLAD in
+// js/scenes/scene-spread-template.js). Een pagina die boven de 24 gewrapte
+// regels uitkomt, wordt afgekapt.
 //
 // Aangepast uit remake-90s (js/logic/strings.js): dezelfde vorm (data +
 // kleine sjabloonfuncties, Node-export), nieuwe inhoud.
@@ -92,8 +95,6 @@ AL.strings = {
     onderzoek: "Kartonnen dozen, dichtgeplakt en gemerkt in Alberta's hand. In " +
       "één ervan zit het volgende blad van haar notitieboek — als je aan dat " +
       "hoofdstuk toe bent.",
-    leeg: "Deze doos heb je al doorzocht. Het blad dat erin zat, ligt nu in het " +
-      "notitieboek.",
     allesGevonden: "Je hebt elk fragment van het notitieboek gevonden. Alles wat " +
       "je nog rest, ligt op de pc — en op het einde, in de broncode-doos.",
     // Waar het eerstvolgende fragment ligt als het niet in deze kamer zit.
@@ -146,7 +147,6 @@ AL.strings = {
     alleChecksOk: "Alle controles groen. Dit stuk van Alberta's spel draait weer.",
     checkOk: "CHECK_OK   ",
     checkFail: "CHECK_FAIL ",
-    puzzelAlAf: "Deze taak staat al af. Je mag ze gerust nog eens bekijken.",
     terugNaarMenu: "— terug naar het menu —",
     typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc voor de zolder.",
     hintKop: "hint",
@@ -159,7 +159,6 @@ AL.strings = {
   dieKantKanJeNietOp: "Die kant kan je niet op.",
   datZieJeHierNiet: "Dat zie je hier niet.",
   nietsBijzonders: "Niets bijzonders.",
-  hintPrefix: "",
 
   // Inventaris (in de zolder draag je weinig; het framework laat het toe).
   draagtNiets: "Je hebt niets bij je. Alles wat telt, ligt op de zolder.",
@@ -177,6 +176,7 @@ AL.strings = {
     "?                  een hint voor waar je nu vastzit",
     "herbegin           begin het spel opnieuw (vraagt bevestiging)",
     "geluid aan / uit   zet het geluid om",
+    "crt aan / uit      zet de beeldbuislijnen om",
     "help               deze lijst"
   ],
 
@@ -189,6 +189,10 @@ AL.strings = {
   // Geluid.
   geluidAan: "Geluid aan.",
   geluidUit: "Geluid uit.",
+
+  // De beeldbuislijnen over het canvas.
+  crtAan: "Beeldbuis aan.",
+  crtUit: "Beeldbuis uit.",
 
   // Placeholder-hints per puzzel (drie stadia, oplopend, nooit het antwoord;
   // save-en-hints.md, §"Het hint-contract"). De echte level-hints komen bij de
@@ -1017,16 +1021,14 @@ AL.strings = {
   },
 
   // De endgame (spelontwerp-legacy.md, §"Endgame"). Level 7 af "voltooit"
-  // Alberta's spel; de pc boot Seven Little Goats als speelbare simulatie. De
-  // echte sim komt in WP 9; deze teksten dragen de aankondiging en de overgang.
+  // Alberta's spel; de pc boot Seven Little Goats als speelbare simulatie.
+  // Deze teksten dragen de aankondiging en de overgang.
   endgame: {
     compleet: "Het laatste hoofdstuk is hersteld. Op de monitor verschijnt, " +
       "regel na regel, wat je al die tijd aan het herstellen was: Alberta's " +
       "spel, compleet. Het compileert. Het draait.",
     bootSim: "SEVEN LITTLE GOATS — de tekstversie boot in de terminal. Speel " +
-      "eindelijk het spel dat je grootmoeder nooit afkreeg.",
-    naarOordeel: "Je speelt Alberta's spel uit. De terminal wordt stil. En dan, " +
-      "in de kantlijn van het laatste scherm, staat er iets in haar hand."
+      "eindelijk het spel dat je grootmoeder nooit afkreeg."
   },
 
   // De epiloog (spelontwerp-legacy.md, §"Endgame", stap 5; achtergrond.md,
@@ -1051,9 +1053,7 @@ AL.strings = {
   // De notitieboek-spreads (spelontwerp-legacy.md, §"De zolder-hub"; art-
   // stijlgids.md, §"Het notitieboek-spread"). Eén spread per level plus een
   // intro-spread. De inhoud is data (de spread-template-renderer leest ze uit;
-  // hij is niet per level hardgecodeerd). De puzzelbriefjes zijn hier nog
-  // teasers op basis van de scharniertitels uit levels-en-scharnieren.md; de
-  // volledige puzzelbriefjes komen in WP 7–8. De weekregel gebruikt de kolom
+  // hij is niet per level hardgecodeerd). De weekregel gebruikt de kolom
   // "Na cursusweek" uit levels-en-scharnieren.md: 1, 2, 2, 3, 4, 5, 6.
   spreads: (function () {
     // Bouw één spread-teaser als een generiek pagina-object dat de renderer

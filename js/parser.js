@@ -98,6 +98,15 @@ AL.parser = {
       return { tekst: [AL.strings.geluidUit], effecten: ["geluid:uit"] };
     }
 
+    // Beeldbuis: de scanlines en het vignet over het canvas. Zelfde patroon als
+    // geluid — de logica kent alleen de voorkeur, de engine zet het beeld om.
+    if (commando === "crt aan") {
+      return { tekst: [AL.strings.crtAan], effecten: ["crt:aan"] };
+    }
+    if (commando === "crt uit") {
+      return { tekst: [AL.strings.crtUit], effecten: ["crt:uit"] };
+    }
+
     return { tekst: [AL.strings.datBegrijpJeNiet], effecten: [] };
   }
 };

@@ -255,11 +255,17 @@ globalThis.AL = globalThis.AL || {};
 
   AL.levels = levels;
 
-  // ---- Placeholder-level (framework-zaad) ---------------------------------
+  // ---- Framework-zaad: een generiek level 1 -------------------------------
 
-  // Registreer een placeholder-level 1 met de drie puzzels uit de staat-vorm,
-  // zodat het framework en de tests iets hebben om tegen te draaien vóór de
-  // level-WP's echte definities leveren. WP van level 1 vervangt dit.
+  // Dit ziet eruit als achtergebleven steigerwerk, maar het draagt de headless
+  // tests. test/helpers.mjs laadt alleen js/logic/levels.js, niet js/levels/*,
+  // dus zonder deze registratie heeft AL.world.nieuw() geen enkel level om een
+  // verse staat uit af te leiden en vallen test-levels.mjs en test-world.mjs om.
+  //
+  // In de browser is het onzichtbaar: index.html laadt js/levels/level1.js ná
+  // dit bestand, en die registratie overschrijft deze met de echte puzzels
+  // (l1-editor-repair, l1-editor-write, l1-verklaar). Verplaats dit dus niet
+  // zomaar — het is een testfixture, geen restant.
   levels.registreer("1", {
     week: 3,
     puzzels: [

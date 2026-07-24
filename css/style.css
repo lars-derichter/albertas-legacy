@@ -1,7 +1,8 @@
-/* Het canvas is 320×200 logisch en wordt met een geheel getal geschaald,
-   nearest-neighbor, gecentreerd op een zwart scherm — zoals een monitor uit
-   1990 dat zou doen. De schaalfactor zet engine.js via de CSS-variabele
-   --schaal (grootste gehele factor die in het venster past). */
+/* Het canvas is 320×200 logisch en wordt nearest-neighbor geschaald,
+   gecentreerd op een zwart scherm — zoals een monitor uit 1990 dat zou doen.
+   Twee gehele schaalfactoren, niet één: VGA mode 13h werd op 4:3 getoond, dus
+   de pixels waren 20 % hoger dan breed. engine.js zet --schaal-x en --schaal-y
+   (zie berekenSchaal daar voor de keuze van het paar). */
 
 html, body {
   margin: 0;
@@ -17,12 +18,43 @@ body {
   justify-content: center;
 }
 
+/* Draagt het canvas én de CRT-laag, zodat die laatste precies het beeld dekt
+   en niet het hele venster. */
+#beeld {
+  position: relative;
+  line-height: 0;
+}
+
 #scherm {
+  display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  width: calc(320px * var(--schaal, 3));
-  height: calc(200px * var(--schaal, 3));
+  width: calc(320px * var(--schaal-x, 3));
+  height: calc(200px * var(--schaal-y, 4));
 }
+
+/* De CRT-behandeling: één donkere lijn per logische pixelrij (de spatiëring
+   volgt --schaal-y, anders klopt het patroon niet bij een andere schaal), plus
+   een zacht vignet naar de hoeken. Bewust subtiel — het mag de art dempen, niet
+   verstoppen. Uit te zetten met het commando "crt uit"; engine.js zet dan
+   data-crt="uit" op <html>. */
+#beeld::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.20) 0 1px,
+      rgba(0, 0, 0, 0) 1px calc(1px * var(--schaal-y, 4))),
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.42) 100%);
+}
+
+:root[data-crt="uit"] #beeld::after { display: none; }
 
 /* De gesimuleerde-pc-overlay: een full-screen VGA-kader in amber-CRT-stijl,
    bovenop het canvas. Verborgen tot de engine hem toont (modus "pc"). De

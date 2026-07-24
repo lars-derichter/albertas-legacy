@@ -41,7 +41,11 @@ function zorgVoorCompilatie() {
   try {
     const bronnen = readdirSync(srcDir).filter((f) => f.endsWith(".java"))
       .map((f) => join(srcDir, f));
-    execSync(`javac -d ${JSON.stringify(outDir)} ${bronnen.map((b) => JSON.stringify(b)).join(" ")}`,
+    // -encoding UTF-8: de bron staat in UTF-8, maar javac gaat zonder deze vlag
+    // af op de standaardcodering van het systeem. Op een machine met cp1252 zou
+    // "geërfd" dan als "geÃ«rfd" in de .class-bestanden belanden. Dezelfde vlag
+    // staat in seven-little-goats/README.md bij de terminalinstructies.
+    execSync(`javac -encoding UTF-8 -d ${JSON.stringify(outDir)} ${bronnen.map((b) => JSON.stringify(b)).join(" ")}`,
       { stdio: "pipe" });
     return existsSync(join(outDir, "Main.class"));
   } catch (e) {
@@ -55,7 +59,12 @@ function javaBeschikbaar() {
 }
 
 function draaiJava(scriptTekst) {
-  const r = spawnSync("java", ["-cp", outDir, "Main"], {
+  // -Dstdout.encoding=UTF-8: zonder deze vlag schrijft de JVM naar stdout in de
+  // consolecodering (hier ANSI_X3.4-1968, op Windows cp850/cp1252), en worden
+  // "ë" en "—" vraagtekens. We lezen hieronder als UTF-8, dus de JVM moet ook
+  // in UTF-8 schrijven — anders vergelijkt deze test coderingsgedrag in plaats
+  // van inhoud. Dezelfde vlag staat in seven-little-goats/README.md.
+  const r = spawnSync("java", ["-Dstdout.encoding=UTF-8", "-cp", outDir, "Main"], {
     input: scriptTekst, encoding: "utf8", timeout: 30000
   });
   return r.stdout || "";

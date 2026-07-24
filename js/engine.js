@@ -13,8 +13,8 @@
 // Aangepast uit remake-90s (js/engine.js): het frame-lus-patroon, de
 // scène-cache-en-blit, de actor-beweging over walkboxes, de venster-paginering
 // en de schaalberekening zijn overgenomen; herschreven rond de nieuwe modi en
-// de volledige effect-taglijst uit engine-architectuur.md. De pc-overlay-haken
-// zijn stubs die een div tonen/verbergen; WP 5 vult ze in.
+// de volledige effect-taglijst uit engine-architectuur.md. De pc-overlay wordt
+// vanuit js/pc/ gevuld; de engine toont en verbergt ze alleen.
 //
 // Geen ES-module: hangt aan het globale AL-object en werkt vanaf file://.
 
@@ -226,6 +226,11 @@ globalThis.AL = globalThis.AL || {};
         if (arg === "aan") { AL.sound.zetAan(true); if (toestand) toestand.geluid = true; bewaar(); }
         else if (arg === "uit") { AL.sound.zetAan(false); if (toestand) toestand.geluid = false; bewaar(); }
         else { AL.sound.speel(arg); }
+      } else if (tag === "crt") {
+        var crtAan = (arg === "aan");
+        if (toestand) toestand.crt = crtAan;
+        zetCrt(crtAan);
+        bewaar();
       } else if (tag === "herbegin") {
         voerHerbeginUit();
       } else if (tag === "gestopt") {
@@ -575,6 +580,13 @@ globalThis.AL = globalThis.AL || {};
     // Lichtstraal schuin.
     AL.gfx.poly(33, [200, 8, 240, 8, 210, 160, 150, 160]);
     AL.gfx.dither(34, 33, [206, 10, 234, 10, 205, 150, 168, 150]);
+    // Een donkere plaat achter het logo, zodat de lichtstraal eráchter door
+    // loopt. Zonder die plaat verdwijnt de titel waar de straal passeert: de
+    // titelkleur (34) is exact de hooglichtkleur van de straal zelf
+    // (art-stijlgids.md, avond-ramp) — gelijke kleur op gelijke kleur. Het is
+    // dus geen tekenvolgorde-probleem maar een contrastprobleem; de tekst stond
+    // altijd al bovenop.
+    AL.gfx.rect(28, 30, 40, 260, 60);
     // Logo-kader in avondgoud.
     AL.gfx.kader(30, 40, 260, 60, 33);
     AL.gfx.kader(32, 42, 256, 56, 41);
@@ -594,10 +606,13 @@ globalThis.AL = globalThis.AL || {};
     if (AL.spreads && data) {
       AL.spreads.tekenInhoud(AL.gfx, data, spreadPagina, toestand.seed);
     }
-    // Bladerhint onderaan rechts (de weekregel staat onderaan links).
+    // Bladerhint rechtsonder, rechts uitgelijnd binnen de rechterbladzijde —
+    // niet tegen de snit, want daar loopt de donkere papierrand van het sjabloon.
     var laatste = spreadPagina >= spreadAantalPaginas() - 1;
     var hint = laatste ? "spatie: pc >" : "spatie >";
-    AL.gfx.tekenTekst(hint, 320 - hint.length * 8 - 6, 182, 40, null);
+    var rechterrand = AL.spreads ? (AL.spreads.BLAD.rechtsX + AL.spreads.BLAD.kolomB)
+      : 302;
+    AL.gfx.tekenTekst(hint, rechterrand - hint.length * 8, 178, 40, null);
   }
 
   // De eindkaart draagt zowel Alberta's oordeel als de epiloog (één scène, twee
@@ -609,11 +624,23 @@ globalThis.AL = globalThis.AL || {};
     if (k) AL.gfx.tekenPicture(k.picture);
   }
 
+  // De kop van een eindkaart, op een papieren band over de volle breedte. De
+  // eindkaart is donker aan de randen en licht in de straal; inkt (41) zonder
+  // band valt links en rechts dus gewoon weg. De band garandeert het contrast en
+  // leest meteen als het titelvlak van een eindkaart.
+  function tekenKaartTitel(tekst, y) {
+    var h = AL.font.hoogte;
+    AL.gfx.rect(36, 0, y - 4, 320, h + 8);
+    AL.gfx.line(40, [0, y - 4, 319, y - 4]);
+    AL.gfx.line(40, [0, y + h + 3, 319, y + h + 3]);
+    gecentreerdeTekst(tekst, y, 41);
+  }
+
   function tekenOordeelKaart() {
     tekenEindkaartAchtergrond();
     var tier = toestand.einde || "vakvrouw";
     var o = AL.strings.oordeel[tier] || AL.strings.oordeel.vakvrouw;
-    gecentreerdeTekst(o.titel, 20, 41);
+    tekenKaartTitel(o.titel, 20);
     var v = AL.gfx.maakVenster([o.tekst, "(Enter: de epiloog)"],
       { maxTekens: 32 });
     AL.gfx.tekenVenster(v);
@@ -622,7 +649,7 @@ globalThis.AL = globalThis.AL || {};
   function tekenEpiloogKaart() {
     tekenEindkaartAchtergrond();
     var ep = AL.strings.epiloog;
-    gecentreerdeTekst(ep.titel, 16, 41);
+    tekenKaartTitel(ep.titel, 16);
     var alineas = ep.alineas.slice();
     alineas.push("(Enter: naar de titel)");
     var v = AL.gfx.maakVenster(alineas, { maxTekens: 34, maxRegels: 12 });
@@ -678,13 +705,54 @@ globalThis.AL = globalThis.AL || {};
     requestAnimationFrame(lus);
   }
 
+  // Het logische scherm is 320×200, maar een VGA-monitor toonde mode 13h op 4:3:
+  // de pixels waren dus niet vierkant, ze waren 20 % hoger dan breed. Vandaar
+  // twee gehele schaalfactoren in plaats van één. (320·sx)/(200·sy) = 4/3 vraagt
+  // sx/sy = 5/6, dus exact klopt het pas bij 1600×1200 — lang niet elk venster.
+  //
+  // Twee gehele factoren houden elke pixelrij even hoog; een gebroken factor zou
+  // rijen ongelijk maken en zichtbaar gaan glinsteren. Past 5:6 niet, dan kiezen
+  // we het best passende paar: eerst de kleinste afwijking van 4:3, bij gelijke
+  // afwijking liever te breed dan te smal (te smal rekt alles uit en oogt kapot,
+  // te breed leest hooguit als breedbeeld), en dan pas het grootste beeld.
+  // De CRT-laag hangt aan een data-attribuut op <html>; de opmaak zelf staat in
+  // css/style.css. Standaard aan.
+  function zetCrt(aan) {
+    if (!document.documentElement) return;
+    if (aan) document.documentElement.removeAttribute("data-crt");
+    else document.documentElement.setAttribute("data-crt", "uit");
+  }
+
+  var DOELVERHOUDING = 4 / 3;
+
   function berekenSchaal() {
-    var n = Math.min(
-      Math.floor(window.innerWidth / BREEDTE),
-      Math.floor(window.innerHeight / HOOGTE)
-    );
-    if (n < 1) n = 1;
-    document.documentElement.style.setProperty("--schaal", n);
+    var maxX = Math.max(1, Math.floor(window.innerWidth / BREEDTE));
+    var maxY = Math.max(1, Math.floor(window.innerHeight / HOOGTE));
+    var besteX = 1, besteY = 1;
+    var besteFout = Infinity, besteOpp = 0, besteBreed = false;
+    for (var sy = 1; sy <= maxY; sy++) {
+      for (var sx = 1; sx <= maxX; sx++) {
+        var verhouding = (BREEDTE * sx) / (HOOGTE * sy);
+        var fout = Math.abs(verhouding - DOELVERHOUDING);
+        var breed = verhouding >= DOELVERHOUDING;
+        var opp = sx * sy;
+        var beter;
+        if (fout < besteFout - 0.0001) {
+          beter = true;
+        } else if (fout < besteFout + 0.0001) {
+          beter = (breed !== besteBreed) ? breed : (opp > besteOpp);
+        } else {
+          beter = false;
+        }
+        if (beter) {
+          besteX = sx; besteY = sy;
+          besteFout = fout; besteOpp = opp; besteBreed = breed;
+        }
+      }
+    }
+    var stijl = document.documentElement.style;
+    stijl.setProperty("--schaal-x", besteX);
+    stijl.setProperty("--schaal-y", besteY);
   }
 
   // Lees ?seed=N (geheel getal) uit de URL, of null.
@@ -729,6 +797,7 @@ globalThis.AL = globalThis.AL || {};
     toestand = AL.world.laad(st, seedUitUrl === null ? undefined : seedUitUrl);
     if (seedUitUrl !== null) toestand.seed = seedUitUrl;    // ?seed overschrijft altijd
     AL.sound.zetAan(toestand.geluid !== false);
+    zetCrt(toestand.crt !== false);
 
     if (hadSave) {
       // Hervat in de opgeslagen modus.

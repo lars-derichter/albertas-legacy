@@ -48,8 +48,10 @@ Java. The repo doubles as a genAI-workflow showcase.
   solutions. This is the primary gate; keep it green.
 - Playwright smoke and scripted playthroughs come later (browser side). Not
   required to run the game.
-- WP 2 gate for the Java prize: `javac -d out src/*.java` clean and
-  `grep -nE 'switch|enum|->|Stream|\bvar '` empty.
+- WP 2 gate for the Java prize: `javac -encoding UTF-8 -d out src/*.java` clean
+  and `grep -nE 'switch|enum|->|Stream|\bvar '` empty. The `-encoding` flag is
+  not optional: the sources are UTF-8, and without it `javac` falls back to the
+  platform charset and bakes `geÃ«rfd` into the class files.
 
 ## Design contracts
 
