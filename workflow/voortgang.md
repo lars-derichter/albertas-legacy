@@ -119,7 +119,7 @@ gemaakt.
 
 ### - [x] WP C — Verhaal, stem en de zolder die antwoordt
 
-Entry: `workflow/18-verhaal-en-stem.md` · commit: (nog in te vullen)
+Entry: `workflow/18-verhaal-en-stem.md` · commit: `7d8be60`
 
 - [x] Register kouder: intro, vier kamerbeschrijvingen, oordeel, epiloog,
       endgame. De kou zit in het contrast (de stoel lijkt net verlaten, het stof
@@ -151,18 +151,28 @@ nieuwe parser-tolerantie en F3 in `deel1-hints.md` vermelden, zodra `pandoc` en
 `typst` beschikbaar zijn om beide PDF's mee te herbouwen — nu niet in deze
 container.
 
-### - [ ] WP D — De opening
+### - [x] WP D — De opening
 
-Entry: `workflow/19-*.md` · commit: —
+Entry: `workflow/19-de-opening.md` · commit: (nog in te vullen)
 
-- [ ] Openingsreeks op het canvas met establishing shots en overgangen
-- [ ] Overslaanbaar; de save onthoudt dat ze gezien is
-- [x] Route en stem kloppen al sinds WP C: titel → achtergrond (verteller,
-      vensters) → zolder, en de `spread`-modus draagt alleen nog de zeven
-      level-spreads. Wat hier nog rest is het **beeld**: de vensters over de
-      titelkaart vervangen door getekende establishing shots
-- [ ] QC: `smoke-browser` en `smoke-full-playthrough` aangepast en groen; geen
-      notitieboekpapier meer vóór het boek gevonden is
+- [x] Drie getekende beelden: `opening-huis`, `opening-trap`, `opening-pc`, elk
+      met een opkomst uit het zwart
+- [x] Vijf beats op die drie beelden, zo gemaat dat geen onderschrift
+      pagineert — anders bladert Enter door de tékst in plaats van de reeks
+- [x] Onderschrift onderaan in plaats van een luik over het beeld
+      (`maakVenster`-optie `plaatsing: "onder"`)
+- [x] Overslaanbaar met Escape, met een leesbare hint op eigen plaat
+- [x] **Geen extra save-veld nodig:** herladen komt via `hervat()` binnen en
+      ziet de titelkaart niet; `herbegin` is een expliciete verse start en
+      hoort de opening juist wél opnieuw te tonen
+- [x] Route en stem kloppen sinds WP C; de `spread`-modus draagt alleen nog de
+      zeven level-spreads
+- [x] QC: 259/259, `lint:scene` schoon op negen scènes, `smoke-browser` 21/21
+      (twee checks erbij), overige rooksmaaktesten groen
+
+Twee lessen uit dit pakket staan nu in `art-stijlgids.md` en gelden voor WP E:
+dither niet over een grote helderheidssprong (een fel accent domineert ook in de
+minderheid), en licht is rond (een halo uit trapezia leest als een tunnel).
 
 ### - [ ] WP E — De zolder hertekend
 

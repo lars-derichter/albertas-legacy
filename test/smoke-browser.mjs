@@ -117,13 +117,23 @@ async function main() {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(90);
   const sIntro = await state(page);
-  check("Enter opent de achtergrond op de titelkaart",
-    sIntro.vensterOpen === true && sIntro.titelActief === true,
-    "venster=" + sIntro.vensterOpen + " titel=" + sIntro.titelActief);
+  check("Enter start de openingsreeks met een onderschrift",
+    sIntro.openingActief === true && sIntro.vensterOpen === true,
+    "opening=" + sIntro.openingActief + " venster=" + sIntro.vensterOpen);
   check("de achtergrond loopt niet via een notitieboek-spread",
     sIntro.modus !== "spread" && sIntro.spreadLevelId === null,
     "modus=" + sIntro.modus + " spread=" + sIntro.spreadLevelId);
-  check("de achtergrond tekent (canvas niet leeg)", await canvasNietLeeg(page));
+  check("de openingsreeks tekent (canvas niet leeg)",
+    await canvasNietLeeg(page));
+
+  // Escape slaat de reeks over: wie herbegint wil dit niet vier keer zien.
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(120);
+  const sSkip = await state(page);
+  check("Escape slaat de openingsreeks over",
+    sSkip.openingActief === false && sSkip.titelActief === false,
+    "opening=" + sSkip.openingActief + " titel=" + sSkip.titelActief);
+
   await naarZolder(page);
   const s1 = await state(page);
   check("na de achtergrond sta je in de zolder", s1.modus === "zolder",

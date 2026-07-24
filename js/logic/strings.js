@@ -25,6 +25,7 @@ AL.strings = {
   titel: "THE LEGACY OF ALBERTA",
   ondertitel: "de zolder van grootmoeder",
   drukEnter: "Druk op Enter",
+  openingOverslaan: "Esc: overslaan",
 
   // De intro: een korte reeks berichtvensters die de kernfictie zet. De laatste
   // alinea bevat de cruciale zin uit achtergrond.md (de prototype-fase).
@@ -35,9 +36,11 @@ AL.strings = {
     "doet.",
 
     "Tussen de dozen ligt haar notitieboek. Losse bladen, doorgelopen inkt, " +
-    "vlekken waar het vocht bij kon. Erin staat Seven Little Goats: zes " +
-    "geitjes die de wolf binnengaan, een zevende die zich in de klokkast " +
-    "verstopt, en een afrekening aan de rivier. Ze heeft het niet afgemaakt.",
+    "vlekken waar het vocht bij kon.",
+
+    "Erin staat Seven Little Goats: zes geitjes die de wolf binnengaan, een " +
+    "zevende die zich in de klokkast verstopt, en een afrekening aan de " +
+    "rivier. Ze heeft het niet afgemaakt.",
 
     "Alberta bouwde elk spel eerst als tekstversie in de terminal. Zo begon " +
     "ze altijd. Wat jij herstelt is dus geen tekening, maar haar code — stuk " +

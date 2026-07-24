@@ -193,10 +193,21 @@ Een paar vuistregels die uit het gebruik volgen:
 - **Schaduw ná de prop, niet ervoor.** `shadow` leest de buffer, dus wat er nog
   niet staat kan niet verduisterd worden.
 - **Houd `noise` laag.** Boven ongeveer 0,2 wordt korrel ruis. Voor houtnerf zit
-  je rond 0,08–0,15.
+  je rond 0,08–0,15, voor gras op afstand rond 0,06.
 - **Verduister met de ramp, niet met zwart.** Een prop in schaduw is dezelfde
   kleur, één stap lager — daarom staan de ramps in `js/palette.js` en heeft het
   palet `verduister`/`verhelder`.
+- **Dither niet over een grote helderheidssprong.** Amber (56) in donkergrijs
+  (49) mengen op 22 % levert geen subtiele gloed maar een oranje vlak: het oog
+  middelt naar helderheid, dus een fel accent domineert ook als het in de
+  minderheid is. Blijf voor een gloed binnen de eigen ramp (50 → 52), en zet de
+  echte felle kleur alleen daar waar de lichtbron zelf zit. Dit is bij de
+  openingsbeelden fout gegaan en daarna rechtgezet; zie
+  `workflow/19-de-opening.md`.
+- **Licht is rond.** Een lichtkegel of halo als trapezium leest als een vórm —
+  je ziet de hoeken. Bouw een halo uit concentrische `ellipse`-stappen (donker
+  naar licht) en breek de randen met een beetje `noise`. Een lichtstraal uit een
+  raam mag wél een veelhoek zijn: die heeft in het echt ook rechte randen.
 
 ## Diepte en voorgrond
 
@@ -217,6 +228,9 @@ De scène-ids zijn bindend en identiek aan `spelontwerp-legacy.md`.
 | Scène-id | Mood |
 |---|---|
 | `titelkaart` | stille zolder in silhouet, één gouden lichtstraal (34/58), het logo eroverheen; melancholisch, uitnodigend |
+| `opening-huis` | het huis van buiten bij avondval, schemerlucht uit de avond-ramp (28→32), één verlicht dakraam; je komt aan, je bent er nog niet binnen |
+| `opening-trap` | de trap naar de zolder van onderaan, wanden die naar het lichtgat toe lopen, treden die naar voren breder worden; opgaan naar iets |
+| `opening-pc` | een zwarte zolder met één ding aan: de monitor, halo als concentrische ellipsen uit de gloed-ramp; het staat hier al een hele tijd te branden |
 | `zolder-west` | starthoek: dozen (26/23), het notitieboek op een kist in het licht (papier-ramp), stof in de lichtstraal (losse 34-pixels); warm, wachtend |
 | `zolder-oost` | Alberta's werkhoek: het bureau, de pc met amber-gloeiend scherm (56–58), een lege stoel; intiem, "net verlaten" |
 | `zolder-midden` | doorgang: balken (22–27), de broncode-doos centraal, licht dat van west naar oost trekt; spil, iets plechtigs |

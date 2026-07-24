@@ -547,7 +547,11 @@ globalThis.AL = globalThis.AL || {};
         paginas: paginas,
         huidige: 0,
         maxTekens: maxTekens,
-        maxRegels: maxRegels
+        maxRegels: maxRegels,
+        // "midden" (default) of "onder". Onderaan is voor beelden die zelf
+        // iets te vertellen hebben: dan hoort de tekst een onderschrift te zijn
+        // en niet een luik over de scène.
+        plaatsing: opties.plaatsing || "midden"
       };
     },
 
@@ -576,7 +580,9 @@ globalThis.AL = globalThis.AL || {};
       var boxB = tekstB + 2 * marge + 2 * rand;
       var boxH = tekstH + 2 * marge + 2 * rand;
       var boxX = Math.floor((BREEDTE - boxB) / 2);
-      var boxY = Math.floor((HOOGTE - boxH) / 2);
+      var boxY = venster.plaatsing === "onder"
+        ? (SPEELVELD_BOT - boxH - 4)
+        : Math.floor((HOOGTE - boxH) / 2);
       // Papieren vulling.
       ivRect(buffer, 37, boxX, boxY, boxB, boxH);
       // Dubbele rand: buitenste kader en één pixel naar binnen.

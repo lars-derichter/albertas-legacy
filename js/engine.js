@@ -53,6 +53,23 @@ globalThis.AL = globalThis.AL || {};
   var spreadLevelId = null;    // welke spread nu open staat (modus "spread")
   var spreadPagina = 0;        // huidige pagina binnen de open spread
 
+  // De openingsreeks: drie getekende beelden met de verteller eroverheen, vóór
+  // de speler zelf de zolder op stapt. openingStap is de index in OPENING, of
+  // null als de reeks niet loopt.
+  //
+  // Vijf stappen op drie beelden: sommige beelden dragen twee alinea's. Dat is
+  // geen willekeur maar een maat — het onderschrift mag niet pagineren, want
+  // dan bladert Enter door de tekst in plaats van door de reeks, en dat voelt
+  // als vastlopen. Vijf korte beats passen elk in zes regels.
+  var OPENING = [
+    { scene: "opening-huis", alinea: 0 },
+    { scene: "opening-trap", alinea: 1 },
+    { scene: "opening-trap", alinea: 2 },
+    { scene: "opening-pc", alinea: 3 },
+    { scene: "opening-pc", alinea: 4 }
+  ];
+  var openingStap = null;
+
   // Tijd en tellers.
   var animTijd = 0;
   var laatsteTijd = 0;
@@ -174,8 +191,8 @@ globalThis.AL = globalThis.AL || {};
     return 1 - Math.max(0, Math.min(1, overgang.t));
   }
 
-  function toonVenster(alineas, naDismiss) {
-    venster = AL.gfx.maakVenster(alineas, {});
+  function toonVenster(alineas, naDismiss, opties) {
+    venster = AL.gfx.maakVenster(alineas, opties || {});
     naVenster = naDismiss || null;
     syncBlokkeer();
   }
@@ -296,20 +313,46 @@ globalThis.AL = globalThis.AL || {};
     AL.sound.speel("titel");
   }
 
-  // Vanaf de titel: de achtergrond, dan de zolder.
+  // Vanaf de titel: de openingsreeks, dan de zolder.
   //
   // Dit liep vroeger via een spread — de openingstekst stond dus op een
   // bladzijde van Alberta's notitieboek, mét haar koffievlek. Dat klopte niet:
   // je las wat er in het boek stond vóór je het boek gevonden had, en de tekst
   // was de verteller die jou aanspreekt op papier dat háár handschrift draagt.
-  // De achtergrond komt nu vóór de zolder én vóór het notitieboek, in de stem
-  // van de verteller, op de titelkaart. WP D maakt er een getekende reeks van;
-  // de drager klopt nu al.
+  //
+  // Nu: drie getekende beelden met de verteller eroverheen — het huis van
+  // buiten, de trap naar boven, de monitor die nog nagloeit — en pas daarna
+  // stapt de speler zelf de zolder op.
   function titelVerder() {
-    toonVenster(AL.strings.intro, function () {
-      titelActief = false;
-      betreedZolder(true);
-    });
+    titelActief = false;
+    openingStap = 0;
+    toonOpeningStap();
+  }
+
+  // Toon het beeld en de alinea van de huidige stap; is de reeks op, dan begint
+  // het spel. Elk beeld komt op uit het zwart (de opkomst uit WP B).
+  function toonOpeningStap() {
+    if (openingStap === null || openingStap >= OPENING.length) {
+      beeindigOpening();
+      return;
+    }
+    var stap = OPENING[openingStap];
+    zorgVoorScene(stap.scene);
+    startOpkomst("fade");
+    // Als onderschrift, niet als luik: het beeld is hier het punt.
+    toonVenster([AL.strings.intro[stap.alinea]], function () {
+      if (openingStap === null) return;      // al overgeslagen
+      openingStap++;
+      toonOpeningStap();
+    }, { plaatsing: "onder", maxTekens: 38, maxRegels: 6 });
+  }
+
+  // De reeks overslaan of uitspelen komt op hetzelfde neer: de zolder in.
+  function beeindigOpening() {
+    openingStap = null;
+    venster = null;
+    naVenster = null;
+    betreedZolder(true);
   }
 
   // Ga (of keer terug) naar de zolder-modus. beschrijf = toon de openings-
@@ -463,8 +506,9 @@ globalThis.AL = globalThis.AL || {};
     if (toestand.modus === "epiloog") { startTitel(); return; }
   }
 
-  // Escape sluit de pc-overlay (terug naar de zolder).
+  // Escape: de openingsreeks overslaan, of de pc-overlay sluiten.
   function opEscape() {
+    if (openingStap !== null) { beeindigOpening(); return; }
     if (!titelActief && toestand && toestand.modus === "pc") {
       opADePc(false);
     }
@@ -556,6 +600,17 @@ globalThis.AL = globalThis.AL || {};
       return;
     }
 
+    // De openingsreeks: het beeld van deze stap, met de verteller erop.
+    if (openingStap !== null) {
+      var stap = OPENING[Math.min(openingStap, OPENING.length - 1)];
+      zorgVoorScene(stap.scene);
+      AL.gfx.blitScene(stap.scene);
+      tekenOverslaanHint();
+      if (venster) AL.gfx.tekenVenster(venster);
+      toonBeeld();
+      return;
+    }
+
     var modus = toestand ? toestand.modus : "zolder";
 
     if (modus === "spread") {
@@ -628,6 +683,21 @@ globalThis.AL = globalThis.AL || {};
     var voorvoegsel = loopt ? "loop-" : "sta-";
     if (richting === "west") return voorvoegsel + "oost";   // west = gespiegeld oost
     return voorvoegsel + richting;
+  }
+
+  // Rechtsboven tijdens de openingsreeks: dat Escape hem overslaat. Wie
+  // herbegint wil dit niet vijf keer zien.
+  //
+  // Met een eigen donkere plaat eronder. De drie beelden hebben een heel
+  // verschillende achtergrond op die plek — schemerlucht, een verlicht gat,
+  // zwart — en zonder plaat valt de hint op minstens één ervan weg. Zelfde les
+  // als bij de titelkaart: contrast garandeer je, je hoopt er niet op.
+  function tekenOverslaanHint() {
+    var hint = AL.strings.openingOverslaan;
+    var b = hint.length * 8;
+    var x = 320 - b - 6;
+    AL.gfx.rect(28, x - 3, 9, b + 6, 12);
+    AL.gfx.tekenTekst(hint, x, 11, 33, null);
   }
 
   // Statusbalk (rij 0..7): scène-naam op avondblauw.
@@ -917,6 +987,8 @@ globalThis.AL = globalThis.AL || {};
     get: function () {
       return {
         titelActief: titelActief,
+        openingActief: openingStap !== null,
+        openingStap: openingStap,
         modus: toestand ? toestand.modus : null,
         sceneId: toestand ? toestand.sceneId : null,
         seed: toestand ? toestand.seed : null,
