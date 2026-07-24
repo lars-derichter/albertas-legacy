@@ -87,6 +87,9 @@ after a crash, a context reset, or a handover.
   A resuming session reads it first.
 - **One commit per work package, atomic, only after its QC gate passes.** Never
   commit a package that is half done — split it into two packages instead.
+- **Push immediately after every commit.** `git push -u origin <branch>` follows
+  the commit in the same breath, never at the end of a batch. Work that only
+  exists locally is work nobody can see and a crash can lose.
 - **Log the decisions, especially the ones that deviate.** Every non-trivial
   choice goes in the work package's entry with its reason. When the
   implementation departs from what the plan said, that departure and its cause
