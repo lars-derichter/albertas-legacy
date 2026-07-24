@@ -43,7 +43,8 @@ try {
 
 // Elk op-type met zijn vaste lengte (aantal array-elementen).
 const OP_LENGTE = {
-  fill: 2, rect: 6, poly: 3, line: 3, dither: 4, ellipse: 6, px: 3
+  fill: 2, rect: 6, poly: 3, line: 3, dither: 4, ellipse: 6, px: 3,
+  gradient: 8, ditherRamp: 5, shadow: 3, noise: 5
 };
 
 // ---- Hulp om een scènebestand te laden -----------------------------------
@@ -123,6 +124,57 @@ function keurOp(op, i, fouten) {
     const pts = op[3];
     if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
       fouten.push(waar + ": dither vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "gradient") {
+    if (!isKleur(op[1]) || !isKleur(op[2])) {
+      fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    }
+    const [, , , x, y, b, h, richting] = op;
+    if (!binnenX(x) || !binnenX(x + b - 1)) fouten.push(waar + ": x buiten veld");
+    if (!binnenY(y) || !binnenY(y + h - 1)) fouten.push(waar + ": y buiten veld");
+    if (richting !== "h" && richting !== "v") {
+      fouten.push(waar + ": richting moet 'h' of 'v' zijn");
+    }
+
+  } else if (naam === "ditherRamp") {
+    if (!isKleur(op[1]) || !isKleur(op[2])) {
+      fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    }
+    if (typeof op[3] !== "number" || op[3] < 0 || op[3] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    const pts = op[4];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": ditherRamp vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "shadow") {
+    if (!Number.isInteger(op[1]) || op[1] < 1 || op[1] > 5) {
+      fouten.push(waar + ": stappen moet een geheel getal 1–5 zijn");
+    }
+    const pts = op[2];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": shadow vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "noise") {
+    if (!isKleur(op[1])) fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    if (typeof op[2] !== "number" || op[2] < 0 || op[2] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    if (!Number.isInteger(op[3])) {
+      fouten.push(waar + ": seed moet een geheel getal zijn");
+    }
+    const pts = op[4];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": noise vraagt minstens 3 punten");
     } else {
       keurPunten(pts, waar, fouten);
     }

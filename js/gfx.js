@@ -154,6 +154,108 @@ globalThis.AL = globalThis.AL || {};
     });
   }
 
+  // ---- Geordend rasteren en deterministische ruis --------------------------
+
+  // Een 4×4-Bayer-matrix. Het 2×2-schaakbord van ivDither kan maar één
+  // mengverhouding (50 %); met een 4×4-drempel zijn zestien dichtheden mogelijk,
+  // en dát is wat een VGA-verloop zacht maakt in plaats van gestreept.
+  var BAYER4 = [
+    [0, 8, 2, 10],
+    [12, 4, 14, 6],
+    [3, 11, 1, 9],
+    [15, 7, 13, 5]
+  ];
+
+  // Drempel voor pixel (x, y), in [0, 1).
+  function bayer(x, y) {
+    return (BAYER4[(y & 3)][(x & 3)] + 0.5) / 16;
+  }
+
+  // Deterministische pseudo-ruis per pixel, in [0, 1). Geen Math.random: een
+  // scène moet er bij elke run identiek uitzien, anders is ze niet te linten en
+  // niet te vergelijken op een screenshot.
+  function ruisWaarde(x, y, seed) {
+    var h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^
+      Math.imul(seed | 0, 1274126177);
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    h = (h ^ (h >>> 16)) >>> 0;
+    return h / 4294967296;
+  }
+
+  // De tussenstappen van c1 naar c2. Zitten beide kleuren in dezelfde ramp, dan
+  // loopt het verloop over de échte tussenkleuren van die ramp — zeven stappen
+  // van 28 naar 34, bijvoorbeeld. Anders blijft het een menging van twee.
+  function rampStappen(c1, c2) {
+    var r1 = AL.palet.rampVan(c1);
+    var r2 = AL.palet.rampVan(c2);
+    if (r1 && r2 && r1.ramp === r2.ramp) {
+      var uit = [], i;
+      if (r1.pos <= r2.pos) {
+        for (i = r1.pos; i <= r2.pos; i++) uit.push(r1.ramp[i]);
+      } else {
+        for (i = r1.pos; i >= r2.pos; i--) uit.push(r1.ramp[i]);
+      }
+      return uit;
+    }
+    return [c1, c2];
+  }
+
+  // Verloop over een rechthoek, van c1 naar c2, met geordende dithering op elke
+  // overgang. richting "h" = horizontaal, alles anders = verticaal.
+  function ivGradient(doel, c1, c2, x, y, b, h, richting) {
+    keurKleur(c1);
+    keurKleur(c2);
+    var stappen = rampStappen(c1, c2);
+    var n = stappen.length;
+    var horizontaal = (richting === "h");
+    var lengte = horizontaal ? b : h;
+    if (b < 1 || h < 1) return;
+    for (var j = 0; j < h; j++) {
+      for (var i = 0; i < b; i++) {
+        var px = x + i, py = y + j;
+        var t = lengte <= 1 ? 0 : (horizontaal ? i : j) / (lengte - 1);
+        var f = t * (n - 1);
+        var idx = Math.floor(f);
+        var frac = f - idx;
+        if (idx >= n - 1) { idx = n - 1; frac = 0; }
+        zetPixel(doel, px, py,
+          frac > bayer(px, py) ? stappen[idx + 1] : stappen[idx]);
+      }
+    }
+  }
+
+  // Veelhoek met een gedoseerde menging: dichtheid 0 is helemaal c1, 1 helemaal
+  // c2, 0.25/0.5/0.75 daartussen. Vervangt het vaste 50 %-schaakbord waar een
+  // zachtere overgang nodig is.
+  function ivDitherRamp(doel, c1, c2, dichtheid, punten) {
+    keurKleur(c1);
+    keurKleur(c2);
+    var d = Math.max(0, Math.min(1, dichtheid));
+    vulPolygoon(doel, punten, function (x, y) {
+      return bayer(x, y) < d ? c2 : c1;
+    });
+  }
+
+  // Verduister wat er al staat: elke pixel binnen de veelhoek zakt n stappen in
+  // zijn eigen ramp. Zo krijgt een contactschaduw de kleur van de ondergrond
+  // mee, in plaats van er een grijze vlek overheen te leggen.
+  function ivShadow(doel, stappen, punten) {
+    var n = Math.max(1, stappen | 0);
+    vulPolygoon(doel, punten, function (x, y) {
+      return AL.palet.verduister(doel[y * BREEDTE + x], n);
+    });
+  }
+
+  // Spikkels binnen een veelhoek: houtnerf, stof, korrel op steen. Laat de
+  // ondergrond staan waar niet gespikkeld wordt.
+  function ivNoise(doel, c, dichtheid, seed, punten) {
+    keurKleur(c);
+    var d = Math.max(0, Math.min(1, dichtheid));
+    vulPolygoon(doel, punten, function (x, y) {
+      return ruisWaarde(x, y, seed) < d ? c : doel[y * BREEDTE + x];
+    });
+  }
+
   // Gevulde ellips met middelpunt (cx, cy) en halve assen rx, ry.
   function ivEllipse(doel, c, cx, cy, rx, ry) {
     keurKleur(c);
@@ -192,6 +294,14 @@ globalThis.AL = globalThis.AL || {};
         ivLine(doel, op[1], op[2]);
       } else if (naam === "dither") {
         ivDither(doel, op[1], op[2], op[3]);
+      } else if (naam === "gradient") {
+        ivGradient(doel, op[1], op[2], op[3], op[4], op[5], op[6], op[7]);
+      } else if (naam === "ditherRamp") {
+        ivDitherRamp(doel, op[1], op[2], op[3], op[4]);
+      } else if (naam === "shadow") {
+        ivShadow(doel, op[1], op[2]);
+      } else if (naam === "noise") {
+        ivNoise(doel, op[1], op[2], op[3], op[4]);
       } else if (naam === "ellipse") {
         ivEllipse(doel, op[1], op[2], op[3], op[4], op[5]);
       } else if (naam === "px") {
@@ -232,6 +342,16 @@ globalThis.AL = globalThis.AL || {};
     poly: function (c, punten) { ivPoly(buffer, c, punten); },
     line: function (c, punten) { ivLine(buffer, c, punten); },
     dither: function (c1, c2, punten) { ivDither(buffer, c1, c2, punten); },
+    gradient: function (c1, c2, x, y, b, h, richting) {
+      ivGradient(buffer, c1, c2, x, y, b, h, richting);
+    },
+    ditherRamp: function (c1, c2, dichtheid, punten) {
+      ivDitherRamp(buffer, c1, c2, dichtheid, punten);
+    },
+    shadow: function (stappen, punten) { ivShadow(buffer, stappen, punten); },
+    noise: function (c, dichtheid, seed, punten) {
+      ivNoise(buffer, c, dichtheid, seed, punten);
+    },
     ellipse: function (c, cx, cy, rx, ry) { ivEllipse(buffer, c, cx, cy, rx, ry); },
     px: function (x, y, c) { zetPixel(buffer, x, y, c); },
 
@@ -272,16 +392,63 @@ globalThis.AL = globalThis.AL || {};
         frames.length];
       var h = frame.length;
       var b = frame[0].length;
-      var linksX = x - Math.floor(b / 2);   // ankerpunt onderkant-midden
-      var bovenY = y - (h - 1);
-      for (var row = 0; row < h; row++) {
-        var rij = frame[row];
-        for (var col = 0; col < b; col++) {
-          var teken = rij.charAt(opts.spiegel ? (b - 1 - col) : col);
+      // opts.schaal < 1 zet de sprite kleiner neer (dieptewerking: verder weg is
+      // kleiner). Nearest-neighbour, doel-gestuurd bemonsterd zodat er geen
+      // gaten vallen. Bij schaal 1 is dit pixel voor pixel dezelfde uitkomst als
+      // de ongeschaalde blitter die hier stond.
+      var schaal = (opts.schaal === undefined || opts.schaal === null)
+        ? 1 : opts.schaal;
+      var doelB = Math.max(1, Math.round(b * schaal));
+      var doelH = Math.max(1, Math.round(h * schaal));
+      var linksX = x - Math.floor(doelB / 2);   // ankerpunt onderkant-midden
+      var bovenY = y - (doelH - 1);
+      for (var dy = 0; dy < doelH; dy++) {
+        var sy = Math.min(h - 1, Math.floor(dy * h / doelH));
+        var rij = frame[sy];
+        for (var dx = 0; dx < doelB; dx++) {
+          var sx = Math.min(b - 1, Math.floor(dx * b / doelB));
+          var teken = rij.charAt(opts.spiegel ? (b - 1 - sx) : sx);
           if (teken === ".") continue;
           var idx = AL.palet.subIndex(subPalet, teken);
           if (idx < 0) continue;
-          zetPixel(buffer, linksX + col, bovenY + row, idx);
+          zetPixel(buffer, linksX + dx, bovenY + dy, idx);
+        }
+      }
+    },
+
+    // ---- Overgangen ---------------------------------------------------------
+
+    // Leg een overgang over de backing store, met t van 0 (niets) naar 1 (alles
+    // kleur). Op een palet-geïndexeerde buffer kan er niet gemengd worden, dus
+    // een fade is hier een geordende oplossing in plaats van een vervaging —
+    // precies zoals de hardware van toen het deed.
+    //
+    //   "fade"      geordend raster, gelijkmatig over het beeld
+    //   "dissolve"  pseudo-willekeurig per pixel, deterministisch
+    //   "iris"      van de randen naar het midden dicht
+    overgang: function (soort, t, kleur) {
+      var k = (kleur === undefined || kleur === null) ? 0 : kleur;
+      keurKleur(k);
+      var v = Math.max(0, Math.min(1, t));
+      var i;
+      if (v <= 0) return;
+      if (v >= 1) {
+        for (i = 0; i < buffer.length; i++) buffer[i] = k;
+        return;
+      }
+      for (var y = 0; y < HOOGTE; y++) {
+        for (var x = 0; x < BREEDTE; x++) {
+          var drempel;
+          if (soort === "dissolve") {
+            drempel = ruisWaarde(x, y, 1);
+          } else if (soort === "iris") {
+            var dx = (x - BREEDTE / 2) / (BREEDTE / 2);
+            var dy = (y - HOOGTE / 2) / (HOOGTE / 2);
+            drempel = 1 - Math.min(1, Math.sqrt(dx * dx + dy * dy) / Math.SQRT2);
+          } else {
+            drempel = bayer(x, y);
+          }
+          if (drempel < v) buffer[y * BREEDTE + x] = k;
         }
       }
     },

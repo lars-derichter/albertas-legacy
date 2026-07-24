@@ -60,6 +60,11 @@ globalThis.AL = globalThis.AL || {};
   var kantCooldownTot = 0;
   var laatsteKantOp = null;
 
+  // De lopende opkomst van een nieuwe kamer, of null. Vorm: { soort, t: 0..1 },
+  // waarbij t van 0 (nog zwart) naar 1 (volledig zichtbaar) loopt.
+  var overgang = null;
+  var OVERGANG_DUUR = 260;     // ms voor de opkomst van een nieuwe kamer
+
   var gecachet = {};           // welke scènes al in de gfx-cache staan
   var pcOverlay = null;        // de DOM-overlay van de gesimuleerde pc
   var pcCtx = null;            // engine-context voor de pc- en sim-controllers
@@ -130,9 +135,43 @@ globalThis.AL = globalThis.AL || {};
 
   function syncBlokkeer() {
     // Typen mag enkel in de zolder-modus zonder open venster.
+    //
+    // Bewust NIET blokkeren tijdens een overgang: een geblokkeerde invoer slikt
+    // aanslagen op, en een speler die tijdens het wegdraaien van het beeld al
+    // zijn volgende commando intypt, zou dat commando kwijt zijn. De overgang
+    // bevriest wél de beweging (zie tik), zodat de speler niet blind doorloopt.
     var vrij = (!titelActief && toestand && toestand.modus === "zolder" &&
       !venster);
     AL.input.blokkeer = !vrij;
+  }
+
+  // ---- Scène-overgangen ----------------------------------------------------
+
+  // De overgang is bewust alléén een opkomst: de scène wisselt meteen, en het
+  // nieuwe beeld komt daarna op uit het zwart.
+  //
+  // De voor de hand liggende variant — eerst dichtdraaien, dan wisselen, dan
+  // opendraaien — is geprobeerd en weer weggehaald. Ze vraagt om de wissel uit
+  // te stellen tot het dieptepunt, en dan loopt het wereldmodel achter op wat de
+  // speler al getypt heeft: een tweede commando in dat halve seconde-venster
+  // rekent nog met de oude kamer en landt in de verkeerde. Meteen wisselen en
+  // alleen de opkomst tonen haalt die hele klasse fouten weg, kost niets aan
+  // sfeer, en is precies wat de adventures van toen bij het betreden van een
+  // kamer deden.
+  function startOpkomst(soort) {
+    overgang = { soort: soort || "fade", t: 0 };
+  }
+
+  function tikOvergang(delta) {
+    if (!overgang) return;
+    overgang.t += delta / OVERGANG_DUUR;
+    if (overgang.t >= 1) overgang = null;
+  }
+
+  // Hoe dicht het scherm nu zit: 1 is helemaal zwart, 0 is open.
+  function overgangDekking() {
+    if (!overgang) return 0;
+    return 1 - Math.max(0, Math.min(1, overgang.t));
   }
 
   function toonVenster(alineas, naDismiss) {
@@ -142,11 +181,19 @@ globalThis.AL = globalThis.AL || {};
   }
 
   function verwerkResultaat(r, entryVoorKamer) {
-    verwerkEffecten(r.effecten || [], entryVoorKamer);
+    var effecten = r.effecten || [];
     var tekst = r.tekst || [];
-    if (tekst.length > 0) {
-      toonVenster(tekst, null);
+
+    // Eerst toepassen — het wereldmodel loopt nooit achter op de speler — en
+    // daarna de nieuwe kamer laten opkomen. Zonder dat is elke kamerwissel een
+    // harde cut, het duidelijkste "webding"-signaal dat het spel afgaf.
+    verwerkEffecten(effecten, entryVoorKamer);
+    var heeftScene = false;
+    for (var i = 0; i < effecten.length; i++) {
+      if (effecten[i].indexOf("scene:") === 0) { heeftScene = true; break; }
     }
+    if (heeftScene && !titelActief) startOpkomst("fade");
+    if (tekst.length > 0) toonVenster(tekst, null);
   }
 
   // ---- Effecttags (de volledige woordenlijst) -----------------------------
@@ -424,6 +471,7 @@ globalThis.AL = globalThis.AL || {};
     animTijd += 1 / 15;
     if (titelActief || !toestand) return;
     if (venster) { loopt = false; return; }
+    if (overgang) { loopt = false; return; }   // stilstaan terwijl het beeld wisselt
     if (toestand.modus !== "zolder") { loopt = false; return; }
     loopStap();
   }
@@ -485,13 +533,21 @@ globalThis.AL = globalThis.AL || {};
 
   // ---- Tekenen -------------------------------------------------------------
 
+  // Zet de lopende overgang over het beeld en toon het. Eén plek, zodat geen
+  // enkele modus hem kan vergeten.
+  function toonBeeld() {
+    var dekking = overgangDekking();
+    if (dekking > 0) AL.gfx.overgang(overgang.soort, dekking, 0);
+    AL.gfx.present();
+  }
+
   function render() {
     syncBlokkeer();
 
     if (titelActief) {
       tekenTitelKaart();
       if (venster) AL.gfx.tekenVenster(venster);
-      AL.gfx.present();
+      toonBeeld();
       return;
     }
 
@@ -499,39 +555,56 @@ globalThis.AL = globalThis.AL || {};
 
     if (modus === "spread") {
       tekenSpread();
-      AL.gfx.present();
+      toonBeeld();
       return;
     }
     if (modus === "oordeel") {
       tekenOordeelKaart();
-      AL.gfx.present();
+      toonBeeld();
       return;
     }
     if (modus === "epiloog") {
       tekenEpiloogKaart();
-      AL.gfx.present();
+      toonBeeld();
       return;
     }
     if (modus === "pc") {
       // De DOM-overlay dekt het canvas af; teken de zolder eronder als achtergrond.
       tekenZolder();
-      AL.gfx.present();
+      toonBeeld();
       return;
     }
 
     // Zolder-modus.
     tekenZolder();
     if (venster) AL.gfx.tekenVenster(venster);
-    AL.gfx.present();
+    toonBeeld();
   }
 
   function tekenZolder() {
     var id = toestand.sceneId;
     zorgVoorScene(id);
     AL.gfx.blitScene(id);
+    var scene = haalScene(id);
+    tekenOverlays(scene, false);
     tekenActor();
+    tekenOverlays(scene, true);
     tekenStatusbalk();
     tekenInvoerbalk();
+  }
+
+  // De voorgrondlaag (painter's order, art-stijlgids.md). Een overlay is
+  // { baselineY, ops }: de voet van het voorwerp staat op baselineY. Staat de
+  // speler verder naar achter dan die voet, dan hoort het voorwerp vóór hem —
+  // dan pas loopt hij er echt achterlangs in plaats van er bovenop.
+  function tekenOverlays(scene, voorSpeler) {
+    var ov = scene.overlays || [];
+    for (var i = 0; i < ov.length; i++) {
+      var o = ov[i];
+      if (!o || !o.ops) continue;
+      var staatVoor = (o.baselineY > actorY);
+      if (staatVoor === voorSpeler) AL.gfx.tekenPicture(o.ops);
+    }
   }
 
   function tekenActor() {
@@ -701,6 +774,9 @@ globalThis.AL = globalThis.AL || {};
       tik();
       accumulator -= TIK_MS;
     }
+    // De overgang loopt op echte tijd, niet op de logische tik: hij moet vloeiend
+    // zijn, en 15 Hz is daar te grof voor.
+    tikOvergang(delta);
     render();
     requestAnimationFrame(lus);
   }

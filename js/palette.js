@@ -98,9 +98,72 @@ function naarHex(rgb) {
 }
 var HEX = KLEUREN.map(naarHex);
 
+// De ramps uit art-stijlgids.md, elk geordend van donker naar licht. Ze zijn
+// wat een verduistering mogelijk maakt zónder een tweede palet: een kleur zakt
+// gewoon een of twee stappen binnen zijn eigen familie. Dat is de basis voor
+// contactschaduwen en voor props die van één lichtbron belicht lijken.
+//
+// Niet elke index zit in een ramp: 6 (bruin) en 14 (geel) staan op zichzelf, en
+// verduisteren laat die dus ongemoeid. De EGA-paren zijn wél opgenomen, zodat
+// ook de rode mantel van de speler een schaduwkant heeft.
+var RAMPEN = [
+  [0, 8, 7, 15],                     // grijs
+  [1, 9],                            // blauw
+  [2, 10],                           // groen (EGA)
+  [3, 11],                           // cyaan
+  [4, 12],                           // rood — mantel schaduw/licht
+  [5, 13],                           // magenta
+  [16, 17, 18, 19, 20, 21],          // huid
+  [22, 23, 24, 25, 26, 27],          // hout
+  [28, 29, 30, 31, 32, 33, 34],      // avondlicht
+  [35, 36, 37, 38],                  // papier
+  [41, 40, 39],                      // inkt naar vlekrand
+  [42, 43, 44, 45, 46, 47],          // gebladerte
+  [48, 49, 50, 51, 52, 53],          // steen
+  [54, 55, 56, 57, 58],              // gloed
+  [59, 60, 61, 62, 63]               // nacht en water
+];
+
+// index -> { ramp, pos }, één keer opgebouwd.
+var RAMP_VAN = {};
+(function () {
+  for (var r = 0; r < RAMPEN.length; r++) {
+    for (var p = 0; p < RAMPEN[r].length; p++) {
+      RAMP_VAN[RAMPEN[r][p]] = { ramp: RAMPEN[r], pos: p };
+    }
+  }
+})();
+
 AL.palet = {
   KLEUREN: KLEUREN,
   HEX: HEX,
+  RAMPEN: RAMPEN,
+
+  // In welke ramp zit deze kleur, en waar? null als ze in geen enkele ramp zit.
+  rampVan: function (index) {
+    return RAMP_VAN[index] || null;
+  },
+
+  // Zak n stappen donkerder binnen de eigen ramp; klemt op de donkerste kleur
+  // van die ramp. Een kleur zonder ramp blijft ongewijzigd.
+  verduister: function (index, n) {
+    var r = RAMP_VAN[index];
+    if (!r) return index;
+    var p = r.pos - (n === undefined ? 1 : n | 0);
+    if (p < 0) p = 0;
+    if (p >= r.ramp.length) p = r.ramp.length - 1;
+    return r.ramp[p];
+  },
+
+  // Idem, maar lichter.
+  verhelder: function (index, n) {
+    var r = RAMP_VAN[index];
+    if (!r) return index;
+    var p = r.pos + (n === undefined ? 1 : n | 0);
+    if (p < 0) p = 0;
+    if (p >= r.ramp.length) p = r.ramp.length - 1;
+    return r.ramp[p];
+  },
 
   // Aantal geldige indexen (voor de debugPalet-guard in gfx.js).
   aantal: KLEUREN.length,

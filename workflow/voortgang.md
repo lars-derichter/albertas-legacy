@@ -63,7 +63,7 @@ Entry: `workflow/15-opwaardering-kickoff.md` · commit: `29d2a2b`
 
 ### - [x] WP A — Fundering en opruiming
 
-Entry: `workflow/16-fundering-en-opruiming.md` · commit: (nog in te vullen)
+Entry: `workflow/16-fundering-en-opruiming.md` · commit: `36c40b9`
 
 - [x] `berekenSchaal()` levert twee gehele factoren (`--schaal-x`,
       `--schaal-y`); beeldverhouding zo dicht bij 4:3 als past
@@ -91,20 +91,31 @@ Doorgeschoven met adres: de sjabloonvlekken onder de spread-tekst → WP G; de
 hardgerande lichtwiggen → WP B/E. `smoke-touch` kon hier niet draaien (geen
 WebKit in deze container).
 
-### - [ ] WP B — Rendererkern
+### - [x] WP B — Rendererkern
 
-Entry: `workflow/17-*.md` · commit: —
+Entry: `workflow/17-rendererkern.md` · commit: (nog in te vullen)
 
-- [ ] `gradient` (ramp met Bayer 4×4 op de overgangen)
-- [ ] `ditherRamp` met dichtheid 25/50/75 %
-- [ ] `schaduw` (pixels omlaag in hun eigen ramp)
-- [ ] `ruis` (deterministische speckle)
-- [ ] Sprite-schaling + `yDrempel`-occlusie per hotspot
-- [ ] Per-frame overlaylaag (na `blitScene`)
-- [ ] Overgangen: fade, iris, dissolve
-- [ ] `tools/lint-scene.mjs` kent de nieuwe ops
-- [ ] QC: unit-test per op met `debugPalet` aan; `art-stijlgids.md` en
-      `engine-architectuur.md` mee in dezelfde commit
+- [x] Ramps in `js/palette.js`: `RAMPEN`, `rampVan`, `verduister`, `verhelder`
+- [x] `gradient` — loopt over de échte tussenkleuren van een gedeelde ramp, met
+      Bayer 4×4 op de overgangen
+- [x] `ditherRamp` met vrije dichtheid 0–1
+- [x] `shadow` (pixels omlaag in hun eigen ramp) — Engelse opnaam, zoals de
+      zeven bestaande ops
+- [x] `noise` (deterministische spikkels, seed hoort bij de scène)
+- [x] Sprite-schaling via `opts.schaal`; ankerpunt blijft onderaan-midden
+- [x] Voorgrondlaag: `overlays` `{ baselineY, ops }` wordt eindelijk getekend,
+      vóór of ná de speler naargelang de diepte
+- [x] Overgangen: `fade`, `dissolve`, `iris` in `gfx.overgang`; de engine
+      gebruikt een **opkomst** bij een kamerwissel (zie entry voor waarom niet
+      dicht-en-open)
+- [x] `tools/lint-scene.mjs` kent de vier nieuwe ops
+- [x] QC: 250/250 groen (25 nieuwe tests), `debugPalet` aan, zes
+      rooksmaaktesten groen, `art-stijlgids.md` en `engine-architectuur.md` mee
+
+Nog niet toegepast, met adres: sprite-schaling en de voorgrondlaag zijn
+gereedschap zonder gebruiker tot **WP E** de kamers hertekent. Bewegende sfeer
+(stof, flikkering) staat ook onder WP E — er is bewust geen slapende code voor
+gemaakt.
 
 ### - [ ] WP C — Verhaal, stem en de zolder die antwoordt
 

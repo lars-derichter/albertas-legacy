@@ -150,8 +150,11 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
   naar een horizon of naar de achterwand; de speler wordt kleiner naar achter
   (maar houd het subtiel — geen echte schaal-engine nodig).
 - **Dithering optioneel.** Met 64 kleuren zijn veel overgangen direct te leggen.
-  Gebruik dithering (de `dither`-op) enkel waar een ramp tekortschiet: luchten,
-  grote lichtvegen, zachte schaduwen. Niet meer als standaard zoals in EGA.
+  Gebruik dithering enkel waar een ramp tekortschiet: luchten, grote lichtvegen,
+  zachte schaduwen. Niet meer als standaard zoals in EGA.
+- **Geen platte vlakken op groot oppervlak.** Een wand, een vloer of een
+  lichtstraal van meer dan pakweg 40×40 px in één kleur leest als onaf. Gebruik
+  `gradient` binnen de ramp van dat materiaal, en `noise` voor korrel.
 - **Outlines:** 1 px donkere rand (0, of de diepste ramp-kleur) waar een vorm
   anders in de achtergrond wegvalt; binnen vlakken geen outline.
 - **Licht:** één dominante lichtbron per scène (op de zolder: het dakraam,
@@ -161,6 +164,51 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
 - **Geen leesbare achtergrondtekst** behalve waar het verhaal het vraagt
   (doos-labels, het notitieboek). Dooslabels mogen 1–2 px-streepjes zijn die
   handschrift suggereren; echte letters horen in het notitieboek thuis.
+
+## De draw-ops, en wanneer je ze gebruikt
+
+De renderer kent elf ops. De eerste zeven zijn de basis uit de
+predecessor-engine; de laatste vier zijn erbij gekomen omdat de stijlregels
+hierboven zonder hen niet uitvoerbaar waren — met alleen platte vullingen en
+één 50 %-schaakbord kán een vlak niet graderen.
+
+| Op | Vorm | Waarvoor |
+|---|---|---|
+| `fill` | `["fill", kleur]` | het hele speelveld in één kleur zetten |
+| `rect` | `["rect", kleur, x, y, b, h]` | blokken, planken, kaders |
+| `poly` | `["poly", kleur, punten]` | schuine vormen, lichtvegen |
+| `line` | `["line", kleur, punten]` | plank- en voegnaden, outlines |
+| `dither` | `["dither", c1, c2, punten]` | het vaste 50 %-schaakbord (EGA-erfstuk) |
+| `ellipse` | `["ellipse", kleur, cx, cy, rx, ry]` | vlekken, ronde vormen |
+| `px` | `["px", kleur, lijst]` | losse pixels: stof, korrels, doos-labels |
+| `gradient` | `["gradient", c1, c2, x, y, b, h, "h"\|"v"]` | **de werkpaardop.** Verloop over een rechthoek. Zitten c1 en c2 in dezelfde ramp, dan loopt het over de échte tussenkleuren (28→34 geeft zeven stappen); anders blijft het een menging van twee. De overgangen worden geordend geditherd, dus geen zichtbare banden |
+| `ditherRamp` | `["ditherRamp", c1, c2, dichtheid, punten]` | menging in een gekozen verhouding (0–1) in plaats van vast 50 %. Voor de zachte rand van een lichtveeg, of een sluier over een vlak |
+| `shadow` | `["shadow", stappen, punten]` | verduistert wat er al staat, 1–5 stappen omlaag in de eigen ramp van elke pixel. Dít is de op voor contactschaduwen: de schaduw krijgt de kleur van de ondergrond mee in plaats van er een grijze vlek overheen te leggen |
+| `noise` | `["noise", kleur, dichtheid, seed, punten]` | deterministische spikkels: houtnerf, stof op een vloer, korrel op steen. De seed hoort bij de scène, niet bij de speler — hetzelfde beeld bij elke run |
+
+Een paar vuistregels die uit het gebruik volgen:
+
+- **Bouw van achter naar voor.** Eerst een `gradient` voor de wand, dan de
+  vloer, dan de props, dan `shadow` onder elke prop, dan de voorgrond.
+- **Schaduw ná de prop, niet ervoor.** `shadow` leest de buffer, dus wat er nog
+  niet staat kan niet verduisterd worden.
+- **Houd `noise` laag.** Boven ongeveer 0,2 wordt korrel ruis. Voor houtnerf zit
+  je rond 0,08–0,15.
+- **Verduister met de ramp, niet met zwart.** Een prop in schaduw is dezelfde
+  kleur, één stap lager — daarom staan de ramps in `js/palette.js` en heeft het
+  palet `verduister`/`verhelder`.
+
+## Diepte en voorgrond
+
+- **`overlays`** in een scène is de voorgrondlaag: een lijst
+  `{ baselineY, ops }`. De voet van het voorwerp staat op `baselineY`. Staat de
+  speler verder naar achter dan die voet, dan tekent de engine het voorwerp ná
+  de speler — dan loopt hij er echt achterlangs. Dit is de painter's order uit
+  de stijlregels, en het geeft een kamer diepte zonder priority-buffer.
+- **Sprite-schaling.** `tekenSprite` neemt `opts.schaal`. De voeten blijven
+  staan waar ze staan, dus een figuur die naar achter kleiner wordt, blijft op
+  dezelfde vloer. De stijlgids vraagt dit expliciet ("de speler wordt kleiner
+  naar achter"); houd het subtiel, rond 0,8 achteraan.
 
 ## Scène-inventaris met mood-notities
 

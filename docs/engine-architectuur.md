@@ -51,6 +51,22 @@ Adapteren en crediteren; niet heruitvinden.
   De guard wordt `debugPalet`: hij controleert nu of elke pixel een geheel getal
   binnen de paletgrootte is (0 t/m `AL.palet.KLEUREN.length - 1`). Zo blijft de
   betrapping van buiten-palet-kleuren bestaan, aangepast aan het grotere palet.
+- **Vier ops erbij: `gradient`, `ditherRamp`, `shadow`, `noise`.** De
+  overgenomen renderer kon alleen platte vullingen en één 50 %-schaakbord, en
+  daarmee is de VGA-look uit `art-stijlgids.md` niet te tekenen: elk groot vlak
+  blijft dan één kleur. De vier nieuwe ops staan met hun signatuur en hun
+  gebruik in `art-stijlgids.md`, §"De draw-ops". `tools/lint-scene.mjs` kent ze
+  en controleert hun ariteit en grenzen mee.
+- **Ramps in het palet.** `js/palette.js` levert nu `RAMPEN`, `rampVan`,
+  `verduister` en `verhelder`. Daarmee kan een kleur binnen zijn eigen familie
+  een stap zakken, wat `shadow` en `gradient` mogelijk maakt zonder een tweede
+  palet. Kleuren buiten elke ramp (6 bruin, 14 geel) blijven ongemoeid.
+- **Sprite-schaling.** `tekenSprite` neemt `opts.schaal`; het ankerpunt blijft
+  onderaan-midden, zodat een geschaalde figuur op dezelfde vloer blijft staan.
+- **Overgangen.** `gfx.overgang(soort, t, kleur)` legt `fade`, `dissolve` of
+  `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
+  gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
+  zoals de hardware van toen het ook deed.
 
 ## De logica-laag
 
@@ -134,6 +150,7 @@ reageert; de logica produceert ze alleen.
 |---|---|
 | `geluid:<cue>` | speel een geluidscue; vaste cues: `pagina`, `deur`, `toets`, `compileer`, `ok`, `fout`, `boot`, `ambient-zolder` |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
+| `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
 | `herbegin` | het spel is teruggezet naar de begintoestand (zie `save-en-hints.md`) |
 | `gestopt` | het spel is beëindigd (einde bereikt of expliciet gestopt) |
 
@@ -172,6 +189,7 @@ Velden (bindend voor de save in `save-en-hints.md`):
 
   hintsTotaal: 0,          // som van alle hint-aanvragen (voor het oordeel)
   geluid: true,            // geluid aan/uit
+  crt: true,               // beeldbuislijnen en vignet aan/uit
   gestopt: false,          // spel beëindigd
   einde: null              // null | verdict-tier uit save-en-hints.md
 }
