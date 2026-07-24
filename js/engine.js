@@ -646,11 +646,74 @@ globalThis.AL = globalThis.AL || {};
     zorgVoorScene(id);
     AL.gfx.blitScene(id);
     var scene = haalScene(id);
+    tekenSfeer(scene);
     tekenOverlays(scene, false);
-    tekenActor();
+    tekenPropsEnActor(scene);
     tekenOverlays(scene, true);
     tekenStatusbalk();
     tekenInvoerbalk();
+  }
+
+  // De props uit scene.hotspots en de speler, op volgorde van hun voet-y: wie
+  // verder naar voren staat, wordt later getekend en dekt dus af wat erachter
+  // staat. Dat is de painter's order uit de stijlgids, en het is de reden dat
+  // deze sprites nu ook echt geblit worden — ze stonden vroeger in de gecachete
+  // achtergrond gebakken, waardoor geen enkel voorwerp ooit van staat kon
+  // veranderen.
+  function tekenPropsEnActor(scene) {
+    var lijst = [];
+    var hs = scene.hotspots || [];
+    for (var i = 0; i < hs.length; i++) {
+      var h = hs[i];
+      var def = AL.sprites && AL.sprites[h.sprite];
+      if (!def) continue;
+      var anim = h.anim || "idle";
+      if (!def.anims[anim]) anim = "idle";
+      lijst.push({ y: h.y, def: def, anim: anim, x: h.x, spiegel: !!h.spiegel });
+    }
+    lijst.push({ y: actorY, speler: true });
+    lijst.sort(function (a, b) { return a.y - b.y; });
+
+    for (var j = 0; j < lijst.length; j++) {
+      var e = lijst[j];
+      if (e.speler) { tekenActor(); continue; }
+      var fps = e.def.anims[e.anim].fps || 0;
+      var frame = fps > 0 ? Math.floor(animTijd * fps) : 0;
+      AL.gfx.tekenSprite(e.def, e.anim, frame, e.x, e.y, { spiegel: e.spiegel });
+    }
+  }
+
+  // De sfeerlaag: het enige dat in een kamer beweegt. Wordt ná de scène-blit
+  // getekend, want de scène zelf is gecachet en wordt als geheel gekopieerd.
+  //
+  // scene.sfeer: [{ soort: "stof", x, y, b, h, aantal, kleur, seed, snelheid }]
+  function tekenSfeer(scene) {
+    var lijst = scene.sfeer || [];
+    for (var i = 0; i < lijst.length; i++) {
+      if (lijst[i].soort === "stof") tekenStof(lijst[i]);
+    }
+  }
+
+  // Stof in de lichtstraal. Elk deeltje heeft een vaste startplek uit de
+  // deterministische ruis en zakt traag; de val loopt rond, zodat er geen begin
+  // of eind aan zit. De stijlgids vraagt hier al om ("stof in de lichtstraal"),
+  // en het was tot nu toe acht stilstaande pixels in de gecachete achtergrond.
+  function tekenStof(o) {
+    var aantal = o.aantal || 18;
+    var kleur = (o.kleur === undefined) ? 34 : o.kleur;
+    var seed = o.seed || 1;
+    var snelheid = o.snelheid || 0.02;
+    for (var i = 0; i < aantal; i++) {
+      var fx = AL.gfx.ruis(i, 1, seed);
+      var fy = AL.gfx.ruis(i, 2, seed);
+      var traag = 0.5 + AL.gfx.ruis(i, 3, seed);      // niet alles even snel
+      var t = (fy + animTijd * snelheid * traag) % 1;
+      // Een beetje zijwaartse drift, zodat het niet als regen valt.
+      var drift = Math.sin((animTijd * 0.4) + i) * 2;
+      var px = Math.round(o.x + fx * o.b + drift);
+      var py = Math.round(o.y + t * o.h);
+      AL.gfx.px(px, py, kleur);
+    }
   }
 
   // De voorgrondlaag (painter's order, art-stijlgids.md). Een overlay is

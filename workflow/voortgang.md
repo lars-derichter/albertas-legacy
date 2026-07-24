@@ -153,7 +153,7 @@ container.
 
 ### - [x] WP D — De opening
 
-Entry: `workflow/19-de-opening.md` · commit: (nog in te vullen)
+Entry: `workflow/19-de-opening.md` · commit: `f0c5c2d`
 
 - [x] Drie getekende beelden: `opening-huis`, `opening-trap`, `opening-pc`, elk
       met een opkomst uit het zwart
@@ -174,19 +174,45 @@ Twee lessen uit dit pakket staan nu in `art-stijlgids.md` en gelden voor WP E:
 dither niet over een grote helderheidssprong (een fel accent domineert ook in de
 minderheid), en licht is rond (een halo uit trapezia leest als een tunnel).
 
-### - [ ] WP E — De zolder hertekend
+### - [x] WP E deel 1 — De vier kamers hertekend
 
-Entry: `workflow/20-*.md` · commit: —
+Entry: `workflow/20-de-zolder-hertekend.md` · commit: (nog in te vullen)
 
-- [ ] Zes scènes hertekend: gradiënten, perspectief, één lichtbron, outlines,
-      voorgrondlaag
-- [ ] Props uit de achtergrond naar geblitte hotspot-sprites (pc `aan`,
-      broncode-doos `open`)
-- [ ] Het beeld dekt de prose: mok, stoel, pen, dozen tot aan de balken
-- [ ] Ambient beweging: stof, monitorflikkering, schuivend licht
-- [ ] `titelkaart` als echte scène met een getekend logo-bitmap
-- [ ] QC: `lint-scene` schoon; elk naamwoord uit de beschrijving aanwijsbaar;
-      geen prop dubbel
+- [x] Vier beloopbare kamers hertekend: gegradeerde wanden en vloeren, wijkend
+      perspectief, één lichtbron met hooglicht en schaduw, outlines, korrel
+- [x] Licht in plakken met aflopende dichtheid — de oude volvlakke wiggen waren
+      precies wat als "onafgewerkte polygoon" las
+- [x] Props uit de achtergrond naar geblitte sprites; de engine sorteert props
+      en speler op voet-y. De pc toont eindelijk zijn `aan`-frame, dat sinds
+      WP 6 bestond en nooit te zien is geweest
+- [x] Nieuw veld `scene.sfeer`: stof dat écht zakt, deterministisch. De lint
+      kent het en controleert grenzen, kleur en aantal
+- [x] Elke kamer een voorgrondlaag waar de speler achterlangs loopt
+- [x] Het beeld lost de prose in: elk zelfstandig naamwoord uit elke
+      kamerbeschrijving is aanwijsbaar
+- [x] 325 draw-ops over alle scènes, tegen 173 bij het vertrekpunt
+- [x] QC: 259/259, lint schoon, check-assets driftvrij, zes rooksmaaktesten
+      groen
+
+Nog open, met adres: de speler wordt niet kleiner naar achter. De
+sprite-schaling uit WP B ligt klaar, maar de loopstrook is 39 px hoog — daar
+valt geen zinnige diepte op te schalen zonder de walkboxes te herzien. Hoort
+bij **WP H**.
+
+### - [ ] WP E deel 2 — De titelkaart en de eindkaart
+
+Entry: nog te schrijven · commit: —
+
+Afgesplitst omdat deel 1 al groot was en `CLAUDE.md` vraagt een half pakket te
+splitsen in plaats van het half te committen. Een logo is bovendien letterwerk
+en geen kamer: ander soort werk.
+
+- [ ] `titelkaart` als echte scène (`js/scenes/scene-titelkaart.js`) in plaats
+      van zeven inline draw-ops in `js/engine.js`
+- [ ] Een getekend logo-bitmap in plaats van de titel in de speelfont
+- [ ] `eindkaart` hertekend met dezelfde woordenschat als de kamers
+- [ ] QC: `lint:scene` schoon; titel en oordeelkop blijven leesbaar — de
+      contrastfout uit WP A mag niet terugkomen
 
 ### - [ ] WP F — Typografie en UI-chrome
 

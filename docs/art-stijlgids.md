@@ -200,14 +200,46 @@ Een paar vuistregels die uit het gebruik volgen:
 - **Dither niet over een grote helderheidssprong.** Amber (56) in donkergrijs
   (49) mengen op 22 % levert geen subtiele gloed maar een oranje vlak: het oog
   middelt naar helderheid, dus een fel accent domineert ook als het in de
-  minderheid is. Blijf voor een gloed binnen de eigen ramp (50 → 52), en zet de
-  echte felle kleur alleen daar waar de lichtbron zelf zit. Dit is bij de
-  openingsbeelden fout gegaan en daarna rechtgezet; zie
-  `workflow/19-de-opening.md`.
+  minderheid is. Dit is bij de openingsbeelden fout gegaan en daarna rechtgezet;
+  zie `workflow/19-de-opening.md`.
+- **Een gloed hoort in de ramp van het oppervlak, niet in die van de lamp.** De
+  scherpere versie van de regel hierboven, na dezelfde fout nog eens gemaakt te
+  hebben op de wand achter de monitor (`workflow/20-de-zolder-hertekend.md`).
+  Amberlicht op een paarse wand teken je met de avond-ramp, niet met de
+  gloed-ramp: één stap per ring (29, dan 30), met wat `noise` eroverheen om de
+  ovaalrand te breken. De echte felle kleur zit alleen daar waar de lichtbron
+  zelf is — in het scherm, in het raam.
 - **Licht is rond.** Een lichtkegel of halo als trapezium leest als een vórm —
   je ziet de hoeken. Bouw een halo uit concentrische `ellipse`-stappen (donker
   naar licht) en breek de randen met een beetje `noise`. Een lichtstraal uit een
   raam mag wél een veelhoek zijn: die heeft in het echt ook rechte randen.
+
+- **Een lichtbundel gaat in plakken.** Eén veelhoek met een vaste dichtheid
+  leest als een schuine plank: licht wordt naar beneden toe breder én zwakker.
+  Vier of vijf plakken met aflopende dichtheid, waarbij ook de ramp-kern
+  meezakt van heet naar koel, geven die uitdoving. Zie de straal in
+  `scene-zolder-west.js`.
+
+## Beweging: de sfeerlaag
+
+Een scène wordt één keer geïnterpreteerd en daarna als geheel gekopieerd
+(`cacheScene`/`blitScene`). Alles wat beweegt, moet dus ná die kopie getekend
+worden. Daarvoor is `scene.sfeer`:
+
+```js
+sfeer: [
+  { soort: "stof", x, y, b, h, aantal, kleur, seed, snelheid }
+]
+```
+
+Eén soort voorlopig: `stof`. Elk deeltje krijgt zijn startplek uit dezelfde
+deterministische ruis als de `noise`-op, zakt traag met een eigen snelheid en
+drijft licht zijwaarts. Deterministisch, want een screenshot moet vergelijkbaar
+blijven.
+
+Houd het klein. Stof hoort te suggereren dat er lucht in de kamer staat, niet de
+aandacht te trekken: twintig deeltjes in de lichtstraal is genoeg, en in kamers
+zonder lichtbron hoort er niets te bewegen.
 
 ## Diepte en voorgrond
 

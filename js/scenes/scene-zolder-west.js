@@ -1,14 +1,18 @@
-// scene-zolder-west.js — Alberta's zolder, de westhoek: de starthoek van het
-// meta-spel. Mood uit art-stijlgids.md: kartonnen dozen (26/23), een schuine
-// streep avondlicht door het dakraam (avond-ramp 28–34, kern 58), stof in het
-// licht (losse 34-pixels), en het notitieboek op een kist, precies in de straal
-// (papier-ramp 35–38, inkt 41). Eén uitgang: oost, naar zolder-midden.
+// scene-zolder-west.js — Alberta's zolder, de westhoek: waar het spel begint.
 //
-// Aangepast uit remake-90s (scène-schema en draw-op-formaat uit
-// docs/scene-schema.md); nieuwe scène met het 64-kleuren-palet.
+// De kamerbeschrijving in js/logic/strings.js is de opdracht voor deze tekening.
+// Ze noemt: dozen tot tegen de balken, een dakraam met een schuine streep licht
+// die al laag staat, een kist met het opengeslagen notitieboek en de pen er nog
+// in, en een doorgang naar het oosten. Elk van die dingen hoort hier zichtbaar
+// te zijn — dat is de QC-poort van dit werkpakket.
 //
-// Placeholder-kwaliteit maar lint-schoon: het leest als een zolder met een
-// dakraam-lichtstraal en een notitieboek in het licht.
+// Mood uit art-stijlgids.md: avond-ramp (28–34) voor het licht, hout-ramp
+// (22–27) voor vloer en balken, karton in 25/26 met schaduw 23, papier-ramp voor
+// het boek. Eén lichtbron: het dakraam rechtsboven. Alles wat schaduw werpt,
+// werpt ze dus naar links-onder.
+//
+// Het notitieboek staat niet meer in deze tekening: het is een geblitte sprite
+// uit hotspots, zodat het een voorwerp is en geen verf.
 
 globalThis.AL = globalThis.AL || {};
 AL.scenes = AL.scenes || {};
@@ -17,75 +21,119 @@ AL.scenes["zolder-west"] = {
   id: "zolder-west",
 
   picture: [
-    // Achterwand: zolderschemer (avond schaduw), donkerder naar de nok.
-    ["fill", 29],
-    ["rect", 28, 0, 8, 320, 42],
+    // ---- Achterwand ------------------------------------------------------
+    // Een verloop over de avond-ramp in plaats van twee vlakke rechthoeken:
+    // donker onder de nok, iets lichter waar het raamlicht de wand haalt.
+    ["gradient", 28, 30, 0, 8, 320, 118, "v"],
+    ["noise", 28, 0.07, 5, [0, 8, 319, 8, 319, 126, 0, 126]],
 
-    // Houten vloer (hout mid) met planklijnen en lichte perspectiefwerking.
-    ["rect", 24, 0, 120, 320, 70],
-    ["line", 23, [0, 120, 319, 120]],
-    ["line", 22, [0, 141, 319, 141]],
-    ["line", 22, [0, 163, 319, 163]],
-    ["line", 22, [0, 183, 319, 183]],
-    ["line", 22, [150, 120, 120, 189]],
-    ["line", 22, [210, 120, 250, 189]],
+    // ---- Vloer -----------------------------------------------------------
+    // Wijkend: de planklijnen lopen naar een punt achteraan, en het hout wordt
+    // lichter naar voren toe (dichter bij de kijker, meer licht).
+    ["gradient", 23, 25, 0, 126, 320, 63, "v"],
+    ["noise", 22, 0.10, 7, [0, 126, 319, 126, 319, 189, 0, 189]],
+    ["line", 22, [0, 126, 319, 126]],
+    ["line", 22, [150, 126, 92, 189]],
+    ["line", 22, [186, 126, 244, 189]],
+    ["line", 22, [122, 126, 0, 172]],
+    ["line", 22, [214, 126, 319, 166]],
+    ["line", 23, [0, 148, 319, 148]],
+    ["line", 23, [0, 168, 319, 168]],
 
-    // Balken: één horizontale gording en twee staanders (hout schaduw).
-    ["rect", 23, 0, 50, 320, 8],
-    ["rect", 23, 40, 8, 10, 112],
-    ["rect", 23, 250, 8, 10, 112],
+    // ---- Balken ----------------------------------------------------------
+    ["rect", 24, 0, 44, 320, 10],
+    ["shadow", 1, [0, 52, 319, 52, 319, 56, 0, 56]],
+    ["noise", 23, 0.12, 9, [0, 44, 319, 44, 319, 54, 0, 54]],
+    ["rect", 24, 36, 8, 12, 118],
+    ["shadow", 1, [36, 8, 40, 8, 40, 126, 36, 126]],
+    ["rect", 24, 268, 8, 12, 118],
+    ["shadow", 1, [268, 8, 272, 8, 272, 126, 268, 126]],
 
-    // Dakraam rechtsboven: houten kader, avondlucht erdoor (nacht-ramp), gloed.
-    ["rect", 24, 196, 18, 78, 62],
-    ["rect", 60, 202, 24, 66, 50],
-    ["dither", 61, 62, [202, 24, 268, 24, 268, 48, 202, 48]],
-    ["line", 23, [235, 24, 235, 74]],
-    ["line", 23, [202, 49, 268, 49]],
+    // ---- Het dakraam ------------------------------------------------------
+    // Kozijn met diepte: een donkere dagkant, dan het glas, dan een lichte
+    // binnenrand aan de kant waar het licht vandaan komt.
+    ["rect", 22, 194, 16, 82, 66],
+    ["rect", 24, 197, 19, 76, 60],
+    ["gradient", 31, 33, 200, 22, 70, 54, "v"],
+    ["ditherRamp", 33, 34, 0.35, [200, 22, 269, 22, 269, 44, 200, 44]],
+    // Roeden.
+    ["rect", 23, 232, 22, 4, 54],
+    ["rect", 23, 200, 46, 70, 4],
+    // Binnenrand: het licht valt op de onderdorpel.
+    ["line", 27, [197, 78, 272, 78]],
+    ["line", 26, [197, 19, 197, 78]],
 
-    // De lichtstraal uit het dakraam, schuin over de vloer (avond goud), met
-    // een helderder kern (dither goud/lichtstraal).
-    ["poly", 33, [212, 74, 250, 74, 210, 168, 150, 168]],
-    ["dither", 34, 33, [216, 78, 246, 78, 208, 152, 168, 152]],
+    // ---- De lichtstraal ---------------------------------------------------
+    // In plakken, niet in één veelhoek. Eén vlak met vaste dichtheid leest als
+    // een schuine plank: licht hoort naar beneden toe breder én zwakker te
+    // worden. Vijf plakken met aflopende dichtheid geven die uitdoving; de
+    // ramp-kern loopt mee van heet bovenaan naar mauve onderaan.
+    ["ditherRamp", 33, 34, 0.55, [198, 78, 272, 78, 278, 100, 190, 100]],
+    ["ditherRamp", 32, 33, 0.45, [190, 100, 278, 100, 286, 124, 178, 124]],
+    ["ditherRamp", 31, 32, 0.34, [178, 124, 286, 124, 292, 146, 166, 146]],
+    ["ditherRamp", 30, 31, 0.24, [166, 146, 292, 146, 300, 168, 152, 168]],
+    ["ditherRamp", 29, 30, 0.16, [152, 168, 300, 168, 308, 189, 138, 189]],
 
-    // Stof in de lichtstraal (losse lichtstraal-pixels).
-    ["px", 34, [[200, 100], [218, 122], [190, 136], [176, 150], [224, 96],
-      [205, 140], [232, 110], [186, 118]]],
+    // Waar de straal de vloer haalt, is het hout warmer — maar laag gehouden:
+    // de streep staat al bijna van de vloer af (zie de kamerbeschrijving).
+    ["ditherRamp", 25, 26, 0.30, [150, 168, 300, 168, 308, 189, 136, 189]],
 
-    // Dozen, links opgestapeld: karton (26) met schaduw (23), tape in 22.
-    ["rect", 23, 20, 96, 70, 60],
-    ["rect", 26, 24, 100, 64, 54],
-    ["rect", 25, 24, 100, 64, 6],
-    ["line", 22, [24, 127, 88, 127]],
-    ["line", 22, [56, 100, 56, 154]],
-    // Doos-label: streepjes die handschrift suggereren (inkt op papier).
-    ["rect", 36, 34, 112, 40, 12],
-    ["px", 41, [[38, 116], [42, 116], [46, 116], [52, 116], [58, 116],
-      [64, 116], [40, 120], [46, 120], [54, 120], [60, 120]]],
-    // Een tweede, kleinere doos ervoor.
-    ["rect", 23, 92, 128, 46, 30],
-    ["rect", 26, 95, 131, 40, 24],
-    ["line", 22, [95, 141, 135, 141]],
+    // ---- Dozen, links tot tegen de balken ---------------------------------
+    // Drie stapels van afnemende hoogte, zodat het als een hoek vol leest en
+    // niet als twee blokken. Elk met een lichtkant rechts (naar het raam toe)
+    // en een schaduwkant links.
+    ["rect", 25, 8, 62, 62, 64],
+    ["shadow", 1, [8, 62, 30, 62, 30, 126, 8, 126]],
+    ["line", 27, [8, 62, 69, 62]],
+    ["line", 22, [8, 126, 69, 126]],
+    ["line", 22, [8, 94, 69, 94]],
+    ["rect", 26, 12, 66, 20, 5],
 
-    // De kist, centraal in het licht: houten body (hout warm), lichter deksel.
-    ["rect", 22, 150, 150, 90, 32],
-    ["rect", 25, 152, 138, 86, 26],
-    ["rect", 26, 152, 138, 86, 6],
-    ["line", 22, [152, 151, 238, 151]],
-    ["px", 27, [[160, 143], [200, 143], [228, 143]]],
+    ["rect", 26, 14, 116, 58, 44],
+    ["shadow", 1, [14, 116, 34, 116, 34, 160, 14, 160]],
+    ["line", 27, [14, 116, 71, 116]],
+    ["line", 22, [14, 138, 71, 138]],
+    ["line", 22, [14, 160, 71, 160]],
+    // Label: streepjes die handschrift suggereren, geen leesbare tekst.
+    ["rect", 36, 24, 124, 34, 11],
+    ["line", 39, [24, 124, 57, 124]],
+    ["px", 41, [[27, 128], [31, 128], [35, 128], [41, 128], [47, 128],
+      [51, 128], [29, 132], [35, 132], [43, 132], [49, 132]]],
 
-    // Het notitieboek op de kist, open, in de straal: papier-ramp + inktregels.
-    ["rect", 40, 168, 128, 56, 15],
-    ["rect", 37, 170, 126, 52, 14],
-    ["rect", 38, 172, 127, 22, 12],
-    ["rect", 38, 198, 127, 22, 12],
-    ["line", 39, [196, 126, 196, 140]],
-    ["px", 41, [[175, 130], [179, 130], [183, 130], [187, 130], [191, 130],
-      [175, 133], [181, 133], [187, 133], [175, 136], [183, 136]]],
-    ["px", 41, [[201, 130], [205, 130], [209, 130], [213, 130], [201, 133],
-      [207, 133], [213, 133], [201, 136], [205, 136], [211, 136]]]
+    ["rect", 25, 66, 132, 46, 34],
+    ["shadow", 1, [66, 132, 82, 132, 82, 166, 66, 166]],
+    ["line", 27, [66, 132, 111, 132]],
+    ["line", 22, [66, 166, 111, 166]],
+    ["line", 22, [88, 132, 88, 166]],
+
+    // Contactschaduwen van de stapels op de vloer.
+    ["shadow", 2, [6, 158, 76, 158, 88, 172, 0, 172]],
+    ["shadow", 2, [62, 164, 116, 164, 126, 176, 54, 176]],
+
+    // ---- De kist, in het licht --------------------------------------------
+    // Het notitieboek en de pen liggen erop als sprite, niet als verf.
+    ["rect", 23, 146, 148, 96, 30],
+    ["gradient", 25, 27, 148, 136, 92, 14, "v"],
+    ["rect", 24, 148, 150, 92, 26],
+    ["line", 27, [148, 136, 239, 136]],
+    ["line", 22, [146, 148, 241, 148]],
+    ["line", 22, [146, 178, 241, 178]],
+    // Beslag: twee banden en een slotplaat.
+    ["rect", 23, 162, 150, 5, 26],
+    ["rect", 23, 220, 150, 5, 26],
+    ["rect", 52, 190, 156, 8, 7],
+    ["px", 22, [[193, 159], [194, 159]]],
+    ["shadow", 2, [140, 176, 248, 176, 258, 186, 130, 186]],
+
+    // ---- Naar het oosten ---------------------------------------------------
+    // Geen deur maar een doorgang: de wand houdt op, en daarachter is het
+    // donkerder. Zo is te zien dat de zolder verder loopt.
+    ["gradient", 29, 28, 288, 54, 32, 72, "h"],
+    ["line", 23, [288, 54, 288, 126]],
+    ["shadow", 1, [292, 54, 319, 54, 319, 126, 292, 126]]
   ],
 
-  // Beloopbare vloer: één brede box die de oostrand raakt (de enige uitgang).
+  // Beloopbare vloer. De strook loopt door tot de oostrand: dat is de uitgang.
   walkboxes: [
     [0, 150, 320, 39]
   ],
@@ -95,12 +143,33 @@ AL.scenes["zolder-west"] = {
     vanOost: [300, 175]
   },
 
-  // Het notitieboek als hotspot (interactiepunt); de tekening staat al in de
-  // picture, dus de engine hoeft er geen sprite voor te blitten.
+  // Het notitieboek is nu een echte prop: een geblitte sprite op de kist, met
+  // de pen ernaast. De engine sorteert props en speler op voet-y, dus de speler
+  // loopt er netjes achter en voor langs.
   hotspots: [
-    { item: "notitieboek", sprite: "notitieboek", x: 196, y: 148 }
+    { item: "notitieboek", sprite: "notitieboek", x: 196, y: 140 }
   ],
 
   props: [],
-  overlays: []
+
+  // Stof in de lichtstraal — de stijlgids vraagt er al om. Het waren tot nu toe
+  // acht stilstaande pixels in de gecachete achtergrond; nu zakken ze echt.
+  sfeer: [
+    { soort: "stof", x: 110, y: 80, b: 96, h: 108, aantal: 22, kleur: 34,
+      seed: 3, snelheid: 0.018 }
+  ],
+
+  // Voorgrond: een balk die vlak voor de kijker langs loopt. Zijn voet ligt
+  // vóór de hele loopstrook, dus de speler passeert er altijd achterlangs — dat
+  // is wat de kamer diepte geeft.
+  overlays: [
+    {
+      baselineY: 200,
+      ops: [
+        ["rect", 22, 0, 8, 320, 14],
+        ["shadow", 1, [0, 20, 319, 20, 319, 24, 0, 24]],
+        ["noise", 23, 0.10, 13, [0, 8, 319, 8, 319, 22, 0, 22]]
+      ]
+    }
+  ]
 };

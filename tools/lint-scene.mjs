@@ -302,6 +302,35 @@ function keurScene(scene, verwachteId) {
     }
   }
 
+  // De sfeerlaag: wat er in deze kamer beweegt. Wordt per frame getekend, dus
+  // niet als draw-ops maar als beschrijving.
+  if (scene.sfeer !== undefined) {
+    if (!Array.isArray(scene.sfeer)) {
+      fouten.push("sfeer is geen array");
+    } else {
+      scene.sfeer.forEach((s, i) => {
+        const waar = "sfeer[" + i + "]";
+        if (s.soort !== "stof") {
+          fouten.push(waar + ": onbekende soort '" + s.soort + "'");
+          return;
+        }
+        if (!binnenX(s.x) || !binnenX(s.x + s.b - 1)) {
+          fouten.push(waar + ": x buiten veld");
+        }
+        if (!binnenY(s.y) || !binnenY(s.y + s.h - 1)) {
+          fouten.push(waar + ": y buiten veld");
+        }
+        if (s.kleur !== undefined && !isKleur(s.kleur)) {
+          fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+        }
+        if (s.aantal !== undefined &&
+            (!Number.isInteger(s.aantal) || s.aantal < 1 || s.aantal > 80)) {
+          fouten.push(waar + ": aantal moet 1–80 zijn");
+        }
+      });
+    }
+  }
+
   if (scene.overlays !== undefined) {
     if (!Array.isArray(scene.overlays)) {
       fouten.push("overlays is geen array");

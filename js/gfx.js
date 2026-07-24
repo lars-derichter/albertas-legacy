@@ -349,6 +349,11 @@ globalThis.AL = globalThis.AL || {};
       ivDitherRamp(buffer, c1, c2, dichtheid, punten);
     },
     shadow: function (stappen, punten) { ivShadow(buffer, stappen, punten); },
+
+    // Dezelfde deterministische ruis die de noise-op gebruikt, publiek gemaakt
+    // voor de sfeerlaag in de engine: stof moet elke run op dezelfde plek
+    // beginnen, anders is een screenshot niet te vergelijken.
+    ruis: function (x, y, seed) { return ruisWaarde(x, y, seed); },
     noise: function (c, dichtheid, seed, punten) {
       ivNoise(buffer, c, dichtheid, seed, punten);
     },
