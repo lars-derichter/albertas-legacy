@@ -376,6 +376,12 @@ class Spel {
                     + (speler.getAanvalskracht() + mes.getKracht())
                     + " schade uit per aanval.");
         }
+        System.out.println("Wapens op zak: " + speler.telWapens());
+        Voorwerp sterkste = speler.sterksteVoorwerp();
+        if (sterkste != null) {
+            System.out.println("Je sterkste voorwerp: " + sterkste.getNaam()
+                    + " (kracht " + sterkste.getKracht() + ").");
+        }
     }
 
     private void eetKoek() {

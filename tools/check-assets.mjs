@@ -35,6 +35,10 @@ require(join(wortel, "js", "logic", "checker", "tokenizer.js"));
 const level1 = require(join(wortel, "js", "levels", "level1.js"));
 const level2 = require(join(wortel, "js", "levels", "level2.js"));
 const level3 = require(join(wortel, "js", "levels", "level3.js"));
+const level4 = require(join(wortel, "js", "levels", "level4.js"));
+const level5 = require(join(wortel, "js", "levels", "level5.js"));
+const level6 = require(join(wortel, "js", "levels", "level6.js"));
+const level7 = require(join(wortel, "js", "levels", "level7.js"));
 
 const tokenizer = globalThis.AL.checker.tokenizer;
 
@@ -140,7 +144,7 @@ function controleerPuzzel(p) {
 }
 
 function main() {
-  const defs = [level1, level2, level3];
+  const defs = [level1, level2, level3, level4, level5, level6, level7];
   const rijen = [];
   for (const def of defs) {
     for (const p of editorPuzzels(def)) {

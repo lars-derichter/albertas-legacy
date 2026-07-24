@@ -82,4 +82,30 @@ class Speler {
         }
         return false;
     }
+
+    // Telt hoeveel wapens de speler draagt: voorwerpen met een kracht boven 0.
+    // De tel-patroonkaart: een teller die bij 0 begint en per treffer ophoogt.
+    int telWapens() {
+        int aantal = 0;
+        for (int i = 0; i < inventaris.size(); i++) {
+            if (inventaris.get(i).getKracht() > 0) {
+                aantal++;
+            }
+        }
+        return aantal;
+    }
+
+    // Zoekt het voorwerp met de grootste kracht, of null bij een lege inventaris.
+    // De uiterste-patroonkaart: onthoud de sterkste tot nog toe en vergelijk elk
+    // volgend voorwerp daarmee.
+    Voorwerp sterksteVoorwerp() {
+        Voorwerp sterkste = null;
+        for (int i = 0; i < inventaris.size(); i++) {
+            Voorwerp huidig = inventaris.get(i);
+            if (sterkste == null || huidig.getKracht() > sterkste.getKracht()) {
+                sterkste = huidig;
+            }
+        }
+        return sterkste;
+    }
 }

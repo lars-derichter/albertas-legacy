@@ -599,8 +599,105 @@ const keten = {
   ]
 };
 
+// ===========================================================================
+// Scharnier 5 — Speler: de twee lus-methoden (tel-kaart + uiterste-kaart)
+//   Nieuw in WP 8: telWapens() en sterksteVoorwerp() zijn echt toegevoegd aan
+//   seven-little-goats/src/Speler.java. De lus-controle is SAMENGESTELD uit
+//   lusVorm + lusGrenzen + heeftReturn + methodeSignatuur (checker-contract.md
+//   §"lusRomp": geen losse patroonkaart-classifier).
+// ===========================================================================
+const luspatroonModel = `class Speler {
+
+    int telWapens() {
+        int aantal = 0;
+        for (int i = 0; i < inventaris.size(); i++) {
+            if (inventaris.get(i).getKracht() > 0) {
+                aantal++;
+            }
+        }
+        return aantal;
+    }
+
+    Voorwerp sterksteVoorwerp() {
+        Voorwerp sterkste = null;
+        for (int i = 0; i < inventaris.size(); i++) {
+            Voorwerp huidig = inventaris.get(i);
+            if (sterkste == null || huidig.getKracht() > sterkste.getKracht()) {
+                sterkste = huidig;
+            }
+        }
+        return sterkste;
+    }
+}`;
+
+const luspatroon = {
+  id: "s5-speler-luspatronen",
+  scharnier: 5,
+  bron: "Speler.java",
+  checks: [
+    { fn: "methodeSignatuur", config: { retour: "int", naam: "telWapens", params: [] } },
+    { fn: "lusVorm", config: { methode: "telWapens", soort: "for" } },
+    { fn: "lusGrenzen", config: { methode: "telWapens", vergelijk: "<", grensBevat: "size" } },
+    { fn: "heeftReturn", config: { methode: "telWapens" } },
+    { fn: "methodeSignatuur", config: { retour: "Voorwerp", naam: "sterksteVoorwerp", params: [] } },
+    { fn: "lusVorm", config: { methode: "sterksteVoorwerp", soort: "for" } },
+    { fn: "lusGrenzen", config: { methode: "sterksteVoorwerp", vergelijk: "<", grensBevat: "size" } },
+    { fn: "heeftReturn", config: { methode: "sterksteVoorwerp" } }
+  ],
+  passen: [
+    { naam: "model", code: luspatroonModel },
+    { naam: "andere-lokale-namen",
+      code: luspatroonModel.replace(/aantal/g, "teller").replace(/huidig/g, "v") },
+    { naam: "andere-index-naam",
+      code: luspatroonModel.replace(/\bi\b/g, "index") },
+    { naam: "compacte-opmaak",
+      code: luspatroonModel.replace(/\s*\n\s*/g, " ") }
+  ],
+  falen: [
+    { naam: "off-by-one-tel",
+      code: luspatroonModel.replace("i < inventaris.size()", "i <= inventaris.size()"),
+      verwacht: { laag: "assert", meldingKey: "lusGrenzen.offByOne" } },
+    { naam: "while-in-plaats-van-for",
+      code: `class Speler {
+
+    int telWapens() {
+        int aantal = 0;
+        int i = 0;
+        while (i < inventaris.size()) {
+            if (inventaris.get(i).getKracht() > 0) {
+                aantal++;
+            }
+            i++;
+        }
+        return aantal;
+    }
+
+    Voorwerp sterksteVoorwerp() {
+        Voorwerp sterkste = null;
+        for (int i = 0; i < inventaris.size(); i++) {
+            Voorwerp huidig = inventaris.get(i);
+            if (sterkste == null || huidig.getKracht() > sterkste.getKracht()) {
+                sterkste = huidig;
+            }
+        }
+        return sterkste;
+    }
+}`,
+      verwacht: { laag: "assert", meldingKey: "lusVorm.verkeerdeSoort" } },
+    { naam: "uiterste-return-vergeten",
+      code: luspatroonModel.replace("        return sterkste;\n", ""),
+      verwacht: { laag: "assert", meldingKey: "heeftReturn.ontbreekt" } },
+    { naam: "tel-verkeerd-retourtype",
+      code: luspatroonModel.replace("int telWapens()", "void telWapens()"),
+      verwacht: { laag: "assert", meldingKey: "methodeSignatuur.verkeerdRetour" } },
+    { naam: "puntkomma-vergeten",
+      code: luspatroonModel.replace("return aantal;", "return aantal"),
+      verwacht: { laag: "javac", categorie: "puntkomma" } }
+  ]
+};
+
 export const fragmenten = [
-  voorwerp, geitje, speler, klem, verbind, verwijder, zoek, keten
+  voorwerp, geitje, speler, klem, verbind, luspatroon, verwijder, zoek, keten
 ];
 
 export default fragmenten;

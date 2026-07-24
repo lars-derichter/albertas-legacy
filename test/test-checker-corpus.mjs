@@ -75,5 +75,5 @@ test("corpus-statistiek: elk fragment heeft model + >=3 varianten en >=4 fouten"
       `${fragment.id}: te weinig faal-cases (${fragment.falen.length}); >=4 vereist`);
     assert.equal(fragment.passen[0].naam, "model", `${fragment.id}: eerste pass-case moet 'model' zijn`);
   }
-  assert.equal(fragmenten.length, 8);
+  assert.equal(fragmenten.length, 9);
 });

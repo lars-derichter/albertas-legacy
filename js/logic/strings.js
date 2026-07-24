@@ -327,6 +327,103 @@ AL.strings = {
         "deze waarde?",
       "Loop de takken van boven naar onder: de eerste conditie die waar is, wint. " +
         "Typ de tekst die die tak afdrukt."
+    ],
+
+    // Level 4 — Twee pijlen, één doos (scharnier 4).
+    "l4-editor-repair": [
+      "Twee pijlen, één doos: elke verbinding tussen kamers loopt twee kanten " +
+        "op. Wat de ene kant legt, moet de andere kant terugleggen.",
+      "Kijk naar de takken van verbindKamers: bij één richting is de setter " +
+        "verkeerd, zodat de terugweg nooit meer wordt gelegd.",
+      "Vorm: eerste.set<Richting>(tweede); en tweede.set<Tegengestelde>(eerste); " +
+        "— de vier richtingen in één if / else if-cascade."
+    ],
+    "l4-trace": [
+      "Twee pijlen, één doos: eerste en tweede wijzen naar dezelfde kamer.",
+      "Wat je via tweede zet, staat ook in eerste — het blijft dezelfde doos.",
+      "eerste.getNoord() geeft precies de kamer terug die je met tweede." +
+        "setNoord(...) hebt gezet."
+    ],
+    "l4-verklaar": [
+      "Twee pijlen, één doos: en null is een pijl die naar géén doos wijst.",
+      "Denk aan een kamer zonder uitgang in die richting: waar wijst de buur-" +
+        "referentie dan heen?",
+      "null = geen enkele doos aan het eind van de pijl: in die richting is er " +
+        "geen buurkamer, dus geen uitgang. Zeg dat in je eigen zin."
+    ],
+
+    // Level 5 — De patroonkaart (scharnier 5).
+    "l5-editor-write": [
+      "Welke patroonkaart? telWapens telt (een teller die ophoogt); " +
+        "sterksteVoorwerp zoekt het uiterste (onthoud de beste tot nog toe).",
+      "Begin telWapens met een teller op 0 en hoog op bij een treffer. Begin " +
+        "sterksteVoorwerp met null en vervang zodra je iets sterkers ziet.",
+      "Vorm: for (int i = 0; i < inventaris.size(); i++) { ... } — in de tel-lus " +
+        "'aantal++;' bij een voorwaarde, in de uiterste-lus 'sterkste = huidig;' " +
+        "bij een grotere kracht."
+    ],
+    "l5-parsons": [
+      "De opbouw-kaart: je maakt een regel die met elke ronde langer wordt.",
+      "Eén strook overschrijft de regel in plaats van eraan toe te voegen — die " +
+        "hoort er niet bij.",
+      "Volgorde: begin met de aanhef → lus over de voorwerpen → soms een " +
+        "scheidingsteken → voeg de naam toe → druk de regel af."
+    ],
+    "l5-patroonkaart": [
+      "Kijk wat de lus met elk element doet: telt ze er één bij, of telt ze de " +
+        "waarde zélf op?",
+      "Bij 'som = som + schadelog[i]' groeit som met de waarde, niet met één per " +
+        "element.",
+      "Eén per element = tellen; de waarde optellen = totaliseren. Kies de " +
+        "totaliseer-kaart."
+    ],
+
+    // Level 6 — De plankenbrug boven het ravijn (scharnier 6).
+    "l6-editor-repair": [
+      "De plankenbrug boven het ravijn: de eerste plank is 0, de laatste is " +
+        "size() min één. Eén plank te ver en je ligt in het water.",
+      "Kijk naar de lusgrens, of naar de soort lus: klopt '<' versus '<=', en is " +
+        "het wel de lus die hier past?",
+      "Vorm: for (int i = 0; i < voorwerpen.size(); i++) { ... } — '<' houdt je " +
+        "op de laatste plank."
+    ],
+    "l6-trace": [
+      "De plankenbrug: tel de planken vanaf 0, niet vanaf 1.",
+      "De lus stopt zodra i niet meer kleiner is dan size(): de laatste i die " +
+        "nog gedrukt wordt, is size() min één.",
+      "Bij N voorwerpen loopt i van 0 tot en met N min één; het laatste getal is " +
+        "dus N min één."
+    ],
+    "l6-vindfout": [
+      "De plankenbrug: hoe ver loopt de lus, en is dat één plank te ver?",
+      "Kijk naar de grens van de for-lus op regel 1, niet naar de romp.",
+      "Vijf rondes (0 t/m 4) vraagt 'ronde < 5', niet 'ronde <= 5': dat laatste " +
+        "speelt er zes."
+    ],
+
+    // Level 7 — De speurtocht en de dubbele pijl (scharnier 7).
+    "l7-editor-write": [
+      "De speurtocht: een zoeklus loopt de lijst af, geeft het gevonden object " +
+        "terug, of null als de tocht doodloopt.",
+      "Loop met een for-lus over geitjes, vergelijk elke naam, en geef bij een " +
+        "treffer meteen het geitje terug.",
+      "Vorm: for (int i = 0; i < geitjes.size(); i++) { ... if (...) return " +
+        "huidig; } en daarna return null;"
+    ],
+    "l7-editor-repair": [
+      "De dubbele pijl: geitje.getSchuilplaats().getKamer() — maar een geitje " +
+        "zonder schuilplaats heeft geen kamer om naar te wijzen.",
+      "Er ontbreekt een null-controle vóór de tweede pijl, of de keten mist een " +
+        "schakel.",
+      "Vorm: haal eerst getSchuilplaats() op, controleer of ze null is, en volg " +
+        "pas dán .getKamer().getNaam()."
+    ],
+    "l7-trace": [
+      "De speurtocht met de dubbele pijl: soms wijst de eerste pijl naar null.",
+      "Controleer eerst of s null is: is ze null, dan stopt de keten op 'nog niet " +
+        "gevonden'.",
+      "Bij een schuilplaats volg je s.getKamer().getNaam() naar de kamernaam; bij " +
+        "null wordt het 'nog niet gevonden'."
     ]
   },
 
@@ -458,6 +555,39 @@ AL.strings = {
     "l3.clamp.geenVerboden": "geen buiten-cursus-constructies",
     "l3.clamp.signatuur": "setLevenspunten heeft de juiste signatuur",
     "l3.clamp.klem": "de waarde wordt tussen 0 en het maximum geklemd",
+
+    // Level 4 — de buur-bedrading (verbindKamers).
+    "l4.verbind.geenVerboden": "geen buiten-cursus-constructies",
+    "l4.verbind.cascade": "de vier richtingen staan in een if/else-cascade",
+    "l4.verbind.setNoord": "de noord-verbinding wordt gelegd",
+    "l4.verbind.setZuid": "de zuid-verbinding wordt gelegd",
+    "l4.verbind.setOost": "de oost-verbinding wordt gelegd",
+    "l4.verbind.setWest": "de west-verbinding wordt gelegd",
+
+    // Level 5 — de twee lus-methoden (tellen + uiterste).
+    "l5.lus.geenVerboden": "geen buiten-cursus-constructies",
+    "l5.lus.telSignatuur": "telWapens geeft een int terug",
+    "l5.lus.telLus": "telWapens telt met een for-lus",
+    "l5.lus.telGrens": "telWapens loopt netjes tot inventaris.size()",
+    "l5.lus.telReturn": "telWapens geeft de teller terug",
+    "l5.lus.sterkSignatuur": "sterksteVoorwerp geeft een Voorwerp terug",
+    "l5.lus.sterkLus": "sterksteVoorwerp zoekt met een for-lus",
+    "l5.lus.sterkGrens": "sterksteVoorwerp loopt netjes tot inventaris.size()",
+    "l5.lus.sterkReturn": "sterksteVoorwerp geeft het uiterste terug",
+
+    // Level 6 — de verwijder-lus (off-by-one).
+    "l6.verwijder.geenVerboden": "geen buiten-cursus-constructies",
+    "l6.verwijder.lus": "verwijderVoorwerp loopt met een for-lus",
+    "l6.verwijder.grens": "de lusgrens blijft op de plankenbrug (< size())",
+    "l6.verwijder.remove": "het gevonden voorwerp wordt verwijderd",
+
+    // Level 7 — de zoeklus + de null-veilige keten.
+    "l7.zoek.lus": "zoekGeitje speurt met een for-lus",
+    "l7.zoek.grens": "de zoeklus loopt netjes tot geitjes.size()",
+    "l7.zoek.signatuur": "zoekGeitje geeft een Geitje terug",
+    "l7.zoek.return": "zoekGeitje geeft null terug als er niets is",
+    "l7.keten.keten": "de dubbele pijl is null-veilig gevolgd",
+    "l7.keten.lus": "de keten loopt over alle geitjes met een for-lus",
 
     generiek: "controle geslaagd"
   },
@@ -677,6 +807,178 @@ AL.strings = {
         "en < 10 laat 10 net vallen naar 'gezond'.",
       fout: "Nog niet. Loop de takken van boven naar onder en let op de " +
         "randwaarden (0 en 10)."
+    }
+  },
+
+  // Level 4 — Twee pijlen, één doos (scharnier 4: referenties, aliasing, null).
+  // De Java-fragmenten leven in js/levels/level4.js.
+  l4: {
+    naam: "Level 4 — Twee pijlen, één doos",
+    repairTitel: "Spel.java — herstel de buur-bedrading",
+
+    trace: {
+      vraag: function (naam) {
+        return [
+          "Voorspel de uitvoer. Twee variabelen wijzen naar dezelfde kamer:",
+          "",
+          "    Kamer eerste = new Kamer(\"Molen\", \"...\", \"...\");",
+          "    Kamer tweede = eerste;",
+          "    Kamer doel = new Kamer(\"" + naam + "\", \"...\", \"...\");",
+          "    tweede.setNoord(doel);",
+          "    System.out.println(eerste.getNoord().getNaam());",
+          "",
+          "Wat verschijnt er? Typ de naam die wordt afgedrukt."
+        ];
+      },
+      ok: "Juist. eerste en tweede zijn twee pijlen naar één doos: zet je de buur " +
+        "via de ene, dan ziet de andere het ook.",
+      fout: "Nog niet. eerste en tweede wijzen naar dezelfde kamer, dus " +
+        "eerste.getNoord() is precies wat je via tweede hebt gezet."
+    },
+
+    verklaar: {
+      vraag: [
+        "In Kamer is de noord-buur van de laatste kamer null:",
+        "",
+        "    private Kamer noord;   // blijft null: geen uitgang",
+        "",
+        "Leg in één zin uit: wat betekent 'null' hier?",
+        "",
+        "Typ je zin en druk Enter (dit beoordeel je daarna zelf)."
+      ],
+      toon: "Alberta had het zo genoteerd:",
+      model: "null is een pijl die naar geen enkele doos wijst: er is in die " +
+        "richting geen buurkamer, dus geen uitgang.",
+      bevestig: "Komt jouw uitleg in de kern overeen? Typ 'juist' of 'anders'.",
+      juist: "Mooi. Null is geen doos — gewoon een pijl die nergens heen wijst.",
+      anders: "Geen probleem — nu je het model gezien hebt, klopt het beeld: null " +
+        "wijst naar geen enkele doos."
+    }
+  },
+
+  // Level 5 — De patroonkaart (scharnier 5: lus-romp + patroonkeuze). De Java-
+  // fragmenten leven in js/levels/level5.js; de twee lus-methoden zijn echt aan
+  // seven-little-goats/src/Speler.java toegevoegd (zie de Beslissing daar).
+  l5: {
+    naam: "Level 5 — De patroonkaart",
+    writeTitel: "Speler.java — schrijf de twee lus-methoden",
+
+    parsons: {
+      vraag: [
+        "Zet de stroken in de juiste volgorde zodat de kamer-regel wordt",
+        "opgebouwd: 'Je kan hier meenemen: mes, koek'. Dit is de opbouw-kaart.",
+        "Typ de nummers in volgorde, bv. '3 1 4 2'. Let op: één strook hoort",
+        "er NIET bij."
+      ],
+      ok: "Juist geordend. De regel bouwt zich stuk voor stuk op.",
+      fout: function (pos) {
+        return "Nog niet. De eerste strook die niet klopt, staat op positie " +
+          pos + " van jouw volgorde.";
+      },
+      foutAantal: "Je gaf niet het juiste aantal stroken op. Eén strook " +
+        "overschrijft de regel in plaats van eraan toe te voegen — die hoort er " +
+        "niet bij."
+    },
+
+    patroonkaart: {
+      vraag: [
+        "Welke patroonkaart hoort bij deze lus (uit het schade-overzicht)?",
+        "",
+        "    int som = 0;",
+        "    for (int i = 0; i < aantalRondes; i++) {",
+        "        som = som + schadelog[i];",
+        "    }",
+        "",
+        "Typ 1, 2, 3 of 4:"
+      ],
+      opties: [
+        "1) tellen — hoeveel elementen aan een voorwaarde voldoen",
+        "2) totaliseren — de som van een waarde over alle elementen",
+        "3) opbouwen — een nieuwe string of lijst samenstellen",
+        "4) uiterste — het grootste of kleinste element zoeken"
+      ],
+      ok: "Juist — dit is de totaliseer-kaart: je telt de waarden zelf op, niet " +
+        "het aantal.",
+      fout: "Nog niet. Kijk wat er bij 'som' wordt opgeteld: de waarde zelf, niet " +
+        "één per element."
+    }
+  },
+
+  // Level 6 — De plankenbrug boven het ravijn (scharnier 6: index, off-by-one,
+  // welke lus). De Java-fragmenten leven in js/levels/level6.js.
+  l6: {
+    naam: "Level 6 — De plankenbrug boven het ravijn",
+    repairTitel: "Kamer.java — herstel de off-by-one",
+
+    trace: {
+      vraag: function (n) {
+        return [
+          "Voorspel de uitvoer. Deze lus drukt de indexen af van een lijst met " +
+            n + " voorwerpen:",
+          "",
+          "    for (int i = 0; i < voorwerpen.size(); i++) {",
+          "        System.out.println(i);",
+          "    }",
+          "",
+          "Welk getal wordt als LAATSTE afgedrukt? Typ dat getal."
+        ];
+      },
+      ok: "Juist. De eerste plank is 0, de laatste is size() min één: het einde " +
+        "van de plankenbrug.",
+      fout: "Nog niet. Tel vanaf 0: de laatste index is er één minder dan het " +
+        "aantal voorwerpen."
+    },
+
+    vindfout: {
+      vraag: [
+        "Deze gevechtslus hoort precies vijf rondes te spelen (0 tot en met 4):",
+        "",
+        "  1  for (int ronde = 0; ronde <= 5; ronde++) {",
+        "  2      speelRonde(ronde);",
+        "  3  }",
+        "",
+        "Op welke regel zit de fout? Typ het regelnummer, of kort wat er mis is."
+      ],
+      ok: "Raak. Eén plank te ver: '<= 5' speelt zes rondes (0 t/m 5). Met '< 5' " +
+        "blijf je netjes bij vijf.",
+      fout: "Nog niet daar. Kijk naar de lusgrens op regel 1: hoeveel rondes " +
+        "speelt ze echt?"
+    }
+  },
+
+  // Level 7 — De speurtocht en de dubbele pijl (scharnier 7: zoeken + de dubbele
+  // pijl). De Java-fragmenten leven in js/levels/level7.js.
+  l7: {
+    naam: "Level 7 — De speurtocht en de dubbele pijl",
+    writeTitel: "Spel.java — schrijf de zoeklus",
+    repairTitel: "Spel.java — herstel de null-veilige keten",
+
+    trace: {
+      vraag: function (wie) {
+        return [
+          "Voorspel de uitvoer. Twee geitjes:",
+          "",
+          "    Geitje jongste = new Geitje(\"jongste\", klokkast);  " +
+            "// klokkast -> Geitenhuisje",
+          "    Geitje broer   = new Geitje(\"broer\", null);        " +
+            "// nog opgeslokt",
+          "",
+          "En deze null-veilige keten, aangeroepen op " + wie + ":",
+          "",
+          "    Schuilplaats s = " + wie + ".getSchuilplaats();",
+          "    if (s == null) {",
+          "        System.out.println(\"nog niet gevonden\");",
+          "    } else {",
+          "        System.out.println(s.getKamer().getNaam());",
+          "    }",
+          "",
+          "Wat verschijnt er? Typ de tekst die wordt afgedrukt."
+        ];
+      },
+      ok: "Juist. Bij een schuilplaats volg je de twee pijlen naar de kamernaam; " +
+        "bij null stopt de keten netjes op 'nog niet gevonden'.",
+      fout: "Nog niet. Kijk eerst of s null is: is ze null, dan 'nog niet " +
+        "gevonden'; anders volg je s.getKamer().getNaam()."
     }
   },
 
