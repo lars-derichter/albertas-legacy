@@ -787,7 +787,9 @@ globalThis.AL = globalThis.AL || {};
     get: function () { return toestand; }
   });
 
-  AL.engine = { boot: boot };
+  // advance is publiek zodat touch.js een schermtik kan laten doorbladeren
+  // (berichtvenster, titelkaart, spread, oordeel) zonder toetsenbord.
+  AL.engine = { boot: boot, advance: opAdvance };
 
   // Testhulp: spring rechtstreeks naar de zolder (slaat titel en intro over).
   AL.debugStartZolder = function () {

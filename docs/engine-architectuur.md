@@ -213,6 +213,7 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 17. js/sim/goats-strings.js  goats-world.js  goats-combat.js
 18. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
 19. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
+20. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
 ```
 
 `js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en
@@ -253,6 +254,34 @@ sturen de spelerinvoer door naar de checker (`js/logic/checker/`) en tonen de
 `{tekst, effecten}` die terugkomt. De checker zelf blijft DOM-vrij en Node-
 testbaar.
 
+## Het aanraakscherm: waarom de zolder een eigen invoerbalk nodig had
+
+De pc (`js/pc/`) gebruikt al een echte `<textarea>`/`<input>` (zie hierboven),
+dus een tik daarop opent het systeemtoetsenbord vanzelf — dat is gratis DOM-
+gedrag, niets extra's nodig. De zolder heeft dat probleem wél: de getypte
+parser-commandoregel wordt volledig door `input.js` opgebouwd uit fysieke
+`keydown`-events op `window` (zie de invoerbalk-tekening in `engine.js`,
+`"> " + AL.input.regel`). Zonder een écht focusbaar tekstveld heeft een
+toestel zonder fysiek toetsenbord (telefoon, tablet) niets om op te tikken,
+en verschijnt er dus nooit een toetsenbord — de zolder was op zo'n toestel
+onspeelbaar, net als lopen zonder pijltjestoetsen.
+
+`js/touch.js` lost dit op met een kleine, feature-detected aanvulling:
+
+- Een echt `<input>`-veld (de mobiele commandobalk) dat bij een tik het
+  systeemtoetsenbord opent zoals elk ander webformulier, en de getypte tekst
+  bij Enter/"ga" doorstuurt naar dezelfde `AL.input.onSubmit`/`onAdvance` die
+  het fysieke toetsenbord ook gebruikt.
+- Vier D-pad-knoppen die via `AL.input.pijlAan`/`pijlUit` dezelfde pijl-stack
+  sturen als de fysieke pijltjestoetsen (`input.js`).
+- Een tik op het canvas die `AL.engine.advance()` aanroept, zodat berichten,
+  de titelkaart, spreads en het oordeel ook zonder toetsenbord doorbladeren.
+
+Enkel aangemaakt op een toestel met een aanraakscherm (`ontouchstart` in
+`window` of `navigator.maxTouchPoints > 0`); op een toestel met muis en
+toetsenbord verandert er niets. Zichtbaar enkel in `modus === "zolder"` — de
+pc heeft zijn eigen, altijd al werkende invoer.
+
 ## Bestandskaart van js/
 
 ```
@@ -262,6 +291,8 @@ js/
 ├── input.js  sound.js         // invoer + geluid (overgenomen, uitgebreid)
 ├── parser.js                  // parse + dispatchpatroon (overgenomen)
 ├── engine.js                  // frame-lus + effect-dispatch (raakt de DOM)
+├── touch.js                   // aanraakscherm-D-pad + mobiele commandobalk
+│                              //   (raakt de DOM; enkel actief bij hasTouch)
 ├── logic/                     // DOM-vrij, Node-testbaar
 │   ├── strings.js             // ALLE zolder-/level-prose
 │   ├── world.js               // zolderscènes, staat, navigatie

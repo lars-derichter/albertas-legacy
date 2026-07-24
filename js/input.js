@@ -60,7 +60,12 @@ globalThis.AL = globalThis.AL || {};
       window.addEventListener("keydown", opKeydown);
       window.addEventListener("keyup", opKeyup);
       return this;
-    }
+    },
+
+    // Publieke haken voor niet-toetsenbord-invoer (het aanraakscherm-D-pad uit
+    // touch.js): dezelfde pijl-stack, dezelfde most-recent-pressed-regel.
+    pijlAan: function (richting) { drukPijl(richting); },
+    pijlUit: function (richting) { laatPijl(richting); }
   };
 
   function drukPijl(richting) {

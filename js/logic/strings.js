@@ -1182,6 +1182,18 @@ AL.strings = {
     };
   })(),
 
+  // Het aanraakscherm-D-pad en de mobiele commandobalk (touch.js): op een
+  // toestel zonder fysiek toetsenbord verschijnt geen toetsenbord vanzelf
+  // boven het canvas, dus krijgt de zolder een eigen, echte invoerbalk.
+  touch: {
+    plaatshouder: "typ hier je commando…",
+    verstuur: "ga",
+    pijlNoord: "noord",
+    pijlOost: "oost",
+    pijlZuid: "zuid",
+    pijlWest: "west"
+  },
+
   // Sjabloonhelpers.
   fragmentGevonden: function (levelId) {
     return "Fragment " + levelId + " ontgrendeld. Een hoofdstuk van Alberta's " +

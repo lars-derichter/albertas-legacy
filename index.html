@@ -92,7 +92,12 @@
 <script src="js/sim/goats-combat.js"></script>
 <script src="js/pc/sim-terminal.js"></script>
 
-<!-- 18: de engine, als laatste -->
+<!-- 18: de engine -->
 <script src="js/engine.js"></script>
+
+<!-- 19: het aanraakscherm-D-pad en de mobiele commandobalk (enkel actief op
+     een toestel zonder fysiek toetsenbord; zie js/touch.js). Allerlaatste,
+     want het leunt op AL.input, AL.engine.advance en AL.debugState. -->
+<script src="js/touch.js"></script>
 </body>
 </html>
