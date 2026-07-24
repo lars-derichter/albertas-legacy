@@ -112,6 +112,31 @@ kolom "herstelt" staat. De precieze puzzeldefinities (beschadigde varianten,
 modeloplossingen, hints, traces) leven in `js/levels/levelN.js`; dit document
 legt alleen het contract vast waaraan die bestanden moeten voldoen.
 
+### Getimede controle (WP 11)
+
+De doorlopende playthrough-test (`test/smoke-full-playthrough.mjs`) speelt het
+hele spel in één run en levert de harde telling voor de kalibratie: **21
+puzzels** (3 per level × 7), **8 spreads** om te lezen (de intro plus één per
+level, elk ± 2 pagina's), een goede vijftien zoek-, loop- en zit-commando's om
+de zeven fragmenten in de zolder op te diepen, en de endgame-sim van _Seven
+Little Goats_ tot aan één van de vier eindes.
+
+Omgerekend naar een échte speler (niet de scriptsnelheid):
+
+- **Codewerk:** de editor-puzzels (herstel of schrijf-van-nul) vragen ± 4–7
+  min, de terminal-puzzels (trace, vind-de-fout, verklaar, Parsons,
+  patroonkaart) ± 2–4 min. Met de spread erbij landt een level op ± 13–15
+  min. Zeven levels samen ≈ **90–105 min**. Dat bevestigt ± 15 min/level.
+- **Zolder-tussenwerk:** intro, fragmenten zoeken, lopen, spreads bladeren
+  en het slot (oordeel + epiloog) samen ≈ **20–25 min** — binnen budget.
+- **Endgame-sim:** het uitspelen van _Seven Little Goats_ kost een eerste speler
+  ± **10–15 min**; dit stuk zat nog niet apart in het budget.
+
+Totaal ≈ **120–145 min**, dus de headline **± 2 uur** houdt stand, met de
+kanttekening dat de sim de realistische duur richting ± 2 u 10 duwt. De
+tijdrovendste post is en blijft het codewerk; hints (die de speler hier nul keer
+nodig had) zouden dat alleen verlengen.
+
 ## Consistentie-eisen
 
 - De kolom "herstelt" gebruikt exact de klassenamen en methodenamen uit

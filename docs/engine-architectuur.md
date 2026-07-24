@@ -206,12 +206,13 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 10. js/logic/checker/asserts.js
 11. js/logic/checker/javacsim.js
 12. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
-13. js/levels/level1.js … level7.js       // puzzeldefinities
-14. js/pc/editor.js  js/pc/terminal.js  js/pc/parsons.js
+13. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
+14. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
 15. js/scenes/*.js         // zolderscènes + spreads
 16. js/sprites/*.js        // sprites
 17. js/sim/goats-strings.js  goats-world.js  goats-combat.js
-18. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
+18. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
+19. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
 ```
 
 `js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en
@@ -245,8 +246,9 @@ zolder eronder blijft op het canvas staan; de overlay dekt hem af zolang
 `modus === "pc"`. De engine schakelt de overlay in bij `pc:open` en uit bij
 `pc:sluit`.
 
-De pc-modules (`js/pc/editor.js`, `terminal.js`, `parsons.js`) mogen — als enige
-naast `engine.js` — de DOM aanraken, want zij zíjn de renderlaag van de pc. Ze
+De pc-modules (`js/pc/editor.js`, `terminal.js`, `parsons.js`, hun coördinator
+`pc.js` en de sim-controller `sim-terminal.js`) mogen — als enige naast
+`engine.js` — de DOM aanraken, want zij zíjn de renderlaag van de pc. Ze
 sturen de spelerinvoer door naar de checker (`js/logic/checker/`) en tonen de
 `{tekst, effecten}` die terugkomt. De checker zelf blijft DOM-vrij en Node-
 testbaar.
@@ -269,7 +271,9 @@ js/
 │       ├── asserts.js         // structurele assertie-bibliotheek
 │       └── javacsim.js        // gesimuleerde javac-diagnostiek
 ├── pc/                        // gesimuleerde pc (DOM-overlay)
-│   ├── editor.js  terminal.js  parsons.js
+│   ├── editor.js  terminal.js  parsons.js   // de drie panelen
+│   ├── pc.js                  // coördinator over de panelen (menu, open/sluit)
+│   └── sim-terminal.js        // de sim-controller: draait Seven Little Goats (endgame)
 ├── levels/                    // level1.js … level7.js: puzzeldefs, varianten,
 │                              //   hints, beschadigde code, modeloplossingen
 ├── sim/                       // Seven Little Goats browsersimulatie (DOM-vrij)

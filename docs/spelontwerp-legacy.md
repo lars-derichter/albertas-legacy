@@ -61,7 +61,6 @@ case en bindend; `art-stijlgids.md` levert de mood-notities en de tekening.
 | `zolder-midden` | kamer | doorgang/spil: verbindt west, oost en de overloop; de broncode-doos |
 | `overloop` | kamer | optioneel vierde scène: trap/berging, extra sfeer en props |
 | `spread-template` | spread | herbruikbaar notitieboek-spread, per level herkleed |
-| `pc-chrome` | overlay | de VGA-styling rond editor/terminal (DOM, zie engine-doc) |
 | `eindkaart` | kaart | drager voor Alberta's oordeel + epiloog |
 
 > Beslissing: drie zolderscènes zijn verplicht (`zolder-west`, `zolder-oost`,
@@ -196,5 +195,9 @@ Level 7 afronden "voltooit" Alberta's spel:
 ## Speelduur
 
 Richtdoel ± 2 uur: ~90 minuten codewerk (7 levels × ~15 min) plus ~25 minuten
-zolder-tussenwerk (fragmenten zoeken, spreads lezen, lopen, intro/outro).
-WP 11 controleert dit met een getimede dry run.
+zolder-tussenwerk (fragmenten zoeken, spreads lezen, lopen, intro/outro), en
+~10–15 minuten voor de endgame-sim van _Seven Little Goats_. WP 11 bevestigt
+dit met de doorlopende playthrough (`test/smoke-full-playthrough.mjs`): de
+headline ± 2 uur houdt stand, met de sim erbij realistisch richting ± 2 u 10.
+De volledige telling en onderbouwing staat in `levels-en-scharnieren.md`,
+§"Getimede controle".

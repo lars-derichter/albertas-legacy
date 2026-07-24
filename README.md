@@ -38,10 +38,6 @@ npx serve
 python3 -m http.server
 ```
 
-> **In aanbouw.** De browserversie wordt op dit moment gebouwd. Zolang
-> `index.html` er nog niet staat, is er niets te openen. De volgorde waarin
-> alles verschijnt, staat in [`workflow/`](workflow/).
-
 Je stapt door Alberta's zolder met de pijltjestoetsen en typt commando's,
 zoals in een klassiek adventure. Op haar oude pc open je een gesimuleerde
 editor en terminal waar je aan de Java-code werkt. Vast? Typ `?` voor een
@@ -69,28 +65,33 @@ Nederlandstalige klasse- en veldnamen, zoals in de cursus.
 albertas-legacy/
 ├── index.html  css/       het spel: openen en spelen, geen server nodig
 ├── README.md  CLAUDE.md  .gitignore
+├── package.json           dev-tooling (Playwright); het spel zelf heeft niets
 ├── js/                    de engine, de renderer en de spellogica
 │   ├── logic/             DOM-vrij en getest: wereld, prose, levels
 │   │   └── checker/       Java-tokenizer, asserts, gesimuleerde javac
-│   ├── pc/                de gesimuleerde pc: editor, terminal, Parsons
-│   ├── levels/            de zeven levels: puzzels, hints, oplossingen
+│   ├── pc/                de gesimuleerde pc: editor, terminal, Parsons, sim
+│   ├── levels/            de zeven levels + proefdruk level0: puzzels, hints
 │   ├── sim/               Seven Little Goats als browsersimulatie
-│   ├── scenes/            zolderkamers en notitieboek-spreads
+│   ├── scenes/            zolderkamers, spread-template en eindkaart
 │   └── sprites/           de sprites als pixel-strings
 ├── seven-little-goats/    DE HOOFDPRIJS: het echte Java-spel, eigen README
-│   └── src/               één klasse per bestand, om te lezen en te draaien
+│   ├── src/               één klasse per bestand, om te lezen en te draaien
+│   └── test-scripts/      invoerscripts die de vier eindes aansturen
 ├── docs/                  de ontwerpcontracten (Nederlands, op 80 tekens)
-├── walkthrough/           hints en oplossingen (deel 2 verzegeld)
-├── test/                  Node --test-suites en Playwright-smoke
-├── tools/                 linters en screenshotscript (Node)
+├── walkthrough/           hints en oplossingen (deel 2 verzegeld) als .md + .pdf
+├── test/                  Node --test-suites en Playwright-smoke (~25 bestanden)
+├── tools/                 asset-check, scene-lint en screenshotscript (Node)
 └── workflow/              verhalend logboek van het genAI-proces
 ```
 
 ## Walkthrough
 
 Vastgelopen en `?` bracht geen soelaas? In [`walkthrough/`](walkthrough/)
-staat een gids in twee delen: deel 1 met milde hints, deel 2 met de volledige
-oplossingen.
+staat een gids in twee delen: deel 1 met milde hints
+([`deel1-hints.pdf`](walkthrough/deel1-hints.pdf)), deel 2 met de volledige
+oplossingen ([`deel2-oplossingen.pdf`](walkthrough/deel2-oplossingen.pdf)).
+Beide delen staan er ook als Markdown naast, mocht je liever in de browser
+lezen.
 
 > **VERBREEK HET ZEGEL NIET** tenzij je écht niet verder kan. Deel 2 zit
 > achter een verzegelde pagina — 90's-stijl, ere-systeem. Eén repository,

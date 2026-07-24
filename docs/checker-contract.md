@@ -73,30 +73,36 @@ geordende lijst asserties tegen de genormaliseerde tokenstroom van
 de speler. Elke assertie geeft `{ ok, diagnose }`; `diagnose` verwijst naar
 een feedbacksleutel (zie §"Falen → feedback"). De kern-asserties:
 
+De namen hieronder zijn de **echte functienamen** uit `asserts.js` (het
+`asserts`-register onderaan het bestand); de level-definities in
+`js/levels/levelN.js` roepen ze aan via `fn: "<naam>"` met een `config`-object.
+
 | Assertie | Controleert |
 |---|---|
-| `velddeclaratie(type, naam, mods?)` | een veld `private <type> <naam>;` is gedeclareerd (modifiers optioneel/tolerant) |
-| `constructorToewijzing(veld, param)` | in de constructor staat `this.<veld> = <param>;` |
-| `exacteSignatuur(retour, naam, params[])` | een methode met exact dit returntype, deze naam en deze parametertypes/-volgorde |
-| `returnAanwezig(inMethode)` | de methode bevat minstens één `return`; bij een returntype ≠ `void` op elk pad (zie tolerantie) |
-| `returnVorm(inMethode, expr)` | de `return` geeft een bepaalde vorm terug (bv. `return <veld>;` of `return null;`) |
-| `conditieStructuur(vorm)` | een `if`-conditie heeft de gevraagde vorm: `&&`, `\|\|`, `!`, een vergelijking, of een cascade `if/else if/else` |
-| `klemStructuur(veld, onder, boven)` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (de drie validatievarianten van scharnier 3) |
-| `lusKop(soort, variabele, start, grens, richting)` | een `for`/`while`-kop met de juiste grenzen; `<` vs `<=` telt (off-by-one van scharnier 6) |
-| `lusRomp(patroon)` | de romp volgt een patroonkaart (scharnier 5) — **niet als losse assertie gebouwd**; zie de noot onder de tabel |
-| `zoeklus(retourType)` | de zoeklus van scharnier 7 — **samengesteld** uit `lusVorm` + `lusGrenzen` + `heeftReturn` + `methodeSignatuur`, geen losse assertie |
-| `getterKeten(stappen[])` | een ketting `a.getX().getY()...` met het juiste aantal pijlen, eventueel null-veilig gewikkeld (scharnier 7) |
-| `roeptAan(methode)` | een bepaalde methode wordt aangeroepen (bv. `verbindKamers(...)`, scharnier 4) |
-| `bevatNiet(patroon)` | een verboden constructie ontbreekt (bv. geen `switch`, geen buiten-cursus-constructie) |
+| `veldDeclaratie({type, naam, privaat?})` | een veld `<type> <naam>;` is gedeclareerd; bij `privaat` moet `private` erbij staan (overige modifiers tolerant) |
+| `constructorSignatuur({naam, params[]})` | de constructor heeft exact deze parametertypes en -volgorde |
+| `constructorToewijzing({veld, param?, klasse?})` | in de constructor staat `this.<veld> = <param>;`; herkent de omgekeerde fout `<param> = this.<veld>` |
+| `methodeSignatuur({retour, naam, params[]})` | een methode met exact dit returntype, deze naam en deze parametertypes/-volgorde |
+| `heeftReturn({methode, retourVorm?})` | de methode bevat minstens één `return`; optioneel in een bepaalde vorm (bv. `return <veld>;` of `return null;`) |
+| `conditieGebruikt({methode, operator, structuur?})` | een `if`-conditie gebruikt de gevraagde operator (`&&`, `\|\|`, `!`); `structuur: "cascade"` eist bovendien een `else if` |
+| `validatieKlem({methode, onder, boven})` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (de drie validatievarianten van scharnier 3) |
+| `lusVorm({methode, soort})` | de lus is van de juiste soort: `for` / `foreach` / `while` (scharnier 5–6) |
+| `lusGrenzen({methode, vergelijk?, grensBevat?})` | de `for`-grens klopt; `<` vs `<=` telt (off-by-one van scharnier 6), en `grensBevat` eist een term in de conditie (bv. `size`) |
+| `aanroepKeten({methode?, stappen[], nullVeilig?, contigue?})` | een ketting `a.getX().getY()...` met de juiste opeenvolgende getters, eventueel null-veilig gesplitst (scharnier 7) |
+| `methodeAanroep({methode, naam})` | de methode `<naam>` wordt aangeroepen (bv. `verbindKamers`, `setNoord`, `remove`; scharnier 4/6) |
+| `geenVerbodenConstructies({methode?})` | geen buiten-cursus-constructie: `switch`, `enum`, `var`, lambda (`->`), ternary (`?`) of `.stream(` |
 
 Elke assertie is opzettelijk lokaal: ze zoekt één patroon, niet een hele
 programmabetekenis. Een puzzel stapelt er enkele zodat samen de bedoelde vorm
-wordt afgedwongen zonder de speler in een keurslijf te dwingen.
+wordt afgedwongen zonder de speler in een keurslijf te dwingen. De patroonkaart-
+romp van scharnier 5 (`lusRomp`) en de zoeklus van scharnier 7 (`zoeklus`) zijn
+géén losse asserties: ze worden **samengesteld** uit `lusVorm` + `lusGrenzen`
++ `heeftReturn` (+ `methodeSignatuur`), zoals de noot hieronder toelicht.
 
 > Noot bij de implementatie (WP 4): de gezaghebbende namenlijst van de
 > asserties staat bovenaan `js/logic/checker/asserts.js` (o.a.
 > `veldDeclaratie`, `methodeSignatuur`, `constructorToewijzing`,
-> `klemStructuur`-varianten). Een losstaande patroonkaart-classifier
+> `validatieKlem`-varianten). Een losstaande patroonkaart-classifier
 > (`lusRomp`) is bewust niet gebouwd: een fuzzy classifier draagt een hoog
 > risico op vals-negatieven, de ergste faalmodus. Het level-5-werkpakket
 > stelt de lus-controle samen uit de bestaande lus-asserties en breidt de
