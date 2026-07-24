@@ -50,16 +50,51 @@ test("betreed loopt van de doorgang naar de overloop en terug", () => {
 
 // ---- Prop-interacties -----------------------------------------------------
 
-test("onderzoek beschrijft de props per kamer", () => {
+test("onderzoek geeft per prop een eigen tekst, niet de kamerbeschrijving", () => {
   const t = world.nieuw();
   t.sceneId = "zolder-oost";
-  assert.ok(world.onderzoek(t, "pc").tekst[0].includes("pc"));
-  assert.ok(world.onderzoek(t, "stoel").tekst[0].length > 0);
-  assert.ok(world.onderzoek(t, "koffiemok").tekst[0].length > 0);
+  const kamer = strings.scenes["zolder-oost"].beschrijving;
+  for (const ding of ["pc", "monitor", "stoel", "bureau", "toetsenbord",
+    "koffiemok"]) {
+    const r = world.onderzoek(t, ding);
+    assert.equal(r.tekst.length, 1, ding + " geeft één alinea");
+    assert.ok(r.tekst[0].length > 0, ding + " geeft tekst");
+    assert.notEqual(r.tekst[0], kamer,
+      "'" + ding + "' geeft de kamerbeschrijving terug in plaats van een detail");
+  }
   t.sceneId = "zolder-midden";
-  assert.deepEqual(world.onderzoek(t, "broncode-doos").tekst,
-    [strings.scenes["zolder-midden"].beschrijving]);
+  assert.notEqual(world.onderzoek(t, "broncode-doos").tekst[0],
+    strings.scenes["zolder-midden"].beschrijving);
+  // De gemerkte dozen houden hun eigen tekst: die gaat over de voortgang.
   assert.deepEqual(world.onderzoek(t, "doos").tekst, [strings.dozen.onderzoek]);
+});
+
+test("elk zelfstandig naamwoord uit een kamerbeschrijving is te onderzoeken", () => {
+  // De QC-poort van het scènewerk luidt "elk zelfstandig naamwoord in de
+  // beschrijving moet aanwijsbaar zijn". Dit is de tekstkant daarvan: geen van
+  // deze woorden mag "Dat zie je hier niet" opleveren.
+  const perKamer = {
+    "zolder-west": ["dozen", "balken", "dakraam", "kist", "notitieboek", "pen"],
+    "zolder-midden": ["balken", "doos", "tape", "label", "trap"],
+    "zolder-oost": ["stoel", "bureau", "pc", "monitor", "toetsenbord", "mok"],
+    "overloop": ["trap", "dozen", "wand"]
+  };
+  const t = world.nieuw();
+  for (const [scene, woorden] of Object.entries(perKamer)) {
+    t.sceneId = scene;
+    for (const woord of woorden) {
+      const r = world.onderzoek(t, woord);
+      assert.notEqual(r.tekst[0], strings.datZieJeHierNiet,
+        scene + ": '" + woord + "' wordt niet herkend");
+    }
+  }
+});
+
+test("een woord dat er niet is, blijft netjes afgewezen", () => {
+  const t = world.nieuw();
+  t.sceneId = "zolder-west";
+  assert.deepEqual(world.onderzoek(t, "olifant").tekst,
+    [strings.datZieJeHierNiet]);
 });
 
 test("de broncode-doos telt pas op het einde (geen fragment-effect)", () => {
@@ -140,7 +175,11 @@ test("elke level-spread telt meerdere pagina's", () => {
     assert.ok(data, "spread l" + n);
     assert.ok(AL.spreads.aantalPaginas(data) >= 2, "l" + n + " pagina's");
   }
-  assert.ok(AL.spreads.aantalPaginas(strings.spreads.intro) >= 2);
+  // De intro is bewust géén spread meer: de achtergrond hoort niet op een
+  // bladzijde van het notitieboek te staan vóór de speler dat boek gevonden
+  // heeft. Ze staat nu in AL.strings.intro (zie de test hieronder).
+  assert.equal(strings.spreads.intro, undefined,
+    "de intro hoort geen notitieboek-spread meer te zijn");
 });
 
 test("de weekregels gebruiken de echte cursusweken 1,2,2,3,4,5,6", () => {
@@ -155,10 +194,24 @@ test("de weekregels gebruiken de echte cursusweken 1,2,2,3,4,5,6", () => {
   }
 });
 
-test("de intro-spread draagt de prototype-regel verbatim", () => {
-  const plat = JSON.stringify(strings.spreads.intro);
+test("de intro draagt de prototype-regel verbatim", () => {
+  // De kernfictie uit achtergrond.md, §"Prototype-fase". Ze mag van drager
+  // veranderen maar niet van bewoording.
+  const plat = JSON.stringify(strings.intro);
   assert.ok(plat.includes(
     "Alberta bouwde elk spel eerst als tekstversie in de terminal."));
+});
+
+test("de intro noemt waar het spel over gaat, maar niet waarom Alberta weg is", () => {
+  const plat = JSON.stringify(strings.intro).toLowerCase();
+  // De duisternis komt uit Seven Little Goats zelf.
+  assert.ok(plat.includes("geitjes"), "de intro benoemt de inzet van het spel");
+  // En de verdwijning blijft onverklaard (achtergrond.md: nooit een oorzaak).
+  for (const oorzaak of ["ziek", "ongeval", "gestorven", "overleden", "dood",
+    "vermoord", "verdronken"]) {
+    assert.ok(!plat.includes(oorzaak),
+      "de intro suggereert een oorzaak: '" + oorzaak + "'");
+  }
 });
 
 // ---- Endgame: sim → oordeel → epiloog -------------------------------------

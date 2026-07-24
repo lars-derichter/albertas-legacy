@@ -47,6 +47,40 @@ globalThis.AL = globalThis.AL || {};
     5: "overloop", 6: "overloop", 7: "overloop"
   };
 
+  // Welke woorden naar welke onderzoeks-sleutel wijzen, per scène. De tekst
+  // zelf staat in AL.strings.onderzoek — hier staat alleen de koppeling, want
+  // dat is taalherkenning en geen prose. Volgorde telt: de eerste treffer wint,
+  // dus "broncode" staat vóór "doos" en "dakraam" vóór "raam".
+  var ONDERZOEK_WOORDEN = {
+    "zolder-west": [
+      { sleutel: "pen", woorden: ["pen"] },
+      { sleutel: "kist", woorden: ["kist", "koffer"] },
+      { sleutel: "dakraam", woorden: ["dakraam", "raam", "licht", "streep",
+        "zon"] },
+      { sleutel: "balken", woorden: ["balk", "dak", "plafond", "haak"] },
+      { sleutel: "dozen", woorden: ["doos", "dozen", "karton"] }
+    ],
+    "zolder-midden": [
+      { sleutel: "broncode", woorden: ["broncode"] },
+      { sleutel: "label", woorden: ["label", "etiket", "handschrift", "tape"] },
+      { sleutel: "trap", woorden: ["trap", "treden", "opening"] },
+      { sleutel: "balken", woorden: ["balk", "dak", "plafond"] }
+    ],
+    "zolder-oost": [
+      { sleutel: "monitor", woorden: ["monitor", "scherm", "beeldbuis"] },
+      { sleutel: "toetsenbord", woorden: ["toetsenbord", "toetsen", "klavier"] },
+      { sleutel: "mok", woorden: ["mok", "koffie", "tas", "beker"] },
+      { sleutel: "stoel", woorden: ["stoel", "zetel"] },
+      { sleutel: "bureau", woorden: ["bureau", "tafel", "werkblad"] },
+      { sleutel: "pc", woorden: ["pc", "computer", "toren", "kast", "machine"] }
+    ],
+    "overloop": [
+      { sleutel: "trap", woorden: ["trap", "treden"] },
+      { sleutel: "wand", woorden: ["wand", "muur", "pleister"] },
+      { sleutel: "dozen", woorden: ["doos", "dozen", "karton", "stapel"] }
+    ]
+  };
+
   // Van een looprichting naar de entry aan de overkant.
   var TEGENGESTELD = {
     noord: "vanZuid", zuid: "vanNoord", oost: "vanWest", west: "vanOost"
@@ -166,30 +200,46 @@ globalThis.AL = globalThis.AL || {};
 
     // Onderzoek/bekijk een ding. De verteller beschrijft; alleen 'open' verandert
     // de staat.
+    //
+    // Vroeger gaven de pc, de stoel, de koffiemok en de broncode-doos alle vier
+    // de kamerbeschrijving terug — de alinea die de speler net gelezen had. Wie
+    // een detail zocht, kreeg de kamer opnieuw. Elk zelfstandig naamwoord uit
+    // een kamerbeschrijving heeft nu een eigen antwoord in
+    // AL.strings.onderzoek[sceneId]; de woordkoppeling staat hieronder in
+    // ONDERZOEK_WOORDEN.
     onderzoek: function (toestand, ding) {
       ding = (ding || "").toLowerCase();
+
+      // Het notitieboek en de fragment-dozen houden hun eigen tekst: die
+      // vertellen over de voortgang, niet over het voorwerp.
       if (toestand.sceneId === "zolder-west" && this._isNotitieboek(ding)) {
         return { tekst: [AL.strings.notitieboek.onderzoek], effecten: [] };
-      }
-      if (toestand.sceneId === "zolder-oost") {
-        if (this._isPc(ding)) {
-          return { tekst: [AL.strings.scenes["zolder-oost"].beschrijving],
-            effecten: [] };
-        }
-        if (ding.indexOf("stoel") !== -1 || ding.indexOf("koffie") !== -1 ||
-            ding.indexOf("mok") !== -1) {
-          return { tekst: [AL.strings.scenes["zolder-oost"].beschrijving],
-            effecten: [] };
-        }
-      }
-      if (this._isBroncodeDoos(toestand, ding)) {
-        return { tekst: [AL.strings.scenes["zolder-midden"].beschrijving],
-          effecten: [] };
       }
       if (this._isFragmentDoos(toestand, ding)) {
         return { tekst: [AL.strings.dozen.onderzoek], effecten: [] };
       }
+
+      var sleutel = this._onderzoekSleutel(toestand.sceneId, ding);
+      if (sleutel) {
+        var perScene = (AL.strings.onderzoek || {})[toestand.sceneId] || {};
+        if (perScene[sleutel]) {
+          return { tekst: [perScene[sleutel]], effecten: [] };
+        }
+      }
       return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
+    },
+
+    // Welke onderzoeks-sleutel hoort bij dit woord, in deze scène? De eerste
+    // treffer wint, dus specifieke woorden staan vóór algemene.
+    _onderzoekSleutel: function (sceneId, ding) {
+      var lijst = ONDERZOEK_WOORDEN[sceneId] || [];
+      for (var i = 0; i < lijst.length; i++) {
+        var woorden = lijst[i].woorden;
+        for (var w = 0; w < woorden.length; w++) {
+          if (ding.indexOf(woorden[w]) !== -1) return lijst[i].sleutel;
+        }
+      }
+      return null;
     },
 
     // Open een doos of het notitieboek. Het notitieboek op zolder-west

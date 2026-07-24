@@ -45,6 +45,9 @@ globalThis.AL = globalThis.AL || {};
     // Staat er een venster of kaart open? De engine zet dit elk frame.
     blokkeer: false,
 
+    // Het laatst verstuurde commando, terug te halen met F3.
+    laatsteCommando: "",
+
     // Haken die de engine invult.
     onSubmit: function () {},
     onAdvance: function () {},
@@ -108,6 +111,20 @@ globalThis.AL = globalThis.AL || {};
       return;
     }
 
+    // F3: het vorige commando terughalen in de invoerregel.
+    //
+    // De pijltjestoetsen zijn hier bezet door het lopen, dus de gewone
+    // shell-conventie (pijl omhoog) kan niet. F3 is bovendien precies wat de
+    // Sierra-parsers van toen gebruikten om het laatste commando te herhalen,
+    // dus dit is niet alleen de vrije toets maar ook de juiste.
+    if (k === "F3") {
+      e.preventDefault();
+      if (!input.blokkeer && input.laatsteCommando) {
+        input.regel = input.laatsteCommando.slice(0, MAX_REGEL);
+      }
+      return;
+    }
+
     // Enter: doorbladeren als er een venster staat, anders het commando versturen.
     if (k === "Enter") {
       e.preventDefault();
@@ -117,6 +134,7 @@ globalThis.AL = globalThis.AL || {};
       } else {
         var regel = input.regel;
         input.regel = "";
+        if (regel.trim() !== "") input.laatsteCommando = regel;
         input.onSubmit(regel);
       }
       return;

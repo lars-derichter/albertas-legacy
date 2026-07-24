@@ -4,11 +4,15 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import { laadLogica } from "./helpers.mjs";
 
 const AL = laadLogica();
 const levels = AL.levels;
 const strings = AL.strings;
+const wortel = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("de vier tiers op hun drempels", () => {
   assert.equal(levels.oordeel(0), "meesterhand");
@@ -34,5 +38,18 @@ test("de tier die de engine toont, mapt op een bestaande tekst", () => {
   for (const h of [0, 4, 11, 21]) {
     const tier = levels.oordeel(h);
     assert.ok(strings.oordeel[tier], "geen tekst voor tier bij hints=" + h);
+  }
+});
+
+test("de oordeelteksten in save-en-hints.md staan gelijk aan strings.js", () => {
+  // save-en-hints.md citeert de vier teksten woordelijk in een tabel. Zonder
+  // deze controle drijven die twee stil uit elkaar zodra iemand de toon
+  // bijstelt — precies wat er bij de opwaardering gebeurde.
+  const doc = readFileSync(join(wortel, "docs", "save-en-hints.md"), "utf8");
+  for (const tier of ["meesterhand", "vakvrouw", "doorzetter", "samen-geraakt"]) {
+    const tekst = strings.oordeel[tier].tekst;
+    assert.ok(doc.includes(tekst),
+      "save-en-hints.md citeert '" + tier + "' anders dan strings.js:\n  " +
+      tekst);
   }
 });

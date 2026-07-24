@@ -43,31 +43,45 @@ AL.parser = {
     }
 
     // Verkennen en navigeren.
-    if (commando === "kijk") {
+    if (commando === "kijk" || commando === "kijk rond" ||
+        commando === "rondkijken") {
       return AL.world.kijk(toestand);
     }
-    if (commando === "ga noord") { return AL.world.betreed(toestand, "noord"); }
-    if (commando === "ga oost") { return AL.world.betreed(toestand, "oost"); }
-    if (commando === "ga zuid") { return AL.world.betreed(toestand, "zuid"); }
-    if (commando === "ga west") { return AL.world.betreed(toestand, "west"); }
+
+    // Aan de pc gaan zitten. Staat vóór de richtingen, want "ga zitten" begint
+    // ook met "ga ".
+    if (commando === "ga zitten" || commando === "gebruik pc" ||
+        commando === "zit" || commando === "pc" || commando === "ga werken") {
+      return AL.world.gebruikPc(toestand);
+    }
+
+    // Richtingen. Naast "ga noord" ook het kale "noord", de afkorting "n", en
+    // "ga naar het noorden" — wie een tekstadventure gewend is, typt dat, en de
+    // intro nodigt uitdrukkelijk uit om te typen.
+    var richting = this._richting(commando);
+    if (richting) {
+      return AL.world.betreed(toestand, richting);
+    }
 
     // Onderzoeken / bekijken van een ding.
-    if (commando.indexOf("onderzoek ") === 0) {
-      return AL.world.onderzoek(toestand, commando.substring(10).trim());
-    }
-    if (commando.indexOf("bekijk ") === 0) {
-      return AL.world.onderzoek(toestand, commando.substring(7).trim());
+    var ding = this._naVerb(commando,
+      ["onderzoek ", "bekijk ", "bestudeer ", "inspecteer ", "kijk naar ",
+        "bekijk de ", "onderzoek de "]);
+    if (ding !== null) {
+      return AL.world.onderzoek(toestand, ding);
     }
 
     // Openen (dozen, het notitieboek).
-    if (commando.indexOf("open ") === 0) {
-      return AL.world.open(toestand, commando.substring(5).trim());
+    var teOpenen = this._naVerb(commando, ["open ", "maak open ", "openen "]);
+    if (teOpenen !== null) {
+      return AL.world.open(toestand, teOpenen);
     }
 
-    // Aan de pc gaan zitten.
-    if (commando === "ga zitten" || commando === "gebruik pc" ||
-        commando === "zit" || commando === "pc") {
-      return AL.world.gebruikPc(toestand);
+    // Nemen. Er is niets om mee te nemen, maar "Dat begrijp je niet" is het
+    // verkeerde antwoord op een commando dat de parser prima begrijpt.
+    if (this._naVerb(commando, ["neem ", "pak ", "raap ", "steek "]) !== null ||
+        commando === "neem" || commando === "pak") {
+      return { tekst: [AL.strings.neemNiet], effecten: [] };
     }
 
     if (commando === "inventaris") {
@@ -108,6 +122,52 @@ AL.parser = {
     }
 
     return { tekst: [AL.strings.datBegrijpJeNiet], effecten: [] };
+  },
+
+  // Herkent een richting in alles wat een speler er redelijkerwijs voor typt:
+  // "ga noord", "loop naar het noorden", "noord", "n". Geeft null als het
+  // commando geen richting is.
+  _richting: function (commando) {
+    var c = commando;
+    var voorvoegsels = ["ga naar het ", "loop naar het ", "ga naar de ",
+      "ga naar ", "loop naar ", "ga ", "loop ", "naar het ", "naar "];
+    for (var i = 0; i < voorvoegsels.length; i++) {
+      if (c.indexOf(voorvoegsels[i]) === 0) {
+        c = c.substring(voorvoegsels[i].length).trim();
+        break;
+      }
+    }
+    var kaart = {
+      n: "noord", noord: "noord", noorden: "noord",
+      o: "oost", oost: "oost", oosten: "oost",
+      z: "zuid", zuid: "zuid", zuiden: "zuid",
+      w: "west", west: "west", westen: "west"
+    };
+    return kaart[c] || null;
+  },
+
+  // Als het commando met een van deze werkwoorden begint: geef terug wat erna
+  // komt, zonder lidwoord. Anders null. Zo werkt "onderzoek de doos" net zo
+  // goed als "onderzoek doos".
+  _naVerb: function (commando, werkwoorden) {
+    for (var i = 0; i < werkwoorden.length; i++) {
+      if (commando.indexOf(werkwoorden[i]) === 0) {
+        return this._zonderLidwoord(commando.substring(werkwoorden[i].length));
+      }
+    }
+    return null;
+  },
+
+  _zonderLidwoord: function (rest) {
+    var d = rest.trim();
+    var lidwoorden = ["de ", "het ", "een ", "die ", "dat ", "'t ", "mijn ",
+      "haar "];
+    for (var i = 0; i < lidwoorden.length; i++) {
+      if (d.indexOf(lidwoorden[i]) === 0) {
+        return d.substring(lidwoorden[i].length).trim();
+      }
+    }
+    return d;
   }
 };
 

@@ -93,7 +93,7 @@ WebKit in deze container).
 
 ### - [x] WP B — Rendererkern
 
-Entry: `workflow/17-rendererkern.md` · commit: (nog in te vullen)
+Entry: `workflow/17-rendererkern.md` · commit: `2ac044f`
 
 - [x] Ramps in `js/palette.js`: `RAMPEN`, `rampVan`, `verduister`, `verhelder`
 - [x] `gradient` — loopt over de échte tussenkleuren van een gedeelde ramp, met
@@ -117,25 +117,39 @@ gereedschap zonder gebruiker tot **WP E** de kamers hertekent. Bewegende sfeer
 (stof, flikkering) staat ook onder WP E — er is bewust geen slapende code voor
 gemaakt.
 
-### - [ ] WP C — Verhaal, stem en de zolder die antwoordt
+### - [x] WP C — Verhaal, stem en de zolder die antwoordt
 
-Entry: `workflow/18-*.md` · commit: —
+Entry: `workflow/18-verhaal-en-stem.md` · commit: (nog in te vullen)
 
-- [ ] Register kouder: intro, vier kamerbeschrijvingen, spreads, oordeel,
-      epiloog. **Let op het bladbudget:** een spread-pagina telt hoogstens 24
-      gewrapte regels (17 tekens × 12 regels × 2 kolommen). De langste pagina nu
-      is `l4` p1 met 22. Wat eroverheen gaat, wordt afgekapt.
-- [ ] Duisternis met _Seven Little Goats_ als bron, zonder de sim aan te raken
-- [ ] Eigen `onderzoek`-tekst voor elk zelfstandig naamwoord in elke kamer
-- [ ] Parser: kale richtingen, lidwoord-stripping, `neem`/`pak`
-- [ ] Commandogeschiedenis met pijl-omhoog in `js/input.js`
-- [ ] `AL.strings.intro` weer in gebruik; doublure `spreads.intro` weg
-- [ ] `docs/achtergrond.md` register-sectie herschreven ("nooit een oorzaak"
-      blijft)
-- [ ] `docs/save-en-hints.md:138–141` oordeelteksten gelijkgetrokken
-- [ ] Walkthrough deel 1 en 2 bijgewerkt, beide PDF's opnieuw gebouwd
-- [ ] QC: 225/225; nieuwe tests per onderzoek-tekst en per synoniem; geen
-      enkele `onderzoek` geeft nog een kamerbeschrijving
+- [x] Register kouder: intro, vier kamerbeschrijvingen, oordeel, epiloog,
+      endgame. De kou zit in het contrast (de stoel lijkt net verlaten, het stof
+      zegt van niet), niet in somberte
+- [x] Duisternis met _Seven Little Goats_ als bron: de intro, de opengeslagen
+      bladzijde (zeven kruisjes, zes doorgehaald) en de terminal vóór het booten
+- [x] Achttien eigen `onderzoek`-teksten over de vier kamers; woordkoppeling in
+      `ONDERZOEK_WOORDEN` (`js/logic/world.js`), tekst in `strings.js`
+- [x] Parser: kale richtingen en afkortingen, voorzetsels, lidwoord-stripping,
+      vier extra werkwoorden, `neem`/`pak` met een echt antwoord
+- [x] Commandogeschiedenis op **F3**, niet pijl-omhoog — de pijltjes zijn het
+      lopen, en F3 is precies wat de Sierra-parsers ervoor gebruikten
+- [x] `AL.strings.intro` weer in gebruik; doublure `spreads.intro` weg; de
+      achtergrond loopt nu in de stem van de verteller over de titelkaart
+- [x] `docs/achtergrond.md`: verdwijning, zolder en register herschreven
+      ("nooit een oorzaak" blijft staan)
+- [x] `docs/save-en-hints.md` oordeelteksten gelijkgetrokken, **plus een test
+      die die twee voortaan aan elkaar houdt**
+- [x] QC: 259/259 groen, zes rooksmaaktesten groen, lint en check-assets schoon
+
+De spreads zijn in dit pakket **niet** herschreven: hun tekst is puzzelinhoud en
+hoort bij WP G, waar ook de bladzijden zelf hertekend worden. Het bladbudget
+blijft daar gelden: hoogstens 24 gewrapte regels per pagina (17 tekens × 12
+regels × 2 kolommen); de langste pagina nu is `l4` p1 met 22.
+
+De walkthrough is nagekeken en bewust ongemoeid gelaten: geen enkel citaat erin
+is onwaar geworden en alle genoemde commando's werken nog. **Open klusje:** de
+nieuwe parser-tolerantie en F3 in `deel1-hints.md` vermelden, zodra `pandoc` en
+`typst` beschikbaar zijn om beide PDF's mee te herbouwen — nu niet in deze
+container.
 
 ### - [ ] WP D — De opening
 
@@ -143,8 +157,10 @@ Entry: `workflow/19-*.md` · commit: —
 
 - [ ] Openingsreeks op het canvas met establishing shots en overgangen
 - [ ] Overslaanbaar; de save onthoudt dat ze gezien is
-- [ ] Route wordt titel → openingsreeks → zolder; `spread`-modus houdt alleen
-      de zeven level-spreads
+- [x] Route en stem kloppen al sinds WP C: titel → achtergrond (verteller,
+      vensters) → zolder, en de `spread`-modus draagt alleen nog de zeven
+      level-spreads. Wat hier nog rest is het **beeld**: de vensters over de
+      titelkaart vervangen door getekende establishing shots
 - [ ] QC: `smoke-browser` en `smoke-full-playthrough` aangepast en groen; geen
       notitieboekpapier meer vóór het boek gevonden is
 

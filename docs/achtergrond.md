@@ -37,10 +37,16 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
 
 ## De verdwijning
 
-Alberta verdween. Het spel legt niet uit hoe of waarheen, en dat is opzet. De
-verdwijning is een zachte, sprookjesachtige leegte, geen misdaad en geen
-drama. Ze is er niet meer; haar werk wel. De speler vult de leegte niet met een
+Alberta verdween. Het spel legt niet uit hoe of waarheen, en dat is opzet. Ze
+is er niet meer; haar werk wel. De speler vult de leegte niet met een
 verklaring maar met arbeid: door haar spel af te maken, houdt hij haar dichtbij.
+
+De leegte is wél ongemakkelijk. Ze was eerder omschreven als "zacht en
+sprookjesachtig"; dat maakte de zolder een warm archief dat geduldig wachtte, en
+daar werd het spel te braaf van. De kamer is halverwege stilgevallen. De stoel
+staat weggedraaid alsof ze even is opgestaan, en het stof zegt dat dat niet zo
+is. Dat contrast — het lijkt vers, het is het niet — draagt het onbehagen, niet
+een verklaring en niet een dreiging.
 
 Richtlijnen voor prose over de verdwijning:
 
@@ -57,7 +63,8 @@ Richtlijnen voor prose over de verdwijning:
 ## De zolder
 
 De zolder is de hub van het meta-spel. Fysiek klein, dicht bezet, avondlicht
-door één dakraam. Sfeer: een archief dat lang op iemand wachtte.
+door één dakraam. Sfeer: een werkkamer die halverwege is stilgevallen. Koel,
+stil, en net iets te goed bewaard.
 
 Vaste elementen die in de prose en de scènes terugkomen:
 
@@ -161,13 +168,24 @@ De frame-logica die elk stukje prose moet respecteren:
 - **Vlaams Nederlands**, geen hollandismen (zie de projectrichtlijnen). Tech-
   termen blijven Engels (parser, editor, compiler) en krijgen Nederlandse
   lidwoorden.
-- **Alberta's stem** (kantlijnnotities, puzzelbriefjes): droog, warm, kort,
-  af en toe een knipoog naar de lezer-in-de-toekomst.
+- **Alberta's stem** (kantlijnnotities, puzzelbriefjes, het oordeel): droog,
+  warm, kort, af en toe een knipoog naar de lezer-in-de-toekomst. Zij is het
+  enige warme in dit spel, en dat blijft zo — de kou zit in de kamer, niet in
+  haar. Dat contrast is het punt.
 - **De verteller** (zolderbeschrijvingen, systeemtekst): rustig, observerend,
-  King's Quest-achtig zuinig. Lopen herbeschrijft niet; `kijk` wel (zie
+  King's Quest-achtig zuinig, en koel. Hij oordeelt niet en hij troost niet; hij
+  noemt wat er staat. Lopen herbeschrijft niet; `kijk` wel (zie
   `engine-architectuur.md`).
 - **Geen AI-tells**, geen decoratieve drieslagen, geen uitroeptekens-
-  enthousiasme. De emotie zit in de terughoudendheid.
+  enthousiasme. De emotie zit in de terughoudendheid. Bij een koeler register
+  telt dat dubbel: één droge zin doet meer dan drie sfeerzinnen.
+- **De duisternis komt uit _Seven Little Goats_ zelf.** Alberta schreef een
+  verhaal waarin zes kinderen worden opgegeten, een wolf wordt opengelegd en één
+  van de vier eindes "koud en onaf" heet — en ze heeft het niet afgemaakt. Het
+  kader mag dat laten voelen: in wat er op de opengeslagen bladzijde staat, in
+  wat de intro aankondigt, in wat de terminal belooft voor ze boot. Er hoeft
+  geen greintje nieuwe fictie bij; de donkerte ligt er al, ze werd tot nu toe
+  alleen nergens gebruikt.
 
 ## Verhouding tot _Revenge of Red Riding Hood_
 

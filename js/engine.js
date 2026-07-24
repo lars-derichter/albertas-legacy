@@ -296,12 +296,20 @@ globalThis.AL = globalThis.AL || {};
     AL.sound.speel("titel");
   }
 
-  // Vanaf de titel: de intro-spread (spelontwerp-legacy.md: titel → spread:intro
-  // → zolder). De intro-spread draagt de kernfictie en de verplichte prototype-
-  // regel; na de laatste pagina komt de speler in de zolder terecht.
+  // Vanaf de titel: de achtergrond, dan de zolder.
+  //
+  // Dit liep vroeger via een spread — de openingstekst stond dus op een
+  // bladzijde van Alberta's notitieboek, mét haar koffievlek. Dat klopte niet:
+  // je las wat er in het boek stond vóór je het boek gevonden had, en de tekst
+  // was de verteller die jou aanspreekt op papier dat háár handschrift draagt.
+  // De achtergrond komt nu vóór de zolder én vóór het notitieboek, in de stem
+  // van de verteller, op de titelkaart. WP D maakt er een getekende reeks van;
+  // de drager klopt nu al.
   function titelVerder() {
-    titelActief = false;
-    opADeSpread("intro");
+    toonVenster(AL.strings.intro, function () {
+      titelActief = false;
+      betreedZolder(true);
+    });
   }
 
   // Ga (of keer terug) naar de zolder-modus. beschrijf = toon de openings-
@@ -351,14 +359,11 @@ globalThis.AL = globalThis.AL || {};
     }
   }
 
-  // Einde van het spread: de intro leidt naar de eerste zolderscène (met
-  // beschrijving); een level-spread leidt de speler naar de pc in de werkhoek
-  // (spelontwerp-legacy.md, §"De lus per level", stap 3).
+  // Einde van een level-spread: de speler gaat naar de pc in de werkhoek
+  // (spelontwerp-legacy.md, §"De lus per level", stap 3). De spread-modus draagt
+  // sinds de opwaardering alleen nog de zeven level-spreads; de intro loopt niet
+  // meer via een bladzijde van het notitieboek (zie titelVerder).
   function spreadVerder() {
-    if (spreadLevelId === "intro") {
-      betreedZolder(true);
-      return;
-    }
     toestand.sceneId = "zolder-oost";
     betreedZolder(false);
   }

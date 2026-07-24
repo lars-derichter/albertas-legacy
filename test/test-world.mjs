@@ -145,3 +145,54 @@ test("parser dispatcht de zolder-commando's", () => {
   assert.deepEqual(AL.parser.verwerk(t, "kijk").tekst,
     [strings.datBegrijpJeNiet]);
 });
+
+test("richtingen mogen kaal, afgekort en met lidwoord", () => {
+  // Alle vier moeten dezelfde kant op sturen als "ga oost". zolder-west heeft
+  // alleen een uitgang naar het oosten, dus die scène verandert of niet.
+  for (const vorm of ["ga oost", "oost", "o", "ga naar het oosten",
+    "loop oost", "naar oost"]) {
+    const t = world.nieuw();
+    const r = AL.parser.verwerk(t, vorm);
+    assert.ok(r.effecten.some((e) => e.indexOf("scene:") === 0),
+      "'" + vorm + "' bracht de speler niet naar het oosten");
+  }
+});
+
+test("een richting die er niet is, blijft een nette weigering", () => {
+  const t = world.nieuw();      // zolder-west: alleen oost
+  const r = AL.parser.verwerk(t, "noord");
+  assert.ok(!r.effecten.some((e) => e.indexOf("scene:") === 0));
+  assert.ok(r.tekst.length > 0);
+  assert.notEqual(r.tekst[0], strings.datBegrijpJeNiet,
+    "een geldige richting die hier niet kan, is geen onbegrepen commando");
+});
+
+test("onderzoek verdraagt lidwoorden en synoniemen", () => {
+  const t = world.nieuw();
+  t.sceneId = "zolder-oost";
+  const kaal = AL.parser.verwerk(t, "onderzoek stoel").tekst[0];
+  for (const vorm of ["onderzoek de stoel", "bekijk de stoel",
+    "bestudeer stoel", "kijk naar de stoel"]) {
+    assert.equal(AL.parser.verwerk(t, vorm).tekst[0], kaal,
+      "'" + vorm + "' gaf iets anders dan 'onderzoek stoel'");
+  }
+});
+
+test("ga zitten gaat naar de pc, ook al begint het met 'ga '", () => {
+  // De richtingherkenning strippt "ga " en mag "zitten" dus niet als richting
+  // opvatten. Wat de pc dan antwoordt (hier: nog geen fragment) doet er niet
+  // toe — het gaat erom dat het commando bij gebruikPc landt en niet bij
+  // betreed.
+  const t = world.nieuw();
+  t.sceneId = "zolder-oost";
+  assert.deepEqual(AL.parser.verwerk(t, "ga zitten"), world.gebruikPc(t));
+  assert.deepEqual(AL.parser.verwerk(t, "ga werken"), world.gebruikPc(t));
+});
+
+test("neem en pak krijgen een antwoord, geen onbegrip", () => {
+  const t = world.nieuw();
+  for (const vorm of ["neem notitieboek", "pak de doos", "neem"]) {
+    assert.deepEqual(AL.parser.verwerk(t, vorm).tekst, [strings.neemNiet],
+      "'" + vorm + "' werd niet begrepen");
+  }
+});

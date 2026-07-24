@@ -61,17 +61,20 @@ async function sluitVensters(page) {
   }
 }
 
-// Naar de zolder: Enter bladert door de titel, de intro-spread (meerdere
-// pagina's) en het openingsvenster tot de zolder-modus.
+// Naar de zolder: Enter bladert door de titelkaart, de achtergrondvensters en
+// het openingsvenster tot de speler echt in de zolder staat. De titelcheck moet
+// erbij: op de titelkaart staat de modus al op "zolder" en is er nog geen
+// venster, dus zonder die check keert dit meteen terug zonder één toets.
 async function naarZolder(page) {
   for (let i = 0; i < 40; i++) {
     const st = await state(page);
-    if (st.modus === "zolder" && !st.vensterOpen) return;
+    if (!st.titelActief && st.modus === "zolder" && !st.vensterOpen) return;
     await page.keyboard.press("Enter");
     await page.waitForTimeout(60);
   }
   await page.waitForFunction(
-    () => window.AL.debugState.modus === "zolder", null, { timeout: 15000 });
+    () => window.AL.debugState.titelActief === false &&
+      window.AL.debugState.modus === "zolder", null, { timeout: 15000 });
 }
 
 // Typ een zolder-commando en wacht kort; sluit eventuele vensters eerst.
@@ -108,16 +111,22 @@ async function main() {
   check("titelkaart actief bij de start", s0.titelActief === true);
   check("canvas is niet leeg op de titelkaart", await canvasNietLeeg(page));
 
-  // 2. Enter → intro-spread → zolder. De intro loopt via spread:intro.
+  // 2. Enter → de achtergrond → zolder. De achtergrond staat in de stem van de
+  // verteller op de titelkaart, niet meer op een bladzijde van het notitieboek:
+  // de speler hoort te weten waar dit over gaat vóór hij het boek vindt.
   await page.keyboard.press("Enter");
   await page.waitForTimeout(90);
   const sIntro = await state(page);
-  check("Enter opent de intro-spread (modus spread)", sIntro.modus === "spread",
-    "modus=" + sIntro.modus);
-  check("de intro-spread tekent (canvas niet leeg)", await canvasNietLeeg(page));
+  check("Enter opent de achtergrond op de titelkaart",
+    sIntro.vensterOpen === true && sIntro.titelActief === true,
+    "venster=" + sIntro.vensterOpen + " titel=" + sIntro.titelActief);
+  check("de achtergrond loopt niet via een notitieboek-spread",
+    sIntro.modus !== "spread" && sIntro.spreadLevelId === null,
+    "modus=" + sIntro.modus + " spread=" + sIntro.spreadLevelId);
+  check("de achtergrond tekent (canvas niet leeg)", await canvasNietLeeg(page));
   await naarZolder(page);
   const s1 = await state(page);
-  check("na de intro-spread sta je in de zolder", s1.modus === "zolder",
+  check("na de achtergrond sta je in de zolder", s1.modus === "zolder",
     "scene=" + s1.sceneId);
   check("zolder-scène tekent (canvas niet leeg)", await canvasNietLeeg(page));
 

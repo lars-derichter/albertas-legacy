@@ -29,20 +29,22 @@ AL.strings = {
   // De intro: een korte reeks berichtvensters die de kernfictie zet. De laatste
   // alinea bevat de cruciale zin uit achtergrond.md (de prototype-fase).
   intro: [
-    "Je grootmoeder Alberta was game-ontwerpster, lang geleden, toen een " +
-    "spel nog op één zolder werd gemaakt. Ze verdween. Wat ze naliet, staat " +
-    "hier: dozen, stof, en een pc die nog aanslaat.",
+    "Je grootmoeder Alberta maakte spellen, in de tijd dat een spel nog op " +
+    "één zolder paste. Ze is er niet meer. Haar werk staat er nog: dozen tot " +
+    "tegen de balken, stof op alles, en een pc die het na al die jaren nog " +
+    "doet.",
 
-    "Tussen de dozen ligt haar notitieboek. Beschadigd, bladen los, vlekken " +
-    "waar de inkt is doorgelopen. Het is de aanzet tot het spel dat ze nooit " +
-    "afmaakte: Seven Little Goats.",
+    "Tussen de dozen ligt haar notitieboek. Losse bladen, doorgelopen inkt, " +
+    "vlekken waar het vocht bij kon. Erin staat Seven Little Goats: zes " +
+    "geitjes die de wolf binnengaan, een zevende die zich in de klokkast " +
+    "verstopt, en een afrekening aan de rivier. Ze heeft het niet afgemaakt.",
 
     "Alberta bouwde elk spel eerst als tekstversie in de terminal. Zo begon " +
     "ze altijd. Wat jij herstelt is dus geen tekening, maar haar code — stuk " +
     "voor stuk, tot haar spel weer draait.",
 
     "Typ 'kijk' om rond te kijken, 'help' voor de commando's, '?' als je " +
-    "vastzit. Stap met de pijltjestoetsen."
+    "vastzit. Lopen doe je met de pijltjestoetsen."
   ],
 
   // De zolderscènes: naam, beschrijving (voor 'kijk' en het eerste bezoek) en
@@ -51,39 +53,96 @@ AL.strings = {
   scenes: {
     "zolder-west": {
       naam: "Zolder — westhoek",
-      beschrijving: "De westhoek van de zolder. Kartonnen dozen tot aan de " +
-        "balken, een schuine streep avondlicht door het dakraam. Op een oude " +
-        "kist, precies in het licht, ligt Alberta's notitieboek. Naar het " +
-        "oosten loopt de zolder verder.",
+      beschrijving: "De westhoek. Dozen tot tegen de balken, dicht op " +
+        "elkaar. Door het dakraam valt een schuine streep licht, laag al, " +
+        "bijna van de vloer af. Op een kist ligt Alberta's notitieboek, " +
+        "opengeslagen, met de pen er nog in. Naar het oosten loopt de zolder " +
+        "verder.",
       hint: "Het notitieboek ligt open in het licht. Onderzoek het, of open " +
         "het — daar begint alles."
     },
     "zolder-midden": {
       naam: "Zolder — doorgang",
-      beschrijving: "Het middenstuk, waar de balken samenkomen. Het licht " +
-        "trekt van west naar oost. Centraal staat een dichtgeplakte doos, " +
-        "zwaarder dan de rest: 'BRONCODE', in Alberta's hand. Ze blijft nog " +
-        "even dicht.",
+      beschrijving: "De doorgang, waar de balken samenkomen en het dak laag " +
+        "wordt. Hier haalt het licht al minder. Midden op de vloer staat een " +
+        "doos die zwaarder oogt dan de andere, dichtgeplakt met tape die geel " +
+        "geworden is. Op het label, in haar hand: BRONCODE. Achterin gaat een " +
+        "trap naar boven.",
       hint: "De broncode-doos in het midden telt pas op het einde. Ga eerst " +
         "verder waar het licht heen trekt: naar het oosten, naar de pc."
     },
     "zolder-oost": {
       naam: "Zolder — werkhoek",
-      beschrijving: "Alberta's werkhoek. Een bureau, een lege stoel die net " +
-        "verlaten lijkt, en de pc: een beige toren met een bolle monitor die " +
-        "warm oranje nagloeit. Naast het toetsenbord staat een halfvolle " +
-        "koffiemok.",
+      beschrijving: "Alberta's werkhoek. De stoel staat schuin van het " +
+        "bureau weggeschoven, alsof ze even is opgestaan. Op het stof na, " +
+        "dat overal even dik ligt. De pc doet het nog: een beige toren, een " +
+        "bolle monitor die warm oranje nagloeit. Naast het toetsenbord staat " +
+        "een halfvolle mok.",
       hint: "Ga aan de pc zitten. Daar werk je aan Alberta's code — typ 'ga " +
         "zitten'."
     },
     "overloop": {
       naam: "Zolder — overloop",
-      beschrijving: "De overloop, boven aan de trap. Kouder hier, en verder " +
-        "van het dakraam: het licht haalt de hoeken niet meer. Tegen de wand " +
-        "staan de latere dozen opgestapeld, dieper in Alberta's archief. Naar " +
-        "beneden loopt de trap terug naar de doorgang.",
+      beschrijving: "De overloop, boven aan de trap. Kouder hier, en het " +
+        "dakraam is ver: het licht haalt de hoeken niet. Tegen de wand staan " +
+        "de dozen van later opgestapeld, hoger dan jij. De trap loopt terug " +
+        "naar beneden.",
       hint: "De dozen hierboven dragen de latere hoofdstukken. Open er een als " +
         "je aan het volgende fragment toe bent."
+    }
+  },
+
+  // Onderzoeks-teksten per scène. Elk zelfstandig naamwoord dat in een
+  // kamerbeschrijving voorkomt, hoort hier een eigen antwoord te hebben —
+  // anders krijgt de speler die iets van dichtbij bekijkt de kamer opnieuw, en
+  // dat leest als onaf. De woordkoppeling (welke synoniemen naar welke sleutel
+  // wijzen) staat in js/logic/world.js; dit bestand draagt alleen de tekst.
+  onderzoek: {
+    "zolder-west": {
+      dozen: "Karton dat lang gedragen heeft. De onderste zijn ingezakt " +
+        "onder het gewicht van de bovenste, en niemand heeft ze rechtgezet.",
+      kist: "Een houten kist met een deksel dat niet meer sluit. Het " +
+        "notitieboek ligt erop, niet erin.",
+      pen: "Een vulpen, dwars over de bladzijde, dop ernaast. De inkt in de " +
+        "punt is allang ingedroogd.",
+      dakraam: "Vier ruiten, drie schoon genoeg om door te kijken. De " +
+        "lichtstreep die erdoor valt is de enige die er nog is; hij schuift " +
+        "traag naar de muur toe.",
+      balken: "Ruw hout, ongeschilderd. Er hangt een haak in, waar niets aan " +
+        "hangt."
+    },
+    "zolder-midden": {
+      broncode: "De tape is geel en bros, maar hij zit er nog helemaal op. " +
+        "Op het label staat BRONCODE, en daaronder, kleiner: pas op het einde. " +
+        "Ze heeft die doos dichtgemaakt met de bedoeling dat iemand hem later " +
+        "zou openen.",
+      trap: "Een smalle trap zonder leuning. Boven is het donkerder dan hier.",
+      balken: "Hier komen de balken samen en zakt het dak tot net boven je " +
+        "hoofd. Je hoort de wind erlangs gaan.",
+      label: "Haar handschrift, in inkt, met de rustige hand van iemand die " +
+        "de tijd nam."
+    },
+    "zolder-oost": {
+      pc: "Een beige toren met een bolle monitor erop. Hij staat aan. Wie " +
+        "hem heeft aangezet, heeft hem nooit meer uitgezet.",
+      monitor: "Amber op zwart, en een cursor die knippert zoals hij al die " +
+        "jaren geknipperd heeft.",
+      stoel: "Een bureaustoel, schuin weggedraaid, alsof iemand er net is " +
+        "uit opgestaan om iets te halen.",
+      bureau: "Vol, maar niet rommelig. Alles ligt waar iemand het bij de " +
+        "hand wilde hebben.",
+      toetsenbord: "De letters op de meest gebruikte toetsen zijn weg " +
+        "gesleten. E, A, R, en de spatiebalk.",
+      mok: "Halfvol. Er staat geen ring in, geen schimmel, niets dat " +
+        "vertelt hoe lang hij er staat. Je laat hem staan."
+    },
+    "overloop": {
+      dozen: "Hoger opgestapeld dan de rest, en dieper in het archief. Wat " +
+        "hier staat, wilde ze niet meteen bij de hand hebben.",
+      trap: "Naar beneden loopt hij terug naar de doorgang. Naar boven loopt " +
+        "hij niet verder; hier houdt het huis op.",
+      wand: "Kaal pleisterwerk, koud aan je hand. Aan deze kant van de " +
+        "zolder is nooit iets opgehangen."
     }
   },
 
@@ -92,8 +151,9 @@ AL.strings = {
   // progressie is (spelontwerp-legacy.md, §"De lus per level", stap 1). De
   // broncode-doos is een aparte prop en telt pas op het einde.
   dozen: {
-    onderzoek: "Kartonnen dozen, dichtgeplakt en gemerkt in Alberta's hand. In " +
-      "één ervan zit het volgende blad van haar notitieboek — als je aan dat " +
+    onderzoek: "Kartonnen dozen, dichtgeplakt, gemerkt in Alberta's hand. Op " +
+      "één staat DIVERSEN, en daaronder kleiner: ook rommel. In een van deze " +
+      "dozen zit het volgende blad van haar notitieboek — als je aan dat " +
       "hoofdstuk toe bent.",
     allesGevonden: "Je hebt elk fragment van het notitieboek gevonden. Alles wat " +
       "je nog rest, ligt op de pc — en op het einde, in de broncode-doos.",
@@ -111,12 +171,13 @@ AL.strings = {
   // Het notitieboek op zolder-west (level 1 se fragment).
   notitieboek: {
     onderzoek: "Het boek ligt open op een dubbele bladzijde. Een schets van " +
-      "een kamer, een lijstje in de kantlijn, en een halve methode waarvan " +
-      "een waterstreep de helft heeft opgevreten. Onderaan, in haar hand: " +
-      "'Dit zou je moeten kunnen na week 3.'",
-    open: "Je slaat het notitieboek open bij de eerste bruikbare bladzijde. " +
-      "Het eerste hoofdstuk van Alberta's spel ligt voor je — beschadigd, " +
-      "maar leesbaar genoeg om te herstellen.",
+      "een kamer met zeven kruisjes erin, waarvan er zes zijn doorgehaald. " +
+      "Daarnaast een halve methode, waar het vocht de andere helft van heeft " +
+      "weggevreten. Onderaan, in haar hand: 'Dit zou je moeten kunnen na " +
+      "week 3.'",
+    open: "Je slaat het notitieboek open bij de eerste bladzijde die nog " +
+      "heel is. Het eerste hoofdstuk van Alberta's spel ligt voor je — " +
+      "beschadigd, maar leesbaar genoeg om te herstellen.",
     alGevonden: "Je hebt dit fragment al. Ga aan de pc zitten om eraan te " +
       "werken."
   },
@@ -158,6 +219,8 @@ AL.strings = {
   datBegrijpJeNiet: "Dat begrijp je niet.",
   dieKantKanJeNietOp: "Die kant kan je niet op.",
   datZieJeHierNiet: "Dat zie je hier niet.",
+  neemNiet: "Laat maar staan. Op deze zolder draag je niets mee; je herstelt " +
+    "alleen wat er al ligt.",
   nietsBijzonders: "Niets bijzonders.",
 
   // Inventaris (in de zolder draag je weinig; het framework laat het toe).
@@ -177,6 +240,7 @@ AL.strings = {
     "herbegin           begin het spel opnieuw (vraagt bevestiging)",
     "geluid aan / uit   zet het geluid om",
     "crt aan / uit      zet de beeldbuislijnen om",
+    "F3                 haal je vorige commando terug",
     "help               deze lijst"
   ],
 
@@ -1001,22 +1065,22 @@ AL.strings = {
     meesterhand: {
       titel: "Alberta's oordeel: de meesterhand",
       tekst: "Je hebt mijn spel afgemaakt met bijna geen spieken. Ik had het " +
-        "niet beter gekund — en dat zeg ik niet snel."
+        "niet beter gekund, en dat zeg ik niet snel.",
     },
     vakvrouw: {
       titel: "Alberta's oordeel: de vakvrouw",
-      tekst: "Nu en dan een blik in de kantlijn, en dan weer dóór. Zo werk ik " +
-        "ook. Proficiat."
+      tekst: "Nu en dan een blik in de kantlijn, en dan weer door. Zo werk ik " +
+        "ook."
     },
     doorzetter: {
       titel: "Alberta's oordeel: de doorzetter",
-      tekst: "Je hebt vaak om hulp gevraagd en telkens weer verder gewerkt. " +
-        "Dat is geen zwakte — dat is hoe je het leert."
+      tekst: "Je hebt vaak om hulp gevraagd en telkens opnieuw doorgezet. Dat " +
+        "is geen zwakte. Zo leer je het."
     },
     "samen-geraakt": {
       titel: "Alberta's oordeel: samen geraakt",
-      tekst: "We hebben dit samen gedaan, jij en ik en een hoop hints. En weet " +
-        "je? Het spel draait. Dat is wat telt."
+      tekst: "We hebben dit samen gedaan, jij en ik en een hoop hints. Het " +
+        "spel draait. Dat is wat telt."
     }
   },
 
@@ -1027,8 +1091,11 @@ AL.strings = {
     compleet: "Het laatste hoofdstuk is hersteld. Op de monitor verschijnt, " +
       "regel na regel, wat je al die tijd aan het herstellen was: Alberta's " +
       "spel, compleet. Het compileert. Het draait.",
+    // De zin die de speler klaarzet voor wat er komt: het is geen vriendelijk
+    // verhaal, en dat hoort hij te weten voor hij het uitspeelt.
     bootSim: "SEVEN LITTLE GOATS — de tekstversie boot in de terminal. Speel " +
-      "eindelijk het spel dat je grootmoeder nooit afkreeg."
+      "het spel dat je grootmoeder niet heeft afgemaakt. Het loopt niet voor " +
+      "iedereen goed af; dat hangt van jou af."
   },
 
   // De epiloog (spelontwerp-legacy.md, §"Endgame", stap 5; achtergrond.md,
@@ -1039,7 +1106,9 @@ AL.strings = {
     titel: "Epiloog",
     alineas: [
       "Je hebt het afgemaakt. Zeven hoofdstukken, stuk voor stuk hersteld, tot " +
-        "Alberta's spel weer draaide. Zij kreeg het niet af; jij wel.",
+        "Alberta's spel weer draaide. Zij kreeg het niet af. Jij wel.",
+      "Boven blijft de zolder staan zoals hij stond: de dozen, het stof, de " +
+        "mok naast het toetsenbord. Alleen het scherm is nu uit.",
       "De broncode ligt op zolder — neem ze mee. Ze staat in " +
         "seven-little-goats/. Open ze in IntelliJ, lees ze, draai ze zelf. " +
         "Wat je in de terminal herstelde, is nu gewoon Java in jouw handen.",
@@ -1079,38 +1148,14 @@ AL.strings = {
       };
     }
 
+    // Er staat hier bewust géén intro-spread meer. De achtergrond werd vroeger
+    // op een bladzijde van het notitieboek gezet, en dat klopte op drie
+    // manieren niet: je las wat er in het boek stond voor je het boek had, de
+    // verteller sprak jou aan op papier dat Alberta's handschrift draagt, en de
+    // voet vroeg om het notitieboek te openen dat je aan het lezen was. De
+    // openingstekst staat nu in AL.strings.intro, in de stem van de verteller,
+    // vóór de zolder. Zie workflow/15-opwaardering-kickoff.md.
     return {
-      // De intro-spread (spelontwerp-legacy.md: titel → spread:intro → zolder).
-      // Draagt de kernfictie en — verplicht, verbatim — de prototype-regel uit
-      // achtergrond.md, §"Prototype-fase".
-      intro: {
-        nr: 0,
-        scharnier: "de zolder",
-        titel: "Zo begon ik altijd",
-        week: null,
-        paginas: [
-          {
-            kop: "The Legacy of Alberta",
-            regels: [
-              "Je grootmoeder Alberta was game-ontwerpster, lang geleden,",
-              "toen een spel nog op één zolder werd gemaakt. Ze verdween.",
-              "Wat ze naliet staat hier: dozen, stof, en een pc die nog",
-              "aanslaat. En, tussen alles, haar beschadigde notitieboek."
-            ]
-          },
-          {
-            kop: "Zo begon ik altijd",
-            regels: [
-              "Alberta bouwde elk spel eerst als tekstversie in de terminal.",
-              "Zo begon ze altijd. Pas als het tekstspel klopte, tekende ze",
-              "eroverheen. Wat jij herstelt is dus geen tekening, maar haar",
-              "code — stuk voor stuk, tot Seven Little Goats weer draait."
-            ],
-            voet: "Sla het notitieboek open. Daar begint het."
-          }
-        ]
-      },
-
       l1: maakSpread(1, "De blauwdruk en de doos",
         "Klasse, instantie, velden, constructor, this",
         1,
