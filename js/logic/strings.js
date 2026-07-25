@@ -266,10 +266,9 @@ AL.strings = {
   ],
 
   // Herbegin (save-en-hints.md): vraagt bevestiging, want het gooit voortgang
-  // weg.
+  // weg. De vraag blijft staan terwijl je typt; Escape laat alles zoals het is.
   herbeginVraag: "Herbeginnen wist je voortgang — al je herstelde hoofdstukken " +
-    "en concepten. Typ 'herbegin ja' om het te bevestigen.",
-  herbeginKlaar: "De zolder ligt er weer bij zoals je hem vond. Alles opnieuw.",
+    "en concepten. Typ 'herbegin ja' om te bevestigen, Esc om het te laten.",
 
   // Geluid.
   geluidAan: "Geluid aan.",

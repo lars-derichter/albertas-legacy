@@ -49,13 +49,21 @@ Het in-game commando `herbegin` (beschikbaar in de zolder-modus, zie
 - Het maakt een verse staat via `AL.world.nieuw(seed)`. De **seed blijft
   behouden** als de speler via `?seed=N` speelde (zodat een QA-run herhaalbaar
   herbegint); zonder expliciete seed wordt een nieuwe gegenereerd.
-- Het brengt de speler terug naar de titelkaart of de eerste zolderscène.
+- Het brengt de speler terug in de openingsreeks — een verse start toont de
+  opening opnieuw, en Escape slaat ze in één toets over.
 - Effect-tag: `herbegin`.
 
 `herbegin` vraagt om een bevestiging (het gooit voortgang weg). Er is geen
 gedeeltelijke reset; het is alles of niets. Een enkel level opnieuw doen gebeurt
 niet via `herbegin` maar door de puzzel opnieuw te openen (de checker beoordeelt
 elke inzending vers).
+
+De bevestiging is een getypt antwoord (`herbegin ja`) en geen toets, zodat ze
+stateless blijft en dus in Node testbaar is. Het vraagvenster draagt daarom de
+effect-tag `vraag`: het laat de invoerbalk vrij zolang het openstaat. Blokkeerde
+het de invoer zoals een gewoon venster, dan was het antwoord dat de vraag zelf
+noemt onmogelijk te typen. Escape trekt de vraag in en laat alles staan; elk
+ander commando vervangt de vraag door zijn eigen antwoord.
 
 ## `?seed=N` — deterministische QA
 

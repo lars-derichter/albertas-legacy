@@ -175,8 +175,13 @@ globalThis.AL = globalThis.AL || {};
     // aanslagen op, en een speler die tijdens het wegdraaien van het beeld al
     // zijn volgende commando intypt, zou dat commando kwijt zijn. De overgang
     // bevriest wél de beweging (zie tik), zodat de speler niet blind doorloopt.
+    //
+    // Een vraagvenster is de uitzondering: dat wacht juist op een getypt
+    // antwoord. Zou het blokkeren, dan slikt het de letters op, dismisst de
+    // spatie in "herbegin ja" het venster, en belandt de rest ("ja") als
+    // onbegrepen commando in de invoerbalk.
     var vrij = (!titelActief && toestand && toestand.modus === "zolder" &&
-      !venster);
+      (!venster || venster.vraag));
     AL.input.blokkeer = !vrij;
   }
 
@@ -224,11 +229,13 @@ globalThis.AL = globalThis.AL || {};
     // harde cut, het duidelijkste "webding"-signaal dat het spel afgaf.
     verwerkEffecten(effecten, entryVoorKamer);
     var heeftScene = false;
+    var isVraag = false;
     for (var i = 0; i < effecten.length; i++) {
-      if (effecten[i].indexOf("scene:") === 0) { heeftScene = true; break; }
+      if (effecten[i].indexOf("scene:") === 0) heeftScene = true;
+      if (effecten[i] === "vraag") isVraag = true;
     }
     if (heeftScene && !titelActief) startOpkomst("fade");
-    if (tekst.length > 0) toonVenster(tekst, null);
+    if (tekst.length > 0) toonVenster(tekst, null, { vraag: isVraag });
   }
 
   // ---- Effecttags (de volledige woordenlijst) -----------------------------
@@ -314,6 +321,9 @@ globalThis.AL = globalThis.AL || {};
         else if (arg === "uit") { AL.sound.zetAan(false); if (toestand) toestand.geluid = false; bewaar(); }
         else if (AL.sound.bedden.indexOf(arg) !== -1) { AL.sound.muziek(arg); }
         else { AL.sound.speel(arg); }
+      } else if (tag === "vraag") {
+        // Alleen een venstervorm: verwerkResultaat leest deze tag en houdt de
+        // invoerbalk vrij. Hier valt niets te doen.
       } else if (tag === "crt") {
         var crtAan = (arg === "aan");
         if (toestand) toestand.crt = crtAan;
@@ -349,6 +359,13 @@ globalThis.AL = globalThis.AL || {};
   // stapt de speler zelf de zolder op.
   function titelVerder() {
     titelActief = false;
+    startOpening();
+  }
+
+  // De reeks aanzwengelen. Twee wegen komen hier binnen: de titelkaart, en een
+  // herbegin — dat is een verse start en hoort de opening dus opnieuw te tonen
+  // (workflow/19-de-opening.md). Escape slaat ze allebei over.
+  function startOpening() {
     openingStap = 0;
     toonOpeningStap();
   }
@@ -484,7 +501,13 @@ globalThis.AL = globalThis.AL || {};
     toestand = AL.world.herbegin(storage(), seed);
     verbergOverlay();
     titelActief = false;
-    betreedZolder(true);
+    venster = null;
+    naVenster = null;
+    // Niet rechtstreeks de zolder in: een herbegin die je meteen weer in
+    // dezelfde hoek zet met één regel tekst, leest als een commando dat niets
+    // deed. De openingsreeks is het duidelijkste bewijs dat het spel opnieuw
+    // begonnen is — en ze is met Escape in één toets weg.
+    startOpening();
   }
 
   // Boot de Seven Little Goats-simulatie in het terminalpaneel van de pc-overlay
@@ -524,9 +547,16 @@ globalThis.AL = globalThis.AL || {};
   // ---- Commando's uit de invoerbalk ---------------------------------------
 
   function opCommando(ruw) {
-    if (titelActief || !toestand || toestand.modus !== "zolder" || venster) return;
+    if (titelActief || !toestand || toestand.modus !== "zolder") return;
+    // Een gewoon venster slikt de invoer tot het weggeklikt is; een
+    // vraagvenster wacht er juist op.
+    if (venster && !venster.vraag) return;
     var invoer = ruw.trim();
     if (invoer === "") return;
+    // De vraag is beantwoord — wat er ook getypt is. Het antwoord komt in de
+    // plaats van de vraag, ook als het antwoord "kijk" is.
+    venster = null;
+    naVenster = null;
     var laag = invoer.toLowerCase();
 
     // Bij "ga <richting>" de entry aan de overkant kiezen (zoals de predecessor).
@@ -562,8 +592,18 @@ globalThis.AL = globalThis.AL || {};
     if (toestand.modus === "epiloog") { startTitel(); return; }
   }
 
-  // Escape: de openingsreeks overslaan, of de pc-overlay sluiten.
+  // Escape: een vraag intrekken, de openingsreeks overslaan, of de pc-overlay
+  // sluiten.
   function opEscape() {
+    // Een vraag hoort een uitweg te hebben die niets doet. Enter en spatie zijn
+    // dat niet: die typen mee in het antwoord.
+    if (venster && venster.vraag) {
+      venster = null;
+      naVenster = null;
+      AL.input.regel = "";
+      syncBlokkeer();
+      return;
+    }
     if (openingStap !== null) { beeindigOpening(); return; }
     if (!titelActief && toestand && toestand.modus === "pc") {
       opADePc(false);
@@ -1241,6 +1281,9 @@ globalThis.AL = globalThis.AL || {};
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
         vensterOpen: !!venster,
+        // Wacht het venster op een getypt antwoord? Dan blijft de invoerbalk
+        // vrij en klikt een toets het niet weg.
+        vensterVraag: !!(venster && venster.vraag),
         overlayOpen: !!(pcOverlay && pcOverlay.style.display !== "none"),
         // Loopt de zit-animatie? De modus staat dan al op "pc" terwijl de overlay
         // nog dicht is — een test die op het paneel wacht, hoort op overlayOpen

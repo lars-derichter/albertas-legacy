@@ -778,7 +778,11 @@ globalThis.AL = globalThis.AL || {};
         // regels is drie regels hoog. Zet krimp op false om altijd de volle
         // maxRegels aan te houden — dat is voor een reeks vensters die na
         // elkaar komen en niet mogen zitten springen.
-        krimp: opties.krimp !== false
+        krimp: opties.krimp !== false,
+        // Een vraagvenster wacht op een getypt antwoord in plaats van op een
+        // toets. De engine laat de invoerbalk vrij zolang het openstaat; een
+        // gewoon venster blokkeert het typen tot het weggeklikt is.
+        vraag: opties.vraag === true
       };
     },
 

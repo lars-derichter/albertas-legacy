@@ -123,9 +123,41 @@ test("de zolder-hint hoort bij de hoek en telt NIET in hintsTotaal", () => {
 
 test("herbegin vraagt bevestiging en geeft pas dan het effect", () => {
   const t = world.nieuw();
-  assert.deepEqual(world.herbeginVraag(t).effecten, []);
+  assert.deepEqual(world.herbeginVraag(t).effecten, ["vraag"]);
   const r = world.herbeginBevestig(t);
   assert.ok(r.effecten.includes("herbegin"));
+});
+
+// De vraag noemt zelf wat je moet typen. Draagt ze de tag "vraag" niet, dan
+// blokkeert het venster de invoerbalk en is dat antwoord niet te typen: de
+// letters worden geslikt, de spatie in "herbegin ja" klikt het venster weg en
+// "ja" belandt als onbegrepen commando in de balk.
+test("de herbegin-vraag houdt de invoerbalk vrij", () => {
+  const t = world.nieuw();
+  const r = world.herbeginVraag(t);
+  assert.ok(r.effecten.includes("vraag"),
+    "zonder de tag 'vraag' is het antwoord onmogelijk te typen");
+  assert.match(r.tekst[0], /herbegin ja/);
+});
+
+// De bevestiging zegt zelf niets: de openingsreeks die erop volgt is het
+// antwoord. Een venster ertussen zou de eerste beat ervan overschrijven.
+test("de bevestiging laat het beeld aan de openingsreeks", () => {
+  const r = world.herbeginBevestig(world.nieuw());
+  assert.deepEqual(r.tekst, []);
+  assert.deepEqual(r.effecten, ["herbegin"]);
+});
+
+test("de parser herkent beide vormen van de bevestiging", () => {
+  const t = world.nieuw();
+  assert.deepEqual(AL.parser.verwerk(t, "herbegin").effecten, ["vraag"]);
+  for (const vorm of ["herbegin ja", "herbegin bevestig", "HERBEGIN JA",
+    "  herbegin ja  "]) {
+    assert.deepEqual(AL.parser.verwerk(t, vorm).effecten, ["herbegin"], vorm);
+  }
+  // "ja" alleen is géén bevestiging: dat is wat er in de balk belandde toen de
+  // spatie het venster nog wegklikte.
+  assert.deepEqual(AL.parser.verwerk(t, "ja").tekst, [strings.datBegrijpJeNiet]);
 });
 
 test("help somt de zolder-commando's op", () => {

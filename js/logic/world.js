@@ -354,11 +354,18 @@ globalThis.AL = globalThis.AL || {};
     // Herbegin met bevestiging (save-en-hints.md). "herbegin" vraagt; het
     // effect "herbegin" volgt pas na bevestiging, waar de engine de save wist en
     // een verse staat maakt.
+    //
+    // De vraag draagt het effect "vraag": ze wacht op een getypt antwoord en
+    // niet op een toets. Zonder dat blokkeert het venster de invoerbalk en is
+    // het antwoord dat de vraag zelf noemt onmogelijk te typen.
     herbeginVraag: function () {
-      return { tekst: [AL.strings.herbeginVraag], effecten: [] };
+      return { tekst: [AL.strings.herbeginVraag], effecten: ["vraag"] };
     },
+    // De bevestiging zegt zelf niets. Het effect zet de speler terug in de
+    // openingsreeks, en dát is het antwoord; een venster ertussen zou de eerste
+    // beat van de opening meteen weer overschrijven.
     herbeginBevestig: function () {
-      return { tekst: [AL.strings.herbeginKlaar], effecten: ["herbegin"] };
+      return { tekst: [], effecten: ["herbegin"] };
     },
 
     // --- Kleine herkenners -----------------------------------------------------

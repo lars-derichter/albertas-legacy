@@ -52,10 +52,13 @@ function canvasNietLeeg(page) {
   });
 }
 
+// Klik open vensters weg. Een vraagvenster blijft staan: dat blokkeert de
+// invoer niet en Enter typt er juist in mee, dus wegklikken is er niet bij én
+// niet nodig.
 async function sluitVensters(page) {
   for (let i = 0; i < 40; i++) {
     const st = await state(page);
-    if (!st.vensterOpen) return;
+    if (!st.vensterOpen || st.vensterVraag) return;
     await page.keyboard.press("Enter");
     await page.waitForTimeout(45);
   }
@@ -253,6 +256,63 @@ async function main() {
     "gain=" + gWeer.meesterGain);
   check("geluid aan start het bed van de huidige stand weer",
     gWeer.bed === "ambient-zolder", "bed=" + gWeer.bed);
+
+  // 11. Herbegin. Dit is de regressie: de vraag noemt zelf het antwoord dat je
+  //     moet typen, dus dat antwoord moet ook getypt kúnnen worden. Blokkeerde
+  //     het venster de invoer — zoals elk ander venster doet — dan slikte het
+  //     "herbegin", klikte de spatie het venster weg, en belandde "ja" als
+  //     onbegrepen commando in de balk. Geen enkele toetsaanslag hieronder mag
+  //     dus tussendoor een venster wegklikken.
+  await sluitVensters(page);
+  const seedVoor = (await state(page)).seed;
+  await page.keyboard.type("herbegin", { delay: 6 });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(140);
+  const sVraag = await state(page);
+  check("herbegin opent de bevestigingsvraag",
+    sVraag.vensterOpen === true && sVraag.vensterVraag === true,
+    "venster=" + sVraag.vensterOpen + " vraag=" + sVraag.vensterVraag);
+  check("de vraag laat de invoerbalk vrij",
+    (await page.evaluate(() => window.AL.input.blokkeer)) === false);
+
+  // Precies typen wat de vraag zegt, zonder het venster eerst weg te klikken.
+  await page.keyboard.type("herbegin ja", { delay: 6 });
+  const regel = await page.evaluate(() => window.AL.input.regel);
+  check("de spatie in 'herbegin ja' klikt het venster niet weg",
+    regel === "herbegin ja", "regel=" + JSON.stringify(regel));
+
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(200);
+  const sNa = await state(page);
+  check("herbegin ja start de openingsreeks opnieuw",
+    sNa.openingActief === true, "opening=" + sNa.openingActief);
+  check("herbegin ja geeft een verse staat", sNa.seed !== seedVoor,
+    "voor=" + seedVoor + " na=" + sNa.seed);
+  const gewist = await page.evaluate(() =>
+    window.AL.debugToestand.levels["1"].ontgrendeld);
+  check("herbegin wist de voortgang (fragment 1 weer op slot)",
+    gewist === false, "ontgrendeld=" + gewist);
+
+  // Escape slaat de herhaalde opening over en zet je in de verse zolder.
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(150);
+  await sluitVensters(page);
+  const sVers = await state(page);
+  check("Escape brengt je na een herbegin in de verse zolder",
+    sVers.openingActief === false && sVers.modus === "zolder" &&
+    sVers.sceneId === "zolder-west", "scene=" + sVers.sceneId);
+
+  // Escape trekt een openstaande vraag in en laat alles staan.
+  await page.keyboard.type("herbegin", { delay: 6 });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(140);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(140);
+  const sAf = await state(page);
+  check("Escape trekt de herbegin-vraag in zonder iets te wissen",
+    sAf.vensterOpen === false && sAf.openingActief === false &&
+    sAf.seed === sVers.seed, "venster=" + sAf.vensterOpen +
+    " seed=" + sAf.seed);
 
   await browser.close();
 
