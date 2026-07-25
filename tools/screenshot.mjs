@@ -45,7 +45,9 @@ async function main() {
   const dir = dirname(uitPad);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined
+  });
   const page = await browser.newPage();
 
   let url = pathToFileURL(indexPad).href;

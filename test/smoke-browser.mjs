@@ -99,6 +99,7 @@ async function main() {
   }
 
   const browser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
   const context = await browser.newContext();
