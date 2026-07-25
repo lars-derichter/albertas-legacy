@@ -20,8 +20,16 @@ lambda's, geen `enum`, geen `var`, geen ternaire operator, geen overerving of
 interfaces, geen collecties buiten `ArrayList<>`. Nederlandstalige klasse- en
 veldnamen. `Scanner` voor invoer. Dit is dezelfde gereedschapskist als de
 predecessor (zie diens README, §"Binnen de grenzen van de cursus"). WP 2 gate:
-`javac -d out src/*.java` schoon en `grep -nE 'switch|enum|->|Stream|\bvar '`
-leeg.
+`javac -encoding UTF-8 -d out src/*.java` schoon en
+`grep -nE 'switch|enum|->|Stream|\bvar '` leeg.
+
+De vlag `-encoding UTF-8` hoort bij die poort. De bron staat in UTF-8, maar
+`javac` valt zonder die vlag terug op de standaardcodering van het systeem; op
+een Windows-machine met cp1252 belandt `geërfd` dan als `geÃ«rfd` in de
+`.class`-bestanden. Bij het draaien geldt hetzelfde voor de uitvoer:
+`java -Dstdout.encoding=UTF-8 -cp out Main`. Beide vlaggen staan in de README
+van het spel en in `test/test-sim-cross-check.mjs`, zodat de vergelijking
+tussen de Java en de browsersimulatie over inhoud gaat en niet over codering.
 
 ## Het verhaal
 

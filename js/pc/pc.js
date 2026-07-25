@@ -23,6 +23,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
 
   var overlay = null;
   var elHeader = null, elMenu = null, elEditor = null, elTerminal = null;
+  var elMenubalk = null, elFbalk = null;
   var ctx = null;
 
   var view = "menu";            // "menu" | "editor" | "terminal"
@@ -40,6 +41,14 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     var chrome = document.createElement("div");
     chrome.className = "pc-chrome";
 
+    // De menubalk bovenaan en de F-toetsenbalk onderaan: de twee regels waar een
+    // Turbo-scherm van te herkennen is. Ze staan er niet als decoratie — de
+    // menubalk draagt de commando's die écht bestaan, en de statusbalk is de
+    // enige plek waar een speler kan lézen dat F9 compileert.
+    elMenubalk = document.createElement("div");
+    elMenubalk.className = "pc-menubalk";
+    chrome.appendChild(elMenubalk);
+
     elHeader = document.createElement("div");
     elHeader.className = "pc-header";
     chrome.appendChild(elHeader);
@@ -55,6 +64,11 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     body.appendChild(elEditor);
     body.appendChild(elTerminal);
     chrome.appendChild(body);
+
+    elFbalk = document.createElement("div");
+    elFbalk.className = "pc-fbalk";
+    chrome.appendChild(elFbalk);
+
     overlay.appendChild(chrome);
 
     ctx = {
@@ -219,6 +233,86 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     elMenu.style.display = (view === "menu") ? "flex" : "none";
     elEditor.style.display = (view === "editor") ? "flex" : "none";
     elTerminal.style.display = (view === "terminal") ? "flex" : "none";
+    renderBalken();
+  }
+
+  // ---- De twee Turbo-balken ------------------------------------------------
+
+  // Wat er op de menubalk en de statusbalk staat, hangt af van welk paneel open
+  // is: in het menu is er niets te compileren en geen hint te vragen. Eén functie
+  // die dat uitrekent, want anders raken de twee balken uit elkaar.
+  function balkItems() {
+    var t = S().pc;
+    if (view === "menu") {
+      return {
+        menu: [{ label: t.balkZolder, toets: "Esc", doe: sluitNaarZolder }],
+        f: [["Esc", t.balkZolder], ["1-9", t.balkKies]]
+      };
+    }
+    if (view === "editor") {
+      return {
+        menu: [
+          { label: t.balkCompileer, toets: "F9", doe: function () {
+            AL.pc.editor.compileer();
+          } },
+          { label: t.balkHint, toets: "F1", doe: vraagHint },
+          { label: t.balkMenu, toets: "Esc", doe: toonMenu }
+        ],
+        f: [["F1", t.balkHint], ["F9", t.balkCompileer], ["Esc", t.balkZolder]]
+      };
+    }
+    return {
+      menu: [
+        { label: t.balkHint, toets: "F1", doe: vraagHint },
+        { label: t.balkMenu, toets: "Esc", doe: toonMenu }
+      ],
+      f: [["F1", t.balkHint], ["Esc", t.balkZolder]]
+    };
+  }
+
+  function sluitNaarZolder() { if (ctx) ctx.emit(["pc:sluit"]); }
+
+  function renderBalken() {
+    if (!elMenubalk || !elFbalk) return;
+    var items = balkItems();
+
+    elMenubalk.innerHTML = "";
+    for (var i = 0; i < items.menu.length; i++) {
+      (function (item) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pc-menubalk-item";
+        // De sneltoets tussen blokhaken erachter, zoals Turbo het deed: het
+        // label zegt wát het doet, de haken zeggen waarmee.
+        var naam = document.createElement("span");
+        naam.textContent = item.label;
+        var toets = document.createElement("span");
+        toets.className = "pc-sneltoets";
+        toets.textContent = "[" + item.toets + "]";
+        btn.appendChild(naam);
+        btn.appendChild(toets);
+        btn.addEventListener("click", item.doe);
+        elMenubalk.appendChild(btn);
+      })(items.menu[i]);
+    }
+    var rek = document.createElement("span");
+    rek.className = "pc-menubalk-rek";
+    elMenubalk.appendChild(rek);
+    var naamplaat = document.createElement("span");
+    naamplaat.className = "pc-menubalk-klok";
+    naamplaat.textContent = S().pc.balkNaamplaat;
+    elMenubalk.appendChild(naamplaat);
+
+    elFbalk.innerHTML = "";
+    for (var j = 0; j < items.f.length; j++) {
+      var vak = document.createElement("span");
+      var t = document.createElement("span");
+      t.className = "pc-fbalk-toets";
+      t.textContent = items.f[j][0] + " ";
+      vak.appendChild(t);
+      vak.appendChild(document.createTextNode(items.f[j][1]));
+      elFbalk.appendChild(vak);
+    }
   }
 
   // De sim (Seven Little Goats) leent het terminalpaneel: zorg dat de overlay

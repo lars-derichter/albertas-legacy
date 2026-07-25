@@ -1,7 +1,8 @@
-/* Het canvas is 320×200 logisch en wordt met een geheel getal geschaald,
-   nearest-neighbor, gecentreerd op een zwart scherm — zoals een monitor uit
-   1990 dat zou doen. De schaalfactor zet engine.js via de CSS-variabele
-   --schaal (grootste gehele factor die in het venster past). */
+/* Het canvas is 320×200 logisch en wordt nearest-neighbor geschaald,
+   gecentreerd op een zwart scherm — zoals een monitor uit 1990 dat zou doen.
+   Twee gehele schaalfactoren, niet één: VGA mode 13h werd op 4:3 getoond, dus
+   de pixels waren 20 % hoger dan breed. engine.js zet --schaal-x en --schaal-y
+   (zie berekenSchaal daar voor de keuze van het paar). */
 
 html, body {
   margin: 0;
@@ -17,12 +18,43 @@ body {
   justify-content: center;
 }
 
+/* Draagt het canvas én de CRT-laag, zodat die laatste precies het beeld dekt
+   en niet het hele venster. */
+#beeld {
+  position: relative;
+  line-height: 0;
+}
+
 #scherm {
+  display: block;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  width: calc(320px * var(--schaal, 3));
-  height: calc(200px * var(--schaal, 3));
+  width: calc(320px * var(--schaal-x, 3));
+  height: calc(200px * var(--schaal-y, 4));
 }
+
+/* De CRT-behandeling: één donkere lijn per logische pixelrij (de spatiëring
+   volgt --schaal-y, anders klopt het patroon niet bij een andere schaal), plus
+   een zacht vignet naar de hoeken. Bewust subtiel — het mag de art dempen, niet
+   verstoppen. Uit te zetten met het commando "crt uit"; engine.js zet dan
+   data-crt="uit" op <html>. */
+#beeld::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.20) 0 1px,
+      rgba(0, 0, 0, 0) 1px calc(1px * var(--schaal-y, 4))),
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0) 55%,
+      rgba(0, 0, 0, 0.42) 100%);
+}
+
+:root[data-crt="uit"] #beeld::after { display: none; }
 
 /* De gesimuleerde-pc-overlay: een full-screen VGA-kader in amber-CRT-stijl,
    bovenop het canvas. Verborgen tot de engine hem toont (modus "pc"). De
@@ -32,7 +64,18 @@ body {
    (amber CRT), niet thema-afhankelijk: dit is een spelscherm uit 1990. */
 
 :root {
-  --pc-schrift: "Courier New", ui-monospace, "DejaVu Sans Mono", monospace;
+  /* Courier New staat hier bewust niet meer in. Dat is een schrijfmachineletter
+     met schreven en dunne stokken; een DOS-terminal had een rasterletter met
+     vlakke einden. De stack hieronder pakt eerst wat het systeem als
+     terminalletter aanbiedt en valt pas daarna terug.
+
+     Wat er níet staat is de 8×8-bitmapfont van het spel zelf. Die kan niet: de
+     editor is een echte <textarea> (een geboekte beslissing in
+     engine-architectuur.md, om selectie, plakken en schermlezers te houden), en
+     een textarea zet zijn tekst met een échte font. Zie
+     workflow/26-de-gesimuleerde-pc.md. */
+  --pc-schrift: ui-monospace, "Cascadia Mono", "Consolas", "DejaVu Sans Mono",
+    "Liberation Mono", monospace;
 }
 
 #pc-overlay {
@@ -47,20 +90,103 @@ body {
   box-sizing: border-box;
 }
 
+/* De kast. Geen afgeronde hoeken en geen gloed eromheen: een monitor uit 1990
+   had een rechthoekig beeld met een scherpe rand, en de "glow" die moderne
+   retro-thema's eromheen leggen is een filter uit 2015. Wat er wél is: een
+   dubbele lijn, want dat is waar Turbo Vision zijn kaders van maakte. */
 .pc-chrome {
   width: min(94vw, 920px);
   height: min(92vh, 680px);
   display: flex;
   flex-direction: column;
   background: #0c0900;           /* schermzwart met warme ondertoon */
-  border: 3px solid var(--pc-rand, #7a4a00);
-  box-shadow: 0 0 0 6px var(--pc-kast, #3a1f00),
-              0 0 42px rgba(255, 191, 58, 0.22);
-  border-radius: 6px;
+  border: 4px double var(--pc-rand, #7a4a00);
+  box-shadow: 0 0 0 6px var(--pc-kast, #3a1f00);
+  border-radius: 0;
   overflow: hidden;
+  position: relative;
   font-family: var(--pc-schrift);
   color: var(--pc-amber-licht, #ffbf3a);
 }
+
+/* Scanlines over het paneel, met dezelfde schakelaar als het canvas: wie
+   `crt uit` typt, zet ze hier ook uit. Ze liggen op de kast en niet op een
+   binnenpaneel, zodat ze doorlopen over het kader — een beeldbuis kent geen
+   uitzonderingen. pointer-events uit, anders vangt de laag elke klik. */
+.pc-chrome::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0 1px,
+    rgba(0, 0, 0, 0) 1px 3px);
+}
+:root[data-crt="uit"] .pc-chrome::after { display: none; }
+
+/* ---- De menubalk --------------------------------------------------------- */
+
+/* Turbo zette zijn menu op de bovenste regel in inverse video, met de sneltoets
+   van elk item opgelicht. Dit is diezelfde balk, maar met de commando's die
+   écht bestaan: een menubalk vol items die niets doen, is decoratie. */
+.pc-menubalk {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--pc-amber, #c98400);
+  color: #0c0900;
+  font-family: var(--pc-schrift);
+  font-size: clamp(11px, 1.7vw, 15px);
+  z-index: 4;
+}
+.pc-menubalk-item {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 4px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pc-menubalk-item:hover,
+.pc-menubalk-item:focus {
+  outline: none;
+  background: #0c0900;
+  color: var(--pc-amber-licht, #ffbf3a);
+}
+.pc-menubalk-item[disabled] { opacity: 0.45; cursor: default; }
+.pc-menubalk-item[disabled]:hover { background: transparent; color: inherit; }
+/* De sneltoets, opgelicht zoals Turbo dat deed. De ruimte ervoor staat in de
+   marge en niet in de tekst: als spaties in het onderstreepte deel zitten, loopt
+   de streep eronder door en leest "Compileer  [F9]" als "Compileer__[F9]". */
+.pc-sneltoets {
+  text-decoration: underline;
+  font-weight: bold;
+  margin-left: 0.5em;
+}
+.pc-menubalk-rek { flex: 1 1 auto; }
+.pc-menubalk-klok { padding: 4px 12px; white-space: nowrap; }
+
+/* ---- De F-toetsenbalk ---------------------------------------------------- */
+
+/* De onderste regel van een Turbo-scherm was de statusbalk met de levende
+   functietoetsen. Precies daarom staat ze hier ook: het is de enige plek waar
+   een speler kan lézen dat F9 compileert en F1 een hint geeft. */
+.pc-fbalk {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 18px;
+  background: var(--pc-amber, #c98400);
+  color: #0c0900;
+  font-family: var(--pc-schrift);
+  font-size: clamp(10px, 1.6vw, 14px);
+  padding: 3px 12px;
+  z-index: 4;
+}
+.pc-fbalk-toets { font-weight: bold; }
 
 .pc-header {
   flex: 0 0 auto;
@@ -71,6 +197,7 @@ body {
   letter-spacing: 1px;
   padding: 6px 12px;
   text-transform: uppercase;
+  border-bottom: 1px solid var(--pc-amber, #c98400);
 }
 /* Een knipperende blok-cursor, zoals een DOS-editor in rust. */
 .pc-header::after {
@@ -104,10 +231,17 @@ body {
   font-size: clamp(12px, 1.9vw, 16px);
   line-height: 1.45;
   color: var(--pc-amber-licht, #ffbf3a);
-  text-shadow: 0 0 4px rgba(255, 191, 58, 0.4);
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* De regels van het uitvoerpaneel. De kernfeedbacklus van het hele spel —
+   slaagt mijn code of niet — was één amberkleurige muur tekst: CHECK_OK en
+   CHECK_FAIL hadden exact dezelfde kleur. --pc-rood werd al door engine.js
+   geïnjecteerd en door geen enkele regel gebruikt. */
+.pc-uit-ok { color: var(--pc-groen, #52a94a); }
+.pc-uit-fout { color: var(--pc-rood, #ff5555); }
+.pc-uit-kop { color: var(--pc-schermwit, #fff0b8); }
 
 /* ---- Menu ---------------------------------------------------------------- */
 
@@ -170,7 +304,7 @@ body {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
-  border: 1px solid var(--pc-rand, #7a4a00);
+  border: 3px double var(--pc-rand, #7a4a00);
   background: #0a0700;
 }
 .pc-editor-gutter {
@@ -218,8 +352,9 @@ body {
   font-size: clamp(11px, 1.7vw, 15px);
   color: var(--pc-schermwit, #fff0b8);
   background: var(--pc-rand, #7a4a00);
-  border: 1px solid var(--pc-amber, #c98400);
-  padding: 6px 14px;
+  border: 3px double var(--pc-amber, #c98400);
+  border-radius: 0;
+  padding: 5px 14px;
   cursor: pointer;
 }
 .pc-knop:hover,
@@ -230,12 +365,21 @@ body {
 }
 .pc-knop-compileer { font-weight: bold; }
 
+/* De bovenrand liep dwars door de eerste regel: border-top plus 8 px padding is
+   minder dan één regelhoogte, dus de eerste regel begon ín de lijn. Nu een echt
+   omkaderd paneel met ruimte binnen het kader, zoals een Turbo-uitvoervenster. */
 .pc-editor-uitvoer {
-  flex: 0 1 34%;
-  min-height: 3em;
+  /* Hoog genoeg voor een volledige uitslag. Met `flex: 0 1 34%` kromp dit paneel
+     mee als de editor ruimte vroeg, en dan viel juist de laatste regel weg — de
+     CHECK_FAIL, het enige dat de speler op dat moment wíl lezen. Een ondergrens
+     in regels, geen percentage: het gaat om hoeveel tekst erin past. */
+  flex: 0 1 auto;
+  min-height: 10em;
+  max-height: 42%;
   overflow: auto;
-  border-top: 1px solid var(--pc-rand, #7a4a00);
-  padding-top: 8px;
+  border: 1px solid var(--pc-rand, #7a4a00);
+  padding: 8px 10px;
+  background: #0a0700;
 }
 
 /* ---- Terminal ------------------------------------------------------------ */

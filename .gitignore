@@ -5,3 +5,4 @@ seven-little-goats/out/
 test-results/
 playwright-report/
 .claude/settings.local.json
+tools/screenshots/

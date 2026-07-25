@@ -43,7 +43,8 @@ try {
 
 // Elk op-type met zijn vaste lengte (aantal array-elementen).
 const OP_LENGTE = {
-  fill: 2, rect: 6, poly: 3, line: 3, dither: 4, ellipse: 6, px: 3
+  fill: 2, rect: 6, poly: 3, line: 3, dither: 4, ellipse: 6, px: 3,
+  gradient: 8, ditherRamp: 5, shadow: 3, light: 4, noise: 5
 };
 
 // ---- Hulp om een scènebestand te laden -----------------------------------
@@ -123,6 +124,71 @@ function keurOp(op, i, fouten) {
     const pts = op[3];
     if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
       fouten.push(waar + ": dither vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "gradient") {
+    if (!isKleur(op[1]) || !isKleur(op[2])) {
+      fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    }
+    const [, , , x, y, b, h, richting] = op;
+    if (!binnenX(x) || !binnenX(x + b - 1)) fouten.push(waar + ": x buiten veld");
+    if (!binnenY(y) || !binnenY(y + h - 1)) fouten.push(waar + ": y buiten veld");
+    if (richting !== "h" && richting !== "v") {
+      fouten.push(waar + ": richting moet 'h' of 'v' zijn");
+    }
+
+  } else if (naam === "ditherRamp") {
+    if (!isKleur(op[1]) || !isKleur(op[2])) {
+      fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    }
+    if (typeof op[3] !== "number" || op[3] < 0 || op[3] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    const pts = op[4];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": ditherRamp vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "shadow") {
+    if (!Number.isInteger(op[1]) || op[1] < 1 || op[1] > 5) {
+      fouten.push(waar + ": stappen moet een geheel getal 1–5 zijn");
+    }
+    const pts = op[2];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": shadow vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "light") {
+    if (!Number.isInteger(op[1]) || op[1] < 1 || op[1] > 5) {
+      fouten.push(waar + ": stappen moet een geheel getal 1–5 zijn");
+    }
+    if (typeof op[2] !== "number" || op[2] < 0 || op[2] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    const pts = op[3];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": light vraagt minstens 3 punten");
+    } else {
+      keurPunten(pts, waar, fouten);
+    }
+
+  } else if (naam === "noise") {
+    if (!isKleur(op[1])) fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+    if (typeof op[2] !== "number" || op[2] < 0 || op[2] > 1) {
+      fouten.push(waar + ": dichtheid moet tussen 0 en 1 liggen");
+    }
+    if (!Number.isInteger(op[3])) {
+      fouten.push(waar + ": seed moet een geheel getal zijn");
+    }
+    const pts = op[4];
+    if (!Array.isArray(pts) || pts.length % 2 !== 0 || pts.length / 2 < 3) {
+      fouten.push(waar + ": noise vraagt minstens 3 punten");
     } else {
       keurPunten(pts, waar, fouten);
     }
@@ -250,6 +316,35 @@ function keurScene(scene, verwachteId) {
     }
   }
 
+  // De sfeerlaag: wat er in deze kamer beweegt. Wordt per frame getekend, dus
+  // niet als draw-ops maar als beschrijving.
+  if (scene.sfeer !== undefined) {
+    if (!Array.isArray(scene.sfeer)) {
+      fouten.push("sfeer is geen array");
+    } else {
+      scene.sfeer.forEach((s, i) => {
+        const waar = "sfeer[" + i + "]";
+        if (s.soort !== "stof") {
+          fouten.push(waar + ": onbekende soort '" + s.soort + "'");
+          return;
+        }
+        if (!binnenX(s.x) || !binnenX(s.x + s.b - 1)) {
+          fouten.push(waar + ": x buiten veld");
+        }
+        if (!binnenY(s.y) || !binnenY(s.y + s.h - 1)) {
+          fouten.push(waar + ": y buiten veld");
+        }
+        if (s.kleur !== undefined && !isKleur(s.kleur)) {
+          fouten.push(waar + ": kleur niet 0–" + MAX_KLEUR);
+        }
+        if (s.aantal !== undefined &&
+            (!Number.isInteger(s.aantal) || s.aantal < 1 || s.aantal > 80)) {
+          fouten.push(waar + ": aantal moet 1–80 zijn");
+        }
+      });
+    }
+  }
+
   if (scene.overlays !== undefined) {
     if (!Array.isArray(scene.overlays)) {
       fouten.push("overlays is geen array");
@@ -308,6 +403,66 @@ for (const pad of doelen) {
     gezakt++;
     console.error("ZAKT " + basename(pad));
     for (const f of fouten) console.error("     - " + f);
+  }
+}
+
+// ---- De spread-schetsen ---------------------------------------------------
+//
+// js/scenes/spread-schetsen.js is geen scène — geen walkbox, geen entries, geen
+// hotspots — maar wel een paar honderd met de hand geplaatste draw-ops. Die
+// horen door dezelfde op-keuring te gaan als een scène-picture: één coördinaat
+// naast het blad of één kleur buiten het palet is met het blote oog pas te zien
+// als je toevallig díé bladzijde opslaat.
+//
+// Draait alleen als er geen scène-ids op de opdrachtregel stonden; dan vroeg de
+// aanroeper om iets specifieks.
+if (process.argv.slice(2).length === 0) {
+  const schetsPad = join(scenesDir, "spread-schetsen.js");
+  if (existsSync(schetsPad)) {
+    let sets;
+    try {
+      const al = laadScene(schetsPad);
+      sets = al ? al.spreadSchetsen : undefined;
+    } catch (e) {
+      console.error("FOUT: spread-schetsen.js kon niet uitgevoerd worden: " +
+        e.message);
+      gezakt++;
+    }
+    if (sets !== undefined) {
+      const fouten = [];
+      if (!sets || typeof sets !== "object") {
+        fouten.push("geen object toegekend aan AL.spreadSchetsen");
+      } else {
+        for (const id of Object.keys(sets)) {
+          if (!/^l[1-7]$/.test(id)) {
+            fouten.push("onbekende sleutel '" + id + "' (verwacht l1..l7)");
+          }
+          const set = sets[id];
+          for (const veld of ["schets", "schade", "schadeLinks"]) {
+            if (set[veld] === undefined) continue;
+            if (!Array.isArray(set[veld])) {
+              fouten.push(id + "." + veld + " is geen array");
+              continue;
+            }
+            set[veld].forEach((op, i) =>
+              keurOp(op, id + "." + veld + "[" + i + "]", fouten));
+          }
+          if (!Array.isArray(set.schets) || set.schets.length === 0) {
+            fouten.push(id + ": geen schets — elk level hoort er een te hebben");
+          }
+        }
+        for (let n = 1; n <= 7; n++) {
+          if (!sets["l" + n]) fouten.push("level " + n + " heeft geen set");
+        }
+      }
+      if (fouten.length === 0) {
+        console.log("OK   spread-schetsen.js");
+      } else {
+        gezakt++;
+        console.error("ZAKT spread-schetsen.js");
+        for (const f of fouten) console.error("     - " + f);
+      }
+    }
   }
 }
 

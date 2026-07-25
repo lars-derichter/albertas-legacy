@@ -135,10 +135,10 @@ zou hebben. Effect-tag: `oordeel:<tier>`.
 
 | Tier (`<tier>`) | Hints totaal | Toon van Alberta |
 |---|---|---|
-| `meesterhand` | 0–3 | "Je hebt mijn spel afgemaakt met bijna geen spieken. Ik had het niet beter gekund — en dat zeg ik niet snel." |
-| `vakvrouw` | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer dóór. Zo werk ik ook. Proficiat." |
-| `doorzetter` | 11–20 | "Je hebt vaak om hulp gevraagd en telkens weer verder gewerkt. Dat is geen zwakte — dat is hoe je het leert." |
-| `samen-geraakt` | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints. En weet je? Het spel draait. Dat is wat telt." |
+| `meesterhand` | 0–3 | "Je hebt mijn spel afgemaakt met bijna geen spieken. Ik had het niet beter gekund, en dat zeg ik niet snel." |
+| `vakvrouw` | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer door. Zo werk ik ook." |
+| `doorzetter` | 11–20 | "Je hebt vaak om hulp gevraagd en telkens opnieuw doorgezet. Dat is geen zwakte. Zo leer je het." |
+| `samen-geraakt` | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints. Het spel draait. Dat is wat telt." |
 
 Alle vier de tiers zijn positief; het verschil is de knipoog, niet de waarde.
 Het oordeel sluit af richting de epiloog (`epiloog`), die naar de echte broncode

@@ -104,6 +104,15 @@ globalThis.AL.pc = globalThis.AL.pc || {};
       opSubmit(el.invoer.value);
       return;
     }
+    // F1 is de hint, net als in de editor en net als in elke Turbo-toepassing.
+    // De statusbalk onderaan belóóft die toets, dus hij hoort te werken; '?' op
+    // de promptregel blijft ook gewoon een hint geven. In de sim-modus niet: daar
+    // is de terminal het spel zelf en zijn er geen puzzelhints.
+    if (e.key === "F1") {
+      e.preventDefault();
+      if (!rauwModus && ctx && ctx.hint) ctx.hint();
+      return;
+    }
     if (e.key === "Escape") {
       e.preventDefault();
       // In de sim-modus is Escape geen uitgang: de sim speelt naar een einde.

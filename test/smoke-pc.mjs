@@ -18,12 +18,17 @@
 
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
+import { mkdirSync } from "node:fs";
 
 const hier = dirname(fileURLToPath(import.meta.url));
 const wortel = join(hier, "..");
 const indexUrl = pathToFileURL(join(wortel, "index.html")).href + "?seed=42&dev=1";
-const SCRATCH = "/private/tmp/claude-501/-Users-lars--work-programming-albertas-legacy/" +
-  "6fe9e308-eb5a-41d1-91fa-26fbfed41067/scratchpad";
+// Waar de screenshots landen. Stond hier vroeger als een absoluut pad van de
+// machine van de auteur, waardoor deze test bij niemand anders liep. Nu een
+// map in de repo (test-results/ staat al in .gitignore), te overschrijven met
+// de omgevingsvariabele AL_SCRATCH.
+const SCRATCH = process.env.AL_SCRATCH || join(wortel, "test-results");
+mkdirSync(SCRATCH, { recursive: true });
 
 const rijen = [];
 function check(naam, voorwaarde, detail) {
@@ -57,7 +62,7 @@ async function main() {
   await page.goto(indexUrl, { waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
   await ev(page, () => window.AL.debugStartPc(0));
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
   const st0 = await ev(page, () => window.AL.debugState);
   check("de pc-overlay opent (modus pc)", st0.modus === "pc" && st0.overlayOpen === true);
 
@@ -76,11 +81,60 @@ async function main() {
   await page.screenshot({ path: join(SCRATCH, "wp5-editor.png") });
   check("screenshot van de open editor bewaard", true, "wp5-editor.png");
 
+  // 3b. De Turbo-chrome, en de dingen die WP J belooft.
+  const chroom = await ev(page, () => {
+    const chrome = document.querySelector(".pc-chrome");
+    const inv = document.querySelector(".pc-editor-invoer");
+    const uit = document.querySelector(".pc-editor-uitvoer");
+    const st = getComputedStyle(chrome);
+    return {
+      menubalk: document.querySelectorAll(".pc-menubalk-item").length,
+      fbalk: document.querySelectorAll(".pc-fbalk span").length,
+      hoeken: st.borderTopLeftRadius,
+      randStijl: st.borderTopStyle,
+      schaduw: st.boxShadow,
+      scanlines: getComputedStyle(chrome, "::after").backgroundImage,
+      schrift: getComputedStyle(inv).fontFamily,
+      editorScroll: inv.scrollTop,
+      uitHoog: uit.clientHeight,
+      uitRegel: parseFloat(getComputedStyle(uit).lineHeight)
+    };
+  });
+  check("de menubalk draagt de levende commando's", chroom.menubalk >= 3,
+    "items=" + chroom.menubalk);
+  check("de F-toetsenbalk staat onderaan", chroom.fbalk >= 3,
+    "vakken=" + chroom.fbalk);
+  check("geen afgeronde hoeken", chroom.hoeken === "0px", chroom.hoeken);
+  check("dubbellijns kader", chroom.randStijl === "double", chroom.randStijl);
+  check("geen gloed rond de kast", chroom.schaduw.indexOf("42px") === -1 &&
+    !/\b(2[0-9]|[3-9][0-9])px\s+rgba/.test(chroom.schaduw), chroom.schaduw);
+  check("scanlines over het paneel",
+    chroom.scanlines.indexOf("repeating-linear-gradient") === 0);
+  check("Courier New is uit de schriftstack",
+    chroom.schrift.toLowerCase().indexOf("courier") === -1, chroom.schrift);
+  check("de editor opent bovenaan het bestand", chroom.editorScroll === 0,
+    "scrollTop=" + chroom.editorScroll);
+  check("het uitvoerpaneel is hoger dan één regel",
+    chroom.uitHoog > chroom.uitRegel * 4,
+    "hoog=" + chroom.uitHoog + " regel=" + chroom.uitRegel);
+
   // 4. Foute (beschadigde) oplossing eerst → CHECK_FAIL met vriendelijke tekst.
   await page.click(".pc-knop-compileer");
   await page.waitForTimeout(120);
   const uitFout = await ev(page, () => window.AL.pc.debug.editorUitvoer());
   check("beschadigde code geeft een CHECK_FAIL", uitFout.includes("CHECK_FAIL"));
+
+  // CHECK_OK en CHECK_FAIL hadden exact dezelfde kleur; dat was de kern van de
+  // feedbacklus in één amberkleurige muur tekst.
+  const kleuren = await ev(page, () =>
+    [...document.querySelectorAll(".pc-editor-uitvoer span")].map((sp) =>
+      ({ k: sp.className, c: getComputedStyle(sp).color })));
+  const okKleur = (kleuren.find((x) => x.k === "pc-uit-ok") || {}).c;
+  const foutKleur = (kleuren.find((x) => x.k === "pc-uit-fout") || {}).c;
+  check("CHECK_FAIL is rood", foutKleur === "rgb(255, 85, 85)", "" + foutKleur);
+  check("CHECK_OK en CHECK_FAIL hebben niet dezelfde kleur",
+    !!okKleur && !!foutKleur && okKleur !== foutKleur,
+    "ok=" + okKleur + " fout=" + foutKleur);
   check("CHECK_FAIL draagt vriendelijke, vormgerichte feedback",
     uitFout.includes("this.<veld> = <parameter>"));
   await page.screenshot({ path: join(SCRATCH, "wp5-terminal.png") });
@@ -169,7 +223,7 @@ async function main() {
 
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
   await ev(page, () => window.AL.pc.debug.kies("l0-editor-write"));
   await page.waitForFunction(() => window.AL.pc.debug.view() === "editor", null, { timeout: 5000 });
   const codeNa = await ev(page, () => window.AL.pc.debug.editorCode());

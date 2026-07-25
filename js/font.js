@@ -9,7 +9,9 @@
 // grondletter een rij ingedrukt eronder.
 //
 // Draait in de browser (AL.font) en in Node (module.exports), zodat
-// tools/lint-font.mjs de dekking kan controleren.
+// test/test-typografie.mjs de dekking kan controleren tegen alle spelprose.
+// (De kop verwees naar een tools/lint-font.mjs die nooit bestaan heeft; de
+// controle staat nu in de testsuite, waar ze bij elke run meeloopt.)
 //
 // Aangepast uit remake-90s (js/font.js): ongewijzigd overgenomen, alleen de
 // namespace RRH → AL.
@@ -348,6 +350,12 @@ AL.font = {
     "…": ["........", "........", "........", "........",
                "........", "........", "1.1.1...", "........"], // beletselteken
 
+    "×": ["........", "........", ".1...1..", "..1.1...",
+               "...1....", "..1.1...", ".1...1..", "........"], // maalteken
+
+    "→": ["........", "........", "....1...", ".....1..",
+               "1111111.", ".....1..", "....1...", "........"], // pijl rechts
+
     "“": ["........", ".1.1....", "1.1.....", "........",
                "........", "........", "........", "........"], // "
 
@@ -366,7 +374,65 @@ AL.font = {
 // staat als aparte sleutel verderop en overschrijft het toch. Node laat een
 // dubbele objectsleutel toe (de laatste wint), dus dit is veilig.
 
-// Node-export voor tools/lint-font.mjs.
+// ---- Proportionele maten ---------------------------------------------------
+//
+// De glyphdata blijft precies zoals ze is: acht rijen van acht tekens, met de
+// letter in de linkerkolommen. Wat erbij komt is een maat per glyph — hoe breed
+// de inkt écht is — zodat prose proportioneel gezet kan worden terwijl de
+// statusbalk, de invoerbalk en de terminal monospace blijven.
+//
+// Waarom dit nodig was: elke glyph vult ongeveer zes van de acht kolommen, dus
+// een monospace-regel zet ook een "i" en een "l" op acht pixels. Dat leest als
+// een debugfont, niet als een spelfont. Met de inktmaat schuift de renderer per
+// teken op met inkt + 1 px, en wordt "Alberta" smal waar ze smal hoort te zijn.
+//
+// Eén keer berekend bij het laden, niet per frame: het is een tabel van
+// ongeveer honderd getallen.
+// Per glyph worden twee dingen bewaard: waar de inkt begint (`links`) en hoe
+// breed ze is (`breedte`). Dat eerste is niet overbodig — verschillende glyphs
+// beginnen op een andere kolom. Een "i" staat op kolom 2 en een "K" op kolom 0,
+// dus zonder de linkerruimte weg te rekenen krijgt elke regel die met een "i"
+// begint een inspringing van twee pixels die er niet hoort te staan.
+(function () {
+  var glyphs = AL.font.glyphs;
+  var maten = {};
+  for (var ch in glyphs) {
+    if (!Object.prototype.hasOwnProperty.call(glyphs, ch)) continue;
+    var rijen = glyphs[ch];
+    var links = AL.font.breedte, rechts = -1;
+    for (var r = 0; r < rijen.length; r++) {
+      for (var c = 0; c < AL.font.breedte; c++) {
+        if (rijen[r].charAt(c) !== "1") continue;
+        if (c < links) links = c;
+        if (c > rechts) rechts = c;
+      }
+    }
+    maten[ch] = rechts < 0
+      ? { links: 0, breedte: 0 }
+      : { links: links, breedte: rechts - links + 1 };
+  }
+  // De spatie heeft per definitie geen inkt; zonder eigen maat zou ze nul breed
+  // zijn en plakten alle woorden aan elkaar. Vier pixels: met de linkerruimte
+  // weggerekend staan de letters dichter op elkaar, dus moet het woordwit mee
+  // omhoog om nog als woordwit te lezen.
+  maten[" "] = { links: 0, breedte: 4 };
+
+  AL.font.maten = maten;
+  AL.font.spatiering = 1;
+
+  // De maat van dit teken. Onbekende tekens vallen terug op "?", zoals
+  // tekenTekst dat ook doet.
+  AL.font.maat = function (ch) {
+    return maten[ch] || maten["?"] || { links: 0, breedte: AL.font.breedte };
+  };
+
+  // Hoe ver schuift de cursor op na dit teken, inclusief de spatiëring erna?
+  AL.font.voortgang = function (ch) {
+    return AL.font.maat(ch).breedte + AL.font.spatiering;
+  };
+})();
+
+// Node-export voor de headless tests.
 if (typeof module !== "undefined") {
   module.exports = AL.font;
 }

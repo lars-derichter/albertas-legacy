@@ -54,12 +54,21 @@ je voor de cursus installeert. Verder niets: geen build-tool, geen dependencies.
 
 ```sh
 # vanuit de projectmap seven-little-goats/
-javac -d out src/*.java
-java -cp out Main
+javac -encoding UTF-8 -d out src/*.java
+java -Dstdout.encoding=UTF-8 -cp out Main
 ```
 
 `javac` compileert alle bronbestanden naar de map `out/`, `java` start het spel
 via de klasse `Main`.
+
+De twee vlaggen gaan over tekens als `ë` en de gedachtestreep `—`. De
+bronbestanden staan in UTF-8, maar `javac` en `java` gaan zonder die vlaggen af
+op de standaardcodering van je systeem — op een Windows-console is dat meestal
+cp1252 of cp850. Zonder `-encoding UTF-8` leest `javac` de bron dan verkeerd en
+komt er `geÃ«rfd` in je `.class`-bestanden terecht; zonder
+`-Dstdout.encoding=UTF-8` schrijft `java` het goed ingelezen teken alsnog als
+`?` weg. Met beide vlaggen klopt het overal. In IntelliJ is dit al in orde: dat
+compileert en draait standaard in UTF-8.
 
 ## Hoe speel je een tekstadventure
 

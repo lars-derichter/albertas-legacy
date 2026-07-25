@@ -29,9 +29,9 @@ met behoud van hun contract:
 | Bestand | Overname | Wijziging |
 |---|---|---|
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
-| `js/font.js` | 8×8-bitmapfont | ongewijzigd |
+| `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
-| `js/sound.js` | WebAudio-bliepjes, aan/uit-toggle | uitgebreide cue-lijst (zie effect-tags) |
+| `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
 | engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc) |
 | scène- en sprite-schema | de draw-op- en frame-formaten uit `docs/scene-schema.md` en `docs/sprite-schema.md` | overgenomen; scène-ids zijn nu zolderkamers en spreads |
@@ -51,6 +51,109 @@ Adapteren en crediteren; niet heruitvinden.
   De guard wordt `debugPalet`: hij controleert nu of elke pixel een geheel getal
   binnen de paletgrootte is (0 t/m `AL.palet.KLEUREN.length - 1`). Zo blijft de
   betrapping van buiten-palet-kleuren bestaan, aangepast aan het grotere palet.
+- **Vijf ops erbij: `gradient`, `ditherRamp`, `shadow`, `light`, `noise`.** De
+  overgenomen renderer kon alleen platte vullingen en één 50 %-schaakbord, en
+  daarmee is de VGA-look uit `art-stijlgids.md` niet te tekenen: elk groot vlak
+  blijft dan één kleur. De nieuwe ops staan met hun signatuur en hun
+  gebruik in `art-stijlgids.md`, §"De draw-ops". `tools/lint-scene.mjs` kent ze
+  en controleert hun ariteit en grenzen mee.
+
+  `light` kwam er een pakket later bij dan de andere vier, en om een reden die
+  het onthouden waard is: zonder die op werd elke lichtstraal met `ditherRamp`
+  getekend, en die vult élke pixel van zijn veelhoek. Licht was daardoor een
+  dekkende plaat over de kamer in plaats van iets dat op de kamer valt — precies
+  de klacht waar deze opwaardering mee begon. Zie
+  `workflow/21-de-kaarten-en-het-licht.md`.
+- **Ramps in het palet.** `js/palette.js` levert nu `RAMPEN`, `rampVan`,
+  `verduister` en `verhelder`. Daarmee kan een kleur binnen zijn eigen familie
+  een stap zakken, wat `shadow` en `gradient` mogelijk maakt zonder een tweede
+  palet. Kleuren buiten elke ramp (6 bruin, 14 geel) blijven ongemoeid.
+- **Sprite-schaling.** `tekenSprite` neemt `opts.schaal`; het ankerpunt blijft
+  onderaan-midden, zodat een geschaalde figuur op dezelfde vloer blijft staan.
+- **Overgangen.** `gfx.overgang(soort, t, kleur)` legt `fade`, `dissolve` of
+  `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
+  gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
+  zoals de hardware van toen het ook deed.
+- **Twee zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
+  gebruik waar een raster hóórt: de statusbalk, de invoerbalk en de terminal van
+  de gesimuleerde pc. Daarnaast staat `tekenProse`/`proseBreedte`, dat de
+  inktmaat per glyph uit `font.js` gebruikt. De glyphdata is niet veranderd; wat
+  erbij kwam is één keer uitrekenen waar de inkt van elke glyph begint en hoe
+  breed ze is.
+
+  Dat "waar ze begint" is niet overbodig. Verschillende glyphs starten op een
+  andere kolom — een `i` op kolom 2, een `K` op kolom 0 — dus zonder de
+  linkerruimte weg te rekenen krijgt elke regel die met een `i` begint een
+  inspringing van twee pixels die er niet hoort te staan.
+- **Wrappen meet, het telt niet meer.** `gfx._wrap(alinea, maxBreedte, meet)`
+  breekt op pixels; `meet` weglaten geeft de oude monospace-rekensom terug, en
+  alles wat op een raster hoort blijft dus ongemoeid. Het berichtvenster krimpt
+  bovendien naar zijn breedste régel in plaats van altijd zijn maximum te
+  gebruiken: proportionele prose komt smaller uit dan het raster waarop ze
+  gewrapt is, en zonder die stap stond er rechts een handbreed papier waar niets
+  op staat. `gfx.vensterKader(venster)` geeft die doos terug zonder te tekenen.
+
+## Geluid
+
+`AL.sound` heeft twee soorten geluid, en het verschil is niet cosmetisch:
+
+- **eenmalige cues** — `speel(naam)`. Kort (de keuring houdt ze onder anderhalve
+  seconde), meteen afgevuurd, geen staat.
+- **muziekbedden** — `muziek(naam)`, en `muziek(null)` stopt. Een bed loopt rond
+  tot iets anders het overneemt; `eenmalig: true` maakt er een die oplost en dan
+  ophoudt (de eindkaart).
+
+Hetzelfde bed opnieuw starten doet niets. Dat is wat een kamerwissel toelaat
+zonder de zolder-loop van voren af aan te laten beginnen.
+
+### FM, niet blokgolven
+
+Er stonden negen cues in, allemaal blokgolf-bliepjes: één oscillator, één
+envelope. Dat is de PC-speaker van 1985, niet de geluidskaart van 1990. De
+periode die dit spel naspeelt klonk uit een AdLib of een Sound Blaster, en die
+deden FM — een OPL2 had twee operatoren per stem.
+
+Elke noot is dus twee oscillatoren: een modulator die via een gain op de
+`frequency` van een carrier uitkomt. Drie knoppen per stem, dezelfde als toen:
+`ratio` (heel getal = harmonisch, niet-heel = klok of tik), `index` (hoe diep de
+modulator verbuigt) en een eigen envelope op die index. Meer dan twee operatoren
+is er niet, en dat is opzet: zes-operator-FM klinkt als een DX7 en dus als 1983
+of 1995, niet als de periode ertussen.
+
+### De scheduler
+
+Noten worden vooruit geplaatst op de audioklok, niet afgevuurd op de beeldklok:
+WebAudio timet exact, een `requestAnimationFrame`-lus niet. De engine roept
+`AL.sound.tik()` aan in zijn logische tik; die kijkt of de volgende noten binnen
+het vooruitkijkvenster van 0,35 s vallen en plaatst ze dan.
+
+Twee gevolgen die het onthouden waard zijn:
+
+- **Er is een meestergain nodig.** Op het moment dat de speler "geluid uit"
+  typt, staan er al noten in de toekomst gepland. Die kun je niet intrekken —
+  alleen naar nul versterken. `zetAan(false)` zet daarom de meestergain op nul
+  én vergeet het actieve bed.
+- **Een gemiste noot wordt niet ingehaald.** Schakelt de speler naar een ander
+  tabblad, dan bevriest de beeldklok en dus de tik, terwijl de audioklok
+  doorloopt. Zonder die regel worden bij terugkomst alle gemiste noten in één
+  keer geplaatst, op een tijd in het verleden — wat WebAudio uitlegt als "nu".
+  Dat is een cluster, geen muziek.
+
+### Welk bed hoort bij welke stand
+
+Eén functie in de engine beslist dat (`startBedVoorStand`), want het antwoord is
+op drie momenten nodig: bij een moduswissel, na een reload, en als de speler het
+geluid weer aanzet. Dat laatste was een echte fout — "geluid uit" vergeet het
+bed en "geluid aan" zette alleen de gain terug, dus op de zolder bleef het
+daarna stil tot je van kamer wisselde.
+
+### Het register
+
+De muziek volgt de koudere toon uit WP C: mineur, traag, veel stilte tussen de
+frasen. De zolder hoort niet gezellig te klinken. Het contrast dat overblijft is
+de pc — het enige warme ding in huis, en het enige bed in een majeur-kleur. Dat
+staat ook als test in `test/test-geluid.mjs`: de notendichtheid van de zolder
+moet lager zijn dan die van de pc.
 
 ## De logica-laag
 
@@ -61,7 +164,12 @@ Zelfde vorm als remake-90s. Elke handler geeft overal dezelfde vorm terug:
 ```
 
 - `tekst` — alinea's voor het berichtvenster (mag leeg zijn). De renderer doet
-  de word-wrap; `\n` waar een regelafbreking betekenis heeft.
+  de word-wrap; `\n` waar een regelafbreking betekenis heeft. **Geen opmaak.**
+  De kamerbeschrijving droeg hier ooit een kop mee als `"== Zolder — westhoek
+  =="`, en dat was twee keer fout: opmaak hoort niet in een laag die
+  presentatievrij moet zijn, en de statusbalk zei twee regels hoger al precies
+  hetzelfde. In de terminal van _Seven Little Goats_ staat zo'n kop er nog wel —
+  dat is een tekstspel, daar ís de tekst de presentatie.
 - `effecten` — machineleesbare tags voor de engine (scènewissels, pc, geluid,
   voortgang). Woordenlijst hieronder.
 
@@ -132,8 +240,9 @@ reageert; de logica produceert ze alleen.
 
 | Tag | Wanneer |
 |---|---|
-| `geluid:<cue>` | speel een geluidscue; vaste cues: `pagina`, `deur`, `toets`, `compileer`, `ok`, `fout`, `boot`, `ambient-zolder` |
+| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
+| `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
 | `herbegin` | het spel is teruggezet naar de begintoestand (zie `save-en-hints.md`) |
 | `gestopt` | het spel is beëindigd (einde bereikt of expliciet gestopt) |
 
@@ -172,6 +281,7 @@ Velden (bindend voor de save in `save-en-hints.md`):
 
   hintsTotaal: 0,          // som van alle hint-aanvragen (voor het oordeel)
   geluid: true,            // geluid aan/uit
+  crt: true,               // beeldbuislijnen en vignet aan/uit
   gestopt: false,          // spel beëindigd
   einde: null              // null | verdict-tier uit save-en-hints.md
 }
@@ -246,6 +356,31 @@ kleuren als het palet (als CSS-variabelen afgeleid van `js/palette.js`). De
 zolder eronder blijft op het canvas staan; de overlay dekt hem af zolang
 `modus === "pc"`. De engine schakelt de overlay in bij `pc:open` en uit bij
 `pc:sluit`.
+
+### Turbo Vision, en waar de 8×8-font níet komt
+
+De chrome is die van een Borland-toepassing, omdat dat de referentie is die een
+speler van 1990 herkent: een **menubalk** op de bovenste regel in inverse video,
+**dubbellijns kaders** om de panelen, en een **F-toetsenstatusbalk** op de
+onderste regel. Die twee balken zijn geen versiering — ze dragen de commando's
+die werkelijk bestaan, en de statusbalk is de enige plek waar een speler kan
+lézen dat F9 compileert en F1 een hint geeft.
+
+Er komen **geen scanlines uit een aparte schakelaar**: de laag hangt aan
+dezelfde `data-crt`-attribuut als het canvas, dus `crt uit` zet ze allebei uit.
+
+Wat er níet is, en dat is een bewuste uitzondering op het plan van WP J: **de
+8×8-bitmapfont van het spel staat niet in de overlay.** Die kan er niet in. De
+editor is een echte `<textarea>` — de beslissing hierboven, om selectie, plakken
+en schermlezers te houden — en een textarea zet zijn tekst met een échte font,
+niet met een glyphtabel die de renderer per pixel uitleest. De font wél
+gebruiken zou betekenen: de tekst zelf op een canvas tekenen met een onzichtbare
+textarea erbovenop voor de invoer, en dan is precies dat "veel werk en fragiel"
+weer terug.
+
+Courier New is er wél uit. Dat is een schrijfmachineletter met schreven en dunne
+stokken; een DOS-terminal had een rasterletter met vlakke einden. De stack
+begint nu bij wat het systeem als terminalletter aanbiedt.
 
 De pc-modules (`js/pc/editor.js`, `terminal.js`, `parsons.js`, hun coördinator
 `pc.js` en de sim-controller `sim-terminal.js`) mogen — als enige naast

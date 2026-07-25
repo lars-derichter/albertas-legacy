@@ -11,12 +11,17 @@
 
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
+import { mkdirSync } from "node:fs";
 
 const hier = dirname(fileURLToPath(import.meta.url));
 const wortel = join(hier, "..");
 const indexPad = join(wortel, "index.html");
-const SCRATCH = "/private/tmp/claude-501/-Users-lars--work-programming-albertas-legacy/" +
-  "6fe9e308-eb5a-41d1-91fa-26fbfed41067/scratchpad";
+// Waar de screenshots landen. Stond hier vroeger als een absoluut pad van de
+// machine van de auteur, waardoor deze test bij niemand anders liep. Nu een
+// map in de repo (test-results/ staat al in .gitignore), te overschrijven met
+// de omgevingsvariabele AL_SCRATCH.
+const SCRATCH = process.env.AL_SCRATCH || join(wortel, "test-results");
+mkdirSync(SCRATCH, { recursive: true });
 
 function urlMetSeed(seed) {
   return pathToFileURL(indexPad).href + "?seed=" + seed;
@@ -128,7 +133,7 @@ async function speelLevel(page, n, naarFragment) {
 
   // 3. Ga aan de pc zitten → pc-overlay open op het juiste level.
   await typCommando(page, "ga zitten");
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
   const sPc = await state(page);
   check("L" + n + ": de pc opent op het juiste level",
@@ -211,7 +216,7 @@ async function main() {
     const uit = {};
     for (const n of [1, 2, 3]) {
       await ev(pg, (k) => window.AL.debugStartPc(k), n);
-      await pg.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+      await pg.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
       await ev(pg, (id) => window.AL.pc.debug.kies(id), "l" + n + "-editor-repair");
       await wachtView(pg, "editor");
       uit[n] = await ev(pg, () => window.AL.pc.debug.editorCode());
