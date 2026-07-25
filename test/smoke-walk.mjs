@@ -152,14 +152,18 @@ async function main() {
   // ---- 1. De kist houdt de speler tegen (bevinding B) ---------------------
   //
   // Vanaf de start (x80, y175) ligt de kist recht in het pad naar het oosten:
-  // geschilderd van x146 tot x241. Wie er tegenaan loopt, hoort te stoppen.
-  const kist = await botsTegen(page, "oost", 4000);
+  // geschilderd van x176 tot x215 sinds de schaalpas van WP 35 (daarvóór
+  // x146–241). Wie er tegenaan loopt, hoort te stoppen.
+  // Zesduizend milliseconde en niet vier: de kist begint sinds WP 35 zeventig
+  // pixels verder naar rechts, en met vier seconden was de speler nog onderweg
+  // in plaats van tegengehouden.
+  const kist = await botsTegen(page, "oost", 6000);
   check("de kist stopt de speler in plaats van hem door te laten",
-    kist.gestopt && kist.x < 146, "x=" + kist.x + " y=" + kist.y);
+    kist.gestopt && kist.x < 176, "x=" + kist.x + " y=" + kist.y);
   check("tegen de kist lopen opent geen venster", kist.venster === false);
 
   // De dozenstapels links. Hun voetafdruk ligt achteraan in de strook (tot
-  // y169), dus eerst naar achter lopen en dan pas naar het westen: vóór de
+  // y172), dus eerst naar achter lopen en dan pas naar het westen: vóór de
   // stapels langs is de vloer vrij, en dat hoort ook zo.
   await loop(page, "noord", 2500);
   const dozen = await botsTegen(page, "west", 3000);
@@ -186,13 +190,14 @@ async function main() {
   check("tegen de muur lopen opent geen venster (geen modale weigering)",
     muur.venster === false);
 
-  // Vóór het bureau gaan staan (het staat op x104–251) en er dan tegenaan.
-  const voorBureau = await loopTotX(page, "west", 150, 240, 15000);
+  // Vóór het bureau gaan staan (het staat op x168–217 sinds WP 35, met de stoel
+  // ervoor) en er dan tegenaan. Het blok loopt tot y166.
+  const voorBureau = await loopTotX(page, "west", 176, 212, 15000);
   check("de speler kan zich vóór het bureau opstellen", voorBureau,
     "x=" + (await state(page)).actorX);
   const bureau = await botsTegen(page, "noord", 2000);
   check("het bureau met de stoel stopt de speler", bureau.gestopt &&
-    bureau.y > 173, "y=" + bureau.y);
+    bureau.y > 166, "y=" + bureau.y);
   check("tegen het bureau lopen opent geen venster", bureau.venster === false);
 
   // ---- 4. Terug naar de doorgang en de trap op --------------------------
@@ -214,13 +219,14 @@ async function main() {
   //
   // Eerst opzij en naar achter: de uitgangszone ligt op x148–175 vóór het
   // trapgat, en wie daar naar het westen door loopt, gaat gewoon de trap af.
-  // De torens staan achteraan (voetafdruk tot y168), dus daar wordt gebotst.
+  // De torens staan achteraan (voetafdruk tot y166 sinds WP 35), dus daar wordt
+  // gebotst.
   await loop(page, "oost", 2000);
   await loopTot(page, "noord", async () => (await state(page)).actorY <= 166,
     8000);
   const toren = await botsTegen(page, "west", 8000);
   check("de kartonnen torens op de overloop stoppen de speler",
-    toren.gestopt && toren.x > 125, "x=" + toren.x + " y=" + toren.y);
+    toren.gestopt && toren.x > 118, "x=" + toren.x + " y=" + toren.y);
   check("tegen de torens lopen opent geen venster", toren.venster === false);
 
   const hoek = await botsTegen(page, "zuid", 3000);

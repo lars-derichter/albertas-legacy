@@ -176,6 +176,22 @@ Een hotspot wordt elk frame geblit, op voet-y gesorteerd met de speler ertussen
 getypte zelfstandige naamwoorden in `js/logic/world.js`, niet via een klik of
 een botsing. `anim` is optioneel (standaard `idle`), `spiegel` ook.
 
+Twee dingen die de engine sinds WP 35 met een hotspot doet:
+
+- **Ze schaalt mee met de diepte**, met dezelfde
+  `AL.loopveld.diepteSchaal(scene, y)` als de speler. Het anker is
+  voeten-midden, dus een geschaalde prop blijft op zijn eigen vloerpunt staan.
+  Een prop die hóger staat dan de loopstrook — de pc op het bureaublad — klemt
+  op de achterste schaal, en dat is precies de schaal van de plek waar hij
+  staat. Wat dit betekent voor het tekenen, staat in `art-stijlgids.md`,
+  §Diepte en voorgrond.
+- **De stoel is de zitplek.** `engine.startZitten` zoekt in de kamer de hotspot
+  met `item: "stoel"` en zet de speler daar neer vóór de zit-animatie begint.
+  Dat is de enige plek waar zijn handen op de voorrand van het bureaublad
+  uitkomen. De zitplek mág in een blok liggen: de speler wordt er neergezet en
+  loopt er niet naartoe, en na de pc-overlay zet `betreedZolder` hem terug op de
+  entry van de kamer.
+
 Wil je dat de speler niet dwars door zo'n voorwerp loopt, dan hoort er een blok
 bij. Een hotspot is tekening, geen collisie.
 
@@ -201,9 +217,10 @@ loopt; er hoort dus géén blok bij.
 - `props` — leeg in elke scène en door niets gelezen. Alles wat vroeger een prop
   was, is nu een `hotspot`. De lint keurt het veld nog wel, zodat een oude scène
   niet stilletjes iets tekent wat niemand blit.
-- `hotspot.item` wordt door de renderlaag niet gebruikt (de wereldlogica kent de
-  voorwerpen bij naam); het veld blijft omdat het de lint een handvat geeft en
-  het scènebestand leesbaar houdt.
+- `hotspot.item` was tot WP 35 dood: de renderlaag las het niet en de
+  wereldlogica kent haar voorwerpen bij naam. Sindsdien leest `startZitten` het
+  wél — het zoekt er de stoel mee op — en is het dus een gewoon veld met een
+  gebruiker. De lint blijft de namen keuren.
 
 ## Wat de lint controleert
 

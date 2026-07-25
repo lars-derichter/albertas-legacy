@@ -168,12 +168,16 @@ test("de dozenstapels in de westhoek houden de speler tegen", () => {
   assert.equal(loopveld.beloopbaar(scene, 60, 175), true);
 });
 
+// De maten komen uit de schaalpas van WP 35: het bureau staat op x168–217 met
+// zijn poten tot y162, en het blok loopt tot y166 omdat de stoel er nog vóór
+// staat. Daarvóór stond hier een bureau van x104 tot x251.
 test("het bureau en de stoel in de werkhoek zijn massief", () => {
   const scene = scenes["zolder-oost"];
-  assert.equal(loopveld.beloopbaar(scene, 116, 160), false, "linkerpoot");
-  assert.equal(loopveld.beloopbaar(scene, 240, 160), false, "rechterpoot");
-  assert.equal(loopveld.beloopbaar(scene, 150, 165), false, "de stoel");
-  assert.equal(loopveld.beloopbaar(scene, 150, 180), true, "ervoor langs");
+  assert.equal(loopveld.beloopbaar(scene, 172, 160), false, "linkerpoot");
+  assert.equal(loopveld.beloopbaar(scene, 212, 160), false, "rechterpoot");
+  assert.equal(loopveld.beloopbaar(scene, 190, 165), false, "de stoel");
+  assert.equal(loopveld.beloopbaar(scene, 190, 180), true, "ervoor langs");
+  assert.equal(loopveld.beloopbaar(scene, 150, 160), true, "naast het bureau");
 });
 
 test("de dozen in de doorgang en op de overloop houden de speler tegen", () => {

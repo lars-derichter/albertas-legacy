@@ -490,9 +490,25 @@ globalThis.AL = globalThis.AL || {};
   // Start de zit-reeks. Bestaat de anim niet (of is er geen spelerdefinitie),
   // dan wordt er niets uitgesteld: de klaar-functie loopt meteen. Zo kan het
   // spel nooit vasthangen op een ontbrekende sprite.
+  //
+  // De reeks speelt op de stoel en niet waar de speler toevallig stond. Dat is
+  // WP 35: met een bureau op ware maat is er precies één plek waar de handen op
+  // de voorrand van het blad uitkomen, en dat is de zitting. De prose zei het al
+  // ("Je schuift Alberta's stoel bíj"), de engine deed het niet. De stoel wordt
+  // opgezocht via `hotspot.item`; staat er geen stoel in de kamer, dan gaat de
+  // speler gewoon zitten waar hij staat, zoals vroeger.
+  //
+  // Dat de zitplek in een blok ligt, is geen probleem: de speler wordt er door
+  // de engine neergezet en niet naartoe gelopen, en na het sluiten van de
+  // pc-overlay zet `betreedZolder` hem terug op de entry van de kamer.
   function startZitten(klaar) {
     var def = AL.sprites && AL.sprites["speler"];
     if (!def || !def.anims["zit-oost"]) { klaar(); return; }
+    var scene = toestand ? haalScene(toestand.sceneId) : null;
+    var hs = (scene && scene.hotspots) || [];
+    for (var i = 0; i < hs.length; i++) {
+      if (hs[i].item === "stoel") { actorX = hs[i].x; actorY = hs[i].y; break; }
+    }
     zitStap = 0;
     zitTikTot = ZIT_TIKKEN;
     zitKlaar = klaar;
@@ -849,7 +865,13 @@ globalThis.AL = globalThis.AL || {};
       if (e.speler) { tekenActor(); continue; }
       var fps = e.def.anims[e.anim].fps || 0;
       var frame = fps > 0 ? Math.floor(animTijd * fps) : 0;
-      AL.gfx.tekenSprite(e.def, e.anim, frame, e.x, e.y, { spiegel: e.spiegel });
+      // Dezelfde diepteschaal als de speler (WP 35). Het anker is
+      // voeten-midden, dus schalen laat de voeten staan waar ze staan: een prop
+      // krimpt naar zijn eigen vloerpunt toe en verschuift niet.
+      AL.gfx.tekenSprite(e.def, e.anim, frame, e.x, e.y, {
+        spiegel: e.spiegel,
+        schaal: AL.loopveld.diepteSchaal(scene, e.y)
+      });
     }
   }
 
@@ -929,28 +951,14 @@ globalThis.AL = globalThis.AL || {};
     return voorvoegsel + richting;
   }
 
-  // Diepteschaal: wie verder naar achter staat, is kleiner. De stijlgids vraagt
-  // dit expliciet en zegt ook hoe hard — "houd het subtiel, rond 0,8 achteraan".
-  //
-  // De schaal loopt over de bewandelbare strook van de scène zelf, niet over een
-  // vast getal: elke kamer heeft haar eigen loopstrook, en een vaste bovengrens
-  // zou in de ene kamer te veel en in de andere niets doen. Achteraan 0,84,
-  // vooraan 1. Op een figuur van eenendertig pixels is dat vijf pixels verschil
-  // over de diepte van de kamer — genoeg om te zien, te weinig om te betrappen.
+  // Diepteschaal van de speler. De berekening zelf staat sinds WP 35 in
+  // `js/loopveld.js`, want ze geldt voor álles wat op deze vloer staat: de
+  // speler én elke prop uit `hotspots`. Twee regimes naast elkaar — een speler
+  // die naar achter krimpt tussen props die dat niet doen — was precies wat de
+  // schaalmismatch nog vergrootte.
   function actorSchaal() {
     var scene = toestand ? haalScene(toestand.sceneId) : null;
-    var boxen = scene && scene.walkboxes;
-    if (!boxen || boxen.length === 0) return 1;
-    var boven = Infinity, onder = -Infinity;
-    for (var i = 0; i < boxen.length; i++) {
-      if (boxen[i][1] < boven) boven = boxen[i][1];
-      var bot = boxen[i][1] + boxen[i][3] - 1;
-      if (bot > onder) onder = bot;
-    }
-    if (onder <= boven) return 1;
-    var t = (onder - actorY) / (onder - boven);       // 0 vooraan, 1 achteraan
-    if (t < 0) t = 0; else if (t > 1) t = 1;
-    return 1 - 0.16 * t;
+    return AL.loopveld.diepteSchaal(scene, actorY);
   }
 
   // Rechtsboven tijdens de openingsreeks: dat Escape hem overslaat. Wie

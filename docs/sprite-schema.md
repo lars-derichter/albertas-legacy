@@ -136,8 +136,12 @@ schouder.
 - `opts.schaal` zet de sprite kleiner of groter neer met nearest-neighbour,
   doel-gestuurd bemonsterd zodat er geen gaten vallen. Het anker blijft
   onderaan-midden, dus een geschaalde figuur blijft op dezelfde vloer staan. De
-  engine gebruikt dit voor de diepteschaal van de speler (1 vooraan tot 0,84
-  achteraan, over de diepte van de walkboxes);
+  engine gebruikt dit voor de diepteschaal (1 vooraan tot 0,84 achteraan, over
+  de diepte van de walkboxes), sinds WP 35 voor de speler én voor elke prop uit
+  `hotspots` — één regime, uit `AL.loopveld.diepteSchaal`. Een sprite is dus
+  getekend op zijn maat vooraan in de kamer; wat je achteraan ziet, is die maat
+  maal de schaal. `sprite-pc.js` is 18 × 16 en komt op het bureau als 15 × 13 in
+  beeld;
 - een teken dat buiten het sub-palet wijst, wordt overgeslagen in plaats van
   gekleurd — een fout in een frame maakt een gat, geen verkeerde kleur.
 
@@ -162,3 +166,9 @@ de speler er niet doorheen loopt, dan hoort er een blok in de scène bij
 7. de speler heeft alle anims die de engine opvraagt, de loopcycli hebben vier
    frames met deining, de sta-anims twee frames met een tempo, en een eenmalige
    anim staat op `fps: 0`.
+
+Daarnáást keurt `test/test-schaal.mjs` de verhóuding: de stoelzitting op negen
+pixels, de pc binnen anderhalve ware maat, het notitieboek hoogstens half zo
+breed als de kist, en elk geschilderd kartonvlak tegen `sprite-doos`. Wat
+hierboven staat, bewaakt de bovengrens van één sprite; die keuring bewaakt de
+maat tússen sprites en scène (`art-stijlgids.md`, §De maatregel).

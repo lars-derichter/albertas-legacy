@@ -41,9 +41,47 @@ globalThis.AL = globalThis.AL || {};
     return false;
   }
 
+  // Hoe klein iets achteraan in de kamer wordt. De stijlgids vraagt de
+  // diepteschaal expliciet en zegt ook hoe hard: "houd het subtiel, rond 0,8
+  // achteraan".
+  var SCHAAL_ACHTERAAN = 0.84;
+
   var loopveld = {
 
+    SCHAAL_ACHTERAAN: SCHAAL_ACHTERAAN,
+
     inRechthoek: inRechthoek,
+
+    // Diepteschaal: wie verder naar achter staat, is kleiner. Eén functie voor
+    // álles wat op de vloer van deze kamer staat — de speler én de props uit
+    // `hotspots`. Tot WP 35 schaalde alleen de speler mee, en dat maakte de
+    // schaalfout juist erger: de figuur kromp naar achter toe terwijl het bureau
+    // en de dozen even groot bleven.
+    //
+    // De schaal loopt over de bewandelbare strook van de scène zelf, niet over
+    // een vast getal: elke kamer heeft haar eigen loopstrook, en een vaste
+    // bovengrens zou in de ene kamer te veel en in de andere niets doen.
+    // Achteraan 0,84, vooraan 1. Op een figuur van eenendertig pixels is dat
+    // vijf pixels verschil over de diepte van de kamer — genoeg om te zien, te
+    // weinig om te betrappen.
+    //
+    // Een prop die hóger staat dan de strook (de pc op het bureaublad) valt
+    // buiten het bereik en klemt op 0,84: hij staat achteraan in de kamer, en
+    // dat is precies de schaal die daarbij hoort.
+    diepteSchaal: function (scene, y) {
+      var boxen = (scene && scene.walkboxes) || [];
+      if (boxen.length === 0) return 1;
+      var boven = Infinity, onder = -Infinity;
+      for (var i = 0; i < boxen.length; i++) {
+        if (boxen[i][1] < boven) boven = boxen[i][1];
+        var bot = boxen[i][1] + boxen[i][3] - 1;
+        if (bot > onder) onder = bot;
+      }
+      if (onder <= boven) return 1;
+      var t = (onder - y) / (onder - boven);          // 0 vooraan, 1 achteraan
+      if (t < 0) t = 0; else if (t > 1) t = 1;
+      return 1 - (1 - SCHAAL_ACHTERAAN) * t;
+    },
 
     // Ligt het punt in een walkbox? (Zonder de blokken af te trekken.)
     inWalkbox: function (scene, x, y) {

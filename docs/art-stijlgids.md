@@ -149,6 +149,52 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
   43 met zon 46.
 - **De wolf:** koelgrijs-ramp (49/50/51), buik 52, ogen 14.
 
+## De maatregel: 1 px ≈ 5 cm
+
+Eén pixel is vijf centimeter. De speler is 31 px hoog en dus 1,55 m; alles wat
+naast hem in een kamer staat, wordt daaraan gemeten. Deze regel bestaat sinds
+WP 35 (`workflow/35-schaalpas.md`) en ze is er gekomen omdat het spel er zonder
+maat uitzag zoals het eruitzag: een koffiemok van 14 × 16 px (bijna zo breed als
+de speler), een bureau van 148 px (7,4 m) waar diezelfde speler met zijn kruin
+niet boven kwam, en geschilderde dozen van twee tot drie keer de doos-sprite die
+ernaast stond. Elk van die dingen was op zichzelf goed getekend. Samen klopte er
+niets van.
+
+**De verhouding tussen buren telt zwaarder dan de absolute waarheid.** Twee
+dozen naast elkaar moeten even groot zijn; of ze nu 0,7 of 0,8 m meten, ziet
+niemand.
+
+**Kleine voorwerpen mogen groter dan waar, tot ongeveer anderhalve keer.** Een
+mok op ware schaal is twee pixels en dat is geen mok meer. Elke uitzondering
+staat hieronder met haar factor erbij; wat er niet bij staat, houdt zich aan de
+maat.
+
+| Voorwerp | Maat | In het echt | Opmerking |
+|---|---|---|---|
+| speler | 31 px hoog | 1,55 m | het ijkpunt |
+| bureaublad | 15 px boven de voetlijn | 0,75 m | voorrand, niet achterrand |
+| bureau (breedte) | ≤ 52 px | 2,6 m | oude werktafel |
+| stoelzitting | 9 px | 0,45 m | gelijk aan de dij in `zit-oost` |
+| stoel (totaal) | 19 px | 0,95 m | rugleuning |
+| verhuisdoos | 16–22 px breed, 13–18 px hoog | 0,8–1,1 m | de doos-sprite is de eenheid |
+| kist | 40 × 19 px | 2,0 × 0,95 m | ~1,4× — het boek moet erop passen |
+| notitieboek (open) | 16 × 10 px | 0,8 × 0,5 m | ~2× — het draagt het hele spel |
+| CRT-monitor | 14 px breed, 10 px hoog | 0,7 × 0,5 m | ~1,3× — middelpunt van de kamer |
+| pc (monitor + kast) | 18 × 16 px, geblit 15 × 13 | 0,75 × 0,65 m | ~1,4× |
+| toetsenbord | 13 × 3 px | 0,65 × 0,15 m | |
+| koffiemok | 4 × 5 px | 0,2 × 0,25 m | ~2× — de kleinste leesbare mok |
+| papier op een blad | 6–8 px breed | 0,3–0,4 m | |
+
+Een stapel wordt hoger door te stapelen, niet door de doos te vergroten. De
+torens op de overloop zijn "hoger dan jij" doordat er vier dozen op elkaar
+staan, niet doordat één doos twee meter is.
+
+**Karton is 25/26, hout op de vloer is 23/24.** De hout- en de karton-kleuren
+komen uit dezelfde ramp, dus alleen een afspraak houdt ze uit elkaar. Ze is er
+niet voor de sfeer maar voor de keuring: `test/test-schaal.mjs` telt élk vlak
+van minstens 12 × 10 px in 25 of 26 als een doos en meet het na tegen de
+doos-sprite. Een kist die in kartonkleur geschilderd staat, breekt die maat.
+
 ## Stijlregels (VGA / SCI1-look)
 
 - **Perspectief:** lichte pseudo-3D zoals de vroege VGA-Sierra's. Vloeren wijken
@@ -271,6 +317,14 @@ zonder lichtbron hoort er niets te bewegen.
   staan waar ze staan, dus een figuur die naar achter kleiner wordt, blijft op
   dezelfde vloer. De stijlgids vraagt dit expliciet ("de speler wordt kleiner
   naar achter"); houd het subtiel, rond 0,8 achteraan.
+- **Eén diepteregime voor iedereen.** De schaal komt uit
+  `AL.loopveld.diepteSchaal(scene, y)` en geldt voor de speler én voor elke
+  sprite uit `hotspots`. Tot WP 35 schaalde alleen de speler mee, en dat máákte
+  de schaalfout: hij kromp naar achter toe terwijl het bureau en de dozen even
+  groot bleven, dus juist waar de verhouding het meest opviel klopte ze het
+  minst. Geschilderde geometrie schaalt niet — die teken je op de maat die bij
+  haar diepte hoort, en dozen achteraan zijn dus een tikje kleiner getekend dan
+  dozen vooraan. Voorgrond-`overlays` zijn ook verf en blijven ongemoeid.
 
 ## Scène-inventaris met mood-notities
 
@@ -311,14 +365,21 @@ teken per pixel, `.` transparant), met één uitbreiding voor het grotere palet.
 
 Specs:
 
+De maten zijn bovengrenzen en volgen de maatregel hierboven. Ze zijn in WP 35
+aangehaald tot vlak boven de werkelijke maat van elke sprite: een bovengrens van
+32 × 32 voor een monitor van een halve meter bewaakt niets.
+
 | Sprite | Anims | Maat (richtlijn) | Anker |
 |---|---|---|---|
 | `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid, draai, zit-oost | ≤ 16×32 | voeten-midden |
-| `notitieboek` | idle | ≤ 24×16 | voeten-midden |
-| `pc` | idle, aan | ≤ 32×32 | voeten-midden |
+| `notitieboek` | idle | ≤ 20×12 | voeten-midden |
+| `pc` | idle, aan | ≤ 20×18 | voeten-midden |
 | `doos` | idle | ≤ 24×20 | voeten-midden |
 | `broncode-doos` | idle, open | ≤ 28×24 | voeten-midden |
-| `stoel` | idle | ≤ 20×28 | voeten-midden |
+| `stoel` | idle | ≤ 14×20 | voeten-midden |
+
+`doos` en `broncode-doos` houden hun maat: zíj zijn de eenheid waar het
+geschilderde karton zich sinds WP 35 aan meet.
 
 Regels:
 

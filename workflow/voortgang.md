@@ -186,7 +186,7 @@ Entry: `workflow/33-flow-en-hints.md` · commit: `01329de`
 
 ### - [x] WP 34 — Nieuwe spelersprite
 
-Entry: `workflow/34-nieuwe-spelersprite.md` · commit: (nog in te vullen)
+Entry: `workflow/34-nieuwe-spelersprite.md` · commit: `9c5d4a2`
 
 - [x] Neutrale erfgenaam-figuur 15 × 31 (doorzwaai 32), licht van rechts, alle
       anims: sta/loop × noord-oost-zuid, `draai`, `zit-oost`. Trui uit de
@@ -201,13 +201,42 @@ Entry: `workflow/34-nieuwe-spelersprite.md` · commit: (nog in te vullen)
       smoke-browser 38/38, smoke-walk 25/25, smoke-full-playthrough 97/97,
       screenshots van de vier kamers + spritesheet in `test-results/wp34-*.png`
 
-### - [ ] WP 35 — Schaalpas over de scènes
+### - [x] WP 35 — Schaalpas over de scènes
 
-- [ ] Maatregel 1 px ≈ 5 cm in de stijlgids
-- [ ] Koffietas, bureau/stoel/pc, dozen, notitieboek/kist herijkt
-- [ ] Eén dieptescaling-regime (props mee of actor-scaling eruit)
-- [ ] Scale-lint
-- [ ] QC: `node --test` + screenshots beoordeeld door manager
+Entry: `workflow/35-schaalpas.md` · commit: (nog in te vullen)
+
+- [x] Maatregel 1 px ≈ 5 cm in `art-stijlgids.md`, met referentietabel, de
+      regel dat buren belangrijker zijn dan waarheid, en elke
+      leesbaarheidsuitzondering (mok ~2×, notitieboek ~2×, pc ~1,4×) mét haar
+      factor
+- [x] Werkhoek: mok 14 × 16 → 4 × 5, bureau 148 px breed → 50 px met een blad
+      op 14 px boven zijn voetlijn, toetsenbord 46 × 10 → 13 × 3,
+      monitorgloed met het scherm mee gekrompen
+- [x] `sprite-pc.js` 28 × 26 → 18 × 16, `sprite-stoel.js` 18 × 26 → 12 × 19
+      (zitting op 9 px), `sprite-notitieboek.js` 22 × 13 → 16 × 10;
+      `doos` en `broncode-doos` blijven de maateenheid
+- [x] Geschilderd karton in alle vier de kamers uit losse dozen van 16 × 13
+      tot 18 × 15 px: westhoek 11, doorgang 3, overloop 19. Een stapel wordt
+      hoger door te stapelen. Kist 96 × 42 → 40 × 19
+- [x] Eén diepteregime: `AL.loopveld.diepteSchaal(scene, y)` voor de speler
+      én elke hotspot-sprite; `engine.actorSchaal` is nu een doorgeefluik
+- [x] Zit-reeks op de stoel: `startZitten` zet de speler op de hotspot met
+      `item: "stoel"` — de enige plek waar zijn handen op de voorrand van het
+      blad uitkomen. `hotspot.item` is daarmee geen dood veld meer
+- [x] Blokken, entries en de smoke-coördinaten volgen de nieuwe voetafdrukken
+- [x] `test/test-schaal.mjs`: veertien keuringen die de verhoudingen uit de
+      scènedata narekenen (mok, bureau, stoel, zithouding, pc, karton,
+      torens, kist, notitieboek, diepteschaal)
+- [x] Docs mee: `art-stijlgids.md` (§De maatregel, §Diepte en voorgrond,
+      sprite-maten), `scene-schema.md` (hotspots schalen mee, de stoel is de
+      zitplek, `item` niet meer dood), `engine-architectuur.md`
+      (`diepteSchaal` in §De vloer), `sprite-schema.md` (`opts.schaal` voor
+      props, verwijzing naar de maatkeuring); prose: "schuin van het bureau
+      weggeschoven" → "schuin voor het bureau"
+- [x] QC: **382/382 groen** (14 nieuw), `lint-scene` en `check-assets`
+      schoon, smoke-browser 38/38, smoke-walk 25/25, smoke-pc 32/32,
+      smoke-full-playthrough 97/97, screenshots van de vier kamers, de
+      zithouding en vier voor-na-stroken in `test-results/wp35-*.png`
 
 ### - [ ] WP 36 — Handschriftfont
 

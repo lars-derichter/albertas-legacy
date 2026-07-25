@@ -89,8 +89,8 @@ AL.strings = {
     },
     "zolder-oost": {
       naam: "Zolder — werkhoek",
-      beschrijving: "Alberta's werkhoek. De stoel staat schuin van het " +
-        "bureau weggeschoven, alsof ze even is opgestaan. Op het stof na, " +
+      beschrijving: "Alberta's werkhoek. De stoel staat schuin voor het " +
+        "bureau, alsof ze even is opgestaan. Op het stof na, " +
         "dat overal even dik ligt. De pc doet het nog: een beige toren, een " +
         "bolle monitor die warm oranje nagloeit. Naast het toetsenbord staat " +
         "een halfvolle mok."

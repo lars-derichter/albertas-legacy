@@ -79,42 +79,67 @@ AL.scenes["overloop"] = {
     ["shadow", 1, [176, 132, 200, 132, 200, 136, 176, 136]],
 
     // ---- De dozen: hoger dan jij -------------------------------------------
-    // Twee torens tegen de wand, de linker tot voorbij de bovenrand van het
-    // speelveld, zodat er geen bovenkant te zien is. Dat is wat "hoger dan jij"
-    // moet doen.
-    ["rect", 25, 10, 8, 62, 148],
-    ["shadow", 1, [10, 8, 30, 8, 30, 156, 10, 156]],
-    ["line", 22, [10, 56, 71, 56]],
-    ["line", 22, [10, 104, 71, 104]],
-    ["line", 22, [10, 156, 71, 156]],
-    ["line", 27, [10, 8, 71, 8]],
-    ["line", 27, [10, 58, 71, 58]],
-    ["line", 27, [10, 106, 71, 106]],
+    // Twee torens tegen de wand en een derde rechts. "Hoger dan jij" zit sinds
+    // de schaalpas van WP 35 in het áántal dozen, niet in de maat van één doos:
+    // elke doos is 16 × 13 px (0,80 × 0,65 m), de maat van `sprite-doos.js` die
+    // er hieronder als prop naast staat. De linkertoren is vier dozen hoog en
+    // haalt daarmee 52 px, twee keer de speler op deze diepte.
+    //
+    // Vroeger was de linkertoren één vlak van 62 × 148 px — zeven meter hoog —
+    // dat tot voorbij de bovenrand van het speelveld liep. Het silhouet is
+    // gebleven (drie massa's op dezelfde plekken), de maateenheid is veranderd.
+    ["rect", 25, 10, 104, 16, 13],
+    ["rect", 26, 10, 117, 16, 13],
+    ["rect", 25, 10, 130, 16, 13],
+    ["rect", 26, 10, 143, 16, 13],
+    ["rect", 26, 26, 104, 16, 13],
+    ["rect", 25, 26, 117, 16, 13],
+    ["rect", 26, 26, 130, 16, 13],
+    ["rect", 25, 26, 143, 16, 13],
+    ["rect", 25, 42, 117, 16, 13],
+    ["rect", 26, 42, 130, 16, 13],
+    ["rect", 25, 42, 143, 16, 13],
+    ["shadow", 1, [10, 104, 16, 104, 16, 156, 10, 156]],
+    ["line", 27, [10, 104, 41, 104]],
+    ["line", 27, [42, 117, 57, 117]],
+    ["line", 22, [10, 116, 41, 116]],
+    ["line", 22, [10, 129, 57, 129]],
+    ["line", 22, [10, 142, 57, 142]],
+    ["line", 22, [10, 155, 57, 155]],
     // Labels op twee van de dozen.
-    ["rect", 36, 22, 68, 34, 11],
-    ["line", 39, [22, 68, 55, 68]],
-    ["px", 41, [[25, 72], [29, 72], [33, 72], [39, 72], [45, 72], [49, 72],
-      [27, 76], [33, 76], [41, 76], [47, 76]]],
-    ["rect", 36, 22, 118, 34, 11],
-    ["line", 39, [22, 118, 55, 118]],
-    ["px", 41, [[25, 122], [31, 122], [35, 122], [43, 122], [47, 122],
-      [27, 126], [35, 126], [43, 126]]],
+    ["rect", 36, 13, 121, 11, 6],
+    ["line", 39, [13, 121, 23, 121]],
+    ["px", 41, [[15, 123], [17, 123], [19, 123], [22, 123],
+      [15, 125], [18, 125], [21, 125]]],
+    ["rect", 36, 29, 147, 11, 6],
+    ["line", 39, [29, 147, 39, 147]],
+    ["px", 41, [[31, 149], [33, 149], [36, 149],
+      [31, 151], [34, 151], [37, 151]]],
 
-    ["rect", 26, 76, 62, 46, 92],
-    ["shadow", 1, [76, 62, 90, 62, 90, 154, 76, 154]],
-    ["line", 22, [76, 108, 121, 108]],
-    ["line", 22, [76, 154, 121, 154]],
-    ["line", 27, [76, 62, 121, 62]],
+    ["rect", 26, 76, 115, 16, 13],
+    ["rect", 25, 76, 128, 16, 13],
+    ["rect", 26, 76, 141, 16, 13],
+    ["rect", 25, 92, 128, 16, 13],
+    ["rect", 26, 92, 141, 16, 13],
+    ["shadow", 1, [76, 115, 82, 115, 82, 154, 76, 154]],
+    ["line", 27, [76, 115, 91, 115]],
+    ["line", 27, [92, 128, 107, 128]],
+    ["line", 22, [76, 127, 91, 127]],
+    ["line", 22, [76, 140, 107, 140]],
+    ["line", 22, [76, 153, 107, 153]],
 
-    ["rect", 25, 236, 96, 52, 58],
-    ["shadow", 1, [236, 96, 250, 96, 250, 154, 236, 154]],
-    ["line", 22, [236, 124, 287, 124]],
-    ["line", 22, [236, 154, 287, 154]],
-    ["line", 27, [236, 96, 287, 96]],
+    ["rect", 25, 236, 128, 16, 13],
+    ["rect", 26, 236, 141, 16, 13],
+    ["rect", 25, 252, 141, 16, 13],
+    ["shadow", 1, [236, 128, 242, 128, 242, 154, 236, 154]],
+    ["line", 27, [236, 128, 251, 128]],
+    ["line", 27, [252, 141, 267, 141]],
+    ["line", 22, [236, 140, 251, 140]],
+    ["line", 22, [236, 153, 267, 153]],
 
     // Contactschaduwen: de torens staan echt op deze vloer.
-    ["shadow", 2, [6, 152, 128, 152, 138, 168, 0, 168]],
-    ["shadow", 2, [230, 150, 294, 150, 302, 164, 222, 164]],
+    ["shadow", 2, [6, 152, 112, 152, 120, 166, 0, 166]],
+    ["shadow", 2, [230, 150, 272, 150, 280, 162, 222, 162]],
 
     // ---- Het licht haalt de hoeken niet ------------------------------------
     // Eén flauwe veeg van de trap-kant, en verder niets. De hoeken worden
@@ -140,12 +165,12 @@ AL.scenes["overloop"] = {
     { richting: "zuid", rect: [148, 152, 28, 8] }
   ],
 
-  //   torens-links    de twee kartonnen torens met hun contactschaduw (x10–121)
-  //   toren-rechts    de derde toren (x236–287, schaduw tot y164)
+  //   torens-links    de twee kartonnen torens met hun contactschaduw (x6–121)
+  //   toren-rechts    de derde toren (x236–267, schaduw tot y162)
   //   doos            de voetafdruk van de sprite op x262 y168
   blokken: [
-    [6, 152, 120, 17],
-    [222, 152, 80, 13],
+    [6, 152, 116, 15],
+    [230, 152, 50, 13],
     [250, 160, 24, 9]
   ],
 

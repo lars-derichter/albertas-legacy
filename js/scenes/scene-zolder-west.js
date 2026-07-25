@@ -67,49 +67,82 @@ AL.scenes["zolder-west"] = {
     // Drie stapels van afnemende hoogte, zodat het als een hoek vol leest en
     // niet als twee blokken. Elk met een lichtkant rechts (naar het raam toe)
     // en een schaduwkant links.
-    ["rect", 25, 8, 62, 62, 64],
-    ["shadow", 1, [8, 62, 30, 62, 30, 126, 8, 126]],
-    ["line", 27, [8, 62, 69, 62]],
-    ["line", 22, [8, 126, 69, 126]],
-    ["line", 22, [8, 94, 69, 94]],
-    ["rect", 26, 12, 66, 20, 5],
+    //
+    // Sinds de schaalpas van WP 35 is elke doos een eigen rechthoek van
+    // ongeveer 16 × 13 tot 18 × 15 px — de maat van `sprite-doos.js` (22 × 18),
+    // want die staat twee kamers verderop op dezelfde vloer. Daarvóór was de
+    // achterste stapel één vlak van 62 × 64 px: drie meter hoog, en dus twee tot
+    // drie keer de doos-sprite ernaast. Een stapel is nu hóger doordat er meer
+    // dozen op elkaar staan, niet doordat de doos groter is. De dozen achteraan
+    // zijn een tikje kleiner dan die vooraan: de vloer wijkt.
+    ["rect", 25, 8, 87, 16, 13],
+    ["rect", 26, 8, 100, 16, 13],
+    ["rect", 25, 8, 113, 16, 13],
+    ["rect", 26, 24, 100, 16, 13],
+    ["rect", 25, 24, 113, 16, 13],
+    ["shadow", 1, [8, 87, 14, 87, 14, 126, 8, 126]],
+    ["line", 27, [8, 87, 23, 87]],
+    ["line", 27, [24, 100, 39, 100]],
+    ["line", 22, [8, 99, 23, 99]],
+    ["line", 22, [8, 112, 39, 112]],
+    ["line", 22, [8, 125, 39, 125]],
+    ["rect", 26, 12, 91, 9, 4],
+    // De achterste stapel staat tegen de wand, dus haar contactschaduw ligt op
+    // de wand-vloerlijn. Zonder die schaduw hing ze aan de muur.
+    ["shadow", 2, [4, 124, 44, 124, 48, 131, 0, 131]],
 
-    ["rect", 26, 14, 116, 58, 44],
-    ["shadow", 1, [14, 116, 34, 116, 34, 160, 14, 160]],
-    ["line", 27, [14, 116, 71, 116]],
-    ["line", 22, [14, 138, 71, 138]],
-    ["line", 22, [14, 160, 71, 160]],
+    ["rect", 26, 14, 132, 17, 14],
+    ["rect", 25, 14, 146, 17, 14],
+    ["rect", 26, 31, 146, 17, 14],
+    ["shadow", 1, [14, 132, 20, 132, 20, 160, 14, 160]],
+    ["line", 27, [14, 132, 30, 132]],
+    ["line", 27, [31, 146, 47, 146]],
+    ["line", 22, [14, 145, 30, 145]],
+    ["line", 22, [14, 159, 47, 159]],
     // Label: streepjes die handschrift suggereren, geen leesbare tekst.
-    ["rect", 36, 24, 124, 34, 11],
-    ["line", 39, [24, 124, 57, 124]],
-    ["px", 41, [[27, 128], [31, 128], [35, 128], [41, 128], [47, 128],
-      [51, 128], [29, 132], [35, 132], [43, 132], [49, 132]]],
+    ["rect", 36, 17, 150, 11, 6],
+    ["line", 39, [17, 150, 27, 150]],
+    ["px", 41, [[19, 152], [21, 152], [23, 152], [26, 152],
+      [19, 154], [22, 154], [25, 154]]],
 
-    ["rect", 25, 66, 132, 46, 34],
-    ["shadow", 1, [66, 132, 82, 132, 82, 166, 66, 166]],
-    ["line", 27, [66, 132, 111, 132]],
-    ["line", 22, [66, 166, 111, 166]],
-    ["line", 22, [88, 132, 88, 166]],
+    ["rect", 25, 66, 151, 18, 15],
+    ["rect", 26, 84, 151, 18, 15],
+    ["shadow", 1, [66, 151, 72, 151, 72, 166, 66, 166]],
+    ["line", 27, [66, 151, 101, 151]],
+    ["line", 22, [66, 165, 101, 165]],
+    ["line", 22, [84, 151, 84, 165]],
 
     // Contactschaduwen van de stapels op de vloer.
-    ["shadow", 2, [6, 158, 76, 158, 88, 172, 0, 172]],
-    ["shadow", 2, [62, 164, 116, 164, 126, 176, 54, 176]],
+    ["shadow", 2, [10, 158, 50, 158, 56, 168, 4, 168]],
+    ["shadow", 2, [62, 164, 104, 164, 112, 172, 56, 172]],
 
     // ---- De kist, in het licht --------------------------------------------
     // Het notitieboek en de pen liggen erop als sprite, niet als verf.
-    ["rect", 23, 146, 148, 96, 30],
-    ["gradient", 25, 27, 148, 136, 92, 14, "v"],
-    ["rect", 24, 148, 150, 92, 26],
-    ["line", 27, [148, 136, 239, 136]],
-    ["line", 22, [146, 148, 241, 148]],
-    ["line", 22, [146, 178, 241, 178]],
+    //
+    // Veertig bij negentien pixels: twee meter breed en een kleine meter hoog.
+    // Dat is nog altijd een grote linnenkist en het bovenste eind van wat de
+    // maatregel toelaat, maar het notitieboek moet er leesbaar op kunnen liggen.
+    // Ze was 96 × 42 px — vijf meter breed, met een boek van 22 px erop dat
+    // daardoor als een postzegel las.
+    // Het voorvlak blijft hout mid (24) en wordt niet in karton-warm (25)
+    // gezet, hoe veel losser de kist daarmee ook van de vloer zou komen: 25 en
+    // 26 zijn in de vier kamers de kleuren van het karton, en de maatkeuring
+    // (`test/test-schaal.mjs`) telt elk vlak in die twee kleuren als een doos.
+    // Een kist die als doos meetelt, breekt de dozenmaat. Het contrast komt
+    // hier van het lichte deksel en de lichtstraal die erop valt.
+    ["rect", 23, 176, 158, 40, 15],
+    ["gradient", 25, 27, 178, 154, 36, 5, "v"],
+    ["rect", 24, 178, 159, 36, 12],
+    ["line", 27, [178, 154, 213, 154]],
+    ["line", 22, [176, 158, 215, 158]],
+    ["line", 22, [176, 172, 215, 172]],
     // Beslag: twee banden en een slotplaat.
-    ["rect", 23, 162, 150, 5, 26],
-    ["rect", 23, 220, 150, 5, 26],
-    ["rect", 55, 189, 155, 10, 9],
-    ["rect", 57, 191, 157, 6, 5],
-    ["px", 22, [[193, 159], [194, 159]]],
-    ["shadow", 2, [140, 176, 248, 176, 258, 186, 130, 186]],
+    ["rect", 23, 184, 159, 3, 12],
+    ["rect", 23, 205, 159, 3, 12],
+    ["rect", 55, 193, 162, 5, 4],
+    ["rect", 57, 194, 163, 3, 2],
+    ["px", 22, [[195, 164]]],
+    ["shadow", 2, [170, 171, 222, 171, 228, 177, 164, 177]],
 
     // ---- Naar het oosten ---------------------------------------------------
     // Geen deur maar een doorgang: de wand houdt op, en daarachter is het
@@ -156,14 +189,16 @@ AL.scenes["zolder-west"] = {
 
   // De voetafdrukken van wat er op deze vloer staat. Niet de geschilderde
   // hoogte — de speler ís zijn voeten — maar het stuk vloer dat bezet is.
-  //   dozen    de twee stapels links, met hun contactschaduw (x10–113)
-  //   kist     de kist in het licht: geschilderd x146–241, y148–177
+  //   dozen    de twee voorste stapels links, met hun contactschaduw (x10–111);
+  //            de achterste stapel staat tegen de wand, vóór de loopstrook
+  //   kist     de kist in het licht: geschilderd x176–215, y154–172, met haar
+  //            contactschaduw tot y177
   // Ze lopen tot aan de bovenrand van de loopstrook, zodat de speler er ook niet
   // achterlangs kan: de kist en de dozen zitten in de gecachete achtergrond en
   // zouden hem dus nooit afdekken.
   blokken: [
-    [10, 150, 104, 20],
-    [146, 150, 96, 28]
+    [10, 150, 102, 23],
+    [176, 150, 40, 28]
   ],
 
   entries: {
@@ -175,7 +210,7 @@ AL.scenes["zolder-west"] = {
   // de pen ernaast. De engine sorteert props en speler op voet-y, dus de speler
   // loopt er netjes achter en voor langs.
   hotspots: [
-    { item: "notitieboek", sprite: "notitieboek", x: 196, y: 140 }
+    { item: "notitieboek", sprite: "notitieboek", x: 196, y: 157 }
   ],
 
   props: [],

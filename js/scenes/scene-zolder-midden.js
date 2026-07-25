@@ -69,12 +69,18 @@ AL.scenes["zolder-midden"] = {
 
     // ---- Wat er níét als sprite staat --------------------------------------
     // Een lage stapel tegen de rechterwand, puur als vulling: de kamer hoort
-    // vol te staan, niet leeg met drie voorwerpen erin.
-    ["rect", 25, 286, 128, 34, 30],
-    ["shadow", 1, [286, 128, 298, 128, 298, 158, 286, 158]],
-    ["line", 27, [286, 128, 319, 128]],
-    ["line", 22, [286, 158, 319, 158]],
-    ["shadow", 2, [282, 156, 319, 156, 319, 166, 276, 166]],
+    // vol te staan, niet leeg met drie voorwerpen erin. Drie dozen van 17 × 13,
+    // op de maat van de doos-sprite die er twee meter naast staat (WP 35);
+    // vroeger één vlak van 34 × 30.
+    ["rect", 25, 286, 131, 17, 13],
+    ["rect", 26, 286, 144, 17, 13],
+    ["rect", 25, 303, 144, 17, 13],
+    ["shadow", 1, [286, 131, 292, 131, 292, 157, 286, 157]],
+    ["line", 27, [286, 131, 302, 131]],
+    ["line", 27, [303, 144, 319, 144]],
+    ["line", 22, [286, 143, 302, 143]],
+    ["line", 22, [286, 156, 319, 156]],
+    ["shadow", 2, [282, 155, 319, 155, 319, 165, 276, 165]],
 
     // ---- Het licht dat van west naar oost trekt ----------------------------
     // Hier haalt het al minder: geen straal meer maar een veeg die links
@@ -119,7 +125,10 @@ AL.scenes["zolder-midden"] = {
   ],
 
   //   stapel-rechts   de geschilderde stapel tegen de rechterwand (x286–319,
-  //                   voet y157, contactschaduw tot y166)
+  //                   voet y157, contactschaduw tot y165). Het blok loopt bewust
+  //                   iets breder dan de stapel: het houdt de speler ook uit de
+  //                   voorgrondstapel op x296–319, waar zijn hoofd anders boven
+  //                   het silhouet uit zou komen (zie workflow/34)
   //   broncode-doos   de voetafdruk van de sprite op x116 y182
   //   doos            de voetafdruk van de sprite op x236 y170
   // De sprite-blokken dekken alleen de onderkant: props worden op voet-y
@@ -167,10 +176,16 @@ AL.scenes["zolder-midden"] = {
     {
       baselineY: 188,
       ops: [
+        // Vier dozen op elkaar in silhouet, 24 px breed en om de zestien pixels
+        // een naad: vooraan staat de speler op schaal 1, dus dit is de doosmaat
+        // van de stijlgids op ware grootte. Met één naad op y152 las de stapel
+        // als twee blokken van een halve meter.
         ["rect", 22, 296, 130, 24, 59],
         ["shadow", 1, [296, 130, 304, 130, 304, 189, 296, 189]],
         ["line", 23, [296, 130, 319, 130]],
-        ["line", 23, [296, 152, 319, 152]]
+        ["line", 23, [296, 146, 319, 146]],
+        ["line", 23, [296, 162, 319, 162]],
+        ["line", 23, [296, 178, 319, 178]]
       ]
     }
   ]

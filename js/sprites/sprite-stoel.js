@@ -1,43 +1,47 @@
 // sprite-stoel.js — Alberta's lege bureaustoel op zolder-oost: sfeer-prop, 'net
 // verlaten' (hout-ramp 23/24, zitting in koelgrijs 50/52). Idle. Anker
-// voeten-midden (art-stijlgids.md, §Sprite-specificaties: <=20x28).
-//   0->0 outline  1->23 hout schaduw  2->24 hout mid  3->50 zitting  4->52 zitting hoog
+// voeten-midden (art-stijlgids.md, §Sprite-specificaties: <=14x20).
+//
+// Maat, na de schaalpas van WP 35: 12 × 19 — een halve meter breed, de zitting
+// op negen pixels (0,45 m) en de rugleuning op achttien (0,90 m). Negen is geen
+// toevallig getal: dat is precies de hoogte waarop de dij van de speler in het
+// derde `zit-oost`-frame ligt (WP 34), en beide worden met dezelfde
+// diepteschaal geblit. Zo zit het kind écht op de zitting in plaats van erdoor.
+// De vorige versie was 18 × 26 (0,9 × 1,3 m) en paste onder geen enkel bureau.
+// De stoel staat op een vloer uit dezelfde hout-ramp. In hout mid (24) viel hij
+// er volledig in weg — een donker frame op donker hout leest als een gat. Het
+// frame is nu hout warm (25) met een hooglicht (27) aan de raamkant.
+//   0->0 outline  1->23 hout schaduw  2->25 hout warm  3->27 hout hooglicht
+//   4->50 zitting  5->52 zitting hoog
 globalThis.AL = globalThis.AL || {};
 AL.sprites = AL.sprites || {};
 
 AL.sprites["stoel"] = {
   ankerpunt: "voeten-midden",
-  palet: [0, 23, 24, 50, 52],
+  palet: [0, 23, 25, 27, 50, 52],
   anims: {
 
     "idle": { fps: 0, frames: [
         [
-          "....0000000000....",
-          "...011111111110...",
-          "...011111111110...",
-          "...022222222220...",
-          "...022221222220...",
-          "...022222222220...",
-          "...022221222220...",
-          "...022222222220...",
-          "...022221222220...",
-          "...022222222220...",
-          "...022222222220...",
-          "...000000000000...",
-          "..04444444444440..",
-          "..03333333333330..",
-          "..03333333333330..",
-          "..01111111111110..",
-          "...022000000220...",
-          "...0220....0220...",
-          "...0220....0220...",
-          "...0220....0220...",
-          "...0220....0220...",
-          "...0220....0220...",
-          "...0220....0220...",
-          "...0110....0110...",
-          "....00......00....",
-          ".................."
+          "..00000000..",
+          "..01222330..",
+          "..01222330..",
+          "..01222330..",
+          "..01212330..",
+          "..01222330..",
+          "..01222330..",
+          "..00000000..",
+          "...0....0...",
+          ".0555555550.",
+          ".0444444450.",
+          ".0111111110.",
+          "..01....30..",
+          "..01....30..",
+          "..01....30..",
+          "..01....30..",
+          "..01....30..",
+          "..01....30..",
+          "..00....00.."
         ]
     ] }
   }

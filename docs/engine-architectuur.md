@@ -70,6 +70,8 @@ Adapteren en crediteren; niet heruitvinden.
   palet. Kleuren buiten elke ramp (6 bruin, 14 geel) blijven ongemoeid.
 - **Sprite-schaling.** `tekenSprite` neemt `opts.schaal`; het ankerpunt blijft
   onderaan-midden, zodat een geschaalde figuur op dezelfde vloer blijft staan.
+  De factor komt sinds WP 35 voor speler én props uit
+  `AL.loopveld.diepteSchaal` (zie §De vloer).
 - **Overgangen.** `gfx.overgang(soort, t, kleur)` legt `fade`, `dissolve` of
   `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
   gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
@@ -192,7 +194,18 @@ twee aan elke scène.
 ```js
 AL.loopveld.beloopbaar(scene, x, y)  // in een walkbox én in geen blok
 AL.loopveld.uitgangBij(scene, x, y)  // "noord"|"oost"|"zuid"|"west", of null
+AL.loopveld.diepteSchaal(scene, y)   // 1 vooraan tot 0,84 achteraan
 ```
+
+`diepteSchaal` staat hier en niet in de engine omdat ze over dezelfde meetkunde
+gaat als de rest van deze module: de loopstrook van de kamer. Sinds WP 35 is ze
+bovendien het énige diepteregime. `tekenActor` gebruikt haar voor de speler en
+`tekenPropsEnActor` voor élke sprite uit `hotspots`, met dezelfde `y`-waarde
+waarop ook de painter's order sorteert. Daarvóór schaalde alleen de speler mee
+en bleven de props even groot, wat de schaalmismatch tussen figuur en meubilair
+juist vergrootte naarmate hij verder naar achter liep. Geschilderde geometrie
+(`picture`, `overlays`) schaalt niet: die staat al op de maat die bij haar
+diepte hoort.
 
 Het volledige veldformaat staat in `scene-schema.md`; wat de engine ermee doet:
 
