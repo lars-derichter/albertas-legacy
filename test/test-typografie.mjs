@@ -22,6 +22,7 @@ const wortel = join(hier, "..");
 require(join(wortel, "js", "palette.js"));
 const font = require(join(wortel, "js", "font.js"));
 const gfx = require(join(wortel, "js", "gfx.js"));
+const strings = require(join(wortel, "js", "logic", "strings.js"));
 
 const BREEDTE = 320;
 
@@ -243,6 +244,23 @@ test("krimp: false houdt de volle hoogte aan", () => {
   const los = gfx.vensterKader(venster(["Kort."], { maxRegels: 8 }));
   const vast = gfx.vensterKader(venster(["Kort."], { maxRegels: 8, krimp: false }));
   assert.ok(vast.h > los.h);
+});
+
+test("een venster is standaard geen vraag", () => {
+  assert.equal(venster(["Kort."]).vraag, false);
+});
+
+test("vraag: true merkt het venster als vraagvenster", () => {
+  assert.equal(venster(["Wil je dat echt?"], { vraag: true }).vraag, true);
+});
+
+// Een vraagvenster laat de invoerbalk vrij, dus Enter en spatie typen mee in
+// plaats van door te bladeren. Past de vraag niet op één pagina, dan is de
+// tweede pagina onbereikbaar. Ze moet dus passen.
+test("de herbegin-vraag past op één pagina", () => {
+  const v = venster([strings.herbeginVraag], { vraag: true });
+  assert.equal(v.paginas.length, 1,
+    "een vraagvenster kan niet gebladerd worden, dus het mag niet pagineren");
 });
 
 test("plaatsing onder zet het venster onderaan het speelveld", () => {

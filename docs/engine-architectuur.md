@@ -243,6 +243,7 @@ reageert; de logica produceert ze alleen.
 | `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
 | `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
+| `vraag` | de begeleidende tekst is een vraag: het venster laat de invoerbalk vrij, zodat de speler het antwoord kan typen. Escape trekt de vraag in |
 | `herbegin` | het spel is teruggezet naar de begintoestand (zie `save-en-hints.md`) |
 | `gestopt` | het spel is beëindigd (einde bereikt of expliciet gestopt) |
 

@@ -441,6 +441,38 @@ de doc heeft het betere argument. Zie de entry.
 toetsenbord is niet geautomatiseerd nagekeken. De overlay is niet aangeraakt op
 het punt dat `js/touch.js` gebruikt.
 
+## Na het programma
+
+Fouten die ná de elf pakketten gemeld zijn. Geen werkpakketten, wel dezelfde
+poort: reproduceren, herstellen, regressietest, entry, commit.
+
+### Herbegin — `workflow/27-herbegin.md`, commit (nog in te vullen)
+
+Gemeld door Lars: *"The herbegin command doesn't work."* Drie fouten, waarvan
+de eerste de gemelde is.
+
+- [x] **De bevestiging was onmogelijk te typen.** `herbegin` vroeg om `herbegin
+      ja` te typen, maar elk venster blokkeert de invoer: de letters werden
+      geslikt, de spatie ín het antwoord klikte het venster weg, en `ja` bleef
+      als onbegrepen commando in de balk staan. Nagemeten vóór de fix: de
+      invoerregel stond op `"ja"`
+- [x] Opgelost met een vraagvenster — `maakVenster` kent `vraag: true`,
+      `syncBlokkeer` laat de balk dan vrij, en de logica-laag zegt zelf dat haar
+      tekst een vraag is via de effect-tag `vraag` (DOM-vrij en Node-testbaar,
+      zoals de rest van de laag)
+- [x] Escape trekt een openstaande vraag in; elk ander commando beantwoordt
+      haar. Enter en spatie bladeren niet meer — die typen mee
+- [x] **De herbegin was niet te zien.** Je kwam terug in dezelfde hoek met één
+      regel tekst; een geresette zolder ziet er niet anders uit dan een niet-
+      geresette. Nu start de openingsreeks opnieuw, precies zoals
+      `workflow/19-de-opening.md` bij WP D al beschreef maar de code nooit deed
+- [x] `AL.strings.herbeginKlaar` geschrapt: `verwerkResultaat` toont tekst ná de
+      effecten, dus die melding overschreef de eerste beat van de opening. De
+      reeks zegt hetzelfde beter
+- [x] QC: **328/328** headless groen (was 322), `smoke-browser` van 28 naar
+      **36** controles, de overige vijf rooksmaaktesten onveranderd groen (255
+      samen), lint en check-assets schoon
+
 ## Nog open na het programma
 
 Elf pakketten zijn af (0, A t/m J). Dit blijft staan, met de reden:
