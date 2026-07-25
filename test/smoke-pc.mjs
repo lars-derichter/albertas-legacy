@@ -62,7 +62,7 @@ async function main() {
   await page.goto(indexUrl, { waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
   await ev(page, () => window.AL.debugStartPc(0));
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
   const st0 = await ev(page, () => window.AL.debugState);
   check("de pc-overlay opent (modus pc)", st0.modus === "pc" && st0.overlayOpen === true);
 
@@ -174,7 +174,7 @@ async function main() {
 
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
   await ev(page, () => window.AL.pc.debug.kies("l0-editor-write"));
   await page.waitForFunction(() => window.AL.pc.debug.view() === "editor", null, { timeout: 5000 });
   const codeNa = await ev(page, () => window.AL.pc.debug.editorCode());

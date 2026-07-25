@@ -102,7 +102,7 @@ async function main() {
 
   // Snel tot in level 7 (bestaande debughaak), dan de drie puzzels oplossen.
   await ev(page, () => window.AL.debugStartPc(7));
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
   const sPc = await state(page);
   check("level 7 opent in de pc", sPc.modus === "pc" && String(sPc.levelActief) === "7",
     "levelActief=" + sPc.levelActief);

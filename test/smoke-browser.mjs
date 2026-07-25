@@ -203,7 +203,7 @@ async function main() {
 
   // 8. Aan de pc gaan zitten → pc:open; Escape keert terug naar de zolder.
   await typCommando(page, "ga zitten");
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
   const sPc = await state(page);
   check("ga zitten aan de pc opent de overlay (pc:open)",

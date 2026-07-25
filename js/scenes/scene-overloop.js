@@ -40,20 +40,32 @@ AL.scenes["overloop"] = {
     // ---- De trap naar beneden ----------------------------------------------
     // Een gat in de vloer met een leuning ernaast: hij loopt naar beneden weg,
     // dus de treden worden donkerder naarmate ze dieper liggen.
-    ["rect", 48, 128, 140, 68, 49],
-    ["gradient", 49, 48, 132, 144, 60, 45, "v"],
-    ["poly", 50, [132, 144, 192, 144, 192, 152, 132, 152]],
-    ["line", 48, [132, 152, 191, 152]],
-    ["poly", 49, [135, 152, 189, 152, 189, 162, 135, 162]],
-    ["line", 48, [135, 162, 188, 162]],
-    ["poly", 50, [138, 162, 186, 162, 186, 174, 138, 174]],
-    ["line", 48, [138, 174, 185, 174]],
-    ["line", 51, [128, 140, 196, 140]],
-    // De leuning: twee stijlen en een regel.
-    ["rect", 24, 122, 108, 5, 34],
-    ["rect", 24, 196, 108, 5, 34],
-    ["rect", 25, 122, 108, 79, 4],
-    ["shadow", 1, [122, 112, 200, 112, 200, 116, 122, 116]],
+    //
+    // Het gat liep tot y188 en de loopstrook begint op y152. Wie via het zuiden
+    // binnenkwam, stond dus midden in het gat — en dat is precies hoe het eruit
+    // zag. Het gat eindigt nu op de voorrand van de strook: je loopt eromheen,
+    // niet erin. De treden zijn navenant korter, want ze verdwijnen ook eerder
+    // uit het zicht.
+    // Het gat zelf, donker, met de bovenkant het diepst: de trap loopt van de
+    // kijker wég naar beneden, dus wat verder weg is ligt lager.
+    ["rect", 48, 128, 122, 68, 30],
+    ["line", 51, [128, 122, 195, 122]],
+    // Drie treden, om en om licht en donker zodat ze als tréden lezen en niet
+    // als een verloop. De onderste is het breedst: die is het dichtst bij.
+    ["poly", 49, [136, 126, 188, 126, 188, 133, 136, 133]],
+    ["line", 51, [136, 126, 187, 126]],
+    ["poly", 50, [133, 133, 191, 133, 191, 142, 133, 142]],
+    ["line", 52, [133, 133, 190, 133]],
+    ["poly", 49, [130, 142, 194, 142, 194, 152, 130, 152]],
+    ["line", 51, [130, 142, 193, 142]],
+    // De leuning staat op de vóórrand van het gat en dus tussen de speler en de
+    // diepte in. Ze stond eerst boven het gat tegen de wand, en las daar als een
+    // plank.
+    ["rect", 24, 122, 128, 5, 25],
+    ["rect", 24, 196, 128, 5, 25],
+    ["rect", 25, 122, 128, 79, 4],
+    ["line", 27, [122, 128, 200, 128]],
+    ["shadow", 1, [122, 132, 200, 132, 200, 136, 122, 136]],
 
     // ---- De dozen: hoger dan jij -------------------------------------------
     // Twee torens tegen de wand, de linker tot voorbij de bovenrand van het

@@ -150,7 +150,7 @@ async function speelLevel(page, n, naarFragment) {
     "scene=" + naSpread.sceneId);
 
   await typCommando(page, "ga zitten");
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
   const sPc = await state(page);
   check("L" + n + ": de pc opent op het juiste level",
@@ -251,7 +251,7 @@ async function main() {
     await pg.goto(urlMetSeed(seed), { waitUntil: "load" });
     await pg.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
     await ev(pg, (k) => window.AL.debugStartPc(k), n);
-    await pg.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+    await pg.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
     await ev(pg, (id) => window.AL.pc.debug.kies(id), "l" + n + "-editor-repair");
     await wachtView(pg, "editor");
     const code = await ev(pg, () => window.AL.pc.debug.editorCode());

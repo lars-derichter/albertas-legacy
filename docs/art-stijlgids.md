@@ -308,7 +308,7 @@ Specs:
 
 | Sprite | Anims | Maat (richtlijn) | Anker |
 |---|---|---|---|
-| `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid | ≤ 16×32 | voeten-midden |
+| `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid, draai, zit-oost | ≤ 16×32 | voeten-midden |
 | `notitieboek` | idle | ≤ 24×16 | voeten-midden |
 | `pc` | idle, aan | ≤ 32×32 | voeten-midden |
 | `doos` | idle | ≤ 24×20 | voeten-midden |
@@ -321,6 +321,23 @@ Regels:
   de predecessor.
 - **West = gespiegeld oost**: lever geen `-west`-anims; de engine spiegelt.
   Vermijd asymmetrie die gespiegeld fout oogt.
+- **Alle frames van één anim zijn even breed.** Het anker is horizontaal
+  gecentreerd, dus een frame dat een pixel breder is, schuift de hele figuur een
+  halve pixel op — en dat leest als trillen.
+- **De deining zit in de hoogte, niet in een verschuiving.** Een doorzwaaiframe
+  mag één rij hóger zijn dan een steunframe. Omdat het anker onderaan ligt,
+  blijven de voeten dan staan en komt de romp omhoog: precies wat er gebeurt als
+  je over je steunbeen heen rolt. Dat ene pixel doet meer voor "dit is lopen"
+  dan de voetstanden samen. Méér dan één rij is geen deining meer maar
+  stuiteren.
+- **Ademen: twee frames op 1 Hz.** Op het tweede zakt het hoofd één pixel en
+  wordt de romp één rij korter. Een sprite die volledig stilstaat leest als een
+  standbeeld, ook in een spel waarin niets beweegt.
+- **Armzwaai alleen in het zijaanzicht.** Van voren en van achteren zitten de
+  armen ín het silhouet; daar is een arm een rode vlek en niets meer. Opzij is
+  er breedte voor een mouw van twee pixels die vóór de mantel uitkomt.
+- **Een eenmalige anim staat op `fps: 0`.** De engine zet die frame voor frame,
+  dus een tempo erop zou hem dubbel laten lopen.
 - De speler is klein op het scherm (Sierra-verhouding, ± 1/6 van de
   schermhoogte); geen close-upsprites, geen gezichtsdetail (zie de speler-
   beslissing in `achtergrond.md`).

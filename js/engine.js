@@ -47,6 +47,21 @@ globalThis.AL = globalThis.AL || {};
   var richting = "zuid";
   var loopt = false;
 
+  // Het draaiframe. Wisselt de speler van de noord-zuidas naar de oost-westas of
+  // omgekeerd, dan komt er twee tikken lang een driekwartframe tussen. Het
+  // blokkeert de beweging niet — dat zou de besturing traag maken — het vervangt
+  // alleen wat er getekend wordt. Zonder dat frame klapt de figuur van de ene
+  // kant naar de andere.
+  var draaiTikken = 0;
+
+  // Gaat aan de pc zitten: drie frames vóór de overlay het beeld overneemt.
+  // Zonder dit zie je nooit dat het kind gaat zitten. zitStap is null als er niet
+  // gezeten wordt; zitKlaar is wat er moet gebeuren als de reeks af is.
+  var zitStap = null;
+  var zitTikTot = 0;
+  var zitKlaar = null;
+  var ZIT_TIKKEN = 3;           // tikken per frame, op 15 Hz dus vijf per seconde
+
   var venster = null;          // het open berichtvenster, of null
   var naVenster = null;        // wat te doen als het venster wegvalt
 
@@ -416,13 +431,33 @@ globalThis.AL = globalThis.AL || {};
   // pc:open en uit bij pc:sluit, en tekent de zolder eronder als achtergrond.
   function opADePc(open) {
     if (open) {
+      // Eerst zíen dat het kind gaat zitten, dan pas de overlay. De pc-overlay
+      // dekt het canvas volledig af, dus als ze meteen opengaat is er geen frame
+      // waarin de animatie te zien is — hoe mooi ze ook is.
+      //
+      // De modus gaat wél meteen op "pc": daar hangen de invoerblokkering en de
+      // save aan, en die horen niet een halve seconde achter te lopen op wat de
+      // speler net heeft gedaan.
       toestand.modus = "pc";
-      toonOverlay();
       bewaar();
+      richting = "oost";
+      loopt = false;
+      startZitten(function () { toonOverlay(); });
     } else {
       verbergOverlay();
       betreedZolder(false);
     }
+  }
+
+  // Start de zit-reeks. Bestaat de anim niet (of is er geen spelerdefinitie),
+  // dan wordt er niets uitgesteld: de klaar-functie loopt meteen. Zo kan het
+  // spel nooit vasthangen op een ontbrekende sprite.
+  function startZitten(klaar) {
+    var def = AL.sprites && AL.sprites["speler"];
+    if (!def || !def.anims["zit-oost"]) { klaar(); return; }
+    zitStap = 0;
+    zitTikTot = ZIT_TIKKEN;
+    zitKlaar = klaar;
   }
 
   function voerHerbeginUit() {
@@ -518,6 +553,8 @@ globalThis.AL = globalThis.AL || {};
 
   function tik() {
     animTijd += 1 / 15;
+    if (draaiTikken > 0) draaiTikken--;
+    if (zitStap !== null) { loopt = false; tikZitten(); return; }
     if (titelActief || !toestand) return;
     if (venster) { loopt = false; return; }
     if (overgang) { loopt = false; return; }   // stilstaan terwijl het beeld wisselt
@@ -525,9 +562,29 @@ globalThis.AL = globalThis.AL || {};
     loopStap();
   }
 
+  // De zit-reeks loopt op de logische tik en niet op een timer, zodat ze
+  // meebeweegt met de rest van het spel en in een test deterministisch is.
+  function tikZitten() {
+    if (--zitTikTot > 0) return;
+    zitStap++;
+    zitTikTot = ZIT_TIKKEN;
+    var def = AL.sprites && AL.sprites["speler"];
+    var aantal = def ? def.anims["zit-oost"].frames.length : 3;
+    if (zitStap < aantal) return;
+    // Klaar: het laatste frame is gezet, nu mag de overlay het beeld overnemen.
+    zitStap = null;
+    var klaar = zitKlaar;
+    zitKlaar = null;
+    if (klaar) klaar();
+  }
+
   function loopStap() {
     var r = AL.input.pijlRichting();
     if (!r) { loopt = false; return; }
+    // Van de ene as naar de andere is een draai, niet een sprong. Binnen dezelfde
+    // as (noord↔zuid, oost↔west) hoeft er niets: dan draait de figuur zich niet
+    // om zijn as maar kijkt hij de andere kant op, en dat is één frame verschil.
+    if (r !== richting && as(r) !== as(richting)) draaiTikken = 2;
     richting = r;
     toestand.speler.richting = r;
 
@@ -561,6 +618,10 @@ globalThis.AL = globalThis.AL || {};
     actorY = ny;
     toestand.speler.x = actorX;
     toestand.speler.y = actorY;
+  }
+
+  function as(r) {
+    return (r === "noord" || r === "zuid") ? "nz" : "ow";
   }
 
   function probeerOversteek(kruis) {
@@ -736,16 +797,51 @@ globalThis.AL = globalThis.AL || {};
     var animNaam = actorAnim();
     var anim = def.anims[animNaam];
     if (!anim) return;
-    var fps = anim.fps || 0;
-    var frame = fps > 0 ? Math.floor(animTijd * fps) : 0;
-    AL.gfx.tekenSprite(def, animNaam, frame, actorX, actorY,
-      { spiegel: richting === "west" });
+    var frame;
+    if (zitStap !== null) {
+      frame = Math.min(zitStap, anim.frames.length - 1);
+    } else if (animNaam === "draai") {
+      frame = 0;
+    } else {
+      var fps = anim.fps || 0;
+      frame = fps > 0 ? Math.floor(animTijd * fps) : 0;
+    }
+    AL.gfx.tekenSprite(def, animNaam, frame, actorX, actorY, {
+      spiegel: richting === "west",
+      schaal: actorSchaal()
+    });
   }
 
   function actorAnim() {
+    if (zitStap !== null) return "zit-oost";
+    if (draaiTikken > 0) return "draai";
     var voorvoegsel = loopt ? "loop-" : "sta-";
     if (richting === "west") return voorvoegsel + "oost";   // west = gespiegeld oost
     return voorvoegsel + richting;
+  }
+
+  // Diepteschaal: wie verder naar achter staat, is kleiner. De stijlgids vraagt
+  // dit expliciet en zegt ook hoe hard — "houd het subtiel, rond 0,8 achteraan".
+  //
+  // De schaal loopt over de bewandelbare strook van de scène zelf, niet over een
+  // vast getal: elke kamer heeft haar eigen loopstrook, en een vaste bovengrens
+  // zou in de ene kamer te veel en in de andere niets doen. Achteraan 0,84,
+  // vooraan 1. Op een figuur van vijfentwintig pixels is dat vier pixels verschil
+  // over de diepte van de kamer — genoeg om te zien, te weinig om te betrappen.
+  function actorSchaal() {
+    var scene = toestand ? haalScene(toestand.sceneId) : null;
+    var boxen = scene && scene.walkboxes;
+    if (!boxen || boxen.length === 0) return 1;
+    var boven = Infinity, onder = -Infinity;
+    for (var i = 0; i < boxen.length; i++) {
+      if (boxen[i][1] < boven) boven = boxen[i][1];
+      var bot = boxen[i][1] + boxen[i][3] - 1;
+      if (bot > onder) onder = bot;
+    }
+    if (onder <= boven) return 1;
+    var t = (onder - actorY) / (onder - boven);       // 0 vooraan, 1 achteraan
+    if (t < 0) t = 0; else if (t > 1) t = 1;
+    return 1 - 0.16 * t;
   }
 
   // Rechtsboven tijdens de openingsreeks: dat Escape hem overslaat. Wie
@@ -1094,7 +1190,11 @@ globalThis.AL = globalThis.AL || {};
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
         vensterOpen: !!venster,
-        overlayOpen: !!(pcOverlay && pcOverlay.style.display !== "none")
+        overlayOpen: !!(pcOverlay && pcOverlay.style.display !== "none"),
+        // Loopt de zit-animatie? De modus staat dan al op "pc" terwijl de overlay
+        // nog dicht is — een test die op het paneel wacht, hoort op overlayOpen
+        // te wachten en niet op de modus.
+        zitAnimatie: zitStap !== null
       };
     }
   });

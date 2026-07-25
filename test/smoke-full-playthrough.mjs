@@ -153,7 +153,7 @@ async function speelLevel(page, n, naarFragment) {
 
   // 3. Ga aan de pc zitten → pc-overlay op het juiste level.
   await typCommando(page, "ga zitten");
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
   const sPc = await state(page);
   check("L" + n + ": de pc opent op het juiste level",

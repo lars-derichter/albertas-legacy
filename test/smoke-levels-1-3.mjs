@@ -133,7 +133,7 @@ async function speelLevel(page, n, naarFragment) {
 
   // 3. Ga aan de pc zitten → pc-overlay open op het juiste level.
   await typCommando(page, "ga zitten");
-  await page.waitForFunction(() => window.AL.debugState.modus === "pc",
+  await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
   const sPc = await state(page);
   check("L" + n + ": de pc opent op het juiste level",
@@ -216,7 +216,7 @@ async function main() {
     const uit = {};
     for (const n of [1, 2, 3]) {
       await ev(pg, (k) => window.AL.debugStartPc(k), n);
-      await pg.waitForFunction(() => window.AL.debugState.modus === "pc", null, { timeout: 15000 });
+      await pg.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
       await ev(pg, (id) => window.AL.pc.debug.kies(id), "l" + n + "-editor-repair");
       await wachtView(pg, "editor");
       uit[n] = await ev(pg, () => window.AL.pc.debug.editorCode());

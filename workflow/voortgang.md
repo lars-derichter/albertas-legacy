@@ -278,7 +278,7 @@ honderd nieuwe glyphs). De vlekken die onder de spread-tekst liggen horen bij
 
 ### - [x] WP G — Het notitieboek
 
-Entry: `workflow/23-het-notitieboek.md` · commit: (nog in te vullen)
+Entry: `workflow/23-het-notitieboek.md` · commit: `76f6ebb`
 
 - [x] Zeven schetsen, één per scharnier-metafoor, in
       `js/scenes/spread-schetsen.js` — blauwdruk-en-doos, trechters-en-goot,
@@ -314,15 +314,40 @@ de weekregel inkorten — die zin staat woordelijk in `achtergrond.md`,
 `spelontwerp-legacy.md` en `deel1-hints.md`, en de walkthrough-PDF's kunnen hier
 niet herbouwd worden.
 
-### - [ ] WP H — Sprites en animatie
+### - [x] WP H — Sprites en animatie
 
-Entry: `workflow/24-*.md` · commit: —
+Entry: `workflow/24-sprites-en-animatie.md` · commit: (nog in te vullen)
 
-- [ ] Ademende idle
-- [ ] Loopcyclus 4–6 frames met armzwaai; draaiframe
-- [ ] "Gaat aan de pc zitten"-animatie
-- [ ] Dieptescaling toegepast
-- [ ] QC: sprite-lint; west blijft gespiegeld oost zonder foute asymmetrie
+- [x] Ademende idle: twee frames op 1 Hz, hoofd één pixel lager
+- [x] Loopcyclus van vier frames met **deining** — de doorzwaaiframes zijn één
+      rij hóger, en omdat het anker onderaan ligt komt de romp omhoog terwijl de
+      voeten staan. Dat ene pixel doet meer dan de voetstanden samen
+- [x] Armzwaai, alleen in het zijaanzicht: van voren zit een arm ín het silhouet
+- [x] Draaiframe bij een aswissel (noord-zuid ↔ oost-west), twee tikken, zonder
+      de beweging te blokkeren
+- [x] Zit-animatie van drie frames; de overlay wacht erop, de **modus niet** —
+      daar hangen de invoerblokkering en de save aan
+- [x] Dieptescaling over de loopstrook van de scène zelf: 1,0 vooraan, 0,84
+      achteraan
+- [x] Trapgat in `overloop` naar achter (eindigt nu op de voorrand van de
+      loopstrook); treden om en om licht/donker; leuning van boven het gat naar
+      de voorrand, waar ze tussen speler en diepte in staat
+- [x] `test/test-sprites.mjs`: tien keuringen (rechthoekigheid, breedte binnen
+      een anim, hoogteverschil ≤ 1, maten uit de stijlgids, sub-palet, anker,
+      aanwezige anims, geen `-west`). Vond meteen dat `loop-oost` geen deining
+      had
+- [x] Negen rooksmaaktesten wachtten op `modus === "pc"` en beweerden dan
+      `overlayOpen` — dat werkte alleen omdat die twee hetzelfde moment waren.
+      Ze wachten nu op de overlay zelf
+- [x] QC: **296/296 groen** (tien nieuwe), lint schoon, check-assets driftvrij,
+      zes rooksmaaktesten groen (229 controles), animatie frame voor frame
+      bekeken
+
+Twee dingen bewust níet: de sprite is niet naar de toegestane 16×32 vergroot (de
+ruimte die de animatie nodig had zat in de hoogte, en de figuur wérkt), en de
+walkboxen van de vier kamers zijn niet herzien — de 39-pixelstrook bleek genoeg
+voor zichtbare diepte, en een hogere strook zou de speler dwars door de in de
+achtergrond gebakken dozen en kist laten lopen.
 
 ### - [ ] WP I — Geluid
 
