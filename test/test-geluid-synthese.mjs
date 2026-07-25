@@ -80,11 +80,18 @@ class NepGain extends NepNode {
 
 let deContext = null;
 
+let gemaakteContexten = 0;
+
 class NepContext {
   constructor() {
     this.currentTime = 10;      // niet nul, zodat een fout met absolute tijd opvalt
-    this.state = "running";
+    // Opgeschort, zoals een echte browser hem geeft vóór de eerste
+    // gebruikersactie. Dát is de toestand waarin het lek zat: een opgeschorte
+    // context laat zijn klok stilstaan, dus alles wat je erin plant blijft in
+    // de graaf hangen tot de eerste resume.
+    this.state = "suspended";
     this.destination = new NepNode("destination");
+    gemaakteContexten++;
     deContext = this;
   }
   createOscillator() { return new NepOscillator(); }
@@ -96,6 +103,51 @@ globalThis.window = { AudioContext: NepContext };
 const sound = require(join(wortel, "js", "sound.js"));
 
 function leegLog() { log.nodes.length = 0; log.automatisering.length = 0; }
+
+// ---- Vóór de ontgrendeling -------------------------------------------------
+//
+// Deze twee tests staan bewust vooraan: ze keuren de wereld zoals hij is vóór
+// de eerste gebruikersactie, en die toestand komt in dit proces maar één keer
+// voor.
+
+test("vóór de eerste gebruikersactie bouwt niets iets", () => {
+  assert.equal(sound.isOntgrendeld(), false);
+  leegLog();
+  for (const naam of sound.cues) sound.speel(naam);
+  sound.muziek("titel");
+  for (let i = 0; i < 50; i++) sound.tik();
+  assert.equal(log.nodes.length, 0,
+    "er zijn " + log.nodes.length + " nodes gebouwd tegen een opgeschorte " +
+    "context; die blijven daar hangen tot de eerste resume");
+  assert.equal(gemaakteContexten, 0,
+    "er is zelfs al een AudioContext gemaakt zonder gebruikersactie");
+  assert.equal(sound.huidigBed(), null,
+    "een bed dat niet gestart is, mag zich niet als lopend melden");
+  assert.equal(sound.debug().nodes, 0);
+});
+
+test("unlock is idempotent en start het bed van de huidige stand", () => {
+  let haakGeroepen = 0;
+  sound.opOntgrendeld(() => { haakGeroepen++; sound.muziek("titel"); });
+
+  sound.unlock();
+  assert.equal(sound.isOntgrendeld(), true);
+  assert.equal(gemaakteContexten, 1);
+  assert.equal(deContext.state, "running", "de context is niet hervat");
+  assert.equal(haakGeroepen, 1);
+  assert.equal(sound.huidigBed(), "titel", "de haak heeft het bed niet gestart");
+
+  // Nog vier keer: geen tweede context, geen tweede haak, geen herstart van het
+  // bed. Elke klik en elke toets van de rest van het spel komt hier langs.
+  leegLog();
+  for (let i = 0; i < 4; i++) sound.unlock();
+  assert.equal(gemaakteContexten, 1, "er is een tweede AudioContext gemaakt");
+  assert.equal(haakGeroepen, 1, "de haak is meer dan één keer geroepen");
+  assert.equal(log.nodes.length, 0, "een tweede unlock plaatst noten");
+
+  sound.opOntgrendeld(null);
+  sound.muziek(null);
+});
 
 // ---- De FM-topologie -------------------------------------------------------
 
@@ -204,11 +256,17 @@ test("de lage noten van een bed gaan naar de bas-stem", () => {
   sound.muziek("ambient-zolder");
   const oscs = log.nodes.filter((n) => n.soort === "oscillator");
   const laagste = Math.min(...oscs.map((o) => o.frequency.value));
-  // Midi 33 is ongeveer 55 Hz; de bas-stem heeft ratio 0,5, dus de modulator van
-  // die noot zit rond 27 Hz. Dat getal kan alleen uit de bas-stem komen.
-  assert.ok(laagste < 40,
-    "laagste modulatorfrequentie is " + laagste.toFixed(1) +
-    " Hz — dat is geen bas-stem");
+  // De laagste noot van het bed staat op midi 45 (110 Hz). De bas-stem heeft
+  // ratio 0,5, dus haar modulator zit op de helft daarvan; de koude stem van
+  // het bed heeft ratio 2 en zou er het dubbele van maken. Die 55 Hz kan dus
+  // alleen uit de bas-stem komen.
+  const laagsteMidi = Math.min(...sound._bedden["ambient-zolder"].noten
+    .map(([m]) => m));
+  const grondtoon = 440 * Math.pow(2, (laagsteMidi - 69) / 12);
+  assert.ok(Math.abs(laagste - grondtoon * sound._stemmen.bas.ratio) < 0.5,
+    "laagste modulatorfrequentie is " + laagste.toFixed(1) + " Hz; de bas-stem " +
+    "hoort er " + (grondtoon * sound._stemmen.bas.ratio).toFixed(1) +
+    " van te maken");
 });
 
 test("geluid uit zet de meestergain naar nul en vergeet het bed", () => {

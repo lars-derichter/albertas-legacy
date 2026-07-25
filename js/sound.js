@@ -38,6 +38,20 @@
 // De muziek volgt de koudere toon uit WP C: mineur, traag, veel stilte tussen de
 // frasen. De zolder hoort niet gezellig te klinken. Het contrast dat overblijft
 // is de pc — het enige warme ding in huis, en het enige bed in een majeur-kleur.
+//
+// ---- Het niveau (WP 37) ----------------------------------------------------
+//
+// De meesterversterking stond op 0,16. Een voetstap piekte daarmee rond
+// -20 dBFS: op een laptopspeaker onhoorbaar naast eender welk ander geluid.
+// Nu 0,30, met de stemgains herverdeeld zodat de som niet klipt. De rekening
+// staat hieronder bij VOLUME.
+//
+// Even belangrijk was het register. Foley en drones stonden in de sub-bas
+// (voetstap midi 38 = 73 Hz, de zolderdrone midi 33 = 55 Hz). Een laptopspeaker
+// van vijftien millimeter geeft daar niets van terug — het is geen zacht
+// geluid, het is géén geluid. Alles ligt nu minstens een octaaf hoger. De
+// FM-vorm blijft: dezelfde twee operatoren, dezelfde niet-harmonische ratio's,
+// alleen een andere grondtoon.
 
 globalThis.AL = globalThis.AL || {};
 
@@ -46,7 +60,28 @@ globalThis.AL = globalThis.AL || {};
   var ctx = null;         // de AudioContext, lui aangemaakt
   var meester = null;     // één GainNode waar álles op uitkomt
   var aan = true;
-  var VOLUME = 0.16;      // de meesterversterking; per stem staat er nog een gain
+  var ontgrendeld = false; // is er al een gebruikersactie geweest?
+  var naUnlock = null;    // haak die de engine invult (zie opOntgrendeld)
+  var gebouwd = 0;        // hoeveel oscillatoren er ooit gebouwd zijn (debug)
+
+  // De meesterversterking; per stem staat er nog een gain. Het ergste geval:
+  //
+  //   bed        drie tegelijk klinkende noten (de zolder op t≈7,2: drone 45 +
+  //              kwint 52 in de bas-stem, plus 72 in de koude stem)  1,50
+  //   foley      één voetstap (hout)                                 0,70
+  //   foley      één kartontik erbovenop (doos, terwijl je loopt)    0,55
+  //                                                                  ----
+  //                                                                  2,75
+  //
+  // 2,75 × 0,30 = 0,825, dus ruim onder de klipgrens, en dan is dat nog de
+  // coherente som: dat alle zes de oscillatoren tegelijk op hun top staan is
+  // bij ongerelateerde frequenties hooguit een sample lang waar. Vervalstaarten
+  // tellen nauwelijks mee — ze zakken exponentieel en staan na een derde van
+  // hun verval al onder een tiende van hun gain.
+  //
+  // De doos- en pagina-cue vallen bewust niet samen (zie ontgrendelFragment in
+  // world.js): het blad komt 0,35 s ná de bonk, als een aparte beweging.
+  var VOLUME = 0.30;
   var VOORUIT = 0.35;     // hoe ver vooruit de scheduler noten plaatst (seconden)
 
   // ---- Stemmen -------------------------------------------------------------
@@ -57,29 +92,34 @@ globalThis.AL = globalThis.AL || {};
   // aanzet   attack in seconden
   // verval   hoe lang de klank na de nootduur nog uitzingt
   // gain     stemvolume (0–1), vóór de meesterversterking
+  //
+  // De gains zijn in WP 37 herverdeeld, niet zomaar opgetrokken: de bedstemmen
+  // gingen omlaag (er klinken er tot drie tegelijk), de foleystemmen omhoog (ze
+  // klinken één voor één en duren een tiende seconde). Netto wordt een voetstap
+  // bijna zeven dB luider en een drone tweeënhalve.
   var STEMMEN = {
     // Hol en luchtig, als een orgelregister met bijna geen boventonen. Ratio 2
     // is harmonisch, dus het blijft een toon en wordt geen bel.
     "koud": { golf: "sine", ratio: 2, index: 0.6, aanzet: 0.35, verval: 0.9,
-      gain: 0.55 },
+      gain: 0.5 },
     // De lage laag. Ratio 0,5 zet de modulator een octaaf lager: dat geeft de
     // grondtoon body zonder hem te laten brommen.
     "bas": { golf: "sine", ratio: 0.5, index: 1.1, aanzet: 0.5, verval: 1.6,
-      gain: 0.7 },
+      gain: 0.5 },
     // De pc. Driehoek met ratio 1 en een wat hogere index: iets belachtigs,
     // maar warm — een monitor die staat te zoemen, geen kerkorgel.
     "warm": { golf: "triangle", ratio: 1, index: 1.8, aanzet: 0.06, verval: 0.7,
-      gain: 0.5 },
+      gain: 0.45 },
     // Kort en helder, voor de bevestigingen.
     "blip": { golf: "square", ratio: 3, index: 0.4, aanzet: 0.004, verval: 0.04,
-      gain: 0.45 },
+      gain: 0.4 },
     // Hout. Ratio 1,41 (ongeveer wortel twee) is niet-harmonisch, dus dit is
     // geen toon meer maar een tik — precies wat een voetstap op een plank is.
     "hout": { golf: "triangle", ratio: 1.41, index: 6, aanzet: 0.002,
-      verval: 0.05, gain: 0.6 },
+      verval: 0.05, gain: 0.7 },
     // Karton: dezelfde niet-harmonische truc, lager en doffer.
     "karton": { golf: "sine", ratio: 1.73, index: 9, aanzet: 0.003,
-      verval: 0.09, gain: 0.5 }
+      verval: 0.09, gain: 0.55 }
   };
 
   // ---- Eenmalige cues ------------------------------------------------------
@@ -87,20 +127,29 @@ globalThis.AL = globalThis.AL || {};
   // Elke cue is { stem, noten: [[midi, start, duur], …] }. Midi in plaats van
   // hertz, want een toonhoogte opschrijven als 69 is te lezen en 440 is dat
   // alleen voor wie het uit zijn hoofd kent.
+  //
+  // Geen enkele cue-noot ligt onder midi 48 (131 Hz); de keuring bewaakt dat.
+  // Een tik van 73 Hz ís laag genoeg om echt te klinken, maar niet op de
+  // speaker waarop dit spel gespeeld wordt. Het karakter zit hier toch niet in
+  // de grondtoon maar in de niet-harmonische ratio: een kartontik op 165 Hz
+  // klinkt nog steeds als karton.
   var CUES = {
     // Een bladzijde omslaan: twee korte doffe tikken.
     pagina: { stem: "karton", noten: [[72, 0.00, 0.03], [67, 0.05, 0.04]] },
-    // Een scènewissel: een lage bonk, hout op hout.
-    deur: { stem: "hout", noten: [[45, 0.00, 0.05], [40, 0.07, 0.06]] },
+    // Een scènewissel: een bonk, hout op hout. Een octaaf hoger dan vroeger
+    // (was 45/40); het blijft de laagste cue in huis.
+    deur: { stem: "hout", noten: [[57, 0.00, 0.05], [52, 0.07, 0.06]] },
     // Een toetsaanslag in de editor.
     toets: { stem: "blip", noten: [[93, 0.00, 0.02]] },
     // Een voetstap op een plank. Twee varianten, zodat opeenvolgende stappen
     // niet identiek klinken — dat is het verschil tussen lopen en een metronoom.
-    stap: { stem: "hout", noten: [[38, 0.00, 0.05]] },
-    "stap-2": { stem: "hout", noten: [[41, 0.00, 0.045]] },
-    // Een doos die opengaat: karton dat meegeeft.
-    doos: { stem: "karton", noten: [[50, 0.00, 0.06], [45, 0.08, 0.08],
-      [43, 0.18, 0.10]] },
+    // Was 38/41 (73/87 Hz): een tik die je vóélde als je hem al hoorde.
+    stap: { stem: "hout", noten: [[50, 0.00, 0.05]] },
+    "stap-2": { stem: "hout", noten: [[53, 0.00, 0.045]] },
+    // Een doos die opengaat: karton dat meegeeft. Onder de pagina-cue in
+    // register (dit is de doos, niet het blad), boven de bodem van midi 48.
+    doos: { stem: "karton", noten: [[60, 0.00, 0.06], [55, 0.08, 0.08],
+      [52, 0.18, 0.10]] },
     // "Compileer & test": een neutrale dubbele blip.
     compileer: { stem: "blip", noten: [[69, 0.00, 0.05], [69, 0.09, 0.05],
       [76, 0.18, 0.07]] },
@@ -119,6 +168,13 @@ globalThis.AL = globalThis.AL || {};
   // lengte is de omloop in seconden; na die tijd begint hij opnieuw, tenzij
   // eenmalig. Noten onder midi 55 gaan naar de bas-stem, daarboven naar de
   // melodiestem van het bed — zo blijft de data leesbaar.
+  //
+  // De bodem ligt hier op midi 45 (110 Hz) en niet op de 48 van de cues: een
+  // drone mag lager liggen dan foley, want hij houdt aan en je hoort hem
+  // daardoor ook op een kleine speaker (of voelt hem, en dat is voor een drone
+  // genoeg). De keuring staat dat toe op één voorwaarde — zo'n noot moet in de
+  // bas-stem vallen en minstens twee seconden duren. Een melodienoot mag daar
+  // niet komen, want die zou wegvallen en het bed zou een gat krijgen.
   var BEDDEN = {
     // De titelkaart. A mineur, traag. Vier maten waarvan de helft stilte.
     titel: { lengte: 16.0, stem: "koud", noten: [
@@ -133,16 +189,21 @@ globalThis.AL = globalThis.AL || {};
     // van vier tiende seconde op 110 Hz — een blip, geen sfeer. Nu is het een
     // bed van bijna twintig seconden: een lage drone met een open kwint, en
     // vier losse noten erboven. Veel stilte, en niets dat oplost.
+    //
+    // De drone stond op midi 33 (55 Hz) en de kwint op 40. Allebei een octaaf
+    // omhoog: dezelfde A en dezelfde open kwint, nu wél hoorbaar.
     "ambient-zolder": { lengte: 19.2, stem: "koud", noten: [
-      [33, 0.0, 9.2], [33, 9.6, 9.2],
-      [40, 4.8, 3.8],
+      [45, 0.0, 9.2], [45, 9.6, 9.2],
+      [52, 4.8, 3.8],
       [69, 2.4, 2.5], [72, 7.2, 2.1], [71, 12.0, 2.9], [69, 16.2, 2.6]
     ] },
 
     // Aan de pc. Het enige bed in een majeur-kleur, en het enige dat beweegt:
     // een trage arpeggio over C. Het contrast met de zolder is het punt.
+    // De pedaaltoon ging van midi 36 (65 Hz) naar 48: dezelfde C, een octaaf
+    // hoger, en daarmee onder de arpeggio in plaats van eronderdóór.
     pc: { lengte: 12.8, stem: "warm", noten: [
-      [36, 0.0, 6.0], [36, 6.4, 6.0],
+      [48, 0.0, 6.0], [48, 6.4, 6.0],
       [60, 0.4, 0.9], [64, 1.6, 0.9], [67, 2.8, 0.9], [72, 4.0, 1.9],
       [67, 6.4, 0.9], [64, 7.6, 0.9], [60, 8.8, 3.2]
     ] },
@@ -186,6 +247,7 @@ globalThis.AL = globalThis.AL || {};
     var t1 = t0 + duur;
     var eind = t1 + s.verval;
 
+    gebouwd += 2;
     var carrier = ctx.createOscillator();
     carrier.type = s.golf;
     carrier.frequency.value = f;
@@ -279,14 +341,40 @@ globalThis.AL = globalThis.AL || {};
     _cues: CUES,
     _bedden: BEDDEN,
     _stemmen: STEMMEN,
+    _volume: VOLUME,
 
-    // Ontgrendel het geluid na een gebruikersactie (de eerste toetsaanslag).
+    // Ontgrendel het geluid na een gebruikersactie. Elke gebruikersactie telt —
+    // toetsaanslag, muisklik, tik op het scherm, D-pad, versturen — want een
+    // browser eist er één en een speler die alleen aanraakt, geeft er nooit een
+    // van het soort dat vroeger als enige meetelde (het toetsenbord).
+    //
+    // Vóór dit moment doen speel() en muziek() niets: er wordt geen
+    // AudioContext gemaakt en er worden geen oscillatoren gebouwd. Dat is niet
+    // alleen netjes, het was een lek — een opgeschorte context laat zijn klok
+    // stilstaan, dus alles wat er tegen gepland werd bleef in de graaf hangen
+    // tot het bij de eerste resume in één klap losbarstte.
+    //
+    // Idempotent: de tweede en volgende aanroep doen niets meer (behalve een
+    // resume proberen als het systeem de context intussen weer opgeschort
+    // heeft, wat gebeurt als het tabblad naar de achtergrond gaat).
     unlock: function () {
       var c = zorgCtx();
-      if (c && c.state === "suspended") {
+      if (!c) return;
+      if (c.state === "suspended") {
         try { c.resume(); } catch (e) { /* niets */ }
       }
+      if (ontgrendeld) return;
+      ontgrendeld = true;
+      // De engine weet welk bed bij de huidige stand hoort; de geluidslaag
+      // niet. Zij is bij de eerste gebruikersactie nog nooit aan een bed
+      // toegekomen, dus de haak start het alsnog.
+      if (naUnlock) { try { naUnlock(); } catch (e) { /* niets */ } }
     },
+
+    // De engine hangt hier startBedVoorStand aan (zie boot in engine.js).
+    opOntgrendeld: function (fn) { naUnlock = fn; },
+
+    isOntgrendeld: function () { return ontgrendeld; },
 
     // Zet het geluid aan of uit (effecttags geluid:aan / geluid:uit).
     //
@@ -319,14 +407,24 @@ globalThis.AL = globalThis.AL || {};
         staat: ctx ? ctx.state : null,
         bed: bedNaam,
         aan: aan,
+        ontgrendeld: ontgrendeld,
         meesterGain: meester ? meester.gain.value : null,
-        geplaatst: bed ? volgende : 0
+        geplaatst: bed ? volgende : 0,
+        // Hoeveel oscillatoren er ooit gebouwd zijn. Vóór de ontgrendeling
+        // hoort dit nul te blijven, hoeveel cues de engine ook afvuurt: dat is
+        // precies de opbouw waar het lek uit bestond, en het is het enige
+        // getal waaraan een test dat kan zien.
+        nodes: gebouwd
       };
     },
 
     // Speel een eenmalige cue op naam. Onbekende naam of geluid uit: doet niets.
-    speel: function (naam) {
-      if (!aan) return;
+    //
+    // vertraging (seconden, optioneel) schuift de hele cue op de audioklok
+    // vooruit. Eén gebruiker: de bladzijde die ná de doosbonk komt in plaats
+    // van erdoorheen (zie world.ontgrendelFragment).
+    speel: function (naam, vertraging) {
+      if (!aan || !ontgrendeld) return;
       var c = zorgCtx();
       if (!c) return;
       if (c.state === "suspended") {
@@ -334,7 +432,7 @@ globalThis.AL = globalThis.AL || {};
       }
       var cue = CUES[naam];
       if (!cue) return;
-      var nu = c.currentTime + 0.005;
+      var nu = c.currentTime + 0.005 + (vertraging > 0 ? vertraging : 0);
       for (var i = 0; i < cue.noten.length; i++) {
         noot(cue.stem, cue.noten[i][0], nu + cue.noten[i][1], cue.noten[i][2]);
       }
@@ -348,6 +446,10 @@ globalThis.AL = globalThis.AL || {};
       if (!naam) { bed = null; bedNaam = null; volgende = 0; return; }
       if (!BEDDEN[naam]) return;
       if (!aan) { bedNaam = null; return; }
+      // Vóór de eerste gebruikersactie start er niets, en wordt er niets
+      // onthouden: huidigBed() blijft null, zodat de engine het bed na de
+      // ontgrendeling gewoon opnieuw aanbiedt (en het dan wél start).
+      if (!ontgrendeld) { bedNaam = null; return; }
       var c = zorgCtx();
       if (!c) { bedNaam = null; return; }
       if (c.state === "suspended") {

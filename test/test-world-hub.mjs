@@ -160,16 +160,19 @@ test("een doos in de verkeerde kamer wijst naar de juiste plek", () => {
 test("in de westhoek zijn de dozen en de kist te openen, maar zonder fragment", () => {
   // De westhoek staat vól geschilderde dozen en er ligt een kist onder het
   // notitieboek. "Dat zie je hier niet" was daarop het verkeerde antwoord.
+  //
+  // Ze klinken wél: een deksel dat opengaat maakt geluid, ook als er niets in
+  // zit (WP 37). Dat is de enige effect-tag die deze twee antwoorden dragen.
   const t = world.nieuw();                       // sceneId: zolder-west
   for (const woord of ["doos", "dozen", "karton"]) {
     const r = world.open(t, woord);
     assert.deepEqual(r.tekst, [strings.dozen.westhoek], woord);
-    assert.deepEqual(r.effecten, [], woord);
+    assert.deepEqual(r.effecten, ["geluid:doos"], woord);
   }
   for (const woord of ["kist", "koffer"]) {
     const r = world.open(t, woord);
     assert.deepEqual(r.tekst, [strings.kist.open], woord);
-    assert.deepEqual(r.effecten, [], woord);
+    assert.deepEqual(r.effecten, ["geluid:doos"], woord);
   }
   // Geen van beide ontgrendelt iets: het fragment van hoofdstuk 1 zit in het
   // notitieboek.
@@ -192,6 +195,33 @@ test("'open doos' en 'open karton' blijven de fragment-dozen openen", () => {
   t.sceneId = "zolder-midden";
   assert.ok(world.open(t, "karton").effecten.includes("fragment-gevonden:l2"));
   assert.ok(world.open(t, "doos").effecten.includes("fragment-gevonden:l3"));
+});
+
+// ---- Het geluid van een doos die opengaat ----------------------------------
+
+test("een fragmentdoos klinkt als karton, en pas daarna als papier", () => {
+  // De doos-cue stond sinds WP I in de tabel en werd nergens afgevuurd — de
+  // enige cue in het spel die alleen op papier bestond. Een doos die opengaat
+  // hoorde `pagina` te spelen, hetzelfde geluid als het omslaan van een blad.
+  const t = world.nieuw();
+  world.open(t, "notitieboek");                  // l1 uit de weg
+  t.sceneId = "zolder-midden";
+  const r = world.open(t, "karton");
+  assert.ok(r.effecten.includes("geluid:doos"),
+    "geen doos-cue bij het openen van een fragmentdoos: " + r.effecten);
+  // Het blad komt ná de bonk: twee foley-cues op hetzelfde moment zijn samen
+  // één modderige klik.
+  const blad = r.effecten.find((e) => e.indexOf("geluid:pagina") === 0);
+  assert.equal(blad, "geluid:pagina@0.35");
+  assert.ok(r.effecten.indexOf("geluid:doos") < r.effecten.indexOf(blad));
+});
+
+test("het notitieboek klinkt als één bladzijde, zonder karton", () => {
+  const t = world.nieuw();                       // sceneId: zolder-west
+  const r = world.open(t, "notitieboek");
+  assert.ok(r.effecten.includes("geluid:pagina"));
+  assert.ok(!r.effecten.some((e) => e.indexOf("geluid:doos") === 0),
+    "een boek is geen doos: " + r.effecten);
 });
 
 // ---- Aan de pc gaan zitten ------------------------------------------------

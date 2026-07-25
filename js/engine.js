@@ -260,7 +260,12 @@ globalThis.AL = globalThis.AL || {};
       } else if (tag === "titel") {
         startTitel();
       } else if (tag === "fragment-gevonden") {
-        AL.sound.speel("pagina");
+        // Geen cue hier. Deze tag markeert voortgang; het geluid van het
+        // moment staat als eigen `geluid:`-tag in dezelfde effectenlijst (WP
+        // 37). Vroeger speelde dit `pagina`, en de spread erna nog eens, en de
+        // logica had er zelf ook al één in de lijst gezet: drie identieke
+        // kartontikken op dezelfde audioklok-tijd, wat één harde klik geeft in
+        // plaats van een bladzijde.
         bewaar();
 
       // --- Gesimuleerde pc ---
@@ -315,6 +320,17 @@ globalThis.AL = globalThis.AL || {};
 
       // --- Systeem ---
       } else if (tag === "geluid") {
+        // Een cue mag een vertraging meedragen: `geluid:pagina@0.35` speelt de
+        // pagina-cue 0,35 s later. Dat is er precies één keer nodig — twee
+        // foley-cues op hetzelfde moment zijn geen twee geluiden maar één
+        // modderige — en het alternatief (de engine laten weten welke cues
+        // elkaar in de weg zitten) legt kennis op de verkeerde plaats.
+        var apenstaart = arg.indexOf("@");
+        var vertraging = 0;
+        if (apenstaart !== -1) {
+          vertraging = parseFloat(arg.substring(apenstaart + 1)) || 0;
+          arg = arg.substring(0, apenstaart);
+        }
         if (arg === "aan") {
           AL.sound.zetAan(true);
           startBedVoorStand();
@@ -323,7 +339,7 @@ globalThis.AL = globalThis.AL || {};
         }
         else if (arg === "uit") { AL.sound.zetAan(false); if (toestand) toestand.geluid = false; bewaar(); }
         else if (AL.sound.bedden.indexOf(arg) !== -1) { AL.sound.muziek(arg); }
-        else { AL.sound.speel(arg); }
+        else { AL.sound.speel(arg, vertraging); }
       } else if (tag === "vraag") {
         // Alleen een venstervorm: verwerkResultaat leest deze tag en houdt de
         // invoerbalk vrij. Hier valt niets te doen.
@@ -428,7 +444,10 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
-    AL.sound.speel("pagina");
+    // Geen cue: welk geluid bij het openslaan hoort, beslist de logica in haar
+    // effectenlijst (een blad uit het notitieboek klinkt anders dan een blad
+    // uit een doos die je net opengetrokken hebt). Doorbladeren speelt wél
+    // `pagina` — zie spreadBlader.
     bewaar();
   }
 
@@ -707,18 +726,7 @@ globalThis.AL = globalThis.AL || {};
     if (dx !== 0 && beloopbaar(scene, actorX + dx, actorY)) nx = actorX + dx;
     if (dy !== 0 && beloopbaar(scene, nx, actorY + dy)) ny = actorY + dy;
     loopt = (nx !== actorX || ny !== actorY);
-    // Voetstappen op de tel van de loopcyclus: die draait op 8 fps met vier
-    // frames, dus twee steunfases per halve seconde. Elke vierde tik is één stap,
-    // en de twee varianten wisselen af — twee identieke stappen achter elkaar
-    // klinken als een metronoom en niet als iemand die loopt.
-    if (loopt) {
-      if (stapTeller % 4 === 0) {
-        AL.sound.speel((stapTeller % 8 === 0) ? "stap" : "stap-2");
-      }
-      stapTeller++;
-    } else {
-      stapTeller = 0;
-    }
+    voetstap();
     actorX = nx;
     actorY = ny;
     toestand.speler.x = actorX;
@@ -735,6 +743,38 @@ globalThis.AL = globalThis.AL || {};
     inUitgang = true;
     probeerOversteek(uit);
     loopt = false;
+  }
+
+  // Voetstappen op de tel van de loopcyclus. De loopanimatie draait op 8 fps met
+  // vier frames waarvan er twee steunfases zijn (frame 0 en 2, "beide voeten op
+  // de vloer"): vier steunfases per seconde.
+  //
+  // De oude regel telde logische tikken — elke vierde van de vijftien per
+  // seconde, dus 3,75 stappen per seconde tegen een beeld dat er 4,0 laat zien.
+  // Een kwart stap verschil per seconde: na vier seconden lopen valt het geluid
+  // op de doorzwaai in plaats van op de voet. Niemand rekent dat na, iedereen
+  // hoort het.
+  //
+  // Nu hangt de stap aan het animatieframe zelf — dezelfde teller waarmee
+  // tekenActor het frame kiest — en valt hij dus per definitie op de steunfase.
+  // De twee varianten wisselen af: twee identieke stappen achter elkaar klinken
+  // als een metronoom en niet als iemand die loopt.
+  var laatsteStapFrame = -1;
+
+  function loopCyclusFps() {
+    var def = AL.sprites && AL.sprites["speler"];
+    var anim = def && def.anims && def.anims["loop-oost"];
+    return (anim && anim.fps) ? anim.fps : 8;
+  }
+
+  function voetstap() {
+    if (!loopt) return;
+    var frame = Math.floor(animTijd * loopCyclusFps());
+    if (frame === laatsteStapFrame) return;     // nog binnen hetzelfde frame
+    laatsteStapFrame = frame;
+    if (frame % 2 !== 0) return;                // doorzwaai, geen steunfase
+    stapTeller++;
+    AL.sound.speel((stapTeller % 2 === 1) ? "stap" : "stap-2");
   }
 
   function as(r) {
@@ -1244,6 +1284,12 @@ globalThis.AL = globalThis.AL || {};
     window.addEventListener("resize", berekenSchaal);
 
     AL.input.init();
+    // Vóór de eerste gebruikersactie start de geluidslaag niets (browsers
+    // verbieden het, en een opgeschorte context laat alles wat je erin plant
+    // ophopen). De titelmuziek hieronder is dus een lege aanroep; deze haak
+    // start alsnog het bed dat bij de stand van dat moment hoort, zodra de
+    // speler zijn eerste toets, klik of tik geeft.
+    AL.sound.opOntgrendeld(startBedVoorStand);
     AL.input.onSubmit = opCommando;
     AL.input.onAdvance = opAdvance;
     AL.input.onEscape = opEscape;
@@ -1331,6 +1377,12 @@ globalThis.AL = globalThis.AL || {};
         einde: toestand ? toestand.einde : null,
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
+        loopt: loopt,
+        // Het frame van de loopcyclus waaraan de voetstap hangt (zie voetstap):
+        // even is een steunfase, oneven een doorzwaai. De geluidsrooksmaaktest
+        // leest dit op het moment dat er een stap klinkt — anders is "de stap
+        // valt op de voet" alleen met een oor te controleren.
+        loopFrame: Math.floor(animTijd * loopCyclusFps()),
         vensterOpen: !!venster,
         // Wacht het venster op een getypt antwoord? Dan blijft de invoerbalk
         // vrij en klikt een toets het niet weg.

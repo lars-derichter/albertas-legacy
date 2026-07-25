@@ -247,6 +247,15 @@ async function main() {
   //     te maken. Dat laatste is zonder speaker alleen te controleren aan de
   //     meestergain — en die moet nul zijn, niet "bijna nul": er staan op dat
   //     moment noten in de toekomst gepland die niet meer in te trekken zijn.
+  //
+  //     De klik hieronder is niet decoratief. Sinds WP 37 start de geluidslaag
+  //     pas bij een gebruikersactie, en de reload van punt 9 heeft er nog geen
+  //     gehad — een herladen tabblad is voor de browser een verse pagina. Dat
+  //     dit een múisklik is en geen toets, is meteen de regressie: vóór WP 37
+  //     ontgrendelde alleen het toetsenbord. Op deze desktopcontext (geen
+  //     aanraakscherm) registreert js/touch.js geen click-handler, dus de klik
+  //     raakt het spel verder niet aan.
+  await page.click("#scherm");
   await page.waitForFunction(
     () => window.AL.sound.huidigBed() === "ambient-zolder",
     null, { timeout: 15000 });

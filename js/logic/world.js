@@ -278,7 +278,7 @@ globalThis.AL = globalThis.AL || {};
     open: function (toestand, ding) {
       ding = (ding || "").toLowerCase();
       if (toestand.sceneId === "zolder-west" && this._isNotitieboek(ding)) {
-        return this.ontgrendelFragment(toestand, 1);
+        return this.ontgrendelFragment(toestand, 1, "boek");
       }
       if (this._isBroncodeDoos(toestand, ding)) {
         // De broncode-doos telt pas op het einde (endgame, WP 9/10).
@@ -291,12 +291,17 @@ globalThis.AL = globalThis.AL || {};
       // beide draagt een fragment: dat ligt hier in het notitieboek. "Dat zie
       // je hier niet" was daarop het verkeerde antwoord — de speler ziet ze
       // wél, ze zitten alleen niet vol papier.
+      //
+      // Ze gaan wél open, ook al zit er niets in: de speler tilt een deksel op
+      // en dat hoort te klinken. Dezelfde kartonbonk als een fragmentdoos —
+      // dat het niets oplevert, staat in de tekst en hoeft niet ook nog eens in
+      // het geluid te staan.
       if (toestand.sceneId === "zolder-west") {
         if (ding.indexOf("kist") !== -1 || ding.indexOf("koffer") !== -1) {
-          return { tekst: [AL.strings.kist.open], effecten: [] };
+          return { tekst: [AL.strings.kist.open], effecten: ["geluid:doos"] };
         }
         if (this._isDoosWoord(ding)) {
-          return { tekst: [AL.strings.dozen.westhoek], effecten: [] };
+          return { tekst: [AL.strings.dozen.westhoek], effecten: ["geluid:doos"] };
         }
       }
       return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
@@ -322,14 +327,22 @@ globalThis.AL = globalThis.AL || {};
       }
       var loc = FRAGMENT_LOCATIE[n];
       if (loc === toestand.sceneId) {
-        return this.ontgrendelFragment(toestand, n);
+        return this.ontgrendelFragment(toestand, n, "doos");
       }
       var wijs = AL.strings.dozen.nietHier[loc] || AL.strings.dozen.onderzoek;
       return { tekst: [wijs], effecten: [] };
     },
 
     // Ontgrendel het fragment van level n: markeer het level en open de spread.
-    ontgrendelFragment: function (toestand, n) {
+    //
+    // `bron` is waar het blad vandaan komt en bepaalt alleen het geluid:
+    // "boek" (het notitieboek in de westhoek) is één bladzijde, "doos" is
+    // eerst karton dat meegeeft en dán pas papier. De doos-cue stond sinds
+    // WP I in de tabel en werd nergens afgevuurd; dit is de plek waar ze
+    // hoort. De 0,35 s vertraging op de bladzijde is geen versiering: twee
+    // foley-cues op hetzelfde moment zijn samen één modderige klik, en het
+    // openen van een doos ís een beweging in twee tellen.
+    ontgrendelFragment: function (toestand, n, bron) {
       var sleutel = String(n);
       var level = toestand.levels[sleutel];
       if (!level) return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
@@ -339,13 +352,16 @@ globalThis.AL = globalThis.AL || {};
       level.ontgrendeld = true;
       toestand.levelActief = n;
       var levelId = "l" + n;
+      var uitDoos = (bron === "doos");
+      var effecten = [
+        uitDoos ? "geluid:doos" : "geluid:pagina",
+        "fragment-gevonden:" + levelId,
+        "spread:" + levelId
+      ];
+      if (uitDoos) effecten.push("geluid:pagina@0.35");
       return {
         tekst: [AL.strings.notitieboek.open, AL.strings.fragmentGevonden(levelId)],
-        effecten: [
-          "fragment-gevonden:" + levelId,
-          "spread:" + levelId,
-          "geluid:pagina"
-        ]
+        effecten: effecten
       };
     },
 

@@ -309,14 +309,52 @@ Commit: (nog in te vullen) — entry: `workflow/36-handschriftfont.md`
       `test-results/wp36-alfabet.png`, `wp36-spread-l1.png`,
       `wp36-spread-l4.png`
 
-### - [ ] WP 37 — Geluid hoorbaar en volledig
+### - [x] WP 37 — Geluid hoorbaar en volledig
 
-- [ ] Master gain en cue-balans; foley/drones uit de sub-bas
-- [ ] `doos`-cue afgevuurd bij fragmentdoos
-- [ ] Unlock bij click/touch/D-pad/submit; geen oscillator-lek
-- [ ] Voetstapcadans 4.0 Hz
-- [ ] test-geluid-asserties; engine-architectuur.md mee
-- [ ] QC: `node --test`; AudioContext `running` na click/touch in smoke
+Commit: (nog in te vullen) — entry: `workflow/37-geluid-hoorbaar.md`
+
+- [x] Meestergain 0,16 → 0,30 met de stemgains herverdeeld (bedstemmen
+      omlaag, foley omhoog): voetstap +6,8 dB, karton +6,3 dB. Ergste
+      geval uitgerekend en als test vastgelegd — 2,75 × 0,30 = 0,825, dus
+      1,7 dB onder de klipgrens
+- [x] Foley en drones uit de sub-bas: stap 38/41 → 50/53, deur 45/40 →
+      57/52, doos 50/45/43 → 60/55/52, zolderdrone 33 → 45 (kwint 40 →
+      52), pc-pedaal 36 → 48. Bodem midi 48 voor cues, 45 voor bedden mét
+      voorwaarden (bas-stem én minstens twee seconden = drone, geen
+      melodie). Het register (zolder leger dan pc) onaangeroerd groen
+- [x] Bevinding uit de kickoff rechtgezet: de bas-stem-routing onder midi
+      55 geldt alleen voor bedden (`planVooruit`), niet voor cues — de
+      voetstap ging nooit door de trage bas-attack
+- [x] `doos`-cue afgevuurd bij het openen van een fragmentdoos, met de
+      bladzijde 0,35 s erná (`geluid:pagina@0.35`, nieuwe vertragingsvorm).
+      Daarbij een drievoudige `pagina` op dezelfde audioklok-tijd
+      opgeruimd: de renderlaag speelt niets meer uit zichzelf bij
+      `fragment-gevonden` of bij het openen van een spread
+- [x] De kist en de dozenstapels in de westhoek dragen nu ook
+      `geluid:doos` (beslissing gelogd in de entry)
+- [x] Unlock op vier oppervlakken: keydown (vóór de tekstveld-uitzondering),
+      vensterbrede `pointerdown`/`touchstart` in de capture-fase, D-pad en
+      commandobalk, en de tik/klik op het canvas. De vensterbrede
+      pointerdown was nodig omdat `js/touch.js` op een desktop helemaal
+      niet laadt
+- [x] Geen oscillator-opbouw meer vóór de ontgrendeling: `speel`/`muziek`
+      maken geen context en bouwen geen node; `AL.sound.opOntgrendeld`
+      start bij de eerste gebruikersactie het bed van de huidige stand
+      (`startBedVoorStand`). `unlock()` is idempotent; `debug()` meldt
+      `ontgrendeld` en `nodes`
+- [x] Voetstapcadans 3,75 → 4,0 Hz door de stap aan het animatieframe te
+      hangen in plaats van aan een modulo van tikken; gemeten in de
+      browser: acht stappen in twee seconden, nul op een doorzwaaiframe
+- [x] Docs: `engine-architectuur.md` §Geluid met drie nieuwe paragrafen
+      (niveau en register, wie vuurt wat af met de cue-tabel, de
+      ontgrendeling) en de effect-tag met de vertragingsvorm.
+      `save-en-hints.md` nagekeken: die noemt geluid alleen als
+      save-trigger en hoefde niet mee
+- [x] QC: **400/400** headless (was 391), `lint-scene` en `check-assets`
+      schoon, smoke-browser 38/38, smoke-full-playthrough 97/97,
+      smoke-walk 25/25, en de nieuwe `test/smoke-geluid.mjs` 17/17 (geen
+      context vóór de eerste actie, muisklik én touch-tik ontgrendelen,
+      geen nodegroei vóór de ontgrendeling, de stap op de steunfase)
 
 ### - [ ] WP 38 — Doc-drift en dood hout
 
@@ -800,11 +838,17 @@ in programma 3:
 
 - **De walkthrough-PDF's zijn niet herbouwd.** → WP 39.
 - **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat
-  ontbreekt hier. `js/touch.js` wordt in WP 37 wél aangeraakt (unlock);
-  de smoke blijft afhankelijk van WebKit-beschikbaarheid.
-- **Hoe het geluid klínkt is niet beoordeeld.** De mechanische oorzaken
-  (gain, sub-bas) worden in WP 37 hersteld; de luistertest op speakers
-  blijft een open punt voor Lars.
+  ontbreekt hier. `js/touch.js` is in WP 37 aangeraakt (unlock op D-pad,
+  commandobalk en canvas-tik); die kant is gedekt door `smoke-geluid`, dat
+  zijn tweede helft in een Chromium-context met `hasTouch` draait. De
+  WebKit-smoke zelf blijft afhankelijk van WebKit-beschikbaarheid.
+- **Hoe het geluid klínkt is nog altijd niet beoordeeld.** De mechanische
+  oorzaken zijn in WP 37 hersteld en nagemeten: meestergain 0,16 → 0,30 met
+  een uitgerekende klipmarge, foley en drones een octaaf omhoog uit de
+  sub-bas, de `doos`-cue afgevuurd, de unlock op elke gebruikersactie, de
+  voetstap op 4,0 Hz. Wat níét kon, is luisteren — deze container heeft geen
+  geluidsuitgang. Of 0,30 op een laptopspeaker het juiste niveau is en of de
+  zolder op 110 Hz nog koud klinkt, blijft een luistertest voor Lars.
 - ~~De sprite gebruikt zijn toegestane maat niet.~~ **Opgelost in WP 34**: de
   speler is 15 × 31 (doorzwaai 32) binnen de 16 × 32 van de stijlgids, en is
   meteen ook de neutrale erfgenaam-figuur geworden in plaats van de Roodkapje

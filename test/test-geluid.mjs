@@ -32,6 +32,17 @@ test("zonder AudioContext doet niets iets, en niets crasht", () => {
   assert.doesNotThrow(() => sound.zetAan(true));
 });
 
+test("zonder AudioContext ontgrendelt niets, hoe vaak je het ook probeert", () => {
+  // De ontgrendeling hangt aan élke gebruikersactie (toets, klik, tik, D-pad),
+  // dus unlock() wordt in een echte sessie honderden keren geroepen. Zonder
+  // context hoort dat niets te veranderen en niets te kosten.
+  for (let i = 0; i < 5; i++) sound.unlock();
+  assert.equal(sound.isOntgrendeld(), false);
+  assert.equal(sound.debug().nodes, 0);
+  assert.equal(sound.debug().context, false);
+  assert.doesNotThrow(() => sound.speel("doos", 0.35));
+});
+
 test("een bed dat niet gestart kon worden, wordt niet als lopend gemeld", () => {
   // Zonder context kan er geen bed lopen. Zou huidigBed() hier een naam geven,
   // dan zou de engine denken dat de muziek al draait en hem nooit meer starten
@@ -96,6 +107,73 @@ test("een eenmalige cue blijft kort", () => {
     const cue = sound._cues[naam];
     const eind = Math.max(...cue.noten.map(([, s, d]) => s + d));
     assert.ok(eind <= 1.5, naam + " duurt " + eind.toFixed(2) + " s");
+  }
+});
+
+// ---- Niveau en register (WP 37) --------------------------------------------
+
+test("de meesterversterking staat binnen het hoorbare bereik", () => {
+  // 0,16 was te zacht: een voetstap van honderd milliseconde piekte daarmee
+  // rond -20 dBFS en verdween op een laptopspeaker. Boven 0,4 gaat de som van
+  // drie bedstemmen plus foley tegen de klipgrens aan (de rekening staat in
+  // sound.js bij VOLUME). Dit is dus een venster en geen streefwaarde.
+  assert.ok(sound._volume >= 0.25 && sound._volume <= 0.4,
+    "meesterversterking " + sound._volume + " valt buiten 0,25–0,4");
+});
+
+test("de som van alles wat tegelijk kan klinken, klipt niet", () => {
+  // Het ergste geval: de drie tegelijk klinkende noten van het volste bed, plus
+  // twee foley-cues erbovenop (lopen terwijl je een doos opent). Coherent
+  // opgeteld — dat alle oscillatoren tegelijk op hun top staan, is bij
+  // ongerelateerde frequenties hooguit een sample lang waar, dus dit is een
+  // pessimistische grens en geen schatting.
+  function tegelijk(bed) {
+    let max = 0;
+    for (const [, start] of bed.noten) {
+      let som = 0;
+      for (const [midi, s, d] of bed.noten) {
+        if (s <= start && start < s + d) {
+          som += sound._stemmen[midi < 55 ? "bas" : bed.stem].gain;
+        }
+      }
+      if (som > max) max = som;
+    }
+    return max;
+  }
+  const zwaarsteBed = Math.max(...Object.values(sound._bedden).map(tegelijk));
+  const foley = sound._stemmen.hout.gain + sound._stemmen.karton.gain;
+  const piek = (zwaarsteBed + foley) * sound._volume;
+  assert.ok(piek < 1.0,
+    "ergste geval " + piek.toFixed(3) + " (bed " + zwaarsteBed.toFixed(2) +
+    " + foley " + foley.toFixed(2) + " maal " + sound._volume + ")");
+});
+
+test("geen enkele cue ligt in de sub-bas", () => {
+  // Foley op 73 Hz (de oude voetstap) is op de speaker van een laptop geen
+  // zacht geluid maar géén geluid. Midi 48 is 131 Hz: de bodem van wat zo'n
+  // speaker nog teruggeeft. Het karakter van deze cues zit toch niet in de
+  // grondtoon maar in de niet-harmonische ratio van hun stem.
+  for (const naam of Object.keys(sound._cues)) {
+    for (const [midi] of sound._cues[naam].noten) {
+      assert.ok(midi >= 48, naam + ": toonhoogte " + midi + " ligt onder midi 48");
+    }
+  }
+});
+
+test("een bed mag dieper, maar alleen als drone en nooit als melodie", () => {
+  // De uitzondering op de bodem van midi 48, en de enige: een drone houdt aan
+  // en wordt daardoor ook op een kleine speaker gevoeld. Twee voorwaarden, want
+  // anders is het gewoon een gat in het bed — hij moet in de bas-stem vallen
+  // (onder midi 55) en minstens twee seconden duren.
+  for (const naam of Object.keys(sound._bedden)) {
+    for (const [midi, , duur] of sound._bedden[naam].noten) {
+      assert.ok(midi >= 45, naam + ": toonhoogte " + midi + " ligt onder midi 45");
+      if (midi >= 48) continue;
+      assert.ok(midi < 55, naam + ": " + midi + " is te diep voor de melodiestem");
+      assert.ok(duur >= 2.0,
+        naam + ": een noot van " + duur + " s op midi " + midi +
+        " is geen drone maar een melodienoot in de kelder");
+    }
   }
 });
 

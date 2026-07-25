@@ -127,6 +127,79 @@ modulator verbuigt) en een eigen envelope op die index. Meer dan twee operatoren
 is er niet, en dat is opzet: zes-operator-FM klinkt als een DX7 en dus als 1983
 of 1995, niet als de periode ertussen.
 
+### Niveau en register
+
+De meesterversterking staat op **0,30**. Ze stond op 0,16, en daarmee piekte een
+voetstap van honderd milliseconde rond -20 dBFS: op een laptopspeaker geen zacht
+geluid maar geen geluid. De stemgains zijn tegelijk herverdeeld — de bedstemmen
+omlaag (er klinken er tot drie tegelijk), de foleystemmen omhoog (die klinken
+één voor één). Het ergste geval telt op tot 2,75 × 0,30 = 0,825, dus onder de
+klipgrens, en dat is dan nog de coherente som van drie bedstemmen plus twee
+foley-cues. `test/test-geluid.mjs` rekent dat na en bewaakt het venster
+0,25–0,40 voor de meestergain.
+
+Het register heeft een bodem, en om dezelfde reden: een tik op 73 Hz komt uit de
+speaker van een laptop niet terug.
+
+- **Cues liggen niet onder midi 48** (131 Hz). Het karakter van de foley zit in
+  de niet-harmonische ratio van hun stem, niet in de grondtoon: een kartontik op
+  165 Hz klinkt nog altijd als karton.
+- **Bedden mogen tot midi 45** (110 Hz), op twee voorwaarden — de noot valt in
+  de bas-stem (onder midi 55) en duurt minstens twee seconden. Dat is een drone:
+  hij houdt aan en wordt daardoor ook op een kleine speaker gevoeld. Een
+  melodienoot mag daar niet komen, want die zou wegvallen en een gat in het bed
+  achterlaten.
+
+### Wie vuurt wat af
+
+De cue-tabel als geheugensteun; de grondtonen staan als midi in `js/sound.js`.
+
+| Cue | Stem | Midi | Afgevuurd door |
+|---|---|---|---|
+| `pagina` | karton | 72, 67 | een spread-bladzijde omslaan (`spreadBlader`), het notitieboek openen, en 0,35 s ná een doos |
+| `deur` | hout | 57, 52 | elke kamerwissel (`AL.world.betreed`) |
+| `doos` | karton | 60, 55, 52 | een doos of kist die opengaat — met of zonder fragment erin |
+| `stap` \| `stap-2` | hout | 50 \| 53 | de steunfases van de loopcyclus, afwisselend |
+| `toets` | blip | 93 | de editor/terminal/Parsons laadt, en een hint |
+| `compileer` | blip | 69, 69, 76 | "compileer & test" |
+| `ok` \| `fout` | blip | 72, 79 \| 69, 64 | een assertie slaagt of faalt, een puzzel of level af |
+| `boot` | warm | 48…72 | de pc boot *Seven Little Goats* |
+
+Twee dingen die deze tabel afdwingt. **Eén cue per moment**: het openen van een
+fragment speelde vroeger drie keer `pagina` op dezelfde audioklok-tijd (de
+effect-tag, de `fragment-gevonden`-tag én het openslaan van de spread), en drie
+identieke tikken tegelijk zijn één harde klik. De renderlaag speelt daarom geen
+cue meer uit zichzelf bij `fragment-gevonden` of bij het openen van een spread;
+de logica zegt in haar effectenlijst wat er te horen is. **Twee foley-cues
+vallen niet samen**: een doos die opengaat is karton en dán papier, en dat is
+precies waar de vertraging `geluid:pagina@0.35` voor bestaat.
+
+### De ontgrendeling
+
+Een browser start geen audio zonder gebruikersactie. `AL.sound.unlock()` is wat
+die actie vertaalt, en hij hangt aan álle vier de oppervlakken waar een speler
+kan beginnen:
+
+- **toets** — `keydown` in `js/input.js`, vóór de tekstveld-uitzondering (het
+  eerste teken dat een telefoonspeler in de commandobalk typt, telt mee);
+- **muis, aanraking, pen** — `pointerdown` (plus `touchstart` voor oudere
+  webviews) op het venster in `js/input.js`, in de capture-fase;
+- **het D-pad en de commandobalk** van `js/touch.js` — pointerdown op een
+  richtingsknop en submit van het formulier;
+- **een tik op het canvas** in `js/touch.js` (tik-om-door-te-bladeren).
+
+Tot dat moment doet de geluidslaag **niets**: `speel()` en `muziek()` keren
+meteen terug, er wordt geen `AudioContext` gemaakt en er wordt geen oscillator
+gebouwd. Dat is geen zuinigheid maar een lek dat gedicht is — een opgeschorte
+context laat zijn klok stilstaan, dus alles wat je ertegen plant blijft in de
+graaf hangen tot de eerste `resume`, en barst dan in één keer los.
+
+Omdat de geluidslaag niet weet wélk bed bij de stand hoort, hangt de engine er
+een haak aan: `AL.sound.opOntgrendeld(startBedVoorStand)`. De titelmuziek die
+bij het opstarten gevraagd wordt, is dus een lege aanroep; het bed begint bij de
+eerste toets, klik of tik. `unlock()` is idempotent — hij wordt in een sessie
+honderden keren geroepen.
+
 ### De scheduler
 
 Noten worden vooruit geplaatst op de audioklok, niet afgevuurd op de beeldklok:
@@ -294,7 +367,7 @@ reageert; de logica produceert ze alleen.
 
 | Tag | Wanneer |
 |---|---|
-| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue |
+| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue. Een cue mag een vertraging meedragen — `geluid:pagina@0.35` speelt haar 0,35 s later; zie §Geluid, "Wie vuurt wat af" |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
 | `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
 | `vraag` | de begeleidende tekst is een vraag: het venster laat de invoerbalk vrij, zodat de speler het antwoord kan typen. Escape trekt de vraag in |

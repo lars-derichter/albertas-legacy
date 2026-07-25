@@ -62,6 +62,15 @@ globalThis.AL = globalThis.AL || {};
     init: function () {
       window.addEventListener("keydown", opKeydown);
       window.addEventListener("keyup", opKeyup);
+      // De audio-ontgrendeling hing vroeger alleen aan het toetsenbord. Wie met
+      // een muis op het canvas klikte of het spel op een telefoon speelde, gaf
+      // dus nooit de gebruikersactie die de browser eist, en hoorde het hele
+      // spel lang niets. `pointerdown` vangt muis, aanraking en pen in één
+      // gebeurtenis, in de capture-fase zodat het ook telt als iets anders het
+      // event daarna tegenhoudt. touch.js ontgrendelt daarnaast expliciet bij
+      // zijn eigen knoppen — zie daar waarom dat geen dubbelop is.
+      window.addEventListener("pointerdown", ontgrendelGeluid, true);
+      window.addEventListener("touchstart", ontgrendelGeluid, true);
       return this;
     },
 
@@ -70,6 +79,11 @@ globalThis.AL = globalThis.AL || {};
     pijlAan: function (richting) { drukPijl(richting); },
     pijlUit: function (richting) { laatPijl(richting); }
   };
+
+  // Eén plek die het geluid ontgrendelt; AL.sound.unlock is zelf idempotent.
+  function ontgrendelGeluid() {
+    if (AL.sound && AL.sound.unlock) AL.sound.unlock();
+  }
 
   function drukPijl(richting) {
     if (pijlStack.indexOf(richting) === -1) pijlStack.push(richting);
@@ -81,8 +95,11 @@ globalThis.AL = globalThis.AL || {};
   }
 
   function opKeydown(e) {
-    // De eerste toets ontgrendelt het geluid (browsers eisen een gebruikersactie).
-    if (AL.sound && AL.sound.unlock) AL.sound.unlock();
+    // De eerste toets ontgrendelt het geluid (browsers eisen een
+    // gebruikersactie). Bewust vóór de tekstveld-uitzondering hieronder: een
+    // speler op een telefoon typt zijn eerste teken ín het invoerveld van
+    // touch.js, en dat is net zo goed zijn eerste gebruikersactie.
+    ontgrendelGeluid();
 
     // De pc-overlay bezit zijn eigen tekstinvoer (de editor-textarea en de
     // terminal-input). Laat toetsen in een tekstveld volledig met rust, zodat
