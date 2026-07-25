@@ -26,6 +26,7 @@ const wortel = join(hier, "..");
 
 require(join(wortel, "js", "palette.js"));
 require(join(wortel, "js", "font.js"));
+require(join(wortel, "js", "font-hand.js"));
 const gfx = require(join(wortel, "js", "gfx.js"));
 require(join(wortel, "js", "scenes", "scene-spread-template.js"));
 require(join(wortel, "js", "scenes", "spread-schetsen.js"));
@@ -34,10 +35,12 @@ const strings = require(join(wortel, "js", "logic", "strings.js"));
 const AL = globalThis.AL;
 const B = AL.spreads.BLAD;
 
-// Dezelfde twee handen als in scene-spread-template.js: de kop wordt rechter
-// geschreven dan de tekst eronder, en dus ook met andere maten gewrapt.
-const HAND = { schuin: 0.25, ruimte: 1, seed: 1 };
-const KOPHAND = { schuin: 0.10, ruimte: 1, seed: 1 };
+// Dezelfde twee handen als in scene-spread-template.js: de kop wordt trager en
+// gelijkmatiger geschreven dan de tekst eronder (geen spatievariatie), en dus
+// ook met andere maten gewrapt. Sinds WP 36 staat de helling in de glyphs van
+// js/font-hand.js, niet meer in een shear; vandaar schuin 0.
+const HAND = { schuin: 0, ruimte: 1, seed: 1 };
+const KOPHAND = { schuin: 0, ruimte: 1, seed: 1, variatie: false };
 const meetHand = (t) => gfx.handschriftBreedte(t, HAND);
 const meetKop = (t) => gfx.handschriftBreedte(t, KOPHAND);
 
@@ -79,6 +82,21 @@ test("de bladspiegel is die van het sjabloon: 12 regels links, 7 naast de schets
   assert.equal(perLinks, 12);
   assert.equal(perRechtsMetSchets, 7);
   assert.equal(B.kolomB, 136);
+});
+
+test("de handfont past in de regelafstand en zit op de liniatuur", () => {
+  // De cel van js/font-hand.js is tien rijen hoog, staarten inbegrepen; de
+  // regelafstand van het spread is elf. Was de cel hoger dan de regelafstand,
+  // dan zou de staart van een "g" door de kop van de regel eronder lopen.
+  const hand = globalThis.AL.fontHand;
+  assert.ok(hand, "js/font-hand.js is geladen");
+  assert.ok(hand.hoogte <= B.regelH,
+    `de handfont is ${hand.hoogte} rijen hoog op een regelafstand van ${B.regelH}`);
+  // De liniatuur van het sjabloon staat op y = topY + n·regelH + 8 (de eerste
+  // lijn op 24 bij topY 16); de basislijn van de font ligt daar net boven.
+  assert.equal(B.topY + hand.lijnRij, 24, "de eerste liniatuurlijn van het blad");
+  assert.equal(hand.basisRij, hand.lijnRij - 1,
+    "Alberta schrijft óp de lijn, niet erover");
 });
 
 test("geen enkele spread-pagina loopt over haar bladspiegel", () => {

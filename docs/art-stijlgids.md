@@ -465,21 +465,16 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   - **Dezelfde vlek op beide bladzijden.** Een vlek trekt door het papier heen.
     De schets staat alleen op de tweede bladzijde, de vlek op allebei — dus wie
     doorbladert ziet dezelfde plek terugkomen.
-- **Handschrift:** Alberta's notities in inkt (41) op de papierkleur. De
-  handschriftbenadering is de 8×8-bitmapfont van de engine, maar **schuin en
-  onregelmatig gezet** zodat het als handschrift leest zonder een aparte
-  handschriftfont nodig te hebben. `gfx.tekenHandschrift` doet dat met drie
-  dingen tegelijk: schuinstand (elke rij schuift met de hoogte mee, dus de
-  letter helt in plaats van te wiebelen), proportionele spatiëring met een
-  deterministische variatie van een pixel, en een verticale deining.
-  - Die deining gaat **per groepje van vier tekens en als driehoeksgolf**, niet
-    per teken en niet als hash. Een hand dwaalt van de lijn af en komt er weer
-    op terug; ze springt niet om de letter. Met een sprong per teken viel elk
-    woord uit elkaar in losse letters op eigen hoogte — met de schuinstand erbij
-    las dat als losgeraakte type, niet als schrift.
-  - De **kop staat in dezelfde hand**, alleen rechter en zonder deining: een
-    titel schrijft een mens trager op. Wat een kop níét mag zijn is de gedrukte
-    prosefont, want dan staan er twee schrijvers op één blad.
+- **Handschrift:** Alberta's notities in inkt (41) op de papierkleur, gezet met
+  haar eigen glyphset — zie §"Typografie" hieronder voor de ontwerpregels van
+  die font. Op deze bladzijde telt vooral dat de **liniatuur en de font
+  dezelfde maat delen**: de lijnen staan op `BLAD.regelH` en de basislijn van de
+  font ligt er één pixel boven, dus Alberta schrijft óp de lijn.
+  - De **kop staat in dezelfde hand en dezelfde maat**, alleen zonder de
+    spatievariatie: een titel schrijft een mens trager en gelijkmatiger op.
+    Verder is hij herkenbaar aan de streep eronder — een tweede lettergrootte
+    hoeft er niet bij. Wat een kop níét mag zijn is de gedrukte prosefont, want
+    dan staan er twee schrijvers op één blad.
 - **Schetsen:** Alberta's diagrammen in inkt met spaarzame kleuraccenten (12
   voor een doorhaling, 44 voor een groen vinkje). Verder niets: het is een
   balpen op papier, geen illustratie. Inkt (41) voor de lijn die telt, 40 voor
@@ -506,3 +501,66 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
 Zo blijft één spread-sjabloon herkenbaar terwijl de schets, de notitie en de
 beschadiging per level verschillen — de goedkope, verhaal-trouwe scène-vorm die
 het plan vraagt.
+
+## Typografie
+
+Er staan drie letterbehandelingen in het spel, en méér mogen het er niet
+worden. Elke behandeling heeft één stem en één plaats.
+
+1. **De druk** — `js/font.js`, de 8×8-bitmapfont in de stijl van de
+   IBM-PC-BIOS-font, proportioneel gezet met de inktmaat per glyph
+   (`gfx.tekenProse`). Dit is de stem van de verteller: kamerbeschrijvingen,
+   berichtvensters, de opening, de eindkaart.
+2. **De hand** — `js/font-hand.js`, Alberta's handschrift. Alleen het
+   notitieboek-spread: de kop, de regels en de weekregel.
+3. **Het monospace chroom** — dezelfde drukfont, maar op het raster van acht
+   pixels (`gfx.tekenTekst`). De status- en invoerbalk, de gesimuleerde pc, en
+   op het spread: het paginanummer en de bladerhint.
+
+### De hand: ontwerpregels van de handschriftfont
+
+De hand is een **échte glyphset**, geen bewerking van de drukfont. Tot WP 36
+was ze dat wel: de drukfont met een shear van 0,25 en een verticale
+driehoeksgolf van ±1 px met periode vier tekens. Die golf was index-gebaseerd,
+dus elke regel deinde identiek, en op een blad met twaalf regels leest dat als
+verticale banding. Die benadering is teruggedraaid; wat een hand moet maken,
+zit nu in de glyphdata.
+
+- **De cel is 8×10.** Rij 0–1 is de stokzone en de accentzone, rij 2–7 de
+  x-hoogte (zes pixels), rij 7 de nominale basislijn, rij 8 de rij waar de
+  liniatuur loopt, rij 9 de staartzone. De cel moet binnen `BLAD.regelH` (11)
+  blijven, anders loopt de staart van een "g" door de kop van de regel eronder.
+- **Onregelmatige basislijn, gebakken per glyph.** Elk teken heeft zijn eigen
+  ligging: een pixel boven de lijn, op de lijn, of op de lijn zelf. Dat is de
+  hele deining — er zit geen formule meer in de renderer. Omdat de afwijking
+  aan het teken hangt en niet aan de positie in de regel, kan ze per definitie
+  geen patroon vormen dat over de regels heen als banding leest.
+  - **Nooit meer dan één pixel.** Twee is geen dwalende hand meer maar een
+    letter die eraf valt.
+  - **Alleen zakken bij letters waarvan de kleine en de grote vorm gelijk zijn**
+    (c o s u v w x z). Zo'n letter een pixel optillen laat haar als een kleine
+    hoofdletter lezen: "vult de velden" werd "Vult de Velden".
+- **Variabele inktbreedte**, van 2 px (de "i") tot 7 px (de "m" en de "w"). Het
+  woordwit is 3 px, één minder dan in de druk: de handletters zijn smaller, dus
+  een breder wit zou de woorden uit elkaar trekken.
+- **De schuinstand zit in de glyphs**, niet in een shear: de stokken van b d f
+  h k l t staan bovenaan één kolom rechts van hun voet, de staarten van g j p q
+  y buigen naar links. Een shear kantelt het hele raster en zet ook punten en
+  streepjes scheef; een pen doet dat niet. `gfx.tekenHandschrift` kent nog een
+  `schuin`-optie, maar ze staat op 0.
+- **Één hand per blad.** De renderer varieert nog precies één ding: de
+  spatiëring, met één pixel per teken, deterministisch uit de save-seed. De kop
+  zet diezelfde hand met die variatie uit.
+- **Dekking is een testeis, geen inschatting.** De handfont dekt alles wat de
+  drukfont dekt; `test/test-typografie.mjs` houdt elk teken dat in handschrift
+  op een bladzijde komt tegen de glyphset. Eén ontbrekend teken is een "?" op
+  een bladzijde die je pas ziet als je toevallig dié bladzijde opslaat.
+
+### Waarom het boek-chroom monospace blijft
+
+Het paginanummer en de bladerhint onderaan het spread staan bewust in de
+monospace drukfont, niet in Alberta's hand. Ze zijn geen deel van wat zij
+opschreef: ze horen bij het bláderen, zoals de statusbalk bij het lopen hoort.
+In haar hand zouden ze meeliegen dat zij "1/2" en "spatie >" op het papier
+heeft gezet. Het formaatverschil is precies het punt — de speler leest ze als
+apparatuur en niet als tekst, en kijkt eroverheen zodra hij verder wil.

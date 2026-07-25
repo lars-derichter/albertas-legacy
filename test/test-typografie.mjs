@@ -21,6 +21,7 @@ const wortel = join(hier, "..");
 
 require(join(wortel, "js", "palette.js"));
 const font = require(join(wortel, "js", "font.js"));
+const hand = require(join(wortel, "js", "font-hand.js"));
 const gfx = require(join(wortel, "js", "gfx.js"));
 const strings = require(join(wortel, "js", "logic", "strings.js"));
 
@@ -88,21 +89,128 @@ function alleStrings(waarde, uit) {
   return uit;
 }
 
-test("elk teken in de spelprose heeft een glyph in de font", () => {
-  const strings = require(join(wortel, "js", "logic", "strings.js"));
+function dekking(glyphs, teksten) {
   const ontbreekt = new Map();
-  for (const s of alleStrings(strings, [])) {
+  for (const s of teksten) {
     for (const ch of s) {
-      if (font.glyphs[ch] !== undefined) continue;
+      if (glyphs[ch] !== undefined) continue;
       // Alleen echte drukbare tekens tellen; een \n is een instructie.
       if (ch === "\n" || ch === "\t") continue;
       if (!ontbreekt.has(ch)) ontbreekt.set(ch, s.slice(0, 60));
     }
   }
-  const lijst = [...ontbreekt.entries()]
+  return [...ontbreekt.entries()]
     .map(([ch, ctx]) => JSON.stringify(ch) + " in " + JSON.stringify(ctx));
+}
+
+test("elk teken in de spelprose heeft een glyph in de font", () => {
+  const strings = require(join(wortel, "js", "logic", "strings.js"));
+  const lijst = dekking(font.glyphs, alleStrings(strings, []));
   assert.deepEqual(lijst, [],
     "deze tekens zouden als '?' op het scherm komen:\n  " + lijst.join("\n  "));
+});
+
+// ---- De handfont (WP 36) ---------------------------------------------------
+//
+// Het notitieboek wordt niet meer met de drukfont gezet maar met een eigen
+// glyphset, js/font-hand.js. Wat hieronder bewaakt wordt is precies wat die
+// font moet zijn: dezelfde dekking als de drukfont (anders staat er een "?" op
+// een bladzijde), een cel die in de regelafstand van het spread past, échte
+// variatie in inktbreedte, en — het hele punt — basislijnen die per teken
+// verschillen. Zolang die drie liggingen bestaan, kan geen enkel patroon in de
+// tekst als verticale banding terugkomen.
+
+test("de handfont heeft de vorm die het spread verwacht", () => {
+  assert.equal(hand.hoogte, 10);
+  assert.equal(hand.breedte, 8);
+  assert.equal(hand.xHoogte, 6);
+  assert.equal(hand.basisRij, 7);
+  assert.equal(hand.lijnRij, 8, "de liniatuur loopt op rij 8 van de cel");
+});
+
+test("elke handglyph is tien rijen van acht tekens", () => {
+  for (const ch of Object.keys(hand.glyphs)) {
+    const g = hand.glyphs[ch];
+    assert.equal(g.length, hand.hoogte, "rijen van " + JSON.stringify(ch));
+    for (const rij of g) {
+      assert.equal(rij.length, hand.breedte, "rij van " + JSON.stringify(ch));
+      assert.ok(/^[.1]*$/.test(rij), "vreemd teken in " + JSON.stringify(ch));
+    }
+  }
+});
+
+test("de handfont dekt alles wat de drukfont dekt", () => {
+  // Anders kan één prosewijziging elders een "?" op een bladzijde zetten.
+  const mist = Object.keys(font.glyphs).filter((c) => hand.glyphs[c] === undefined);
+  assert.deepEqual(mist, []);
+});
+
+test("elk teken dat in handschrift op een bladzijde komt, heeft een handglyph", () => {
+  // Alles wat door tekenHandschrift gaat: de koppen, de regels en de weekregel
+  // van de veertien spread-bladzijden.
+  const strings = require(join(wortel, "js", "logic", "strings.js"));
+  const teksten = [];
+  for (const id of Object.keys(strings.spreads)) {
+    for (const pag of strings.spreads[id].paginas) {
+      if (pag.kop) teksten.push(pag.kop);
+      for (const r of pag.regels || []) teksten.push(r);
+      if (pag.voet) teksten.push(pag.voet);
+    }
+  }
+  assert.ok(teksten.length > 40, "de veertien bladzijden staan er");
+  const lijst = dekking(hand.glyphs, teksten);
+  assert.deepEqual(lijst, [],
+    "deze tekens zouden als '?' in Alberta's hand komen:\n  " + lijst.join("\n  "));
+});
+
+test("de handfont heeft variabele inktbreedtes", () => {
+  const breedtes = Object.keys(hand.glyphs).map((c) => hand.maat(c).breedte);
+  assert.ok(Math.min(...breedtes) <= 2, "er hoort iets smals in te zitten");
+  assert.ok(Math.max(...breedtes) >= 7, "er hoort iets breeds in te zitten");
+  assert.ok(hand.maat("i").breedte < hand.maat("m").breedte);
+  assert.equal(hand.maat(" ").breedte, 3, "het woordwit van de hand");
+});
+
+// Op welke rij eindigt de inkt van dit teken?
+function onderste(ch) {
+  const g = hand.glyphs[ch];
+  for (let r = g.length - 1; r >= 0; r--) if (g[r].indexOf("1") !== -1) return r;
+  return -1;
+}
+function bovenste(ch) {
+  const g = hand.glyphs[ch];
+  for (let r = 0; r < g.length; r++) if (g[r].indexOf("1") !== -1) return r;
+  return -1;
+}
+
+test("de basislijn is per teken onregelmatig, gebakken in de glyphs", () => {
+  // Kleine letters zonder staart. Hun onderste inktrij hoort niet voor alle
+  // tekens dezelfde te zijn — dat is wat de oude driehoeksgolf moest doen en
+  // wat nu in de data zit.
+  const zonderStaart = "abcdefhiklmnorstuvwxz".split("");
+  const liggingen = new Set(zonderStaart.map(onderste));
+  assert.ok(liggingen.has(hand.basisRij - 1), "er staan letters boven de lijn");
+  assert.ok(liggingen.has(hand.basisRij), "er staan letters op de lijn");
+  assert.ok(liggingen.has(hand.basisRij + 1), "er staan letters op de lijn zelf");
+  assert.equal(liggingen.size, 3, "meer dan één pixel afwijking is geen hand meer");
+  // En de afwijking hangt aan het teken, niet aan een golf: "n" ligt anders dan
+  // "e", zodat geen twee regels dezelfde deining krijgen.
+  assert.notEqual(onderste("n"), onderste("e"));
+});
+
+test("stokken en staarten steken buiten de x-hoogte", () => {
+  for (const ch of "bdfhkl".split("")) {
+    assert.ok(bovenste(ch) <= 1, "stok van " + ch + " begint op rij " + bovenste(ch));
+  }
+  for (const ch of "gjpqy".split("")) {
+    assert.ok(onderste(ch) >= hand.lijnRij,
+      "staart van " + ch + " eindigt op rij " + onderste(ch));
+  }
+  // Niets steekt buiten de cel: de renderer tekent precies hoogte rijen.
+  for (const ch of Object.keys(hand.glyphs)) {
+    const o = onderste(ch);
+    assert.ok(o < hand.hoogte, ch);
+  }
 });
 
 // ---- Meten en tekenen ------------------------------------------------------
@@ -203,15 +311,33 @@ test("handschriftBreedte is deterministisch bij dezelfde seed", () => {
   assert.equal(a, b);
 });
 
-test("handschrift is breder dan prose: spatievariatie en schuinstand", () => {
+test("handschrift meet met de handfont, niet met de drukfont", () => {
+  // Sinds WP 36 heeft de hand haar eigen glyphset, en die is smaller dan de
+  // drukfont. Wat hier telt is dat méten en zétten dezelfde font gebruiken:
+  // handschriftBreedte moet exact de som van de handmaten zijn.
   const zin = "Een klasse is een blauwdruk";
-  assert.ok(gfx.handschriftBreedte(zin, { seed: 1 }) > gfx.proseBreedte(zin));
+  const verwacht = [...zin].reduce((b, ch) => b + hand.maat(ch).breedte + 1, 0) - 1;
+  const gemeten = gfx.handschriftBreedte(zin, { seed: 1, variatie: false });
+  assert.equal(gemeten, verwacht);
+  assert.ok(gemeten < gfx.proseBreedte(zin),
+    "de hand is smaller dan de druk; anders klopt het bladbudget niet meer");
+});
+
+test("de spatievariatie maakt de regel breder, en is uit te zetten", () => {
+  const zin = "Een klasse is een blauwdruk";
+  assert.ok(gfx.handschriftBreedte(zin, { seed: 1 }) >
+    gfx.handschriftBreedte(zin, { seed: 1, variatie: false }));
 });
 
 test("meer schuinstand geeft meer overhang", () => {
+  // De shear staat op 0 voor de handfont (de helling zit in de glyphs), maar de
+  // optie blijft bestaan en het meten moet haar blijven kennen — anders zou een
+  // aanroeper die haar wél zet over de kolomrand schrijven.
   const zin = "constructor";
   assert.ok(gfx.handschriftBreedte(zin, { seed: 1, schuin: 0.5 }) >
     gfx.handschriftBreedte(zin, { seed: 1, schuin: 0.1 }));
+  assert.equal(gfx.handschriftBreedte(zin, { seed: 1, schuin: 0 }),
+    gfx.handschriftBreedte(zin, { seed: 1 }), "0 is de standaard");
 });
 
 // ---- Het berichtvenster ----------------------------------------------------

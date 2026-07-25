@@ -30,6 +30,7 @@ met behoud van hun contract:
 |---|---|---|
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
+| `js/font-hand.js` | — | nieuw in WP 36: een eigen 8×10-handschriftglyphset (`AL.fontHand`), niet overgenomen |
 | `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
@@ -76,12 +77,16 @@ Adapteren en crediteren; niet heruitvinden.
   `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
   gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
   zoals de hardware van toen het ook deed.
-- **Twee zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
-  gebruik waar een raster hóórt: de statusbalk, de invoerbalk en de terminal van
-  de gesimuleerde pc. Daarnaast staat `tekenProse`/`proseBreedte`, dat de
-  inktmaat per glyph uit `font.js` gebruikt. De glyphdata is niet veranderd; wat
-  erbij kwam is één keer uitrekenen waar de inkt van elke glyph begint en hoe
-  breed ze is.
+- **Drie zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
+  gebruik waar een raster hóórt: de statusbalk, de invoerbalk, de terminal van
+  de gesimuleerde pc en het chroom onder een notitieboek-spread. Daarnaast staat
+  `tekenProse`/`proseBreedte`, dat de inktmaat per glyph uit `font.js` gebruikt.
+  De glyphdata van de drukfont is niet veranderd; wat erbij kwam is één keer
+  uitrekenen waar de inkt van elke glyph begint en hoe breed ze is. En sinds
+  WP 36 is er een derde: `tekenHandschrift`/`handschriftBreedte` zetten met een
+  éígen glyphset, `js/font-hand.js` (8 × 10, onregelmatige basislijnen per
+  glyph), alleen voor het notitieboek. Die drie en niet meer — de regels staan
+  in `art-stijlgids.md`, §Typografie.
 
   Dat "waar ze begint" is niet overbodig. Verschillende glyphs starten op een
   andere kolom — een `i` op kolom 2, een `K` op kolom 0 — dus zonder de
@@ -359,26 +364,27 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 
 ```
 1.  js/palette.js          // AL.palet: de kleurtabel
-2.  js/font.js             // AL.font
-3.  js/gfx.js              // AL.gfx (init na palet + font)
-4.  js/input.js            // AL.input
-5.  js/sound.js            // AL.sound
-6.  js/parser.js           // AL.parser
-7.  js/loopveld.js         // AL.loopveld (walkboxes, blokken, uitgangszones)
-8.  js/logic/strings.js    // AL.strings  (alle prose)
-9.  js/logic/world.js      // AL.world    (zolder, staat, navigatie)
-10. js/logic/checker/tokenizer.js
-11. js/logic/checker/asserts.js
-12. js/logic/checker/javacsim.js
-13. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
-14. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
-15. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
-16. js/scenes/*.js         // zolderscènes + spreads
-17. js/sprites/*.js        // sprites
-18. js/sim/goats-strings.js  goats-world.js  goats-combat.js
-19. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
-20. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
-21. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
+2.  js/font.js             // AL.font     (de druk)
+3.  js/font-hand.js        // AL.fontHand (Alberta's hand, het notitieboek)
+4.  js/gfx.js              // AL.gfx (init na palet + beide fonts)
+5.  js/input.js            // AL.input
+6.  js/sound.js            // AL.sound
+7.  js/parser.js           // AL.parser
+8.  js/loopveld.js         // AL.loopveld (walkboxes, blokken, uitgangszones)
+9.  js/logic/strings.js    // AL.strings  (alle prose)
+10. js/logic/world.js      // AL.world    (zolder, staat, navigatie)
+11. js/logic/checker/tokenizer.js
+12. js/logic/checker/asserts.js
+13. js/logic/checker/javacsim.js
+14. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
+15. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
+16. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
+17. js/scenes/*.js         // zolderscènes + spreads
+18. js/sprites/*.js        // sprites
+19. js/sim/goats-strings.js  goats-world.js  goats-combat.js
+20. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
+21. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
+22. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
 ```
 
 `js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en

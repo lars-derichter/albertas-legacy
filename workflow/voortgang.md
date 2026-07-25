@@ -244,7 +244,7 @@ Ingelast door de manager na de QC van WP 35: de maatregel maakte de
 kamers correct maar leeg — een zolder hoort vol te staan. Afwijking van
 het goedgekeurde plan, gelogd hier en in de entry van WP 35.
 
-Entry: `workflow/35b-de-zolder-aangekleed.md` · commit: (nog in te vullen)
+Entry: `workflow/35b-de-zolder-aangekleed.md` · commit: `3084045`
 
 - [x] Vier kamers aangekleed met rommel op de juiste schaal (stapels,
       koffers, zolderspullen), zonder de composities en lichttaal te
@@ -278,11 +278,36 @@ Entry: `workflow/35b-de-zolder-aangekleed.md` · commit: (nog in te vullen)
       97/97, vier kamerscreenshots en vier voor-na-stroken in
       `test-results/wp35b-*.png`
 
-### - [ ] WP 36 — Handschriftfont
+### - [x] WP 36 — Handschriftfont
 
-- [ ] Echte pixel-handschriftglyphset; tekenHandschrift gebruikt ze
-- [ ] Spread-typografie opgeruimd; stijlgids mee
-- [ ] QC: `node --test` + spread-screenshot beoordeeld door manager
+Commit: (nog in te vullen) — entry: `workflow/36-handschriftfont.md`
+
+- [x] `js/font-hand.js`: 114 glyphs van 8 × 10, x-hoogte 6, basislijn op
+      rij 7 en de liniatuur op rij 8, staarten op 8–9. De onregelmatige
+      ligging (±1 px) zit per glyph in de data: omhoog `a m r K V 7`,
+      omlaag `c i n u z D G S 3`. Dekking gelijk aan de drukfont
+- [x] `tekenHandschrift`/`handschriftBreedte` zetten en meten met
+      `AL.fontHand`; shear standaard 0 (de helling zit in de glyphs);
+      de index-driehoeksgolf `_jitter` verwijderd, niet vervangen; het
+      stale commentaar "groepje van drie" ermee weg
+- [x] Eén hand per blad: kop en tekst dezelfde font en maat, de kop
+      zonder spatievariatie plus de streep eronder. Het boek-chroom
+      (paginanummer, bladerhint) blijft bewust monospace, gemotiveerd in
+      `art-stijlgids.md` §Typografie
+- [x] Bladbudget nagerekend: geen enkele van de veertien bladzijden loopt
+      over, twaalf werden korter (l7 p1 18 → 15 van 24; l1 p1 16 → 12);
+      breedste regel 136 px in een kolom van 136. De weekregel gaat van
+      drie naar twee regels; geen prose aangeraakt
+- [x] De WP 22-beslissing "geen aparte glyphset" is formeel teruggedraaid
+      op keuze van de gebruiker; gemotiveerd in de entry
+- [x] Docs: `art-stijlgids.md` (nieuwe §Typografie met de drie zetwijzen
+      en de ontwerpregels; handschriftparagraaf van het spread vervangen),
+      `engine-architectuur.md` (drie zetwijzen, laadvolgorde)
+- [x] QC: **391/391 groen** (382 bij aanvang; negen nieuwe tests, twee
+      herschreven), `lint-scene` en `check-assets` schoon, smoke-browser
+      38/38, smoke-full-playthrough 97/97, screenshots
+      `test-results/wp36-alfabet.png`, `wp36-spread-l1.png`,
+      `wp36-spread-l4.png`
 
 ### - [ ] WP 37 — Geluid hoorbaar en volledig
 
