@@ -23,7 +23,7 @@ blijft index-gebaseerd: één byte per pixel, alleen de opzoektabel is groter.
 | 1 | `#0000AA` | donkerblauw | avondlucht, diepe schaduw buiten |
 | 2 | `#00AA00` | donkergroen | gebladerte donker |
 | 3 | `#00AAAA` | cyaan | lucht (dither met 11) |
-| 4 | `#AA0000` | donkerrood | mantel-schaduw, baksteen |
+| 4 | `#AA0000` | donkerrood | baksteen, `rode mantel` in de sim |
 | 5 | `#AA00AA` | magenta | spaarzaam: accenten |
 | 6 | `#AA5500` | bruin | hout, paden, meubels |
 | 7 | `#AAAAAA` | lichtgrijs | steen, stof, rook |
@@ -31,7 +31,7 @@ blijft index-gebaseerd: één byte per pixel, alleen de opzoektabel is groter.
 | 9 | `#5555FF` | helderblauw | water, lucht-accent |
 | 10 | `#55FF55` | lichtgroen | gras met zon |
 | 11 | `#55FFFF` | lichtcyaan | lucht (dither met 3) |
-| 12 | `#FF5555` | helderrood | mantel-licht, vuur |
+| 12 | `#FF5555` | helderrood | vuur, `rode mantel` in de sim |
 | 13 | `#FF55FF` | lichtmagenta | accent, bloem |
 | 14 | `#FFFF55` | geel | licht, koek, kaars |
 | 15 | `#FFFFFF` | wit | hooglicht, ogen, papierwit |
@@ -137,8 +137,13 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
 - **Dozen:** karton in 26/25 met schaduw 23; labels als 41-inkt op 36-papier.
 - **De pc:** beige kast in 51/52, scherm-gloed 56→58 (amber CRT), aan-staat met
   een 34-halo.
-- **Roodkapje / de speler:** mantel 12 met schaduw 4 (callback naar de
-  predecessor), huid uit de huid-ramp, haar 41 of 23.
+- **De speler:** Alberta's kleinkind, alledaags gekleed. Trui uit de
+  gebladerte-ramp (42 naad, 43 schaduw, 44 mid, 45 licht), jeans uit de
+  nacht-ramp (59 binnenbeen, 60 schaduw, 61 licht), huid 18/19/20, kort haar
+  23/24, schoenen 49 met zool 0. Uitdrukkelijk **niet** 4/12: het rood is nu
+  alleen nog de `rode mantel` in de sim. De vier trappen per kledingstuk zijn
+  er omdat het licht van rechts komt (zie hieronder) — een paar van twee
+  volstond voor een mantel, niet voor een mouw naast een romp.
 - **Buiten (de sim-scènes, indien getekend):** lucht dither 61/63 avond of
   3/11 dag; gras 44/45 met vlekken 42; boomstammen 24 met schaduw 22, kruinen
   43 met zon 46.
@@ -334,13 +339,22 @@ Regels:
   wordt de romp één rij korter. Een sprite die volledig stilstaat leest als een
   standbeeld, ook in een spel waarin niets beweegt.
 - **Armzwaai alleen in het zijaanzicht.** Van voren en van achteren zitten de
-  armen ín het silhouet; daar is een arm een rode vlek en niets meer. Opzij is
-  er breedte voor een mouw van twee pixels die vóór de mantel uitkomt.
+  armen ín het silhouet; daar leest een naad van één pixel in de diepste trap
+  van de ramp beter dan een uitstekende arm. Opzij is er breedte voor een mouw
+  van twee pixels die vóór de romp uitkomt.
 - **Een eenmalige anim staat op `fps: 0`.** De engine zet die frame voor frame,
   dus een tempo erop zou hem dubbel laten lopen.
 - De speler is klein op het scherm (Sierra-verhouding, ± 1/6 van de
   schermhoogte); geen close-upsprites, geen gezichtsdetail (zie de speler-
-  beslissing in `achtergrond.md`).
+  beslissing in `achtergrond.md`). Concreet: 15 × 31, met 32 rijen voor de
+  doorzwaaiframes. Het gezicht is een vlak stuk huid met een lichtkant — geen
+  ogen, geen mond.
+- **Sprites zijn van rechts belicht**, net als de props: het dakraam staat in
+  elke kamer rechts. De donkerste trap van een ramp hoort links, de lichtste
+  rechts. Eén uitzondering met open vizier: `spiegel` keert de belichting mee
+  om, dus een naar het westen lopende speler is een paar tellen van links
+  belicht. Dat is de prijs voor het halveren van het aantal frames; wie dat niet
+  wil, tekent aparte `-west`-anims, en dat mag hier niet.
 - 1 px donkere outline waar de sprite anders in de achtergrond verdwijnt.
 
 ## Het notitieboek-spread — visuele taal

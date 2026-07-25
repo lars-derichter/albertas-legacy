@@ -935,7 +935,7 @@ globalThis.AL = globalThis.AL || {};
   // De schaal loopt over de bewandelbare strook van de scène zelf, niet over een
   // vast getal: elke kamer heeft haar eigen loopstrook, en een vaste bovengrens
   // zou in de ene kamer te veel en in de andere niets doen. Achteraan 0,84,
-  // vooraan 1. Op een figuur van vijfentwintig pixels is dat vier pixels verschil
+  // vooraan 1. Op een figuur van eenendertig pixels is dat vijf pixels verschil
   // over de diepte van de kamer — genoeg om te zien, te weinig om te betrappen.
   function actorSchaal() {
     var scene = toestand ? haalScene(toestand.sceneId) : null;

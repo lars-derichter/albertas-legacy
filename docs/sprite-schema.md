@@ -77,10 +77,16 @@ Zet de kleuren in een vaste volgorde en zet ze in de kop van het bestand in
 commentaar, één regel per index:
 
 ```
-//   0 -> 0  zwart (outline, ogen, schoenen)
-//   1 -> 4  mantel schaduw (donkerrood)
-//   2 -> 12 mantel licht (helderrood)
+//   0 -> 0  zwart (zolen, contactrand)
+//   1 -> 42 trui diepst (mouwnaad, zoom)
+//   2 -> 43 trui schaduw (de linkerkant)
+//   3 -> 44 trui mid
+//   4 -> 45 trui licht (de dakraamkant, rechts)
 ```
+
+Zet de trappen van een ramp op volgorde van donker naar licht, en houd die
+volgorde gelijk voor elk kledingstuk in dezelfde sprite. Dan is een frame te
+lezen als een hoogtekaart van het licht in plaats van als een lijst nummers.
 
 Zonder die legenda is een frame niet te lezen en dus niet te onderhouden. De
 lint controleert dat elk teken binnen het sub-palet valt en dat elke index in
@@ -113,6 +119,14 @@ De namen zijn afspraken tussen de sprite en de engine, geen vrije keuze:
 **West bestaat niet.** De engine spiegelt de oost-frames
 (`opts.spiegel`); lever dus geen `-west`-anims en vermijd asymmetrie die
 gespiegeld fout oogt — belichting van één kant flipt mee.
+
+Dat laatste is geen theorie: `sprite-speler.js` is van rechts belicht omdat het
+dakraam rechts staat, en naar het westen lopen zet het licht dus links. De
+afweging is bewust en staat in de kop van dat bestand: aparte `-west`-anims
+zouden het aantal frames verdubbelen voor een fout die je alleen ziet zolang je
+een pijltoets ingedrukt houdt. Teken daarom liever niets wat alleen kán kloppen
+in één spiegeling — een gereedschap in de rechterhand, een tas over één
+schouder.
 
 ## Wat de renderer met een frame doet
 

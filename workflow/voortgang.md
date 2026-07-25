@@ -146,7 +146,7 @@ Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: `399906a`
 
 ### - [x] WP 33 — Flow en hints op de zolder
 
-Entry: `workflow/33-flow-en-hints.md` · commit: (nog in te vullen)
+Entry: `workflow/33-flow-en-hints.md` · commit: `01329de`
 
 - [x] `?`-hint progress-aware: `world.hint` vertakt op `levelActief` +
       `volgendFragment` + `FRAGMENT_LOCATIE` — eerst het hoofdstuk dat open
@@ -184,11 +184,22 @@ Entry: `workflow/33-flow-en-hints.md` · commit: (nog in te vullen)
 - [x] QC: **368/368 groen** (15 nieuw), `lint-scene` en `check-assets` schoon,
       smoke-browser 38/38, smoke-full-playthrough 97/97, smoke-walk 25/25
 
-### - [ ] WP 34 — Nieuwe spelersprite
+### - [x] WP 34 — Nieuwe spelersprite
 
-- [ ] Neutrale erfgenaam-figuur ~31 px, licht van rechts, alle anims
-- [ ] art-stijlgids en sprite-schema.md mee
-- [ ] QC: `node --test` + screenshots vier kamers beoordeeld door manager
+Entry: `workflow/34-nieuwe-spelersprite.md` · commit: (nog in te vullen)
+
+- [x] Neutrale erfgenaam-figuur 15 × 31 (doorzwaai 32), licht van rechts, alle
+      anims: sta/loop × noord-oost-zuid, `draai`, `zit-oost`. Trui uit de
+      gebladerte-ramp, jeans uit de nacht-ramp, kort haar 23/24, geen ogen en
+      geen mond — de norm uit `achtergrond.md` staat nu ook in de pixels
+- [x] De rode mantel (palet 4/12) is weg; Roodkapje leeft alleen nog in de sim
+- [x] `art-stijlgids.md` (paletrollen 4/12, de vaste toewijzing voor de speler,
+      armzwaai, spelermaat, een expliciete regel dat sprites van rechts belicht
+      zijn), `sprite-schema.md` (voorbeeldlegenda + de spiegel-afweging),
+      `js/palette.js` (twee commentaarregels over de mantel)
+- [x] QC: **368/368 groen**, `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-walk 25/25, smoke-full-playthrough 97/97,
+      screenshots van de vier kamers + spritesheet in `test-results/wp34-*.png`
 
 ### - [ ] WP 35 — Schaalpas over de scènes
 
@@ -700,7 +711,10 @@ in programma 3:
 - **Hoe het geluid klínkt is niet beoordeeld.** De mechanische oorzaken
   (gain, sub-bas) worden in WP 37 hersteld; de luistertest op speakers
   blijft een open punt voor Lars.
-- **De sprite gebruikt zijn toegestane maat niet.** → WP 34.
+- ~~De sprite gebruikt zijn toegestane maat niet.~~ **Opgelost in WP 34**: de
+  speler is 15 × 31 (doorzwaai 32) binnen de 16 × 32 van de stijlgids, en is
+  meteen ook de neutrale erfgenaam-figuur geworden in plaats van de Roodkapje
+  uit de predecessor.
 
 ## Wat bewust niet gebeurt
 

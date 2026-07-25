@@ -105,13 +105,13 @@ var HEX = KLEUREN.map(naarHex);
 //
 // Niet elke index zit in een ramp: 6 (bruin) en 14 (geel) staan op zichzelf, en
 // verduisteren laat die dus ongemoeid. De EGA-paren zijn wél opgenomen, zodat
-// ook de rode mantel van de speler een schaduwkant heeft.
+// ook een vlak in een EGA-kleur een schaduwkant kan krijgen.
 var RAMPEN = [
   [0, 8, 7, 15],                     // grijs
   [1, 9],                            // blauw
   [2, 10],                           // groen (EGA)
   [3, 11],                           // cyaan
-  [4, 12],                           // rood — mantel schaduw/licht
+  [4, 12],                           // rood — baksteen, vuur, `rode mantel` (sim)
   [5, 13],                           // magenta
   [16, 17, 18, 19, 20, 21],          // huid
   [22, 23, 24, 25, 26, 27],          // hout
