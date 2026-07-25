@@ -61,7 +61,7 @@ even dicht.
 Meer dan dit zeggen we niet over de zolder. Het is een kleine, warme ruimte —
 je hebt ze zo in de vingers.
 
-# Level 1 — De blauwdruk en de doos
+# Level 1 — Klasse en instantie: zeven uit één vorm
 
 *Scharnier: klasse en instantie, velden, constructor, `this`. Speelbaar na
 week 1.*
@@ -97,7 +97,7 @@ daarna zelf tegen Alberta's model.
 - *Hint 2:* Welk woord hoort bij het plan (je tekent het één keer), en welk bij
   het ding (je maakt er vele van)?
 
-# Level 2 — Trechters erin, goot eruit
+# Level 2 — Signaturen: wat erin gaat, wat eruit komt
 
 *Scharnier: signaturen (return vs. `void`), en het verschil tussen attribuut,
 parameter en lokale variabele. Speelbaar na week 2.*
@@ -133,7 +133,7 @@ getallen die verschijnen.
 - *Hint 2:* Zonder `this` pakt de code de dichtstbijzijnde doos: de parameter.
   Met `this.` de doos van het object (het attribuut).
 
-# Level 3 — De knikkerbaan
+# Level 3 — Voorwaarden: de deur op slot
 
 *Scharnier: voorwaarden — validatie, cascade, `&&` / `||` / `!`. Speelbaar na
 week 2.*
@@ -166,7 +166,7 @@ verschijnt? Let op de randen.
 - *Hint 2:* Let op de randen: `<= 0` pakt ook net 0, en `< 10` pakt 10 net
   niet. Waar valt jouw waarde? Loop de takken van boven naar onder.
 
-# Level 4 — Twee pijlen, één doos
+# Level 4 — Referenties: twee pijlen, één doos
 
 *Scharnier: referenties (aliasing) en `null`. Speelbaar na week 3.*
 
@@ -201,7 +201,7 @@ zet de buur via de ene en leest hem via de andere.
 - *Hint 2:* Denk aan een kamer zonder uitgang in die richting: waar wijst de
   buur-referentie dan heen?
 
-# Level 5 — De patroonkaart
+# Level 5 — Luspatronen: geitje voor geitje
 
 *Scharnier: de lus-romp + patroonkeuze (tellen, totaliseren, opbouwen,
 filteren, het uiterste). Speelbaar na week 4.*
@@ -234,7 +234,7 @@ tellen, totaliseren, opbouwen of het uiterste.
 - *Hint 2:* Bij `som = som + schadelog[i]` groeit `som` met de waarde, niet met
   één per element. Eén per element is tellen; de waarde optellen is iets anders.
 
-# Level 6 — De plankenbrug boven het ravijn
+# Level 6 — Index en off-by-one: de laatste plank
 
 *Scharnier: index en off-by-one; welke lus kies ik. Speelbaar na week 5.*
 
@@ -264,7 +264,7 @@ rondes te spelen (0 tot en met 4). Toch klopt er iets niet.
 - *Hint 2:* Kijk naar de grens van de `for`-lus op regel 1, niet naar de romp.
   Vijf rondes vraagt `< 5`, geen `<= 5` — dat laatste speelt er zes.
 
-# Level 7 — De speurtocht en de dubbele pijl
+# Level 7 — Zoeken en de dubbele pijl: waar het jongste zit
 
 *Scharnier: zoeken + de dubbele pijl (een ketting van getters). Speelbaar na
 week 6.*

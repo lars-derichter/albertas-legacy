@@ -22,11 +22,39 @@ Verbatim uit de cursusleidraad, _De zeven scharnieren_:
 | 6 | 12–13 | Index en off-by-one; welke lus kies ik | Toets 2 en eindtoets |
 | 7 | 17–18 | Zoeken + de dubbele pijl (`artikel.getCategorie().getNaam()`) | De kern van de eindtoets |
 
-De metafoor-woordenschat per scharnier (uit de cursus-hub, `hub-data.js`),
-die de hints in stap 1 hergebruiken:
+## De zeven hoofdstuktitels
 
-| # | Metafoor | Kernbeeld |
-|---|----------|-----------|
+Elk level draagt één naam, en die naam staat op drie plaatsen tegelijk: de kop
+van bladzijde 1 van het notitieboek-spread ("Hoofdstuk 3 — Voorwaarden: de deur
+op slot"), de kop van de gesimuleerde pc ("Alberta's pc — Level 3 —
+Voorwaarden: de deur op slot") en de hoofdstukkoppen van de walkthrough. De
+vorm ligt vast: **eerst de scharnierterm zoals de cursus die noemt, dan een
+dubbelpunt, dan een beeld uit Alberta's eigen verhaal.**
+
+| L | Hoofdstuktitel | Waar het beeld vandaan komt |
+|---|----------------|------------------------------|
+| 1 | Klasse en instantie: zeven uit één vorm | zeven geitjes uit één `Geitje`-klasse |
+| 2 | Signaturen: wat erin gaat, wat eruit komt | de methode als machine met in- en uitgang |
+| 3 | Voorwaarden: de deur op slot | de geitjes mogen alleen opendoen als aan álle voorwaarden voldaan is |
+| 4 | Referenties: twee pijlen, één doos | staat al in cursustaal; ongewijzigd overgenomen |
+| 5 | Luspatronen: geitje voor geitje | de lus die de kudde één voor één afgaat |
+| 6 | Index en off-by-one: de laatste plank | de laatste plank van de brug = `size()` min één |
+| 7 | Zoeken en de dubbele pijl: waar het jongste zit | `zoekGeitje` zoekt het jongste in de klokkast |
+
+Tot WP 31 droegen de levels de titels van de andere minigames van de cursus
+("De knikkerbaan", "De plankenbrug boven het ravijn", "De speurtocht…",
+letterlijk uit `games/home/hub-data.js`). Die namen zeggen een speler niets
+over de leerstof: het scharnier stond wél op bladzijde 2, maar de titel zelf
+had geen enkele band met de cursusterminologie. De nieuwe titels zetten de term
+vooraan, zodat een speler die vastzit weet waarnaar hij in zijn cursus moet
+zoeken, en houden het verhaal in de tweede helft.
+
+De metafoor-woordenschat uit de cursus-hub blíjft in het spel — in de hints van
+stap 1, in Alberta's briefteksten en in de schetsen op bladzijde 2 van elk
+spread (`js/scenes/spread-schetsen.js`). Alleen de titels dragen ze niet meer:
+
+| # | Metafoor (hints, brieven, schetsen) | Kernbeeld |
+|---|-------------------------------------|-----------|
 | 1 | De blauwdruk en de doos | klasse = blauwdruk, instantie = doos; `this` = "deze doos" |
 | 2 | Trechters erin, goot eruit; drie dozen | parameter in, return uit; attribuut/parameter/lokaal |
 | 3 | De knikkerbaan | validatie klemt, de cascade splitst, `&&`/`\|\|`/`!` sturen |
@@ -76,7 +104,10 @@ fragment.
 | 7 | 7 | 6 | les 17–18 | vóór de eindtoets |
 
 De in-game intro van elk level toont letterlijk: "Dit zou je moeten kunnen na
-week X van de cursus", met X uit de kolom "Na cursusweek".
+week X van de cursus", met X uit de kolom "Na cursusweek". Elke andere plek die
+Alberta's weekregel citeert, citeert diezelfde X: de onderzoektekst van het
+notitieboek op zolder-west leest het spread van level 1 en zegt dus week 1
+(ze zei week 3 tot WP 31), en de walkthrough herhaalt de week per level.
 
 ## Toetsritme
 

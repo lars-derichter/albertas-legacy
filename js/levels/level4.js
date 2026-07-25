@@ -1,8 +1,9 @@
-// level4.js — "Level 4 — Twee pijlen, één doos" (scharnier 4: referenties — twee
-// pijlen één doos, null). Herstelt Kamer + Spel.verbindKamers. Puzzelvormen uit
-// de leveltabel (docs/levels-en-scharnieren.md): herstel de buur-bedrading,
-// voorspel een aliasing-scenario (twee referenties naar één object), en verklaar
-// wat null betekent.
+// level4.js — "Level 4 — Referenties: twee pijlen, één doos" (scharnier 4:
+// referenties — twee pijlen één doos, null). Herstelt Kamer +
+// Spel.verbindKamers. Puzzelvormen uit de leveltabel
+// (docs/levels-en-scharnieren.md): herstel de buur-bedrading, voorspel een
+// aliasing-scenario (twee referenties naar één object), en verklaar wat null
+// betekent.
 //
 // Het editor-fragment is een byte-getrouw uittreksel van
 // seven-little-goats/src/Spel.java (verbindKamers; tools/check-assets bewaakt de

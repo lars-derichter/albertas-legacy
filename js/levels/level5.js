@@ -1,8 +1,8 @@
-// level5.js — "Level 5 — De patroonkaart" (scharnier 5: de lus-romp +
-// patroonkeuze — tellen, totaliseren, opbouwen, filteren, uiterste). Herstelt de
-// lus-methoden van Speler. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): schrijf twee lussen uit de notities, orden een
-// string-builder (Parsons), en kies de juiste patroonkaart.
+// level5.js — "Level 5 — Luspatronen: geitje voor geitje" (scharnier 5: de
+// lus-romp + patroonkeuze — tellen, totaliseren, opbouwen, filteren, uiterste).
+// Herstelt de lus-methoden van Speler. Puzzelvormen uit de leveltabel
+// (docs/levels-en-scharnieren.md): schrijf twee lussen uit de notities, orden
+// een string-builder (Parsons), en kies de juiste patroonkaart.
 //
 // Beslissing (level-5-special-case, zie het werkpakket + checker-contract.md
 // §"lusRomp"): de kolom "herstelt" vraagt generieke lus-methoden die nog niet

@@ -188,6 +188,12 @@ body {
 }
 .pc-fbalk-toets { font-weight: bold; }
 
+/* De kopbalk draagt sinds WP 31 de volledige hoofdstuknaam ("Alberta's pc —
+   Level 7 — Zoeken en de dubbele pijl: waar het jongste zit"). Op haar maximum
+   (920 px kast, 17 px letter) zet deze balk ± 78 tekens; de langste naam is er
+   72. Op een smal scherm past dat niet meer, en dan hoort een titelbalk uit
+   1990 af te kappen, niet om te breken naar een tweede regel — een kopbalk van
+   twee regels leest als een fout in de kast. Vandaar nowrap + beletselteken. */
 .pc-header {
   flex: 0 0 auto;
   background: var(--pc-rand, #7a4a00);
@@ -198,6 +204,9 @@ body {
   padding: 6px 12px;
   text-transform: uppercase;
   border-bottom: 1px solid var(--pc-amber, #c98400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Een knipperende blok-cursor, zoals een DOS-editor in rust. */
 .pc-header::after {

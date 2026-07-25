@@ -1,6 +1,6 @@
-// level7.js — "Level 7 — De speurtocht en de dubbele pijl" (scharnier 7: zoeken +
-// de dubbele pijl). Herstelt Spel.zoekGeitje en de endgame-keten
-// (Spel.toonSchuilplaatsen). Puzzelvormen uit de leveltabel
+// level7.js — "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit"
+// (scharnier 7: zoeken + de dubbele pijl). Herstelt Spel.zoekGeitje en de
+// endgame-keten (Spel.toonSchuilplaatsen). Puzzelvormen uit de leveltabel
 // (docs/levels-en-scharnieren.md): schrijf de zoeklus die een Geitje of null
 // teruggeeft, herstel de null-veilige getter-keten, en voorspel de uitkomst van
 // een geketende getter (inclusief het null-geval).

@@ -9,9 +9,13 @@
 // rustig en King's-Quest-zuinig.
 //
 // Let op bij het herschrijven van de spreads: de bladspiegel telt twee kolommen
-// van 17 tekens en 12 regels (zie AL.spreads.BLAD in
-// js/scenes/scene-spread-template.js). Een pagina die boven de 24 gewrapte
-// regels uitkomt, wordt afgekapt.
+// van 136 px (± 17 tekens) en 12 regels (zie AL.spreads.BLAD in
+// js/scenes/scene-spread-template.js). Bladzijde 1 heeft er dus 24; op
+// bladzijde 2 staat Alberta's schets, en die kapt de rechterkolom af op 7 —
+// samen 19. Wat daarboven uitkomt, tekent de renderer niet. En een woord dat op
+// zichzelf breder is dan 136 px wordt niet gebroken maar over de bladrand
+// geschreven. test/test-spreads.mjs rekent beide grenzen na met de echte
+// handschrift-maten; draai die test na elke herschrijving.
 //
 // Aangepast uit remake-90s (js/logic/strings.js): dezelfde vorm (data +
 // kleine sjabloonfuncties, Node-export), nieuwe inhoud.
@@ -183,7 +187,7 @@ AL.strings = {
       "een kamer met zeven kruisjes erin, waarvan er zes zijn doorgehaald. " +
       "Daarnaast een halve methode, waar het vocht de andere helft van heeft " +
       "weggevreten. Onderaan, in haar hand: 'Dit zou je moeten kunnen na " +
-      "week 3.'",
+      "week 1.'",
     open: "Je slaat het notitieboek open bij de eerste bladzijde die nog " +
       "heel is. Het eerste hoofdstuk van Alberta's spel ligt voor je — " +
       "beschadigd, maar leesbaar genoeg om te herstellen.",
@@ -339,7 +343,9 @@ AL.strings = {
       "Een lus die één passend element opzoekt en teruggeeft, is de zoeklus."
     ],
 
-    // Level 1 — De blauwdruk en de doos (scharnier 1).
+    // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1).
+    // De hints hieronder houden Alberta's beeldspraak (blauwdruk en doos);
+    // alleen de hoofdstuktitel is naar de cursusterm verhuisd.
     "l1-editor-repair": [
       "Denk aan de blauwdruk en de doos: de constructor vult de velden van een " +
         "verse doos. Wat gaat waarheen?",
@@ -365,7 +371,7 @@ AL.strings = {
         "bouwt (het object). Zeg dat verschil in je eigen zin."
     ],
 
-    // Level 2 — Trechters erin, goot eruit (scharnier 2).
+    // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2).
     "l2-editor-repair": [
       "Denk aan de machine: trechters erin (parameters), een goot eruit (return) " +
         "of niets eruit (void).",
@@ -391,7 +397,7 @@ AL.strings = {
         "attribuut (20) af. Geef beide getallen."
     ],
 
-    // Level 3 — De knikkerbaan (scharnier 3).
+    // Level 3 — Voorwaarden: de deur op slot (scharnier 3).
     "l3-editor-repair": [
       "Denk aan de knikkerbaan: de waarde moet tussen twee randen blijven, nooit " +
         "onder de ene, nooit boven de andere.",
@@ -417,7 +423,7 @@ AL.strings = {
         "Typ de tekst die die tak afdrukt."
     ],
 
-    // Level 4 — Twee pijlen, één doos (scharnier 4).
+    // Level 4 — Referenties: twee pijlen, één doos (scharnier 4).
     "l4-editor-repair": [
       "Twee pijlen, één doos: elke verbinding tussen kamers loopt twee kanten " +
         "op. Wat de ene kant legt, moet de andere kant terugleggen.",
@@ -440,7 +446,7 @@ AL.strings = {
         "geen buurkamer, dus geen uitgang. Zeg dat in je eigen zin."
     ],
 
-    // Level 5 — De patroonkaart (scharnier 5).
+    // Level 5 — Luspatronen: geitje voor geitje (scharnier 5).
     "l5-editor-write": [
       "Welke patroonkaart? telWapens telt (een teller die ophoogt); " +
         "sterksteVoorwerp zoekt het uiterste (onthoud de beste tot nog toe).",
@@ -466,7 +472,7 @@ AL.strings = {
         "totaliseer-kaart."
     ],
 
-    // Level 6 — De plankenbrug boven het ravijn (scharnier 6).
+    // Level 6 — Index en off-by-one: de laatste plank (scharnier 6).
     "l6-editor-repair": [
       "De plankenbrug boven het ravijn: de eerste plank is 0, de laatste is " +
         "size() min één. Eén plank te ver en je ligt in het water.",
@@ -489,7 +495,7 @@ AL.strings = {
         "speelt er zes."
     ],
 
-    // Level 7 — De speurtocht en de dubbele pijl (scharnier 7).
+    // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7).
     "l7-editor-write": [
       "De speurtocht: een zoeklus loopt de lijst af, geeft het gevonden object " +
         "terug, of null als de tocht doodloopt.",
@@ -778,10 +784,11 @@ AL.strings = {
     }
   },
 
-  // Level 1 — De blauwdruk en de doos (scharnier 1: klasse/instantie, velden,
-  // constructor, this). De Java-fragmenten leven in js/levels/level1.js.
+  // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1:
+  // klasse/instantie, velden, constructor, this). De Java-fragmenten leven in
+  // js/levels/level1.js.
   l1: {
-    naam: "Level 1 — De blauwdruk en de doos",
+    naam: "Level 1 — Klasse en instantie: zeven uit één vorm",
     repairTitel: "Voorwerp.java — herstel de constructor",
     writeTitel: "Geitje.java — schrijf de klasse",
 
@@ -803,10 +810,11 @@ AL.strings = {
     }
   },
 
-  // Level 2 — Trechters erin, goot eruit (scharnier 2: signaturen, attribuut /
-  // parameter / lokaal). De Java-fragmenten leven in js/levels/level2.js.
+  // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2:
+  // signaturen, attribuut / parameter / lokaal). De Java-fragmenten leven in
+  // js/levels/level2.js.
   l2: {
-    naam: "Level 2 — Trechters erin, goot eruit",
+    naam: "Level 2 — Signaturen: wat erin gaat, wat eruit komt",
     repairTitel: "Speler.java — herstel de signaturen",
 
     parsons: {
@@ -849,10 +857,11 @@ AL.strings = {
     }
   },
 
-  // Level 3 — De knikkerbaan (scharnier 3: voorwaarden, validatie, cascade,
-  // && / || / !). De Java-fragmenten leven in js/levels/level3.js.
+  // Level 3 — Voorwaarden: de deur op slot (scharnier 3: voorwaarden,
+  // validatie, cascade, && / || / !). De Java-fragmenten leven in
+  // js/levels/level3.js.
   l3: {
-    naam: "Level 3 — De knikkerbaan",
+    naam: "Level 3 — Voorwaarden: de deur op slot",
     repairTitel: "Speler.java — herstel de klem",
 
     vindfout: {
@@ -898,10 +907,10 @@ AL.strings = {
     }
   },
 
-  // Level 4 — Twee pijlen, één doos (scharnier 4: referenties, aliasing, null).
-  // De Java-fragmenten leven in js/levels/level4.js.
+  // Level 4 — Referenties: twee pijlen, één doos (scharnier 4: referenties,
+  // aliasing, null). De Java-fragmenten leven in js/levels/level4.js.
   l4: {
-    naam: "Level 4 — Twee pijlen, één doos",
+    naam: "Level 4 — Referenties: twee pijlen, één doos",
     repairTitel: "Spel.java — herstel de buur-bedrading",
 
     trace: {
@@ -944,11 +953,12 @@ AL.strings = {
     }
   },
 
-  // Level 5 — De patroonkaart (scharnier 5: lus-romp + patroonkeuze). De Java-
-  // fragmenten leven in js/levels/level5.js; de twee lus-methoden zijn echt aan
-  // seven-little-goats/src/Speler.java toegevoegd (zie de Beslissing daar).
+  // Level 5 — Luspatronen: geitje voor geitje (scharnier 5: lus-romp +
+  // patroonkeuze). De Java-fragmenten leven in js/levels/level5.js; de twee
+  // lus-methoden zijn echt aan seven-little-goats/src/Speler.java toegevoegd
+  // (zie de Beslissing daar).
   l5: {
-    naam: "Level 5 — De patroonkaart",
+    naam: "Level 5 — Luspatronen: geitje voor geitje",
     writeTitel: "Speler.java — schrijf de twee lus-methoden",
 
     parsons: {
@@ -992,10 +1002,10 @@ AL.strings = {
     }
   },
 
-  // Level 6 — De plankenbrug boven het ravijn (scharnier 6: index, off-by-one,
-  // welke lus). De Java-fragmenten leven in js/levels/level6.js.
+  // Level 6 — Index en off-by-one: de laatste plank (scharnier 6: index,
+  // off-by-one, welke lus). De Java-fragmenten leven in js/levels/level6.js.
   l6: {
-    naam: "Level 6 — De plankenbrug boven het ravijn",
+    naam: "Level 6 — Index en off-by-one: de laatste plank",
     repairTitel: "Kamer.java — herstel de off-by-one",
 
     trace: {
@@ -1034,10 +1044,10 @@ AL.strings = {
     }
   },
 
-  // Level 7 — De speurtocht en de dubbele pijl (scharnier 7: zoeken + de dubbele
-  // pijl). De Java-fragmenten leven in js/levels/level7.js.
+  // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7:
+  // zoeken + de dubbele pijl). De Java-fragmenten leven in js/levels/level7.js.
   l7: {
-    naam: "Level 7 — De speurtocht en de dubbele pijl",
+    naam: "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit",
     writeTitel: "Spel.java — schrijf de zoeklus",
     repairTitel: "Spel.java — herstel de null-veilige keten",
 
@@ -1148,19 +1158,31 @@ AL.strings = {
     // Bouw één spread-teaser als een generiek pagina-object dat de renderer
     // dom kan aflopen: elke pagina heeft een kop (inkt-titel), regels
     // (handschrift) en optioneel een voet (de weekregel, rechtsonder).
-    function maakSpread(nr, scharnier, titel, week, briefA, briefB) {
+    //
+    // `titel` is de hoofdstuktitel: eerst de scharnierterm zoals de cursus die
+    // noemt, dan een dubbelpunt, dan het beeld uit Alberta's eigen verhaal
+    // ("Voorwaarden: de deur op slot"). Vroeger stond hier een metafoornaam die
+    // uit de andere minigames van de cursus geleend was ("De knikkerbaan"), en
+    // die zei een speler niets over de leerstof waar het hoofdstuk over gaat.
+    // Dezelfde titel staat in `lN.naam` (de kop van de gesimuleerde pc); de
+    // spread-test bewaakt dat de twee gelijk blijven.
+    //
+    // `termen` is de opsomming van cursustermen die op bladzijde 2 als kop
+    // staat. Ze herhaalt de scharnierterm van de titel niet: bladzijde 1 zegt
+    // "Voorwaarden", bladzijde 2 vult aan met "Validatie ×3, cascade, …".
+    function maakSpread(nr, titel, termen, week, briefA, briefB) {
       return {
         nr: nr,
-        scharnier: scharnier,
         titel: titel,
+        termen: termen,
         week: week,
         paginas: [
           {
-            kop: "Hoofdstuk " + nr + " — " + scharnier,
+            kop: "Hoofdstuk " + nr + " — " + titel,
             regels: ["Voor jou die dit later leest:", ""].concat(briefA)
           },
           {
-            kop: titel,
+            kop: termen,
             regels: briefB,
             voet: "Dit zou je moeten kunnen na week " + week + " van de cursus."
           }
@@ -1176,8 +1198,8 @@ AL.strings = {
     // openingstekst staat nu in AL.strings.intro, in de stem van de verteller,
     // vóór de zolder. Zie workflow/15-opwaardering-kickoff.md.
     return {
-      l1: maakSpread(1, "De blauwdruk en de doos",
-        "Klasse, instantie, velden, constructor, this",
+      l1: maakSpread(1, "Klasse en instantie: zeven uit één vorm",
+        "Velden, constructor, this",
         1,
         ["Een klasse is een blauwdruk; een object is de doos die je",
           "ernaar bouwt. De constructor vult de velden van zo'n verse doos.",
@@ -1186,8 +1208,8 @@ AL.strings = {
           "is nog maar half ingevuld. Herstel wat de doos hoort te krijgen,",
           "en schrijf Geitje helemaal uit volgens de schets hieronder."]),
 
-      l2: maakSpread(2, "Trechters erin, goot eruit",
-        "Signaturen: return vs. void, attribuut / parameter / lokaal",
+      l2: maakSpread(2, "Signaturen: wat erin gaat, wat eruit komt",
+        "Return vs. void; attribuut / parameter / lokaal",
         2,
         ["Een methode is een machine: trechters erin (de parameters),",
           "een goot eruit (return), of niets eruit (void). En drie soorten",
@@ -1197,8 +1219,8 @@ AL.strings = {
           "En let op welke doos je gebruikt — een lokale schaduwt zo een",
           "attribuut."]),
 
-      l3: maakSpread(3, "De knikkerbaan",
-        "Voorwaarden: validatie ×3, cascade, && / || / !",
+      l3: maakSpread(3, "Voorwaarden: de deur op slot",
+        "Validatie ×3, cascade, && / || / !",
         2,
         ["Denk aan een knikkerbaan. De validatie klemt de knikker tussen",
           "twee randen; de cascade splitst de baan; && / || / ! sturen",
@@ -1207,8 +1229,8 @@ AL.strings = {
           "&& waar een || hoort. Klem de waarde netjes tussen onder- en",
           "bovengrens, en kies de juiste operator."]),
 
-      l4: maakSpread(4, "Twee pijlen, één doos",
-        "Referenties: twee pijlen, één doos; null",
+      l4: maakSpread(4, "Referenties: twee pijlen, één doos",
+        "Twee variabelen, één object; null",
         3,
         ["Twee variabelen kunnen naar dezelfde doos wijzen: twee pijlen,",
           "één doos. Verander je de doos via de ene pijl, dan ziet de andere",
@@ -1217,8 +1239,8 @@ AL.strings = {
           "zodat de pijlen kloppen, en let op waar een kamer nog naar null",
           "wijst voor je erdoorheen loopt."]),
 
-      l5: maakSpread(5, "De patroonkaart",
-        "De lus-romp + patroonkeuze (tellen, opbouwen, filteren, uiterste)",
+      l5: maakSpread(5, "Luspatronen: geitje voor geitje",
+        "Tellen, totaliseren, opbouwen, filteren, uiterste",
         4,
         ["Elke lus volgt een patroonkaart: tellen, totaliseren, opbouwen,",
           "filteren, of het uiterste zoeken. Kies eerst de kaart, dan schrijf",
@@ -1227,8 +1249,8 @@ AL.strings = {
           "getekend — schrijf de rompen eronder, en zet de string-builder",
           "in de juiste volgorde."]),
 
-      l6: maakSpread(6, "De plankenbrug boven het ravijn",
-        "Index en off-by-one; welke lus kies ik",
+      l6: maakSpread(6, "Index en off-by-one: de laatste plank",
+        "Eerste index 0, laatste size() min 1; welke lus kies ik",
         5,
         ["Een lijst is een plankenbrug boven een ravijn. De eerste plank is",
           "nummer 0; de laatste is size() min één. Eén plank te ver en je",
@@ -1239,13 +1261,15 @@ AL.strings = {
       // De kop van dit spread droeg de volledige keten mee —
       // "(getCategorie().getNaam())" — en dat is één woord van zesentwintig
       // tekens. Een kolom van 136 px kan dat niet breken, dus liep het over de
-      // bladrand. De keten staat in de brief hieronder toch al voluit.
-      l7: maakSpread(7, "De speurtocht en de dubbele pijl",
-        "Zoeken, en dan de dubbele pijl",
+      // bladrand. Om dezelfde reden staat de keten in de brief hieronder in twee
+      // stukken: "artikel.getCategorie().getNaam()" meet 174 px en past dus
+      // evenmin op één regel.
+      l7: maakSpread(7, "Zoeken en de dubbele pijl: waar het jongste zit",
+        "Zoeklus geeft object of null; ketting van getters",
         6,
         ["Een zoeklus is een speurtocht: hij geeft het gevonden object terug,",
           "of null als er niets is. En soms volg je twee pijlen na elkaar:",
-          "artikel.getCategorie().getNaam() — een ketting van getters."],
+          "eerst artikel.getCategorie(), dan .getNaam() op wat je terugkrijgt."],
         ["zoekGeitje en de endgame-keten zijn het laatste stuk. Schrijf de",
           "zoeklus die een Geitje of null teruggeeft, en maak de getter-",
           "keten null-veilig voor je de tweede pijl volgt."])

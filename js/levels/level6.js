@@ -1,6 +1,6 @@
-// level6.js — "Level 6 — De plankenbrug boven het ravijn" (scharnier 6: index en
-// off-by-one; welke lus kies ik). Herstelt Kamer.verwijderVoorwerp en raakt aan
-// de Gevecht-rondes. Puzzelvormen uit de leveltabel
+// level6.js — "Level 6 — Index en off-by-one: de laatste plank" (scharnier 6:
+// index en off-by-one; welke lus kies ik). Herstelt Kamer.verwijderVoorwerp en
+// raakt aan de Gevecht-rondes. Puzzelvormen uit de leveltabel
 // (docs/levels-en-scharnieren.md): herstel de off-by-one, voorspel de laatste
 // afgedrukte index, en vind de fout in een verkeerde luskeuze.
 //

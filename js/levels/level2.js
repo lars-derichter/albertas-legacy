@@ -1,8 +1,9 @@
-// level2.js — "Level 2 — Trechters erin, goot eruit" (scharnier 2: signaturen —
-// return vs. void, attribuut / parameter / lokale variabele). Herstelt Speler.
-// Puzzelvormen uit de leveltabel (docs/levels-en-scharnieren.md): herstel de
-// signaturen, orden een echte Speler-methode (Parsons), en voorspel de output
-// van een scenario waarin een parameter een attribuut schaduwt (trace).
+// level2.js — "Level 2 — Signaturen: wat erin gaat, wat eruit komt" (scharnier
+// 2: signaturen — return vs. void, attribuut / parameter / lokale variabele).
+// Herstelt Speler. Puzzelvormen uit de leveltabel
+// (docs/levels-en-scharnieren.md): herstel de signaturen, orden een echte
+// Speler-methode (Parsons), en voorspel de output van een scenario waarin een
+// parameter een attribuut schaduwt (trace).
 //
 // De Java-fragmenten zijn byte-getrouwe uittreksels uit
 // seven-little-goats/src/Speler.java (tools/check-assets bewaakt de drift). De

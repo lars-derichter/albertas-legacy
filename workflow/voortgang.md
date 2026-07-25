@@ -64,8 +64,7 @@ Entry: `workflow/29-taal-en-verhaal.md` · commit: `e84b723`
 
 ### - [x] WP 30 — Alberta's stem in de Java-broncode
 
-Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: (nog in te
-vullen)
+Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: `14987a8`
 
 - [x] Doceercommentaar in seven-little-goats/src/*.java (incl. de drie
       Test*-klassen) herschreven naar Alberta's notitieboekstem;
@@ -77,14 +76,27 @@ vullen)
 - [x] QC: javac exit 0 + verboden- en jargon-grep leeg, 328/328 groen,
       check-assets driftvrij
 
-### - [ ] WP 31 — Levelnamen en spreads
+### - [x] WP 31 — Levelnamen en spreads
 
-- [ ] Zeven nieuwe hoofdstuktitels (verhaal + scharnierterm) in
-      strings.js, docs/levels-en-scharnieren.md, walkthrough deel2
-- [ ] pc.js toont de levelnaam echt
-- [ ] Week-clash opgelost
-- [ ] Spread-lengtetest (≤ 24 gewrapte regels per pagina)
-- [ ] QC: `node --test` groen incl. nieuwe test
+Entry: `workflow/31-levelnamen-en-spreads.md` · commit: (nog in te vullen)
+
+- [x] Zeven nieuwe hoofdstuktitels (scharnierterm vooraan, dan het beeld
+      uit het verhaal) in strings.js (spread-titel + `lN.naam` +
+      bestandskoppen), js/levels/level*.js, docs/levels-en-scharnieren.md,
+      walkthrough deel1 én deel2
+- [x] Bladzijde 2 draagt de losse cursustermen, zonder de term van de
+      titel te herhalen
+- [x] pc.js toont de levelnaam echt (`S().lN.naam`, voor elk level);
+      .pc-header kapt af met een beletselteken in plaats van om te breken
+- [x] Week-clash opgelost: het notitieboek zegt week 1, zoals de voet van
+      het level-1-spread en de koppeltabel
+- [x] Spread-lengtetest: `test/test-spreads.mjs` rekent de bladspiegel na
+      (24 regels op bladzijde 1, 19 naast de schets) én bewaakt dat geen
+      regel breder wordt dan de kolom van 136 px
+- [x] Bijvangst: `artikel.getCategorie().getNaam()` (174 px) liep van het
+      blad in de brief van level 7 — in twee stukken gezet
+- [x] QC: 337/337 groen incl. de nieuwe test, lint-scene en check-assets
+      schoon
 
 ### - [ ] WP 32 — Lopen: uitgangen, muren en collisie
 
