@@ -44,7 +44,7 @@ AL.strings = {
     "Tussen de dozen ligt haar notitieboek. Losse bladen, doorgelopen inkt, " +
     "vlekken waar het vocht bij kon.",
 
-    "Erin staat Seven Little Goats: zes geitjes die de wolf binnengaan, een " +
+    "Erin staat Seven Little Goats: zes geitjes die de wolf opslokt, een " +
     "zevende die zich in de klokkast verstopt, en een afrekening aan de " +
     "rivier. Ze heeft het niet afgemaakt.",
 
@@ -140,8 +140,8 @@ AL.strings = {
         "uit opgestaan om iets te halen.",
       bureau: "Vol, maar niet rommelig. Alles ligt waar iemand het bij de " +
         "hand wilde hebben.",
-      toetsenbord: "De letters op de meest gebruikte toetsen zijn weg " +
-        "gesleten. E, A, R, en de spatiebalk.",
+      toetsenbord: "De letters op de meest gebruikte toetsen zijn " +
+        "afgesleten. E, A, R, en de spatiebalk.",
       mok: "Halfvol. Er staat geen ring in, geen schimmel, niets dat " +
         "vertelt hoe lang hij er staat. Je laat hem staan."
     },
@@ -177,7 +177,7 @@ AL.strings = {
     }
   },
 
-  // Het notitieboek op zolder-west (level 1 se fragment).
+  // Het notitieboek op zolder-west (het fragment van level 1).
   notitieboek: {
     onderzoek: "Het boek ligt open op een dubbele bladzijde. Een schets van " +
       "een kamer met zeven kruisjes erin, waarvan er zes zijn doorgehaald. " +
@@ -1085,7 +1085,7 @@ AL.strings = {
     meesterhand: {
       titel: "Alberta's oordeel: de meesterhand",
       tekst: "Je hebt mijn spel afgemaakt met bijna geen spieken. Ik had het " +
-        "niet beter gekund, en dat zeg ik niet snel.",
+        "niet beter gekund, en dat zeg ik niet snel."
     },
     vakvrouw: {
       titel: "Alberta's oordeel: de vakvrouw",

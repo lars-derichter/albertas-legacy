@@ -28,8 +28,8 @@ class Kamer {
         this.beschrijving = beschrijving;
         this.hint = hint;
         this.voorwerpen = new ArrayList<Voorwerp>();
-        // De buren en de tegenstander blijven voorlopig null. Het spel wiret ze
-        // achteraf aan elkaar.
+        // De buren en de tegenstander blijven voorlopig null. Het spel verbindt
+        // ze achteraf met elkaar.
     }
 
     String getNaam() {

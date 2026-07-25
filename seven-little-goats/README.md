@@ -22,20 +22,21 @@ en kijk hoe de losse stukken uit de levels één geheel vormen.
 ## Het verhaal
 
 Je kent het vorige verhaal. Een rode mantel, een wolf, grootmoeders huisje. Hoe
-het afliep? Daar zijn de verhalen het niet over eens: de een zweert bij de
-schaar en de stenen, de ander bij een kille afrekening, een derde bij genade.
+het afliep? Daar zijn de verhalen het niet over eens: de ene zweert bij de
+schaar en de stenen, de andere bij een kille afrekening, een derde bij genade.
 Laat het in het midden. De wolf van toen is weg; dat volstaat.
 
 Maar die wolf had een neef. Een jonge wolf, de honger geërfd, de wijsheid niet.
 Hij las het oude verhaal als een handleiding. Gisteren wreef hij zijn poot wit
 met bloem uit de molen en at krijt bij de kruidenier, tot zijn stem zo zacht
-klonk als die van een moeder. De zeven geitjes deden open. Zes gingen naar
-binnen — in de wolf.
+klonk als die van een moeder. De zeven geitjes deden open. De wolf slokte er
+zes op.
 
-Het jongste kroop in de klokkast en overleefde. Het ging niet naar de
-dorpelingen (die vonden alles "te gevaarlijk", zoals altijd), maar naar de
-enige met verstand van wolven: naar jou. Je volgt het spoor van het
-geitenhuisje tot aan de rivier. Wat je daar met de wolf doet, bepaal jij.
+Het jongste kroop in de klokkast en bleef er zitten. Het riep, dun en hoog, tot
+iemand het hoorde. De dorpelingen vonden het "te gevaarlijk", zoals altijd. Het
+bericht kwam bij de enige met verstand van wolven: bij jou. Je volgt het spoor
+van het geitenhuisje tot aan de rivier. Wat je daar met de wolf doet, bepaal
+jij.
 
 ## Aan de slag
 
@@ -101,7 +102,7 @@ De bedoeling is: eerst zelf proberen, dan `?`, en enkel in nood `opties`.
 | `inventaris` | toon wat je bij je hebt |
 | `stats` | toon je levenspunten en aanvalskracht |
 | `eet koek` | eet een koek (+4 LP) |
-| `eet melk` | drink van de kruik melk (+6 LP) |
+| `eet melk` | leeg de kruik melk (+6 LP) |
 | `praat` | praat met de raaf of het jongste geitje |
 | `geef koek` | ruil bij de raaf: een koek voor gladde kiezels |
 | `vecht` | val de tegenstander in deze kamer aan |
@@ -133,7 +134,7 @@ Eén klasse per bestand, net als in de voorganger.
 | Klasse | Verantwoordelijkheid |
 |---|---|
 | `Main` | startpunt: titelbanner, backstory en de spellus |
-| `Spel` | bouwt de wereld, wiret de kamers, verwerkt commando's, start de gevechten en handelt de vier eindes af |
+| `Spel` | bouwt de wereld, verbindt de kamers, verwerkt commando's, start de gevechten en handelt de vier eindes af |
 | `Speler` | Roodkapje: levenspunten (0–20, klemmende setter), aanvalskracht, inventaris |
 | `Kamer` | één plek: naam, beschrijving, hint, voorwerpen, vier buur-referenties en een tegenstander |
 | `Voorwerp` | naam, beschrijving, kracht; twee overloaded constructors |

@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 // Spel houdt de hele wereld bij en verwerkt de commando's van de speler.
-// Het bouwt de kamers op en wiret ze aan elkaar, onthoudt in welke kamer de
+// Het bouwt de kamers op en verbindt ze met elkaar, onthoudt in welke kamer de
 // speler staat, houdt de zeven geitjes bij, en beslist wat elk commando doet.
 // De gevechten en de vier eindes worden hier gestart en afgehandeld.
 class Spel {
@@ -45,21 +45,21 @@ class Spel {
         return gestopt;
     }
 
-    // Bouwt alle kamers, vult ze met voorwerpen en tegenstanders, wiret de
-    // uitgangen aan elkaar en maakt de zeven geitjes aan.
+    // Bouwt alle kamers, vult ze met voorwerpen en tegenstanders, verbindt de
+    // uitgangen met elkaar en maakt de zeven geitjes aan.
     private void bouwWereld() {
         geitenhuisje = new Kamer("Geitenhuisje",
                 "Het huisje van de zeven geitjes. Stoelen omver, een omgestoten\n"
                 + "kruk, deuren wagenwijd. In de hoek tikt de oude staande klok.\n"
                 + "Op een haak hangt een rode mantel; op tafel liggen een\n"
                 + "keukenmes en een mandje.",
-                "Kijk in de klokkast (praat) en neem iets scherps en iets warms mee.");
+                "Typ praat bij de klokkast, en neem iets scherps en iets warms mee.");
 
         dorpsplein = new Kamer("Dorpsplein",
                 "Het plein is de spil van het dorp. Naar het oosten de molen,\n"
                 + "naar het westen de kruidenier, naar het zuiden het bospad.\n"
                 + "Op een marktkraam koelen twee koeken af.",
-                "Neem iets mee om te ruilen. En neem iets om ze in te dragen.");
+                "Neem iets mee om te ruilen. En iets om de koeken in te dragen.");
 
         molen = new Kamer("Molen",
                 "Meelstof hangt in het licht. Tegen de zakken ligt bloem gemorst.\n"
@@ -89,7 +89,7 @@ class Spel {
 
         wolvenspoor = new Kamer("Wolvenspoor",
                 "Witte pootafdrukken, één voor één, het pad af. Bloem en krijtstof.\n"
-                + "Ergens vooruit klinkt water. De spanning stijgt.",
+                + "Ergens vooruit klinkt water.",
                 "Bijna. Ga zuid naar de rivier.");
 
         rivieroever = new Kamer("Rivieroever",
@@ -130,7 +130,7 @@ class Spel {
         molen.setTegenstander(jachthond);
 
         Tegenstander wolf = new Tegenstander("jonge wolf",
-                "Groot, grijs, en dit keer geen vermomming meer.",
+                "Groot, grijs, en deze keer geen vermomming meer.",
                 18, new int[] {3, 5, 2, 6, 4}, 5, "Vijf rondes. Wie rekent, wint.");
         rivieroever.setTegenstander(wolf);
 
@@ -249,7 +249,7 @@ class Spel {
         } else if (commando.equals("help")) {
             toonHelp();
         } else if (commando.equals("stop")) {
-            System.out.println("Je legt het mes neer. Tot de volgende keer.");
+            System.out.println("Je stopt voor vandaag. Tot de volgende keer.");
             gestopt = true;
         } else if (commando.equals("opties")) {
             toonOpties();
@@ -402,7 +402,7 @@ class Spel {
         }
         speler.verwijder("kruik melk");
         speler.setLevenspunten(speler.getLevenspunten() + 6);
-        System.out.println("Je drinkt van de kruik melk. +6 LP (nu "
+        System.out.println("Je zet de kruik melk aan je mond. +6 LP (nu "
                 + speler.getLevenspunten() + ").");
     }
 
@@ -508,7 +508,7 @@ class Spel {
         System.out.println("  inventaris      toon wat je bij je hebt");
         System.out.println("  stats           toon je levenspunten en aanvalskracht");
         System.out.println("  eet koek        eet een koek (+4 LP)");
-        System.out.println("  eet melk        drink van de kruik melk (+6 LP)");
+        System.out.println("  eet melk        leeg de kruik melk (+6 LP)");
         System.out.println("  praat           praat met wie hier is");
         System.out.println("  geef koek       geef een koek weg");
         System.out.println("  vecht           val de tegenstander hier aan");

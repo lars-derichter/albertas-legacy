@@ -107,7 +107,7 @@ class Gevecht {
                         speler.verwijder("kruik melk");
                         speler.setLevenspunten(speler.getLevenspunten() + 6);
                         schadelog[ronde] = 0;
-                        System.out.println("Je drinkt van de kruik melk. +6 LP (nu "
+                        System.out.println("Je zet de kruik melk aan je mond. +6 LP (nu "
                                 + speler.getLevenspunten() + ").");
                     } else {
                         System.out.println("Je hebt geen kruik melk.");

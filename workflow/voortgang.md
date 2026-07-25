@@ -37,7 +37,7 @@ die blokken is de volgorde bindend zoals genummerd.
 
 ### - [x] WP 28 — Kickoff en programma
 
-Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: (nog in te vullen)
+Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: `c2d0919`
 
 - [x] Kickoff-entry met prompt, verkenning, Q&A, beslissingen en het
       goedgekeurde plan als Bijlage B
@@ -45,16 +45,21 @@ Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: (nog in te vullen)
 - [x] QC: markdown op 80 tekens (in tekens gemeten, geen enkele regel
       erover), geen codewijzigingen, tests ongewijzigd groen (328/328)
 
-### - [ ] WP 29 — Taal en verhaal (proza)
+### - [x] WP 29 — Taal en verhaal (proza)
 
-- [ ] Wolf-zin herformuleerd op de drie gespiegelde plaatsen +
-      strings.js:47
-- [ ] Verhaal-bug jongste geitje opgelost in de backstory (drie plaatsen)
-- [ ] "weg gesleten", "de een/de ander", "dit keer", "wiret", "De
+Entry: `workflow/29-taal-en-verhaal.md` · commit: (nog in te vullen)
+
+- [x] Wolf-zin herformuleerd op de drie gespiegelde plaatsen +
+      strings.js:47 ("De wolf slokte er zes op.")
+- [x] Verhaal-bug jongste geitje opgelost: het blijft in de klokkast,
+      het bericht bereikt jou (drie plaatsen gelijk)
+- [x] "weg gesleten", "de een/de ander", "dit keer", "wiret", "De
       spanning stijgt.", hint-antecedent, mes-zin, eet/drink,
       "(praat)", commentaar-typo, trailing comma
-- [ ] Docs mee waar geciteerd proza wijzigt
-- [ ] QC: `node --test` groen incl. sim-cross-check met live `java`;
+- [x] Docs mee: spelontwerp-seven-little-goats.md; walkthrough citeert
+      geen enkele gewijzigde zin (gegrept)
+- [x] QC: 328/328 groen incl. sim-cross-check met live `java` én een
+      extra levende diff over alle gewijzigde regels (0 verschillen);
       javac-poort schoon; verboden-grep leeg
 
 ### - [ ] WP 30 — Alberta's stem in de Java-broncode
