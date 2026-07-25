@@ -47,7 +47,7 @@ Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: `c2d0919`
 
 ### - [x] WP 29 — Taal en verhaal (proza)
 
-Entry: `workflow/29-taal-en-verhaal.md` · commit: (nog in te vullen)
+Entry: `workflow/29-taal-en-verhaal.md` · commit: `e84b723`
 
 - [x] Wolf-zin herformuleerd op de drie gespiegelde plaatsen +
       strings.js:47 ("De wolf slokte er zes op.")
@@ -62,12 +62,20 @@ Entry: `workflow/29-taal-en-verhaal.md` · commit: (nog in te vullen)
       extra levende diff over alle gewijzigde regels (0 verschillen);
       javac-poort schoon; verboden-grep leeg
 
-### - [ ] WP 30 — Alberta's stem in de Java-broncode
+### - [x] WP 30 — Alberta's stem in de Java-broncode
 
-- [ ] Doceercommentaar in seven-little-goats/src/*.java herschreven naar
-      Alberta's notitieboekstem; klaslokaal-"we" en "scharnier 7" weg
-- [ ] js/levels/level5.js en level7.js notitie-register hersteld
-- [ ] QC: javac + grep-poort, `node --test` groen, cross-check groen
+Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: (nog in te
+vullen)
+
+- [x] Doceercommentaar in seven-little-goats/src/*.java (incl. de drie
+      Test*-klassen) herschreven naar Alberta's notitieboekstem;
+      klaslokaal-"we" en "scharnier 7" weg; diff bevat uitsluitend
+      commentaarregels
+- [x] js/levels/level5.js en level7.js notitie-register hersteld (level 7
+      verklapt hintfase 3 niet meer)
+- [x] Manager-extra: zelfde jargon uit js/sim/goats-world.js:138
+- [x] QC: javac exit 0 + verboden- en jargon-grep leeg, 328/328 groen,
+      check-assets driftvrij
 
 ### - [ ] WP 31 — Levelnamen en spreads
 

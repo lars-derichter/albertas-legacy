@@ -16,8 +16,8 @@ class Spel {
     // Heeft de speler al met de raaf geruild? De ruil kan maar één keer.
     private boolean kiezelsGeruild;
 
-    // Referenties naar de kamers die een speciale rol spelen. Zo kunnen we
-    // makkelijk controleren "sta ik aan de rivier?" met een objectvergelijking.
+    // De kamers met een eigen rol in het verhaal. Zo kan ik ergens kort vragen
+    // "staat ze aan de rivier?" zonder namen tegen elkaar te leggen.
     private Kamer geitenhuisje;
     private Kamer dorpsplein;
     private Kamer molen;
@@ -160,10 +160,9 @@ class Spel {
         geitjes.add(new Geitje("zesde geitje", null));
     }
 
-    // Legt een verbinding tussen twee kamers in de gegeven richting, en meteen
-    // ook de terugweg. Twee pijlen naar één doos: gaat de eerste kamer naar het
-    // zuiden naar de tweede, dan gaat de tweede naar het noorden terug naar de
-    // eerste.
+    // Eén regel per gang, heen en meteen terug. In de eerste versie legde ik de
+    // twee kanten apart en vergat ik telkens de weg terug; dan stond ze in de
+    // molen zonder deur naar het plein.
     private void verbindKamers(Kamer eerste, String richting, Kamer tweede) {
         if (richting.equals("noord")) {
             eerste.setNoord(tweede);
@@ -180,8 +179,8 @@ class Spel {
         }
     }
 
-    // Zoekt een geitje in de lijst op naam. Geeft het geitje terug, of null als
-    // er geen geitje met die naam bestaat. Dit is de zoeklus van scharnier 7.
+    // Het geitje met die naam, of null als er hier geen zo heet. Voorlopig vraag
+    // ik enkel naar het jongste; op het einde loop ik ze alle zeven af.
     Geitje zoekGeitje(String gezochteNaam) {
         for (int i = 0; i < geitjes.size(); i++) {
             Geitje huidig = geitjes.get(i);
@@ -417,7 +416,7 @@ class Spel {
                     + "een koek\nen ik geef jou iets gladds voor de buik van een "
                     + "wolf.\nZeg maar: geef koek.\"");
         } else if (huidigeKamer == geitenhuisje) {
-            // De zoeklus in actie: we halen het jongste geitje uit de lijst op.
+            // Alleen het jongste zit hier nog en praat; de zes anderen niet.
             Geitje jongste = zoekGeitje("jongste geitje");
             if (jongste == null) {
                 System.out.println("Er is hier niemand om mee te praten.");
@@ -570,9 +569,9 @@ class Spel {
         gestopt = true;
     }
 
-    // Bevrijdt de zes broertjes: elk krijgt voortaan een eigen schuilplaats,
-    // verspreid over de kaart — nooit meer samen op één plek. We doorlopen de
-    // lijst en geven elk geitje zonder schuilplaats er een.
+    // De zes komen vrij en krijgen elk een eigen plek, verspreid over de kaart:
+    // nooit meer met z'n zevenen achter één deur. Dat is waar het verhaal om
+    // draait, niet om de wolf.
     private void bevrijdGeitjes() {
         Schuilplaats[] plekken = new Schuilplaats[6];
         plekken[0] = new Schuilplaats("onder de molensteen", molen);
@@ -593,9 +592,9 @@ class Spel {
         }
     }
 
-    // De endgame-keten: voor elk geitje volgen we twee pijlen naar de naam van
-    // de kamer waar het voortaan schuilt. Null-veilig, want een geitje zonder
-    // schuilplaats (nog niet gevonden) heeft geen kamer om naar te wijzen.
+    // De slotlijst: per geitje de plek en de kamer waar het voortaan schuilt.
+    // Eerst op null controleren — een geitje dat nog niet gevonden is heeft geen
+    // kamer om naar te wijzen, en daar mag het einde niet over struikelen.
     private void toonSchuilplaatsen() {
         System.out.println("Het jongste geitje vertelt waar elk voortaan schuilt:");
         for (int i = 0; i < geitjes.size(); i++) {

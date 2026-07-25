@@ -64,8 +64,8 @@ class Gevecht {
                 } else {
                     System.out.println("Dat begrijp je niet.");
                 }
-                // Een smeekmoment telt niet als een ronde: we verhogen ronde niet
-                // en de tegenstander slaat niet terug.
+                // Een smeekmoment kost geen ronde en levert geen klap op. De
+                // keuze om te sparen mag niet duurder uitvallen dan doorslaan.
 
             } else {
 
@@ -124,8 +124,8 @@ class Gevecht {
                     geldigeActie = false;
                 }
 
-                // Alleen bij een echte actie loopt de ronde door. Bij ?, opties
-                // of onzin blijven we in dezelfde ronde staan.
+                // Alleen een echte actie kost een ronde. Een hint vragen of een
+                // typfout maken mag haar geen klap opleveren.
                 if (geldigeActie) {
                     if (tegenstander.getLevenspunten() <= 0) {
                         System.out.println("De " + tegenstander.getNaam()
@@ -135,8 +135,8 @@ class Gevecht {
                     } else {
                         // De tegenstander slaat terug volgens zijn vaste patroon.
                         int inkomend = tegenstander.getAanvalspatroon()[ronde];
-                        // Verdedigen halveert de klap. Let op: dit is gehele deling,
-                        // dus 5 / 2 wordt 2, niet 2,5.
+                        // Verdedigen halveert de klap, en wat er overschiet valt
+                        // weg in haar voordeel. Een ronde dekking mag lonen.
                         if (verdedigt) {
                             inkomend = inkomend / 2;
                         }
@@ -162,8 +162,7 @@ class Gevecht {
             }
         }
 
-        // Achteraf: een overzichtje van de schade over de rondes die echt
-        // gevochten zijn (de teller ronde).
+        // Achteraf een overzichtje van de rondes die echt gevochten zijn.
         toonSchadelog(schadelog, ronde);
 
         return resultaat;
@@ -180,9 +179,8 @@ class Gevecht {
         return schade;
     }
 
-    // Toont het schade-overzicht: aantal rondes, som, gemiddelde en maximum over
-    // de gevochten rondes. Dit zijn de klassieke lijstpatronen op een array:
-    // tellen, totaliseren en het uiterste zoeken.
+    // Het overzicht na afloop: rondes, totaal, gemiddelde, grootste klap. Wie
+    // het niet haalde, moet achteraf kunnen zien waar het misliep.
     private void toonSchadelog(int[] schadelog, int aantalRondes) {
         System.out.println();
         System.out.println("-- Schade-overzicht --");
@@ -199,7 +197,7 @@ class Gevecht {
                 maximum = schadelog[i];
             }
         }
-        // Cast naar double zodat het gemiddelde met decimalen verschijnt.
+        // Cast naar double, anders staat er 3 waar 3,5 hoort te staan.
         double gemiddelde = (double) som / aantalRondes;
 
         System.out.println("Rondes gevochten: " + aantalRondes);

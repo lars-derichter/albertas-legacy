@@ -38,10 +38,9 @@ globalThis.AL = globalThis.AL || {};
 
   var zoekStub =
 "// Alberta's notitie — zoekGeitje (de speurtocht):\n" +
-"//   Loop met een for-lus over geitjes, van index 0 tot geitjes.size().\n" +
-"//   Pak elk geitje, vergelijk zijn naam met gezochteNaam, en geef het\n" +
-"//   gevonden Geitje meteen terug. Kom je aan het einde zonder treffer, geef\n" +
-"//   dan null terug — de speurtocht liep dood.\n" +
+"//   Ze roept een naam in het huisje en luistert de rij af tot er één\n" +
+"//   antwoordt. Dat geitje geef je terug. Antwoordt er niemand, dan liep de\n" +
+"//   speurtocht dood: null.\n" +
 "\n" +
 "Geitje zoekGeitje(String gezochteNaam) {\n" +
 "    // schrijf hier je zoeklus\n" +

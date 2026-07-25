@@ -135,7 +135,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
     return sterkste;
   }
 
-  // De zoeklus van scharnier 7 (Spel.zoekGeitje): het geitje of null.
+  // Spiegelt Spel.zoekGeitje: het geitje met die naam, of null.
   function zoekGeitje(t, naam) {
     for (var i = 0; i < t.geitjes.length; i++) {
       if (t.geitjes[i].naam === naam) return t.geitjes[i];

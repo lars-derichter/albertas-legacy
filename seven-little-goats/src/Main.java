@@ -49,8 +49,7 @@ class Main {
                 + "'help' voor de commando's.");
         spel.beschrijfHuidigeKamer();
 
-        // De spellus: lees een regel, laat het spel ze verwerken, herhaal tot
-        // het spel gestopt is.
+        // Lezen, verwerken, opnieuw — tot ze stopt of het verhaal af is.
         while (!spel.isGestopt()) {
             System.out.println();
             System.out.print("> ");

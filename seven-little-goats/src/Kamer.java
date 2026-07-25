@@ -52,8 +52,8 @@ class Kamer {
         voorwerpen.add(voorwerp);
     }
 
-    // Zoekt een voorwerp in deze kamer op naam. Geeft het voorwerp terug, of
-    // null als het hier niet ligt. Dit is de klassieke zoeklus.
+    // Wat hier op die naam ligt, of null als het hier niet ligt. Ligt het een
+    // kamer verder, dan is dat mijn zorg niet: een kamer kent enkel haar vloer.
     Voorwerp zoekVoorwerp(String gezochteNaam) {
         for (int i = 0; i < voorwerpen.size(); i++) {
             Voorwerp huidig = voorwerpen.get(i);
@@ -64,9 +64,9 @@ class Kamer {
         return null;
     }
 
-    // Haalt een voorwerp uit de kamer weg (na het oppakken). Zoekt eerst de
-    // index in de lus en verwijdert dan op die index. Let op de off-by-one:
-    // de lus loopt van 0 tot size() - 1, en na remove stoppen we meteen.
+    // Weg uit de kamer zodra ze het opraapt. Na de eerste treffer meteen
+    // stoppen: op het dorpsplein koelen twee koeken af, en wie er één meeneemt
+    // hoort de andere op de kraam te laten liggen.
     void verwijderVoorwerp(String teVerwijderenNaam) {
         for (int i = 0; i < voorwerpen.size(); i++) {
             if (voorwerpen.get(i).getNaam().equals(teVerwijderenNaam)) {
@@ -76,8 +76,8 @@ class Kamer {
         }
     }
 
-    // De vier buur-referenties, elk met een getter en een setter. Het spel zet
-    // ze in beide richtingen (zie Spel.verbindKamers): twee pijlen naar één doos.
+    // De vier buren, elk met een getter en een setter. Spel.verbindKamers legt
+    // ze in beide richtingen; ik wil nergens een gang die maar één kant op werkt.
 
     Kamer getNoord() {
         return noord;
