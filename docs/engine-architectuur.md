@@ -326,6 +326,10 @@ Velden (bindend voor de save in `save-en-hints.md`):
 
 - `modus` stuurt de dispatch, zoals `modus` in de predecessor het gevecht
   stuurde. Elke modus heeft een eigen commandoset (zie `spelontwerp-legacy.md`).
+- `modus: "titel"` staat in de save vanaf het moment dat de speler de epiloog
+  wegklikt: de epiloog slaat zichzelf op, dus zonder die stand kreeg wie na de
+  aftiteling herlaadde de eindkaart opnieuw voor zijn neus. Bij het hervatten
+  toont die stand de titelkaart; de voortgang eronder blijft ongemoeid.
 - `puzzels[*].draft` bewaart de editor-inhoud tussen sessies (concept-behoud).
 - `puzzels[*].status`: `"open"` | `"bezig"` | `"af"`.
 - Geen object-referenties in de staat: puzzels, levels en scènes worden op

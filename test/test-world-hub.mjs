@@ -101,7 +101,7 @@ test("de broncode-doos telt pas op het einde (geen fragment-effect)", () => {
   const t = world.nieuw(); t.sceneId = "zolder-midden";
   const r = world.open(t, "broncode-doos");
   assert.deepEqual(r.effecten, []);
-  assert.deepEqual(r.tekst, [strings.scenes["zolder-midden"].hint]);
+  assert.deepEqual(r.tekst, [strings.dozen.broncodeDicht]);
   // De broncode-doos ontgrendelt geen enkel level.
   for (let n = 1; n <= 7; n++) assert.equal(t.levels[String(n)].ontgrendeld, false);
 });
@@ -155,6 +155,45 @@ test("een doos in de verkeerde kamer wijst naar de juiste plek", () => {
   assert.deepEqual(r.tekst, [strings.dozen.nietHier["zolder-west"]]);
 });
 
+// ---- De woordenschat per kamer: doos, kist, karton -------------------------
+
+test("in de westhoek zijn de dozen en de kist te openen, maar zonder fragment", () => {
+  // De westhoek staat vól geschilderde dozen en er ligt een kist onder het
+  // notitieboek. "Dat zie je hier niet" was daarop het verkeerde antwoord.
+  const t = world.nieuw();                       // sceneId: zolder-west
+  for (const woord of ["doos", "dozen", "karton"]) {
+    const r = world.open(t, woord);
+    assert.deepEqual(r.tekst, [strings.dozen.westhoek], woord);
+    assert.deepEqual(r.effecten, [], woord);
+  }
+  for (const woord of ["kist", "koffer"]) {
+    const r = world.open(t, woord);
+    assert.deepEqual(r.tekst, [strings.kist.open], woord);
+    assert.deepEqual(r.effecten, [], woord);
+  }
+  // Geen van beide ontgrendelt iets: het fragment van hoofdstuk 1 zit in het
+  // notitieboek.
+  assert.equal(t.levels["1"].ontgrendeld, false);
+});
+
+test("in de doorgang en op de overloop is 'kist' geen open-woord meer", () => {
+  // Daar staat geen kist getekend; het woord hoorde bij de westhoek.
+  for (const scene of ["zolder-midden", "overloop"]) {
+    const t = world.nieuw(); t.sceneId = scene;
+    const r = world.open(t, "kist");
+    assert.deepEqual(r.tekst, [strings.datZieJeHierNiet], scene);
+    assert.equal(world.volgendFragment(t), 1, scene + ": niets ontgrendeld");
+  }
+});
+
+test("'open doos' en 'open karton' blijven de fragment-dozen openen", () => {
+  const t = world.nieuw();
+  world.open(t, "notitieboek");                  // l1 uit de weg
+  t.sceneId = "zolder-midden";
+  assert.ok(world.open(t, "karton").effecten.includes("fragment-gevonden:l2"));
+  assert.ok(world.open(t, "doos").effecten.includes("fragment-gevonden:l3"));
+});
+
 // ---- Aan de pc gaan zitten ------------------------------------------------
 
 test("ga zitten opent de pc zodra een fragment ontgrendeld is", () => {
@@ -165,6 +204,159 @@ test("ga zitten opent de pc zodra een fragment ontgrendeld is", () => {
   assert.equal(t.modus, "pc");
   assert.ok(r.effecten.includes("pc:open"));
   assert.ok(r.effecten.includes("level-start:1"));
+});
+
+test("ga zitten met een afgerond hoofdstuk wijst naar het volgende blad", () => {
+  // De zachte doodlopende lus: de pc ging opnieuw open op een level waar alles
+  // al af was, en niets wees de speler naar het volgende fragment.
+  const t = world.nieuw();
+  world.open(t, "notitieboek");
+  t.levels["1"].afgerond = true;
+  t.sceneId = "zolder-oost";
+  const r = world.gebruikPc(t);
+  assert.notEqual(t.modus, "pc", "de pc hoort dicht te blijven");
+  assert.deepEqual(r.effecten, []);
+  // Twee regels: het hoofdstuk is klaar, én waar het volgende blad ligt.
+  assert.deepEqual(r.tekst, [strings.pc.levelAf,
+    strings.hints.fragmentGinder["zolder-midden"]]);
+
+  // Staat de speler al in de doorgang, dan zegt dezelfde melding "hier".
+  t.sceneId = "zolder-midden";
+  assert.deepEqual(world.gebruikPc(t).tekst, [strings.pc.levelAf,
+    strings.hints.fragmentHier["zolder-midden"]]);
+});
+
+test("met alles ontgrendeld en af gaat de pc gewoon open (endgame-pad)", () => {
+  const t = world.nieuw();
+  for (let n = 1; n <= 7; n++) {
+    t.levels[String(n)].ontgrendeld = true;
+    t.levels[String(n)].afgerond = true;
+  }
+  t.levelActief = 7;
+  t.sceneId = "zolder-oost";
+  const r = world.gebruikPc(t);
+  assert.equal(t.modus, "pc");
+  assert.ok(r.effecten.includes("pc:open"));
+  assert.ok(r.effecten.includes("level-start:7"));
+});
+
+// ---- De '?'-hint: de volledige beslisboom ---------------------------------
+
+// De hint is progress-aware: hij zegt wat er NU te doen staat, niet wat er in
+// deze hoek staat. De takken hieronder zijn alle situaties uit world.hint.
+test("hint 1: niets ontgrendeld → naar het notitieboek in de westhoek", () => {
+  const t = world.nieuw();
+  // In de westhoek zelf: hier.
+  assert.deepEqual(world.hint(t).tekst,
+    [strings.hints.fragmentHier["zolder-west"]]);
+  // Elders: ginder, met de weg erbij.
+  for (const scene of ["zolder-midden", "zolder-oost", "overloop"]) {
+    t.sceneId = scene;
+    assert.deepEqual(world.hint(t).tekst,
+      [strings.hints.fragmentGinder["zolder-west"]], scene);
+  }
+});
+
+test("hint 2: een ontgrendeld, onafgewerkt hoofdstuk stuurt naar de pc", () => {
+  const t = world.nieuw();
+  world.open(t, "notitieboek");                  // l1 ontgrendeld, niet af
+  t.sceneId = "zolder-oost";
+  assert.deepEqual(world.hint(t).tekst, [strings.hints.werkPcHier]);
+  for (const scene of ["zolder-west", "zolder-midden", "overloop"]) {
+    t.sceneId = scene;
+    assert.deepEqual(world.hint(t).tekst, [strings.hints.werkPcElders], scene);
+  }
+});
+
+test("hint 3: hoofdstuk af → het volgende blad, in deze kamer of ginder", () => {
+  const t = world.nieuw();
+  world.open(t, "notitieboek");
+  t.levels["1"].afgerond = true;                 // volgend fragment: l2, doorgang
+  t.sceneId = "zolder-midden";
+  assert.deepEqual(world.hint(t).tekst,
+    [strings.hints.fragmentHier["zolder-midden"]]);
+  t.sceneId = "zolder-oost";
+  assert.deepEqual(world.hint(t).tekst,
+    [strings.hints.fragmentGinder["zolder-midden"]]);
+});
+
+test("hint 4: de doorgang stuurt NIET meer weg van de dozen met 2, 3 en 4", () => {
+  // Het oorspronkelijke defect: de vaste hint van zolder-midden zei "ga naar
+  // het oosten, naar de pc" terwijl de fragmenten 2–4 in de dozen van die
+  // kamer zaten.
+  const t = world.nieuw();
+  t.sceneId = "zolder-midden";
+  for (const n of [2, 3, 4]) {
+    // Alles tot en met n-1 ontgrendeld én afgerond: het volgende blad is n.
+    for (let k = 1; k < n; k++) {
+      t.levels[String(k)].ontgrendeld = true;
+      t.levels[String(k)].afgerond = true;
+    }
+    t.levelActief = n - 1;
+    assert.equal(world.volgendFragment(t), n);
+    assert.deepEqual(world.hint(t).tekst,
+      [strings.hints.fragmentHier["zolder-midden"]], "fragment " + n);
+  }
+});
+
+test("hint 5: de latere fragmenten wijzen naar de overloop", () => {
+  const t = world.nieuw();
+  for (let k = 1; k <= 4; k++) {
+    t.levels[String(k)].ontgrendeld = true;
+    t.levels[String(k)].afgerond = true;
+  }
+  t.levelActief = 4;
+  assert.equal(world.volgendFragment(t), 5);
+  t.sceneId = "zolder-midden";
+  assert.deepEqual(world.hint(t).tekst,
+    [strings.hints.fragmentGinder["overloop"]]);
+  t.sceneId = "overloop";
+  assert.deepEqual(world.hint(t).tekst,
+    [strings.hints.fragmentHier["overloop"]]);
+});
+
+test("hint 6: alles gevonden en hersteld → er ligt hier niets meer", () => {
+  const t = world.nieuw();
+  for (let n = 1; n <= 7; n++) {
+    t.levels[String(n)].ontgrendeld = true;
+    t.levels[String(n)].afgerond = true;
+  }
+  t.levelActief = 7;
+  for (const scene of ["zolder-west", "zolder-midden", "zolder-oost", "overloop"]) {
+    t.sceneId = scene;
+    assert.deepEqual(world.hint(t).tekst, [strings.hints.allesAf], scene);
+  }
+});
+
+test("de zolder-hint blijft gratis: hij telt nooit in hintsTotaal", () => {
+  const t = world.nieuw();
+  for (const scene of ["zolder-west", "zolder-midden", "zolder-oost", "overloop"]) {
+    t.sceneId = scene;
+    const r = world.hint(t);
+    assert.deepEqual(r.effecten, ["hint:1"], scene);
+    assert.equal(r.tekst.length, 1, scene);
+  }
+  assert.equal(t.hintsTotaal, 0);
+});
+
+test("de hint en de pc spreken elkaar niet tegen", () => {
+  // Beide hangen aan levelActief en volgendFragment; als de pc zegt "zoek het
+  // volgende blad", zegt '?' precies waar dat ligt.
+  const t = world.nieuw();
+  world.open(t, "notitieboek");
+  t.levels["1"].afgerond = true;
+  for (const scene of ["zolder-west", "zolder-midden", "zolder-oost", "overloop"]) {
+    t.sceneId = scene;
+    const pc = world.gebruikPc(t);
+    assert.equal(pc.tekst[1], world.hint(t).tekst[0], scene);
+  }
+});
+
+test("de vaste scene-hints zijn weg: geen dode tekst die de spelstand negeert", () => {
+  for (const id of ["zolder-west", "zolder-midden", "zolder-oost", "overloop"]) {
+    assert.equal(strings.scenes[id].hint, undefined, id);
+  }
+  assert.equal(strings.geenPlaatsHint, undefined);
 });
 
 // ---- Spread-data (paging + weekregels) ------------------------------------

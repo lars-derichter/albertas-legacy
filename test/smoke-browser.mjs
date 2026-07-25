@@ -171,6 +171,19 @@ async function main() {
     (await state(page)).sceneId === "zolder-oost",
     "scene=" + (await state(page)).sceneId);
 
+  // 5b. De '?'-hint volgt de voortgang, niet de kamer. In de werkhoek, met nog
+  //     niets ontgrendeld, hoort hij naar het notitieboek in de westhoek te
+  //     wijzen — de oude vaste hint van deze hoek zei hier "ga aan de pc zitten".
+  await typCommando(page, "?");
+  const sHint = await state(page);
+  const hintTekst = sHint.vensterRegels.join(" ");
+  const verwachtGinder = await page.evaluate(
+    () => window.AL.strings.hints.fragmentGinder["zolder-west"].slice(0, 24));
+  check("'?' in de werkhoek wijst naar het nog niet gevonden notitieboek",
+    hintTekst.includes(verwachtGinder), hintTekst);
+  check("de zolder-hint telt niet in hintsTotaal", sHint.hintsTotaal === 0,
+    "hintsTotaal=" + sHint.hintsTotaal);
+
   // 6. Terug naar de westhoek en het notitieboek openen → fragment + spread.
   await typCommando(page, "ga west");
   await typCommando(page, "ga west");

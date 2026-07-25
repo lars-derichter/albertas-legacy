@@ -91,10 +91,17 @@ beschadiging of dezelfde getallen.
 
 ## Het hint-contract
 
-`?` werkt overal (de predecessor-conventie). Binnen een puzzel geeft `?`
-een hint in **drie stadia**, oplopend, en **nooit het letterlijke antwoord**. De
-tellerstand per puzzel staat in `puzzels[*].hints`; de som over alles in
-`hintsTotaal` (voedt Alberta's oordeel).
+Om een hint vragen doe je met `?` in de zolder en in de terminal van de
+gesimuleerde pc, en met **F1** in de editor. Die uitzondering is geen
+slordigheid maar een noodzaak: in een code-editor zet `?` een vraagteken in de
+code, dus daar neemt F1 het over, zoals in elke Turbo-editor uit die tijd. De
+spread-modus kent geen hint — daar is de invoerbalk geblokkeerd en bladert elke
+toets gewoon door.
+
+Binnen een puzzel geeft `?` (of F1) een hint in **drie stadia**, oplopend, en
+**nooit het letterlijke antwoord**. De tellerstand per puzzel staat in
+`puzzels[*].hints`; de som over alles in `hintsTotaal` (voedt Alberta's
+oordeel).
 
 De drie stadia per puzzel:
 
@@ -125,6 +132,34 @@ Regels:
 - Stap 1 hergebruikt bewust de exacte metafoor-taal van de cursus, zodat de hint
   het mentale model versterkt dat in de les is opgebouwd — de didactische kern
   van het hele spel.
+
+### De zolder-hint
+
+`?` in de zolder is een navigatie-nudge en geen puzzel-hint: hij is **gratis en
+ongeteld** (hij raakt `hintsTotaal` niet). Hij zegt niet wat er in deze hoek
+staat maar wat er **nu** te doen staat, en leidt dat af uit de bestaande staat
+(`levelActief`, `levels[*].ontgrendeld` / `afgerond` en de kaart
+`FRAGMENT_LOCATIE`) — er is geen apart hint-veld in de save. De beslisboom staat
+in `js/logic/world.js` (`world.hint`), de teksten in `AL.strings.hints`:
+
+1. Ligt het actieve hoofdstuk ontgrendeld maar nog niet afgerond, dan wijst de
+   hint naar de pc: "typ `ga zitten`" in de werkhoek, "de pc staat in de
+   werkhoek in het oosten" elders.
+2. Anders, is er nog een fragment te vinden, dan zegt de hint waar het ligt: in
+   déze kamer (met het commando erbij) of in welke kamer dan wel, met de weg
+   erheen.
+3. Is alles gevonden én hersteld, dan zegt de hint dat er op de zolder niets
+   meer ligt.
+
+`AL.world.gebruikPc` hangt aan dezelfde twee ankers en gebruikt dezelfde
+teksten, zodat de pc en `?` elkaar niet kunnen tegenspreken: gaat de speler
+zitten terwijl het actieve hoofdstuk al hersteld is en er nog een blad op de
+zolder ligt, dan blijft de pc dicht en zegt hij waar dat blad ligt.
+
+> Beslissing (WP 33): de vaste `hint` per scène is verdwenen. Eén tekst per hoek
+> kan de spelstand niet volgen, en ze loog ook echt: de hint van de doorgang
+> stuurde de speler naar de pc in het oosten terwijl de fragmenten 2, 3 en 4 in
+> de dozen van diezelfde doorgang zaten.
 
 ## Alberta's oordeel — verdict-tiers
 

@@ -60,9 +60,16 @@ AL.strings = {
     "vastzit. Lopen doe je met de pijltjestoetsen."
   ],
 
-  // De zolderscènes: naam, beschrijving (voor 'kijk' en het eerste bezoek) en
-  // een plaats-hint (voor '?': waar zit het volgende fragment). De sleutels
-  // zijn de scène-ids uit art-stijlgids.md.
+  // De zolderscènes: naam en beschrijving (voor 'kijk' en het eerste bezoek).
+  // De sleutels zijn de scène-ids uit art-stijlgids.md.
+  //
+  // Hier stond vroeger ook een `hint` per kamer, en dat was een vaste tekst per
+  // plek terwijl '?' belooft te zeggen waar je NU vastzit. De hint van de
+  // doorgang stuurde de speler naar de pc in het oosten terwijl de fragmenten
+  // 2, 3 en 4 in de dozen van diezelfde doorgang zaten, en de hint van de
+  // westhoek bleef "open het notitieboek" zeggen tot het einde van het spel.
+  // De hint volgt nu de voortgang; de teksten staan onder `hints`, de
+  // beslisboom in js/logic/world.js (world.hint).
   scenes: {
     "zolder-west": {
       naam: "Zolder — westhoek",
@@ -70,9 +77,7 @@ AL.strings = {
         "elkaar. Door het dakraam valt een schuine streep licht, laag al, " +
         "bijna van de vloer af. Op een kist ligt Alberta's notitieboek, " +
         "opengeslagen, met de pen er nog in. Naar het oosten loopt de zolder " +
-        "verder.",
-      hint: "Het notitieboek ligt open in het licht. Onderzoek het, of open " +
-        "het — daar begint alles."
+        "verder."
     },
     "zolder-midden": {
       naam: "Zolder — doorgang",
@@ -80,9 +85,7 @@ AL.strings = {
         "wordt. Hier haalt het licht al minder. Midden op de vloer staat een " +
         "doos die zwaarder oogt dan de andere, dichtgeplakt met tape die geel " +
         "geworden is. Op het label, in haar hand: BRONCODE. Achterin gaat een " +
-        "trap naar boven.",
-      hint: "De broncode-doos in het midden telt pas op het einde. Ga eerst " +
-        "verder waar het licht heen trekt: naar het oosten, naar de pc."
+        "trap naar boven."
     },
     "zolder-oost": {
       naam: "Zolder — werkhoek",
@@ -90,19 +93,54 @@ AL.strings = {
         "bureau weggeschoven, alsof ze even is opgestaan. Op het stof na, " +
         "dat overal even dik ligt. De pc doet het nog: een beige toren, een " +
         "bolle monitor die warm oranje nagloeit. Naast het toetsenbord staat " +
-        "een halfvolle mok.",
-      hint: "Ga aan de pc zitten. Daar werk je aan Alberta's code — typ 'ga " +
-        "zitten'."
+        "een halfvolle mok."
     },
     "overloop": {
       naam: "Zolder — overloop",
       beschrijving: "De overloop, boven aan de trap. Kouder hier, en het " +
         "dakraam is ver: het licht haalt de hoeken niet. Tegen de wand staan " +
         "de dozen van later opgestapeld, hoger dan jij. De trap loopt terug " +
-        "naar beneden.",
-      hint: "De dozen hierboven dragen de latere hoofdstukken. Open er een als " +
-        "je aan het volgende fragment toe bent."
+        "naar beneden."
     }
+  },
+
+  // De zolder-hint: wat het commando '?' antwoordt. Anders dan de vaste
+  // kamerteksten hierboven volgt hij de voortgang — hij zegt wat je NU te doen
+  // staat. De beslisboom staat in js/logic/world.js (world.hint) en houdt
+  // dezelfde volgorde aan als de lus per level (spelontwerp-legacy.md): eerst
+  // het hoofdstuk dat open ligt afwerken, dan het volgende blad zoeken.
+  hints: {
+    // Het actieve hoofdstuk is ontgrendeld maar nog niet hersteld.
+    werkPcHier: "Het hoofdstuk dat je opensloeg, is nog niet hersteld. De pc " +
+      "staat voor je — typ 'ga zitten'.",
+    werkPcElders: "Het hoofdstuk dat je opensloeg, is nog niet hersteld. Dat " +
+      "werk ligt op de pc, in de werkhoek aan de oostkant van de zolder.",
+
+    // Het eerstvolgende blad ligt in déze kamer.
+    fragmentHier: {
+      "zolder-west": "Het notitieboek ligt hier, open in het licht. Sla het " +
+        "open — daar begint alles.",
+      "zolder-midden": "Het volgende blad zit hier, in een van de gemerkte " +
+        "dozen: typ 'open doos'. De doos met BRONCODE laat je staan, die telt " +
+        "pas op het einde.",
+      "overloop": "Het volgende blad zit hier, in de stapels tegen de wand. " +
+        "Typ 'open doos'."
+    },
+
+    // Het eerstvolgende blad ligt elders: zeg waar, en hoe je er raakt.
+    fragmentGinder: {
+      "zolder-west": "Het volgende blad zit in het notitieboek zelf, in de " +
+        "westhoek. Dat is aan het andere eind van de zolder: ga naar het " +
+        "westen tot het niet verder kan.",
+      "zolder-midden": "Het volgende blad zit in een gemerkte doos in de " +
+        "doorgang, midden op de zolder.",
+      "overloop": "Het volgende blad ligt dieper in het archief: boven aan de " +
+        "trap, op de overloop. De trap staat achterin de doorgang."
+    },
+
+    // Alles gevonden en alles hersteld.
+    allesAf: "Elk blad is gevonden en elk hoofdstuk hersteld. Op de zolder " +
+      "ligt niets meer voor je; wat rest, staat op de pc."
   },
 
   // Onderzoeks-teksten per scène. Elk zelfstandig naamwoord dat in een
@@ -178,7 +216,30 @@ AL.strings = {
         "in het midden. Zoek daar verder.",
       "overloop": "Het eerstvolgende blad zit dieper in het archief: boven, op " +
         "de overloop. Ga eerst de trap op."
-    }
+    },
+
+    // De dozen in de westhoek zijn geschilderd tot tegen de balken, maar ze
+    // dragen geen fragment: het blad van hoofdstuk 1 ligt in het notitieboek.
+    // "Dat zie je hier niet" was het verkeerde antwoord op 'open doos' in een
+    // kamer die vól dozen staat.
+    westhoek: "Je krijgt een klep los. Er zit huisraad in: gordijnringen, een " +
+      "rol behangpapier, schroeven in een jampot. Niets van Alberta's papier — " +
+      "wat zij achterliet, ligt in het notitieboek en dieper in de zolder.",
+
+    // De prijs-doos op zolder-midden. Ze gaat pas op het einde open; dit is
+    // wat 'open broncode-doos' antwoordt.
+    broncodeDicht: "De tape zit er nog helemaal op, en dat laat je zo. Deze " +
+      "doos is voor het einde, als haar spel weer draait."
+  },
+
+  // De kist in de westhoek, waar het notitieboek op ligt. Ze is te openen, en
+  // dan hoort er iets in te zitten — 'kist' was hier vroeger geen open-woord
+  // terwijl de doorgang en de overloop het wél aanvaardden, waar geen kist
+  // getekend staat.
+  kist: {
+    open: "Het deksel ligt er los op. In de kist zit opgevouwen stof — " +
+      "gordijnen, of een tafelkleed dat te goed was om weg te doen. Het " +
+      "notitieboek lag erbovenop, niet erin."
   },
 
   // Het notitieboek op zolder-west (het fragment van level 1).
@@ -201,6 +262,11 @@ AL.strings = {
       "toetsenbord. De monitor knippert wakker. Je zit in haar terminal.",
     geenFragment: "Je hebt nog geen fragment om aan te werken. Zoek eerst " +
       "verder op de zolder.",
+    // Het actieve hoofdstuk is al hersteld en er ligt nog een blad op de
+    // zolder: gaan zitten heeft dan geen zin. Deze melding staat nooit alleen —
+    // world.gebruikPc zet er meteen achter waar dat blad ligt.
+    levelAf: "Dit hoofdstuk is hersteld; de pc heeft niets meer voor je tot je " +
+      "het volgende blad van Alberta's notitieboek gevonden hebt.",
 
     // Chrome-labels van de gesimuleerde pc (DOM-overlay). Period-look: een
     // beige editor met regelnummers, een amber terminal. Alle knop- en
@@ -1084,9 +1150,18 @@ AL.strings = {
   hintGeenMeer: "Meer hints heb ik niet voor je. Lees nog eens rustig wat er " +
     "staat — je bent dichterbij dan je denkt. (De volledige walkthrough ligt " +
     "in walkthrough/deel1-hints.md, als het echt moet.)",
-  // Hint in de zolder als er geen plaats-hint is (alles is gevonden).
-  geenPlaatsHint: "Je hebt hier alles gevonden wat je nodig hebt. Ga aan de " +
-    "pc werken.",
+
+  // Het chroom onderaan het linkerblad van een spread (art-stijlgids.md,
+  // §"Chroom hoort op het linkerblad"). Het stond als letterlijke tekst in
+  // engine.js, en de laatste-pagina-versie loog: ze zei "spatie: pc >" terwijl
+  // spatie het boek dichtdoet en je in de werkhoek zet — de pc gaat pas open
+  // als je 'ga zitten' typt. De regel deelt de onderrand met het
+  // paginanummer (16..40 px), dus ze mag hoogstens dertien tekens tellen;
+  // test-spreads.mjs rekent dat na.
+  spreadChroom: {
+    bladerVerder: "spatie >",
+    bladerLaatste: "spatie: terug"
+  },
 
   // Alberta's oordeel — de vier verdict-tiers (save-en-hints.md, §"Alberta's
   // oordeel"). Allemaal positief; het verschil is de knipoog. De drempels

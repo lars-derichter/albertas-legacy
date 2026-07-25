@@ -258,10 +258,22 @@ globalThis.AL = globalThis.AL || {};
       }
       if (this._isBroncodeDoos(toestand, ding)) {
         // De broncode-doos telt pas op het einde (endgame, WP 9/10).
-        return { tekst: [AL.strings.scenes["zolder-midden"].hint], effecten: [] };
+        return { tekst: [AL.strings.dozen.broncodeDicht], effecten: [] };
       }
       if (this._isFragmentDoos(toestand, ding)) {
         return this._openFragmentDoos(toestand);
+      }
+      // De westhoek staat vol dozen en er staat een kist in, maar geen van
+      // beide draagt een fragment: dat ligt hier in het notitieboek. "Dat zie
+      // je hier niet" was daarop het verkeerde antwoord — de speler ziet ze
+      // wél, ze zitten alleen niet vol papier.
+      if (toestand.sceneId === "zolder-west") {
+        if (ding.indexOf("kist") !== -1 || ding.indexOf("koffer") !== -1) {
+          return { tekst: [AL.strings.kist.open], effecten: [] };
+        }
+        if (this._isDoosWoord(ding)) {
+          return { tekst: [AL.strings.dozen.westhoek], effecten: [] };
+        }
       }
       return { tekst: [AL.strings.datZieJeHierNiet], effecten: [] };
     },
@@ -313,13 +325,39 @@ globalThis.AL = globalThis.AL || {};
       };
     },
 
+    // Waar ligt het eerstvolgende blad, gezien vanaf waar de speler nu staat?
+    // Eén tekst, gedeeld door de '?'-hint en door gebruikPc, zodat de twee
+    // elkaar nooit kunnen tegenspreken. n is een levelnummer uit
+    // volgendFragment (nooit null).
+    _waarLigtFragment: function (toestand, n) {
+      var loc = FRAGMENT_LOCATIE[n];
+      var h = AL.strings.hints;
+      return (loc === toestand.sceneId) ? h.fragmentHier[loc] : h.fragmentGinder[loc];
+    },
+
     // Ga aan de pc zitten (loop-stap "ga aan de pc zitten"). Vereist dat er een
     // fragment ontgrendeld is; anders stuurt Alberta je terug de zolder in.
+    //
+    // Het actieve hoofdstuk kon ook al hersteld zijn: dan ging de speler weer
+    // zitten, opende de pc op een level waar alles al af was, en niets wees hem
+    // naar het volgende fragment — een zachte doodlopende lus. Nu zegt de pc
+    // dat het hoofdstuk klaar is en waar het volgende blad ligt. Alleen als er
+    // géén volgend fragment meer is (alles ontgrendeld) gaat de pc gewoon open:
+    // dat is het endgame-pad, en dat blijft ongemoeid.
     gebruikPc: function (toestand) {
       var n = toestand.levelActief;
       var level = toestand.levels[String(n)];
       if (!level || !level.ontgrendeld) {
         return { tekst: [AL.strings.pc.geenFragment], effecten: [] };
+      }
+      if (level.afgerond) {
+        var volgend = this.volgendFragment(toestand);
+        if (volgend !== null) {
+          return {
+            tekst: [AL.strings.pc.levelAf, this._waarLigtFragment(toestand, volgend)],
+            effecten: []
+          };
+        }
       }
       toestand.modus = "pc";
       return {
@@ -333,14 +371,46 @@ globalThis.AL = globalThis.AL || {};
       return { tekst: [AL.strings.draagtNiets], effecten: [] };
     },
 
-    // De plaats-hint van de huidige hoek (het commando "?" in de zolder). Deze
-    // navigatie-nudge telt NIET in hintsTotaal — dat is voor de puzzel-hints in
-    // de pc (save-en-hints.md). Beslissing: zolder-hints zijn gratis en
-    // ongeteld.
+    // De hint van het commando "?" in de zolder. Deze navigatie-nudge telt
+    // NIET in hintsTotaal — dat is voor de puzzel-hints in de pc
+    // (save-en-hints.md). Beslissing: zolder-hints zijn gratis en ongeteld.
+    //
+    // De hint volgt de voortgang, niet de kamer. Hij stond hier als één vaste
+    // tekst per hoek, en dan liegt hij: in de doorgang stuurde hij de speler
+    // naar de pc in het oosten terwijl de fragmenten 2, 3 en 4 in de dozen van
+    // diezelfde doorgang zaten, en in de westhoek bleef hij tot het einde van
+    // het spel "open het notitieboek" zeggen.
+    //
+    // De beslisboom volgt de lus per level (spelontwerp-legacy.md) en neemt
+    // dezelfde ankers als gebruikPc, zodat de twee elkaar niet tegenspreken:
+    //
+    //   1. Ligt het actieve hoofdstuk ontgrendeld maar onafgewerkt open?
+    //      → werk het af aan de pc (hier, of in de werkhoek in het oosten).
+    //   2. Anders: is er nog een fragment te vinden?
+    //      → zeg waar het ligt: in deze kamer, of in welke kamer dan wel.
+    //   3. Anders: alles gevonden en hersteld.
+    //
+    // Het spread-lezen krijgt geen eigen tak: de spread is een eigen modus met
+    // een geblokkeerde invoerbalk, dus "?" is daar niet te typen (het veld
+    // spreadGelezen is dode data, zie de defectenlijst).
     hint: function (toestand) {
-      var scene = AL.strings.scenes[toestand.sceneId];
-      var tekst = scene ? scene.hint : AL.strings.geenPlaatsHint;
-      return { tekst: [tekst], effecten: ["hint:1"] };
+      var actief = toestand.levels[String(toestand.levelActief)];
+      if (actief && actief.ontgrendeld && !actief.afgerond) {
+        return {
+          tekst: [toestand.sceneId === "zolder-oost"
+            ? AL.strings.hints.werkPcHier
+            : AL.strings.hints.werkPcElders],
+          effecten: ["hint:1"]
+        };
+      }
+      var n = this.volgendFragment(toestand);
+      if (n === null) {
+        return { tekst: [AL.strings.hints.allesAf], effecten: ["hint:1"] };
+      }
+      return {
+        tekst: [this._waarLigtFragment(toestand, n)],
+        effecten: ["hint:1"]
+      };
     },
 
     help: function () {
@@ -383,14 +453,24 @@ globalThis.AL = globalThis.AL || {};
       return toestand.sceneId === "zolder-midden" &&
         ding.indexOf("broncode") !== -1;
     },
+    // Noemt dit woord een doos? ("dozen" bevat "doos" niet, dus beide staan
+    // er; "karton" staat er omdat onderzoek het ook aanvaardt.)
+    _isDoosWoord: function (ding) {
+      return ding.indexOf("doos") !== -1 || ding.indexOf("dozen") !== -1 ||
+        ding.indexOf("karton") !== -1;
+    },
     // Een gemerkte fragment-doos: alleen op zolder-midden en de overloop, en
     // enkel als het woord "broncode" er niet in staat (dat is de prijs-doos).
+    //
+    // "kist" stond hier vroeger bij, en dat was de woordenschat van de
+    // verkeerde kamer: in de doorgang en op de overloop staat geen kist
+    // getekend, en in de westhoek — waar er wél een staat — werd het woord net
+    // niet aanvaard. De kist heeft nu haar eigen antwoord in open().
     _isFragmentDoos: function (toestand, ding) {
       if (toestand.sceneId !== "zolder-midden" &&
           toestand.sceneId !== "overloop") return false;
       if (ding.indexOf("broncode") !== -1) return false;
-      return ding.indexOf("doos") !== -1 || ding.indexOf("dozen") !== -1 ||
-        ding.indexOf("kist") !== -1;
+      return this._isDoosWoord(ding);
     },
 
     // --- Endgame: sim → Alberta's oordeel → epiloog ---------------------------

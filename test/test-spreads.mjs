@@ -142,6 +142,27 @@ test("de weekregel past in de drie regels die de renderer ervoor tekent", () => 
   }
 });
 
+// De bladerhint deelt de onderrand van het linkerblad met het paginanummer.
+// Het paginanummer staat links op B.linksX en telt drie tekens ("1/2") van 8 px
+// in de gedrukte font; de hint wordt rechts uitgelijnd tegen de rug
+// (B.linksX + B.kolomB, zie js/engine.js, tekenSpread). Wat daar niet meer
+// tussen past, schuift over het paginanummer heen — en dat is precies waarom
+// de laatste-pagina-hint kort moet blijven.
+test("de bladerhint past naast het paginanummer op het linkerblad", () => {
+  const PAGINANUMMER = 3 * 8;       // "1/2"
+  const ruimte = B.kolomB - PAGINANUMMER - 8;   // 8 px lucht ertussen
+  for (const sleutel of ["bladerVerder", "bladerLaatste"]) {
+    const tekst = strings.spreadChroom[sleutel];
+    assert.ok(typeof tekst === "string" && tekst.length > 0, sleutel);
+    assert.ok(tekst.length * 8 <= ruimte,
+      `${sleutel}: "${tekst}" is ${tekst.length * 8} px, er is ${ruimte} px`);
+  }
+  // En ze mag niet beloven dat de pc opengaat: spatie doet het boek dicht en
+  // zet je in de werkhoek; de pc opent pas op 'ga zitten'.
+  assert.ok(!/\bpc\b/.test(strings.spreadChroom.bladerLaatste),
+    "de bladerhint belooft de pc, maar spatie brengt je enkel naar de werkhoek");
+});
+
 // ---- De zeven hoofdstuktitels ---------------------------------------------
 
 // De vorm is vast (docs/levels-en-scharnieren.md, §"De zeven hoofdstuktitels"):

@@ -17,11 +17,13 @@ Ga terug naar het spel. Werkt het? Prachtig, sluit de gids. Werkt het nog
 niet? Lees de volgende hint. Blijf niet doorbladeren tot je per ongeluk te
 veel weet — dat bederft de pret.
 
-**Onthoud:** in het spel zelf typ je gewoon `?` voor exact deze hints, in
-oplopende stappen. Deze gids herhaalt de eerste twee stappen op papier, zodat
-je ze rustig naast je toetsenbord kan leggen. De derde, meest verklappende
-stap laten we hier bewust weg — die zoek je in het spel, of, als het écht
-moet, in deel 2. En deel 2? Dat zit achter een zegel. Om een reden.
+**Onthoud:** in het spel zelf vraag je exact deze hints op, in oplopende
+stappen. In de terminal en op de zolder typ je daarvoor `?`; in de editor druk
+je **F1** — daar zet een vraagteken gewoon een vraagteken in de code. Deze gids
+herhaalt de eerste twee stappen op papier, zodat je ze rustig naast je
+toetsenbord kan leggen. De derde, meest verklappende stap laten we hier bewust
+weg — die zoek je in het spel, of, als het écht moet, in deel 2. En deel 2? Dat
+zit achter een zegel. Om een reden.
 
 **Nog iets:** Alberta houdt bij hoeveel hints je vraagt. Niet om je te
 straffen — hints kosten je niets en blokkeren niets — maar om je op het einde
@@ -33,8 +35,11 @@ samen gedaan." Allebei goed. Het spel draait, dat is wat telt.
 
 Alberta's zolder is je thuisbasis. Je loopt er rond met de pijltjestoetsen,
 of je typt commando's zoals in een klassiek adventure: `kijk`, `ga oost`,
-`onderzoek notitieboek`, `open doos`, `ga zitten`. Typ `help` voor de volledige
-lijst, en `?` als je niet weet waar het volgende stukje zit.
+`onderzoek notitieboek`, `open doos`, `ga zitten`, `inventaris`. Verder kan je
+`herbegin` typen (die vraagt eerst of je het echt meent), `geluid aan` / `uit`
+en `crt aan` / `uit` voor de beeldbuislijnen; **F3** haalt je vorige commando
+terug in de balk. Typ `help` voor de volledige lijst, en `?` als je niet weet
+waar het volgende stukje zit.
 
 De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
 
@@ -53,10 +58,13 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
    weer op de zolder, klaar voor het volgende fragment.
 
 **Vastgelopen op de zolder zelf?** Bijna altijd is het antwoord: je hebt het
-volgende blad nog niet, of je zit in de verkeerde kamer. Typ `?` — Alberta
-wijst je naar de kamer waar het eerstvolgende fragment ligt. De grote doos in
-het midden met "BRONCODE" erop telt trouwens pas op het einde; laat die nog
-even dicht.
+volgende blad nog niet, of je zit in de verkeerde kamer. Typ `?`. De hint kijkt
+naar hoe ver je staat, niet naar waar je staat: ligt er nog een hoofdstuk open
+op de pc, dan stuurt hij je daarheen; anders zegt hij in welke kamer het
+eerstvolgende blad ligt — of dat het in déze kamer in een doos zit. Die hints
+zijn gratis en tellen niet mee in Alberta's terugblik. De grote doos in het
+midden met "BRONCODE" erop telt trouwens pas op het einde; laat die nog even
+dicht.
 
 Meer dan dit zeggen we niet over de zolder. Het is een kleine, warme ruimte —
 je hebt ze zo in de vingers.

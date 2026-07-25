@@ -592,7 +592,19 @@ globalThis.AL = globalThis.AL || {};
       verwerkEffecten(AL.world.startEpiloog(toestand).effecten, null);
       return;
     }
-    if (toestand.modus === "epiloog") { startTitel(); return; }
+    if (toestand.modus === "epiloog") { naarTitelNaEpiloog(); return; }
+  }
+
+  // Van de epiloog terug naar de titelkaart. De epiloog sláát op (toonEpiloog),
+  // de titel niet — dus wie na de aftiteling herlaadde, kreeg de epiloog
+  // opnieuw voor zijn neus. De staat krijgt hier de modus "titel", zodat hervat
+  // na een reload de titelkaart toont en niet de eindkaart. Enter op de titel
+  // start daarna gewoon de openingsreeks (de save blijft intact: alle zeven
+  // hoofdstukken staan er nog op af).
+  function naarTitelNaEpiloog() {
+    toestand.modus = "titel";
+    bewaar();
+    startTitel();
   }
 
   // Escape: een vraag intrekken, de openingsreeks overslaan, of de pc-overlay
@@ -1040,8 +1052,12 @@ globalThis.AL = globalThis.AL || {};
     // twee regels ging — wat sinds het handschrift proportioneel gezet wordt
     // altijd zo is. De onderrand van het rechterblad is nu van haar; het
     // linkerblad draagt de chroom (bladwijzer links, hint rechts ertegenaan).
+    // De laatste-pagina-versie zei "spatie: pc >", en dat klopte maar half: de
+    // spatie doet het boek dicht en zet je in de werkhoek — de pc gaat pas open
+    // als je daar 'ga zitten' typt. De teksten staan nu in AL.strings.spread.
     var laatste = spreadPagina >= spreadAantalPaginas() - 1;
-    var hint = laatste ? "spatie: pc >" : "spatie >";
+    var hint = laatste ? AL.strings.spreadChroom.bladerLaatste
+      : AL.strings.spreadChroom.bladerVerder;
     var rechterrand = AL.spreads ? (AL.spreads.BLAD.linksX + AL.spreads.BLAD.kolomB)
       : 152;
     AL.gfx.tekenTekst(hint, rechterrand - hint.length * 8, 178, 40, null);
@@ -1266,7 +1282,11 @@ globalThis.AL = globalThis.AL || {};
 
   function hervat() {
     var modus = toestand.modus;
-    if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
+    // Een save die op de titelkaart staat (na de epiloog) hervat op de
+    // titelkaart. startTitel zet titelActief weer aan; startBedVoorStand
+    // hieronder kiest daar het titelbed bij.
+    if (modus === "titel") { startTitel(); }
+    else if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
     else if (modus === "spread") { /* de spread hertekent uit spreadLevelId */
       spreadLevelId = "l" + (toestand.levelActief || 1);
       spreadPagina = 0;
@@ -1307,6 +1327,11 @@ globalThis.AL = globalThis.AL || {};
         // Wacht het venster op een getypt antwoord? Dan blijft de invoerbalk
         // vrij en klikt een toets het niet weg.
         vensterVraag: !!(venster && venster.vraag),
+        // De regels van de huidige bladzijde van het open venster. De
+        // rooksmaaktest leest hiermee wát de verteller antwoordt (bv. of de
+        // '?'-hint bij de spelstand past) in plaats van alleen dát hij iets zegt.
+        vensterRegels: (venster && venster.paginas)
+          ? venster.paginas[venster.huidige].slice() : [],
         overlayOpen: !!(pcOverlay && pcOverlay.style.display !== "none"),
         // Loopt de zit-animatie? De modus staat dan al op "pc" terwijl de overlay
         // nog dicht is — een test die op het paneel wacht, hoort op overlayOpen

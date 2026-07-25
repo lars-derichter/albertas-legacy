@@ -122,7 +122,10 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    Alberta's spel is hersteld".
 5. **Keer terug.** De pc sluit (`pc:sluit`), de staat wordt opgeslagen
    (`voortgang:opgeslagen`), en de speler staat weer op de zolder, klaar voor
-   het volgende fragment.
+   het volgende fragment. Gaat hij daarna opnieuw zitten terwijl dat hoofdstuk
+   al hersteld is, dan blijft de pc dicht: hij zegt dat het klaar is en waar het
+   volgende blad ligt. Alleen als er géén fragment meer te vinden is, gaat de pc
+   gewoon open — dat is het endgame-pad.
 
 Na level 7 volgt de endgame in plaats van "keer terug" (zie onder).
 
@@ -156,18 +159,28 @@ tag daar.
 - **Pijltjestoetsen** — lopen; over een rand → `betreed:<richting>` +
   `scene:<id>`.
 - **Getypte parser** in de stijl van de predecessor: `kijk`, `ga <richting>`,
-  `onderzoek <ding>` / `bekijk <ding>`, `open <ding>` (dozen, notitieboek),
-  `gebruik pc` / `ga zitten` (→ `pc:open`), `inventaris`.
-- `?` — een hint voor waar de speler nu vastzit (in de zolder: waar het volgende
-  fragment zit) → `hint:<stap>`.
-- `herbegin` — zet het spel terug (zie `save-en-hints.md`) → `herbegin`.
-- `help` — de commandolijst. `geluid aan` / `geluid uit` → `geluid:aan|uit`.
+  `onderzoek <ding>` / `bekijk <ding>`, `open <ding>` (dozen, notitieboek, de
+  kist in de westhoek), `gebruik pc` / `ga zitten` / `zit` / `pc` / `ga werken`
+  (→ `pc:open`), `inventaris`, `neem <ding>` (er valt hier niets mee te nemen,
+  maar het commando krijgt een antwoord in plaats van onbegrip).
+- `?` — een hint voor waar de speler nu vastzit → `hint:1`. Hij volgt de
+  voortgang, niet de kamer: eerst het hoofdstuk dat open ligt, dan het volgende
+  fragment, dan "alles is af" (de beslisboom staat in `save-en-hints.md`,
+  §"De zolder-hint"). Gratis en ongeteld.
+- `herbegin` — zet het spel terug, na een bevestigingsvraag (`herbegin ja`; zie
+  `save-en-hints.md`) → `vraag`, dan `herbegin`.
+- `help` — de commandolijst. `geluid aan` / `geluid uit` → `geluid:aan|uit`;
+  `crt aan` / `crt uit` → `crt:aan|uit` (de beeldbuislijnen over het canvas).
+- **F3** — haal het vorige commando terug in de invoerbalk (engine, geen
+  parser-commando en dus geen effect-tag).
 
 ### Spread (`modus: "spread"`)
 
-- **Spatie / Enter / klik** — doorbladeren; laatste pagina → naar de pc.
-- `?` — herhaalt Alberta's kernnotitie (geen echte hint hier; de puzzel-hints
-  zitten in de pc).
+- **Spatie / Enter / klik** — doorbladeren; na de laatste pagina gaat het boek
+  dicht en staat de speler in de werkhoek, bij de pc. De pc zelf opent pas op
+  `ga zitten`; de bladerhint onderaan het linkerblad zegt dat ook zo.
+- Er is hier geen `?`: de invoerbalk is in deze modus geblokkeerd en elke toets
+  bladert. De puzzel-hints zitten in de pc.
 
 ### Pc (`modus: "pc"`)
 
@@ -175,8 +188,9 @@ tag daar.
   `compileer` → checker → `javac:fout` / `check:ok` / `check:fout`.
 - In de terminal: puzzel-specifieke invoer (een getal voor een trace, een keuze
   voor welke-patroonkaart, de stroken voor Parsons).
-- `?` — de gestage puzzel-hint (stap 1→2→3, nooit het letterlijke antwoord) →
-  `hint:<stap>`, of `hint:geen-meer`.
+- `?` in de terminal, **F1** in de editor — de gestage puzzel-hint (stap 1→2→3,
+  nooit het letterlijke antwoord) → `hint:<stap>`, of `hint:geen-meer`. In de
+  editor is `?` gewoon een teken in de code; daar neemt F1 het over.
 - **"sluit pc"** / `Esc` — terug naar de zolder → `pc:sluit`.
 
 ### Sim (`modus: "sim"`)

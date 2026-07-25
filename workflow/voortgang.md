@@ -100,7 +100,7 @@ Entry: `workflow/31-levelnamen-en-spreads.md` · commit: `54f61d3`
 
 ### - [x] WP 32 — Lopen: uitgangen, muren en collisie
 
-Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: (nog in te vullen)
+Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: `399906a`
 
 - [x] Nieuwe DOM-vrije module `js/loopveld.js` (`AL.loopveld`): walkboxes min
       blokken, uitgangszones, randdetectie. Niet in `js/logic/` — het is
@@ -144,14 +144,45 @@ Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: (nog in te vullen
       smoke-pc 32/32; verse screenshots van de vier kamers in `test-results/`
       (`wp32-*.png`)
 
-### - [ ] WP 33 — Flow en hints op de zolder
+### - [x] WP 33 — Flow en hints op de zolder
 
-- [ ] `?`-hint progress-aware
-- [ ] Afgerond-level-melding bij `ga zitten`
-- [ ] `open doos`/`kist`-woordenschat per kamer
-- [ ] Spread-bladerhint klopt; epiloog saved
-- [ ] Docs en walkthrough deel1 mee
-- [ ] QC: `node --test` + smoke-playthrough groen
+Entry: `workflow/33-flow-en-hints.md` · commit: (nog in te vullen)
+
+- [x] `?`-hint progress-aware: `world.hint` vertakt op `levelActief` +
+      `volgendFragment` + `FRAGMENT_LOCATIE` — eerst het hoofdstuk dat open
+      ligt afwerken, dan het volgende blad (in deze kamer of ginder), dan
+      "alles af". Geen nieuw staat-veld; alle teksten als sleutels in
+      `AL.strings.hints`
+- [x] De vier vaste `scenes.*.hint`-sleutels en `geenPlaatsHint` verwijderd —
+      ze wáren het defect; een test bewaakt dat ze weg blijven
+- [x] Afgerond-level-melding bij `ga zitten`: `gebruikPc` houdt de pc dicht als
+      het actieve hoofdstuk al hersteld is en er nog een fragment op de zolder
+      ligt, en zegt in twee regels wat klaar is en waar dat blad ligt (zelfde
+      helper als de hint, dus geen tegenspraak). Alles ontgrendeld → de pc gaat
+      gewoon open: het endgame-pad blijft ongemoeid
+- [x] Woordenschat per kamer: in de westhoek antwoorden `open kist` en
+      `open doos`/`karton` zinnig; in doorgang en overloop is "kist" geen
+      open-woord meer (daar staat er geen). `open broncode-doos` kreeg een
+      eigen sleutel in plaats van de verdwenen kamerhint
+- [x] Spread-bladerhint klopt: "spatie: pc >" → "spatie: terug" (spatie doet
+      het boek dicht en zet je in de werkhoek; de pc opent pas op `ga zitten`),
+      en de twee regels staan nu in `AL.strings.spreadChroom` in plaats van
+      inline in `engine.js`. Grens van dertien tekens (naast het paginanummer)
+      bewaakt door `test-spreads.mjs`
+- [x] Epiloog saved: `naarTitelNaEpiloog` zet `modus: "titel"` en bewaart;
+      `hervat()` toont die stand als titelkaart. Een reload na de aftiteling
+      geeft de titel, niet opnieuw de eindkaart
+- [x] `AL.debugState.vensterRegels` toegevoegd, zodat een smoke kan nalezen wát
+      de verteller antwoordt
+- [x] Docs mee: `save-en-hints.md` (§Het hint-contract herschreven — `?` in
+      zolder en terminal, F1 in de editor — plus de nieuwe §De zolder-hint),
+      `spelontwerp-legacy.md` (§Commando's: `crt aan/uit`, F3, de volledige
+      `ga zitten`-lijst, `?`-gedrag, spread-modus zonder `?`; §De lus per level
+      stap 5), `engine-architectuur.md` (`modus: "titel"`),
+      `walkthrough/deel1-hints.md` (`?` vs F1, commandolijst, de zolder-alinea
+      over de nieuwe hint). Geen PDF's — die zijn voor WP 39
+- [x] QC: **368/368 groen** (15 nieuw), `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-full-playthrough 97/97, smoke-walk 25/25
 
 ### - [ ] WP 34 — Nieuwe spelersprite
 
