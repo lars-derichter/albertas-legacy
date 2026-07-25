@@ -30,7 +30,6 @@ globalThis.AL = globalThis.AL || {};
   var VELD_BOT = 189;
   var TIK_MS = 1000 / 15;      // vaste logische tik: 15 Hz
   var SNELHEID = 1.5;          // looppixels per tik
-  var KANT_COOLDOWN = 1.0;     // rustpauze na "die kant kan je niet op" (s)
 
   // Van een looprichting naar de entry aan de overkant.
   var TEGENGESTELD = {
@@ -92,8 +91,12 @@ globalThis.AL = globalThis.AL || {};
   var animTijd = 0;
   var laatsteTijd = 0;
   var accumulator = 0;
-  var kantCooldownTot = 0;
-  var laatsteKantOp = null;
+
+  // Staat de speler nú in een uitgangszone? De zone vuurt alleen op het moment
+  // dat hij hem binnenkomt. Zonder die grendel zou een speler die van de
+  // overkant precies in een zone wordt neergezet meteen weer terugstappen, en
+  // dat is een lus die zichzelf voedt.
+  var inUitgang = false;
 
   // De lopende opkomst van een nieuwe kamer, of null. Vorm: { soort, t: 0..1 },
   // waarbij t van 0 (nog zwart) naar 1 (volledig zichtbaar) loopt.
@@ -144,6 +147,10 @@ globalThis.AL = globalThis.AL || {};
     }
     actorX = e[0];
     actorY = e[1];
+    // Grendel de uitgangszone op de plek waar de speler landt. De lint verbiedt
+    // een entry ín een zone, dus dit staat normaal op false; het is het vangnet
+    // voor het geval iemand een entry verschuift.
+    inUitgang = AL.loopveld.uitgangBij(scene, actorX, actorY) !== null;
   }
 
   function wisselNaarScene(id, entryNaam) {
@@ -154,16 +161,12 @@ globalThis.AL = globalThis.AL || {};
     loopt = false;
   }
 
-  function inWalkbox(scene, x, y) {
-    var boxen = scene.walkboxes;
-    for (var i = 0; i < boxen.length; i++) {
-      var b = boxen[i];
-      if (x >= b[0] && x <= b[0] + b[2] - 1 &&
-          y >= b[1] && y <= b[1] + b[3] - 1) {
-        return true;
-      }
-    }
-    return false;
+  // Mag de speler hier staan? De meetkunde zelf staat in js/loopveld.js: de
+  // walkboxes min de blokken (de voetafdrukken van de voorwerpen). Die splitsing
+  // is er omdat de engine niet te testen valt zonder browser en de meetkunde
+  // wél — en het is precies de meetkunde waar een fout onzichtbaar in wegzakt.
+  function beloopbaar(scene, x, y) {
+    return AL.loopveld.beloopbaar(scene, x, y);
   }
 
   // ---- Vensters en de resultaatvorm ---------------------------------------
@@ -673,8 +676,8 @@ globalThis.AL = globalThis.AL || {};
 
     var scene = haalScene(toestand.sceneId);
     var nx = actorX, ny = actorY;
-    if (dx !== 0 && inWalkbox(scene, actorX + dx, actorY)) nx = actorX + dx;
-    if (dy !== 0 && inWalkbox(scene, nx, actorY + dy)) ny = actorY + dy;
+    if (dx !== 0 && beloopbaar(scene, actorX + dx, actorY)) nx = actorX + dx;
+    if (dy !== 0 && beloopbaar(scene, nx, actorY + dy)) ny = actorY + dy;
     loopt = (nx !== actorX || ny !== actorY);
     // Voetstappen op de tel van de loopcyclus: die draait op 8 fps met vier
     // frames, dus twee steunfases per halve seconde. Elke vierde tik is één stap,
@@ -692,27 +695,47 @@ globalThis.AL = globalThis.AL || {};
     actorY = ny;
     toestand.speler.x = actorX;
     toestand.speler.y = actorY;
+
+    // De uitgangszones. Noord en zuid zijn niet met een schermrand te doen: geen
+    // enkele loopstrook raakt y8 of y189, en dat kán ook niet — een kamer die tot
+    // bovenaan het beeld beloopbaar is, heeft geen achterwand meer. De trap is
+    // daarom een zone in de vloer: wie erin stapt, gaat naar boven. Zonder
+    // venster, zonder tweede toets.
+    var uit = AL.loopveld.uitgangBij(scene, actorX, actorY);
+    if (!uit) { inUitgang = false; return; }
+    if (inUitgang) return;                  // al binnen: niet nog eens vuren
+    inUitgang = true;
+    probeerOversteek(uit);
+    loopt = false;
   }
 
   function as(r) {
     return (r === "noord" || r === "zuid") ? "nz" : "ow";
   }
 
+  // Een oversteek te voet: over een schermrand (oost/west) of door een
+  // uitgangszone (noord/zuid). Lukt hij niet, dan gebeurt er níéts.
+  //
+  // Dat is een beslissing en geen vergetelheid. Tot nu toe opende een mislukte
+  // oversteek "Die kant kan je niet op" in een modaal venster, en omdat élke
+  // loopstrook van x0 tot x319 liep, kreeg de speler dat venster ongeveer elke
+  // seconde te zien zodra hij tegen een geschilderde muur aan liep. Een muur
+  // hoort te stoppen, niet te praten. De weigering blijft bestaan waar ze wél
+  // een antwoord is: op het getypte "ga west" (AL.world.betreed via de parser),
+  // want daar heeft de speler een vraag gesteld.
+  //
+  // De randen die op niets uitkomen zijn bovendien uit de walkboxes gehaald
+  // (tools/lint-scene.mjs bewaakt dat), dus dit pad is de vangrail en niet de
+  // dagelijkse gang van zaken.
   function probeerOversteek(kruis) {
-    if (laatsteKantOp === kruis && animTijd < kantCooldownTot) return;
     var r = AL.world.betreed(toestand, kruis);
     var heeftScene = false;
     for (var i = 0; i < r.effecten.length; i++) {
       if (r.effecten[i].indexOf("scene:") === 0) { heeftScene = true; break; }
     }
-    if (heeftScene) {
-      verwerkResultaat(r, TEGENGESTELD[kruis]);
-      bewaar();
-    } else {
-      laatsteKantOp = kruis;
-      kantCooldownTot = animTijd + KANT_COOLDOWN;
-      verwerkResultaat(r, null);
-    }
+    if (!heeftScene) return;
+    verwerkResultaat(r, TEGENGESTELD[kruis]);
+    bewaar();
   }
 
   // ---- Tekenen -------------------------------------------------------------

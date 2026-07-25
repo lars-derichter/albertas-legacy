@@ -126,8 +126,22 @@ AL.scenes["zolder-oost"] = {
     ["light", 1, 0.28, [116, 112, 276, 112, 296, 176, 96, 176]]
   ],
 
+  // De strook loopt tot x0 — dat is de doorgang naar het westen — maar houdt aan
+  // de oostkant op bij x311: daar staat een wand, en tegen een wand aan lopen
+  // hoort te stoppen en niet een venster te openen.
   walkboxes: [
-    [0, 150, 320, 39]
+    [0, 150, 312, 39]
+  ],
+
+  exits: [],
+
+  // Het bureau met zijn twee poten (x104–251, poten tot y168 en y174) en de
+  // stoel ervoor (sprite-voet y172) staan op één stuk vloer; één blok dekt ze
+  // allebei. De speler loopt er vóórlangs in plaats van er dwars doorheen.
+  // "Ga zitten" is een getypt commando en hangt niet aan een plek, dus de stoel
+  // blijft bereikbaar zoals hij dat altijd was.
+  blokken: [
+    [104, 150, 148, 24]
   ],
 
   entries: {

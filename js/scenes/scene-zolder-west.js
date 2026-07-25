@@ -141,9 +141,29 @@ AL.scenes["zolder-west"] = {
     ["light", 1, 0.30, [150, 168, 300, 168, 308, 189, 136, 189]]
   ],
 
-  // Beloopbare vloer. De strook loopt door tot de oostrand: dat is de uitgang.
+  // Beloopbare vloer. De strook loopt door tot de oostrand: dát is de uitgang,
+  // en de speler steekt hem te voet over. Aan de westkant houdt ze op bij x6,
+  // want daar staat geen doorgang maar een wand: zonder die marge liep de speler
+  // het beeld uit en kreeg hij "Die kant kan je niet op" in een modaal venster,
+  // ongeveer elke seconde. Een muur hoort te stoppen, niet te praten.
   walkboxes: [
-    [0, 150, 320, 39]
+    [6, 150, 314, 39]
+  ],
+
+  // Geen uitgangszones: de enige uitgang is de oostrand, en die doet de engine
+  // met de randkruising (zie docs/scene-schema.md, §Uitgangen).
+  exits: [],
+
+  // De voetafdrukken van wat er op deze vloer staat. Niet de geschilderde
+  // hoogte — de speler ís zijn voeten — maar het stuk vloer dat bezet is.
+  //   dozen    de twee stapels links, met hun contactschaduw (x10–113)
+  //   kist     de kist in het licht: geschilderd x146–241, y148–177
+  // Ze lopen tot aan de bovenrand van de loopstrook, zodat de speler er ook niet
+  // achterlangs kan: de kist en de dozen zitten in de gecachete achtergrond en
+  // zouden hem dus nooit afdekken.
+  blokken: [
+    [10, 150, 104, 20],
+    [146, 150, 96, 28]
   ],
 
   entries: {

@@ -43,10 +43,27 @@ De intro eindigt in de zolder (`modus: "zolder"`), bij de eerste scène.
 
 ## De zolder-hub
 
-Beloopbare scènes in de stijl van de remake-90s-engine: walkboxes, entries,
-hotspots, props (zie `scene-schema.md`). De speler loopt over een schermrand om
-naar de aangrenzende scène te gaan (`betreed:<richting>`), zoals in de
-predecessor.
+Beloopbare scènes in de stijl van de remake-90s-engine: walkboxes, blokken,
+uitgangszones, entries en hotspots (zie `scene-schema.md`). De speler gaat te
+voet naar de aangrenzende kamer (`betreed:<richting>`), zoals in de
+predecessor, en dat kan op twee manieren:
+
+- **Over de oost- of westrand.** De loopstrook loopt tot aan het beeld door
+  waar een buurkamer ligt; loop je eroverheen, dan sta je in de volgende kamer.
+- **Door een uitgangszone.** Noord en zuid zijn met een rand niet te doen — een
+  kamer die tot bovenaan het beeld beloopbaar is, heeft geen achterwand meer.
+  De trap tussen de doorgang en de overloop is daarom een rechthoek in de
+  vloer (`exits` in het scène-schema): wie erin stapt, gaat naar boven of naar
+  beneden. Zonder venster, zonder tweede toets.
+
+Waar geen buurkamer ligt, houdt de loopstrook op vóór het beeld en stopt de
+speler gewoon: een geschilderde muur hoort te blokkeren, niet te praten. De
+weigering "Die kant kan je niet op" blijft bestaan waar ze een antwoord is —
+op een getypt `ga <richting>` dat nergens heen gaat.
+
+De voorwerpen in een kamer — de kist, het bureau met de stoel, de
+dozenstapels — hebben een voetafdruk (`blokken`) die van de vloer wordt
+afgetrokken. De speler loopt er omheen of ervoor langs, niet erdoorheen.
 
 ### Scène-inventaris
 

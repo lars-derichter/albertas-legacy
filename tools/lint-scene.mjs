@@ -22,12 +22,45 @@ const hier = dirname(fileURLToPath(import.meta.url));
 const wortel = dirname(hier);
 const scenesDir = join(wortel, "js", "scenes");
 const paletPad = join(wortel, "js", "palette.js");
+const worldPad = join(wortel, "js", "logic", "world.js");
+const loopveldPad = join(wortel, "js", "loopveld.js");
 
 // Het speelveld en de gekende namen.
 const X_MIN = 0, X_MAX = 319;
 const Y_MIN = 8, Y_MAX = 189;
-const GEKENDE_ITEMS = ["notitieboek", "pc", "broncode-doos", "doos", "stoel",
-  "koffiemok"];
+// "koffiemok" stond hier als zevende item terwijl er geen mok-sprite en geen
+// mok-hotspot bestaat: de mok is geschilderd op het bureaublad. Een lint die
+// namen kent die nergens voorkomen, keurt niets meer goed.
+const GEKENDE_ITEMS = ["notitieboek", "pc", "broncode-doos", "doos", "stoel"];
+const RICHTINGEN = ["noord", "oost", "zuid", "west"];
+
+// De zolderkaart uit de wereldlogica, zodat de lint kan controleren dat élke
+// verbinding op de kaart ook echt te belopen is. world.js is DOM-vrij, dus het
+// draait gewoon in een vm-context; uitgangen() leest alleen KAMERS.
+function laadUitgangen() {
+  try {
+    const sandbox = {};
+    vm.createContext(sandbox);
+    vm.runInContext(readFileSync(worldPad, "utf8"), sandbox,
+      { filename: worldPad });
+    const world = sandbox.AL && sandbox.AL.world;
+    if (!world) return null;
+    return (id) => world.uitgangen({ sceneId: id });
+  } catch (_e) { return null; }
+}
+
+// De meetkunde zelf komt uit js/loopveld.js: de lint en de engine horen
+// dezelfde vraag op dezelfde manier te beantwoorden.
+function laadLoopveld() {
+  const sandbox = {};
+  vm.createContext(sandbox);
+  vm.runInContext(readFileSync(loopveldPad, "utf8"), sandbox,
+    { filename: loopveldPad });
+  return sandbox.AL.loopveld;
+}
+
+const uitgangenVan = laadUitgangen();
+const loopveld = laadLoopveld();
 
 // Laad het palet één keer en lees de grootte, zodat de kleurgrens de bron volgt.
 let MAX_KLEUR = 63;
@@ -235,6 +268,34 @@ function inWalkbox(x, y, walkboxes) {
   return false;
 }
 
+// Een rechthoek [x,y,b,h] die binnen het speelveld valt.
+function keurRechthoek(r, waar, fouten) {
+  if (!Array.isArray(r) || r.length !== 4) {
+    fouten.push(waar + ": verwacht [x,y,breedte,hoogte]");
+    return false;
+  }
+  const [x, y, b, h] = r;
+  if (!Number.isInteger(b) || !Number.isInteger(h) || b < 1 || h < 1) {
+    fouten.push(waar + ": breedte en hoogte moeten minstens 1 zijn");
+    return false;
+  }
+  if (!binnenX(x) || !binnenX(x + b - 1) || !binnenY(y) || !binnenY(y + h - 1)) {
+    fouten.push(waar + " valt buiten het speelveld");
+    return false;
+  }
+  return true;
+}
+
+// Ligt er binnen deze rechthoek nog één beloopbare pixel (walkbox min blokken)?
+function heeftBeloopbaarPunt(scene, r) {
+  for (let y = r[1]; y < r[1] + r[3]; y++) {
+    for (let x = r[0]; x < r[0] + r[2]; x++) {
+      if (loopveld.beloopbaar(scene, x, y)) return true;
+    }
+  }
+  return false;
+}
+
 function keurScene(scene, verwachteId) {
   const fouten = [];
 
@@ -270,6 +331,40 @@ function keurScene(scene, verwachteId) {
     });
   }
 
+  // De blokken: de voetafdrukken van de voorwerpen, van de walkboxes
+  // afgetrokken (docs/scene-schema.md, §Blokken).
+  if (scene.blokken !== undefined) {
+    if (!Array.isArray(scene.blokken)) {
+      fouten.push("blokken is geen array");
+    } else {
+      scene.blokken.forEach((b, i) =>
+        keurRechthoek(b, "blok[" + i + "]", fouten));
+    }
+  }
+
+  // De uitgangszones: waar de speler te voet een buurkamer betreedt.
+  if (scene.exits !== undefined) {
+    if (!Array.isArray(scene.exits)) {
+      fouten.push("exits is geen array");
+    } else {
+      scene.exits.forEach((e, i) => {
+        const waar = "exit[" + i + "]";
+        if (!e || typeof e !== "object") {
+          fouten.push(waar + ": verwacht { richting, rect }");
+          return;
+        }
+        if (!RICHTINGEN.includes(e.richting)) {
+          fouten.push(waar + ": onbekende richting '" + e.richting + "'");
+        }
+        if (!keurRechthoek(e.rect, waar + ".rect", fouten)) return;
+        if (Array.isArray(walkboxes) && !heeftBeloopbaarPunt(scene, e.rect)) {
+          fouten.push(waar + " (" + e.richting + "): geen enkele beloopbare " +
+            "pixel — de zone is onbereikbaar");
+        }
+      });
+    }
+  }
+
   if (!scene.entries || typeof scene.entries !== "object") {
     fouten.push("entries ontbreken");
   } else if (Array.isArray(walkboxes)) {
@@ -277,8 +372,49 @@ function keurScene(scene, verwachteId) {
       const p = scene.entries[sleutel];
       if (!Array.isArray(p) || p.length !== 2) {
         fouten.push("entry '" + sleutel + "': verwacht [x,y]");
-      } else if (!inWalkbox(p[0], p[1], walkboxes)) {
+        continue;
+      }
+      if (!inWalkbox(p[0], p[1], walkboxes)) {
         fouten.push("entry '" + sleutel + "' ligt niet in een walkbox");
+      } else if (loopveld.inBlok(scene, p[0], p[1])) {
+        fouten.push("entry '" + sleutel + "' ligt in een blok: de speler zou " +
+          "in een voorwerp staan");
+      }
+      // Landen in een uitgangszone is een lus: de engine zou de speler meteen
+      // weer terugsturen naar de kamer waar hij net vandaan kwam.
+      const zone = loopveld.uitgangBij(scene, p[0], p[1]);
+      if (zone !== null) {
+        fouten.push("entry '" + sleutel + "' ligt in de uitgangszone '" + zone +
+          "'");
+      }
+    }
+  }
+
+  // De navigatie zelf, alleen voor de kamers op de zolderkaart.
+  if (uitgangenVan && Array.isArray(walkboxes)) {
+    const buren = uitgangenVan(verwachteId);
+    const isKamer = RICHTINGEN.some((r) => buren[r] !== null);
+    if (isKamer) {
+      for (const richting of RICHTINGEN) {
+        const heeftZone = loopveld.uitgangRichtingen(scene).includes(richting);
+        const raakt = loopveld.raaktRand(scene, richting, Y_MIN, Y_MAX);
+        if (buren[richting] !== null && !heeftZone && !raakt) {
+          fouten.push("uitgang '" + richting + "' naar " + buren[richting] +
+            " is niet te voet te bereiken: geen walkbox aan die rand en geen " +
+            "exits-zone");
+        }
+        // En omgekeerd: een loopstrook die tot aan een rand komt waar niets
+        // achter ligt, laat de speler het beeld uit lopen tegen een
+        // geschilderde muur. Dat is precies waar de modale weigering vandaan
+        // kwam die dit pakket weghaalt.
+        if (buren[richting] === null && raakt) {
+          fouten.push("walkbox raakt de " + richting + "rand, maar daar ligt " +
+            "geen kamer: versmal de strook of teken er een doorgang");
+        }
+        if (buren[richting] === null && heeftZone) {
+          fouten.push("exits-zone '" + richting + "' wijst naar een kamer die " +
+            "niet op de zolderkaart staat");
+        }
       }
     }
   }

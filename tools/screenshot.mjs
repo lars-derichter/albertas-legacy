@@ -7,6 +7,7 @@
 //   node tools/screenshot.mjs --out /pad/naar.png    (eigen uitvoerpad)
 //   node tools/screenshot.mjs --seed 20260716        (deterministische run)
 //   node tools/screenshot.mjs --venster              (laat het openingsvenster staan)
+//   node tools/screenshot.mjs --kamer overloop       (een bepaalde zolderkamer)
 //
 // Aangepast uit remake-90s (tools/screenshot.mjs): daar per scène via een
 // preview.html; hier via de echte engine (er is nog geen preview-harnas). De
@@ -29,6 +30,7 @@ function argWaarde(naam) {
 }
 const houdVenster = args.includes("--venster");
 const seed = argWaarde("--seed");
+const kamer = argWaarde("--kamer");
 const uitPad = argWaarde("--out") || join(uitDir, "zolder.png");
 
 async function main() {
@@ -66,7 +68,31 @@ async function main() {
     await page.keyboard.press("Enter");
     await page.waitForTimeout(60);
   }
-  await page.waitForTimeout(200);
+  // Een bepaalde kamer: zet de scène en laat de engine er opnieuw in stappen.
+  // De kamerbeschrijving die daarbij hoort, klikken we weg — tenzij het venster
+  // juist gevraagd is.
+  if (kamer) {
+    await page.evaluate((id) => {
+      window.AL.debugToestand.sceneId = id;
+      window.AL.debugStartZolder();
+    }, kamer);
+    await page.waitForTimeout(200);
+    for (let i = 0; i < 10 && !houdVenster; i++) {
+      const st = await page.evaluate(() => window.AL.debugState);
+      if (!st.vensterOpen) break;
+      await page.keyboard.press("Enter");
+      await page.waitForTimeout(60);
+    }
+    const st = await page.evaluate(() => window.AL.debugState);
+    if (st.sceneId !== kamer) {
+      console.error("FOUT: kamer '" + kamer + "' niet bereikt (scene=" +
+        st.sceneId + ").");
+      await browser.close();
+      process.exit(1);
+    }
+  }
+
+  await page.waitForTimeout(400);
 
   const dataUrl = await page.evaluate(() => {
     const c = document.getElementById("scherm");

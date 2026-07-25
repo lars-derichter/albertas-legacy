@@ -102,17 +102,41 @@ AL.scenes["zolder-midden"] = {
     ["light", 1, 0.40, [0, 78, 28, 78, 46, 189, 0, 189]]
   ],
 
-  // Beloopbare vloer (west↔oost) plus een corridor naar de trap (noord).
+  // Beloopbare vloer (west↔oost) plus een corridor naar de trap (noord). Beide
+  // zijranden zijn hier écht een uitgang, dus de strook loopt van x0 tot x319.
   walkboxes: [
     [0, 150, 320, 39],
     [150, 118, 42, 71]
+  ],
+
+  // De trap. Noord is met een schermrand niet te doen — een kamer die tot y8
+  // beloopbaar is, heeft geen achterwand meer — dus de uitgang is een zone in de
+  // vloer, boven aan de corridor en op de onderste trede. Wie erin stapt, gaat
+  // naar boven: geen venster, geen tweede toets. De corridor-walkbox stond hier
+  // al vanaf het begin; ze wees op een uitgang die nooit bestond.
+  exits: [
+    { richting: "noord", rect: [150, 118, 42, 8] }
+  ],
+
+  //   stapel-rechts   de geschilderde stapel tegen de rechterwand (x286–319,
+  //                   voet y157, contactschaduw tot y166)
+  //   broncode-doos   de voetafdruk van de sprite op x116 y182
+  //   doos            de voetafdruk van de sprite op x236 y170
+  // De sprite-blokken dekken alleen de onderkant: props worden op voet-y
+  // gesorteerd, dus áchter een doos lopen klopt vanzelf en mag gewoon.
+  blokken: [
+    [284, 150, 36, 18],
+    [102, 174, 28, 9],
+    [224, 162, 24, 9]
   ],
 
   entries: {
     start: [80, 175],
     vanWest: [20, 175],
     vanOost: [300, 175],
-    vanNoord: [170, 126]
+    // Twee treden onder de uitgangszone: wie van boven komt, mag niet meteen
+    // weer in de zone staan, anders stuitert hij terug naar de overloop.
+    vanNoord: [170, 132]
   },
 
   // De twee doos-props. De broncode-doos staat centraal en vooraan; de gemerkte

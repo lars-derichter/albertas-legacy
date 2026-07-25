@@ -61,11 +61,22 @@ AL.scenes["overloop"] = {
     // De leuning staat op de vóórrand van het gat en dus tussen de speler en de
     // diepte in. Ze stond eerst boven het gat tegen de wand, en las daar als een
     // plank.
+    //
+    // Ze liep ook van x122 tot x200 in één stuk, en dat was een hek: de trap
+    // naar beneden was afgesloten met een balk op heuphoogte. Nu staan er twee
+    // stukken leuning met vier stijlen, en tussen x148 en x175 is de opening
+    // waar je de trap af gaat. Dat is precies de uitgangszone hieronder — wat de
+    // tekening belooft, moet de vloer waarmaken.
     ["rect", 24, 122, 128, 5, 25],
+    ["rect", 24, 144, 128, 4, 25],
+    ["rect", 24, 176, 128, 4, 25],
     ["rect", 24, 196, 128, 5, 25],
-    ["rect", 25, 122, 128, 79, 4],
-    ["line", 27, [122, 128, 200, 128]],
-    ["shadow", 1, [122, 132, 200, 132, 200, 136, 122, 136]],
+    ["rect", 25, 122, 128, 26, 4],
+    ["rect", 25, 176, 128, 25, 4],
+    ["line", 27, [122, 128, 147, 128]],
+    ["line", 27, [176, 128, 200, 128]],
+    ["shadow", 1, [122, 132, 147, 132, 147, 136, 122, 136]],
+    ["shadow", 1, [176, 132, 200, 132, 200, 136, 176, 136]],
 
     // ---- De dozen: hoger dan jij -------------------------------------------
     // Twee torens tegen de wand, de linker tot voorbij de bovenrand van het
@@ -115,8 +126,27 @@ AL.scenes["overloop"] = {
     ["shadow", 1, [292, 8, 319, 8, 319, 189, 278, 189]]
   ],
 
+  // De overloop heeft maar één uitgang, en die ligt niet aan een zijrand: de
+  // strook houdt links en rechts op vóór het beeld, zodat de speler tegen de
+  // hoeken aan loopt in plaats van eruit.
   walkboxes: [
-    [0, 152, 320, 37]
+    [6, 152, 308, 37]
+  ],
+
+  // De trap naar beneden, in de opening tussen de twee stukken leuning. Loop je
+  // ertegenaan, dan ga je naar de doorgang — te voet, zoals "ga zuid" dat ook
+  // doet.
+  exits: [
+    { richting: "zuid", rect: [148, 152, 28, 8] }
+  ],
+
+  //   torens-links    de twee kartonnen torens met hun contactschaduw (x10–121)
+  //   toren-rechts    de derde toren (x236–287, schaduw tot y164)
+  //   doos            de voetafdruk van de sprite op x262 y168
+  blokken: [
+    [6, 152, 120, 17],
+    [222, 152, 80, 13],
+    [250, 160, 24, 9]
   ],
 
   entries: {

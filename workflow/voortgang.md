@@ -78,7 +78,7 @@ Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: `14987a8`
 
 ### - [x] WP 31 — Levelnamen en spreads
 
-Entry: `workflow/31-levelnamen-en-spreads.md` · commit: (nog in te vullen)
+Entry: `workflow/31-levelnamen-en-spreads.md` · commit: `54f61d3`
 
 - [x] Zeven nieuwe hoofdstuktitels (scharnierterm vooraan, dan het beeld
       uit het verhaal) in strings.js (spread-titel + `lN.naam` +
@@ -98,14 +98,51 @@ Entry: `workflow/31-levelnamen-en-spreads.md` · commit: (nog in te vullen)
 - [x] QC: 337/337 groen incl. de nieuwe test, lint-scene en check-assets
       schoon
 
-### - [ ] WP 32 — Lopen: uitgangen, muren en collisie
+### - [x] WP 32 — Lopen: uitgangen, muren en collisie
 
-- [ ] Exit-zones per scene; noord/zuid te voet bereikbaar
-- [ ] `blokken` per scene; kist, bureau, stoel, dozenstapels blokkeren
-- [ ] Walkboxen versmald waar een muur geschilderd is
-- [ ] lint-scene: exit-bereikbaarheid, walkbox∩blokken, koffiemok weg
-- [ ] docs/scene-schema.md en docs/sprite-schema.md geschreven
-- [ ] QC: `node --test` + lint schoon + voet-navigatiesmoke groen
+Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: (nog in te vullen)
+
+- [x] Nieuwe DOM-vrije module `js/loopveld.js` (`AL.loopveld`): walkboxes min
+      blokken, uitgangszones, randdetectie. Niet in `js/logic/` — het is
+      scène-meetkunde en geen wereldlogica, en ze geeft geen
+      `{tekst, effecten}` terug; `js/parser.js` is het precedent
+- [x] `exits: [{richting, rect}]` per scène: `zolder-midden` noord boven aan de
+      trapcorridor, `overloop` zuid in het trapgat. De zone vuurt bij het
+      binnenkomen en roept dezelfde `AL.world.betreed` aan als een randkruising
+      — de logica is onveranderd
+- [x] `blokken: [[x,y,b,h]]` per scène: kist en dozenstapels (west), bureau +
+      stoel (oost), stapel en de twee doos-sprites (doorgang), de drie torens en
+      de doos-sprite (overloop). Geschilderd blokkeert tot achteraan (de
+      achtergrond kan de speler niet afdekken), een sprite alleen zijn onderkant
+- [x] Walkboxen versmald waar een muur geschilderd staat: `zolder-west` x6–319,
+      `zolder-oost` x0–311, `overloop` x6–313. Daarmee vuurt de randkruising
+      alleen nog waar écht een kamer ligt
+- [x] Lopen tegen een muur of een voorwerp is stil: de modale weigering "Die
+      kant kan je niet op" blijft alleen op het getypte `ga <richting>`. De
+      cooldown-machinerie eromheen (`KANT_COOLDOWN`) kon weg
+- [x] `entries.vanNoord` van de doorgang naar y132 (twee treden onder de zone),
+      anders stuitert wie van boven komt meteen terug
+- [x] De leuning op de overloop liep als één balk over het hele trapgat — een
+      hek voor de uitgang. Nu twee stukken met vier stijlen en een opening van
+      x148 tot x175, precies de uitgangszone
+- [x] `tools/lint-scene.mjs`: blokken/exits keuren (ariteit, grenzen), elke
+      verbinding op de zolderkaart moet een mechanisme hebben, geen strook tegen
+      een rand zonder kamer, geen entry in een blok of in een zone, elke zone
+      moet een beloopbare pixel hebben. "koffiemok" uit `GEKENDE_ITEMS`
+- [x] `docs/scene-schema.md` en `docs/sprite-schema.md` geschreven (allebei
+      sinds WP A geciteerd en nooit bestaand); `engine-architectuur.md` §De
+      vloer + laadvolgorde + bestandskaart + `betreed`-tag, en
+      `spelontwerp-legacy.md` §De zolder-hub bijgewerkt
+- [x] `test/test-loopveld.mjs` (16 keuringen, incl. een vloedvulling die van
+      elke entry naar elke uitgang loopt) en `test/smoke-walk.mjs` (25
+      controles: élke kamerovergang te voet met alleen pijltjes, botsen tegen
+      kist, dozen, bureau, torens en muur, en de getypte navigatie ongewijzigd)
+- [x] Hiermee is de open post uit WP H gesloten: de walkboxen zijn herzien en de
+      speler loopt niet meer door de in de achtergrond gebakken kist en dozen
+- [x] QC: **353/353 groen** (16 nieuw), `lint-scene` en `check-assets` schoon,
+      smoke-browser 36/36, smoke-walk 25/25, smoke-full-playthrough 94/94,
+      smoke-pc 32/32; verse screenshots van de vier kamers in `test-results/`
+      (`wp32-*.png`)
 
 ### - [ ] WP 33 — Flow en hints op de zolder
 

@@ -33,7 +33,7 @@ met behoud van hun contract:
 | `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
-| engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc) |
+| engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc); de vloermeetkunde staat apart in `js/loopveld.js` (zie §De vloer) |
 | scène- en sprite-schema | de draw-op- en frame-formaten uit `docs/scene-schema.md` en `docs/sprite-schema.md` | overgenomen; scène-ids zijn nu zolderkamers en spreads |
 | `docs/`-schema's, Node `--test`, Playwright | test- en toolopzet | overgenomen |
 
@@ -180,6 +180,42 @@ tegenover `RRH` in de predecessor.
 Laadvolgorde binnen de logica (elke leest wat de vorige nodig heeft):
 `strings.js` → `world.js` → `levels.js` → checker-modules → `sim/*`.
 
+## De vloer: walkboxes, blokken en uitgangszones
+
+De meetkunde van een kamer zit niet in de engine maar in `js/loopveld.js`. Dat
+is een DOM-vrije module op hetzelfde niveau als `js/parser.js`: geen
+wereldlogica (ze geeft geen `{tekst, effecten}` terug, alleen booleans en een
+richting), maar wél iets wat zonder browser te testen hoort te zijn. De engine
+stelt haar per loopstap twee vragen, en `tools/lint-scene.mjs` stelt dezelfde
+twee aan elke scène.
+
+```js
+AL.loopveld.beloopbaar(scene, x, y)  // in een walkbox én in geen blok
+AL.loopveld.uitgangBij(scene, x, y)  // "noord"|"oost"|"zuid"|"west", of null
+```
+
+Het volledige veldformaat staat in `scene-schema.md`; wat de engine ermee doet:
+
+- **Blokken houden de speler tegen zonder iets te zeggen.** De walkbox min de
+  blokken is de vloer; loopt de speler ergens tegenaan, dan klemt de beweging en
+  gebeurt er verder niets. Er is geen botsingsvenster, geen tekst, geen cue.
+- **Uitgangszones vervangen de randkruising voor noord en zuid.** Een
+  randkruising vuurt als de doelpositie voorbij `VELD_TOP` (8) of `VELD_BOT`
+  (189) gaat, en geen enkele loopstrook komt daar — een kamer die tot bovenaan
+  het beeld beloopbaar is, heeft geen achterwand meer. De trap is daarom een
+  rechthoek in de vloer. De zone vuurt op het moment dat de speler hem
+  binnenkomt (een grendel in de engine houdt bij of hij er al in stond) en roept
+  precies hetzelfde aan als de rand: `AL.world.betreed`.
+- **Een mislukte oversteek te voet zwijgt.** `AL.world.betreed` geeft bij een
+  richting zonder buur `dieKantKanJeNietOp` terug; loopt de speler, dan laat de
+  engine dat vallen. Op het getypte `ga <richting>` blijft het venster staan,
+  want daar is het een antwoord op een vraag. De lint bewaakt bovendien dat een
+  loopstrook geen rand raakt waar geen kamer achter ligt, zodat dit pad de
+  vangrail is en niet de dagelijkse gang van zaken.
+
+`AL.world.betreed` is bij dit alles niet veranderd: de logica kent alleen de
+zolderkaart en de richting, niet de rechthoeken.
+
 ## Effect-tag-woordenlijst
 
 Dit is de volledige, gezaghebbende lijst. `spelontwerp-legacy.md` mag geen
@@ -194,7 +230,7 @@ reageert; de logica produceert ze alleen.
 | `scene:<id>` | wissel naar een zolder-/huisscène (scène-id uit `art-stijlgids.md`) |
 | `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7`, plus `intro` en `outro` (dus `spread:l1`, `spread:intro`) |
 | `titel` | toon de titelkaart |
-| `betreed:<richting>` | de speler stak een schermrand over (`noord`/`oost`/`zuid`/`west`); engine-hint voor de camera |
+| `betreed:<richting>` | de speler ging te voet naar de buurkamer (`noord`/`oost`/`zuid`/`west`): over de oost-/westrand of door een uitgangszone; engine-hint voor de camera |
 | `fragment-gevonden:<levelId>` | het notitieboek-fragment voor dit level is ontgrendeld in de adventure |
 
 ### Gesimuleerde pc
@@ -311,20 +347,21 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 4.  js/input.js            // AL.input
 5.  js/sound.js            // AL.sound
 6.  js/parser.js           // AL.parser
-7.  js/logic/strings.js    // AL.strings  (alle prose)
-8.  js/logic/world.js      // AL.world    (zolder, staat, navigatie)
-9.  js/logic/checker/tokenizer.js
-10. js/logic/checker/asserts.js
-11. js/logic/checker/javacsim.js
-12. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
-13. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
-14. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
-15. js/scenes/*.js         // zolderscènes + spreads
-16. js/sprites/*.js        // sprites
-17. js/sim/goats-strings.js  goats-world.js  goats-combat.js
-18. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
-19. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
-20. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
+7.  js/loopveld.js         // AL.loopveld (walkboxes, blokken, uitgangszones)
+8.  js/logic/strings.js    // AL.strings  (alle prose)
+9.  js/logic/world.js      // AL.world    (zolder, staat, navigatie)
+10. js/logic/checker/tokenizer.js
+11. js/logic/checker/asserts.js
+12. js/logic/checker/javacsim.js
+13. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
+14. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
+15. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
+16. js/scenes/*.js         // zolderscènes + spreads
+17. js/sprites/*.js        // sprites
+18. js/sim/goats-strings.js  goats-world.js  goats-combat.js
+19. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
+20. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
+21. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
 ```
 
 `js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en
@@ -426,6 +463,7 @@ js/
 ├── font.js  gfx.js            // renderer (overgenomen, palet-aangepast)
 ├── input.js  sound.js         // invoer + geluid (overgenomen, uitgebreid)
 ├── parser.js                  // parse + dispatchpatroon (overgenomen)
+├── loopveld.js                // DOM-vrij: walkboxes, blokken, uitgangszones
 ├── engine.js                  // frame-lus + effect-dispatch (raakt de DOM)
 ├── touch.js                   // aanraakscherm-D-pad + mobiele commandobalk
 │                              //   (raakt de DOM; enkel actief bij hasTouch)
