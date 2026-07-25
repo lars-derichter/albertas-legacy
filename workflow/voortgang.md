@@ -238,6 +238,20 @@ Entry: `workflow/35-schaalpas.md` · commit: (nog in te vullen)
       smoke-full-playthrough 97/97, screenshots van de vier kamers, de
       zithouding en vier voor-na-stroken in `test-results/wp35-*.png`
 
+### - [ ] WP 35b — De zolder aangekleed (ingelast)
+
+Ingelast door de manager na de QC van WP 35: de maatregel maakte de
+kamers correct maar leeg — een zolder hoort vol te staan. Afwijking van
+het goedgekeurde plan, gelogd hier en in de entry van WP 35.
+
+- [ ] Vier kamers aangekleed met rommel op de juiste schaal (stapels,
+      koffers, zolderspullen), zonder de composities en lichttaal te
+      breken
+- [ ] Blokken/lint volgen de nieuwe geometrie; elk zelfstandig
+      naamwoord in de kamerbeschrijvingen blijft aanwijsbaar
+- [ ] QC: `node --test` + lint + smokes groen + screenshots beoordeeld
+      door de manager
+
 ### - [ ] WP 36 — Handschriftfont
 
 - [ ] Echte pixel-handschriftglyphset; tekenHandschrift gebruikt ze
