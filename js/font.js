@@ -9,7 +9,9 @@
 // grondletter een rij ingedrukt eronder.
 //
 // Draait in de browser (AL.font) en in Node (module.exports), zodat
-// tools/lint-font.mjs de dekking kan controleren.
+// test/test-typografie.mjs de dekking kan controleren tegen alle spelprose.
+// (De kop verwees naar een tools/lint-font.mjs die nooit bestaan heeft; de
+// controle staat nu in de testsuite, waar ze bij elke run meeloopt.)
 //
 // Aangepast uit remake-90s (js/font.js): ongewijzigd overgenomen, alleen de
 // namespace RRH → AL.
@@ -348,6 +350,12 @@ AL.font = {
     "…": ["........", "........", "........", "........",
                "........", "........", "1.1.1...", "........"], // beletselteken
 
+    "×": ["........", "........", ".1...1..", "..1.1...",
+               "...1....", "..1.1...", ".1...1..", "........"], // maalteken
+
+    "→": ["........", "........", "....1...", ".....1..",
+               "1111111.", ".....1..", "....1...", "........"], // pijl rechts
+
     "“": ["........", ".1.1....", "1.1.....", "........",
                "........", "........", "........", "........"], // "
 
@@ -424,7 +432,7 @@ AL.font = {
   };
 })();
 
-// Node-export voor tools/lint-font.mjs.
+// Node-export voor de headless tests.
 if (typeof module !== "undefined") {
   module.exports = AL.font;
 }

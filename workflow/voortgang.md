@@ -240,7 +240,7 @@ dieptescaling.
 
 ### - [x] WP F — Typografie en chroom
 
-Entry: `workflow/22-typografie-en-chroom.md` · commit: (nog in te vullen)
+Entry: `workflow/22-typografie-en-chroom.md` · commit: `799a22b`
 
 - [x] Inktmaat per glyph in `js/font.js`; de glyphdata zelf ongemoeid. Óók de
       linkerruimte wordt weggerekend — anders staat elke regel die met een "i"
@@ -276,15 +276,43 @@ polish-tícket bóven op de benadering, en op 8×8 is de winst marginaal tegenov
 honderd nieuwe glyphs). De vlekken die onder de spread-tekst liggen horen bij
 **WP G**, waar het papier per level opnieuw getekend wordt.
 
-### - [ ] WP G — Het notitieboek
+### - [x] WP G — Het notitieboek
 
-Entry: `workflow/23-*.md` · commit: —
+Entry: `workflow/23-het-notitieboek.md` · commit: (nog in te vullen)
 
-- [ ] Per level een eigen papierachtergrond, beschadiging waar de puzzel zit
-- [ ] Schetsen per scharnier-metafoor (blauwdruk, trechters, knikkerbaan, twee
-      pijlen, patroonkaart, plankenbrug, dubbele pijl)
-- [ ] Handschrift met de font uit WP F
-- [ ] QC: `lint-scene` schoon; elke spread bekeken; `art-stijlgids.md` mee
+- [x] Zeven schetsen, één per scharnier-metafoor, in
+      `js/scenes/spread-schetsen.js` — blauwdruk-en-doos, trechters-en-goot,
+      knikkerbaan met klem en splitsing, twee-pijlen-één-doos, patroonkaart met
+      turfjes, plankenbrug met genummerde planken, zoekspoor en dubbele pijl
+- [x] Ze staan op de twéede bladzijde: dat is waar Alberta de opdracht geeft, en
+      waar haar tekst naar verwijst ("volgens de schets hieronder"). Die zinnen
+      wezen tot nu toe naar niets
+- [x] Beschadiging per level in plaats van één gedeelde vlek, en op de plek
+      waar de puzzel zit
+- [x] Dezelfde vlek op béide bladzijden, de schets alleen op de tweede — een
+      vlek trekt door het papier heen
+- [x] Papier met verlopen naar de rug, korrel en **liniatuur** op exact
+      `BLAD.regelH`, zodat het handschrift ín de lijn valt
+- [x] Bladerhint naar het linkerblad; de onderrand van het rechterblad is van de
+      weekregel, die sinds het proportionele handschrift drie regels nodig heeft
+- [x] `tools/lint-scene.mjs` keurt de schetsen mee in een eigen pas
+- [x] Glyphs `×` en `→` toegevoegd, plus een test die elk teken in de spelprose
+      tegen de font houdt — "validatie ×3" stond als "validatie ?3" op de
+      bladzijde, en `js/font.js` verwees naar een lint-tool die nooit bestaan
+      heeft
+- [x] Kop van spread 7 ingekort: "(getCategorie().getNaam())" is één woord van
+      26 tekens en liep over de bladrand
+- [x] `AL.debugSpread` als testhaak — zonder die haak kost het zeven
+      uitgespeelde levels om alle veertien bladzijden te zien
+- [x] QC: **286/286 groen**, lint schoon (tien scènes + schetsenset),
+      check-assets driftvrij, zes rooksmaaktesten groen (229 controles), alle
+      veertien bladzijden bekeken
+
+Bewust niet: de spread-tekst zelf herschrijven (die is puzzelinhoud en doet wat
+ze moet doen), een papiersjabloon per level (zeven keer dezelfde liniatuur), en
+de weekregel inkorten — die zin staat woordelijk in `achtergrond.md`,
+`spelontwerp-legacy.md` en `deel1-hints.md`, en de walkthrough-PDF's kunnen hier
+niet herbouwd worden.
 
 ### - [ ] WP H — Sprites en animatie
 

@@ -406,6 +406,66 @@ for (const pad of doelen) {
   }
 }
 
+// ---- De spread-schetsen ---------------------------------------------------
+//
+// js/scenes/spread-schetsen.js is geen scène — geen walkbox, geen entries, geen
+// hotspots — maar wel een paar honderd met de hand geplaatste draw-ops. Die
+// horen door dezelfde op-keuring te gaan als een scène-picture: één coördinaat
+// naast het blad of één kleur buiten het palet is met het blote oog pas te zien
+// als je toevallig díé bladzijde opslaat.
+//
+// Draait alleen als er geen scène-ids op de opdrachtregel stonden; dan vroeg de
+// aanroeper om iets specifieks.
+if (process.argv.slice(2).length === 0) {
+  const schetsPad = join(scenesDir, "spread-schetsen.js");
+  if (existsSync(schetsPad)) {
+    let sets;
+    try {
+      const al = laadScene(schetsPad);
+      sets = al ? al.spreadSchetsen : undefined;
+    } catch (e) {
+      console.error("FOUT: spread-schetsen.js kon niet uitgevoerd worden: " +
+        e.message);
+      gezakt++;
+    }
+    if (sets !== undefined) {
+      const fouten = [];
+      if (!sets || typeof sets !== "object") {
+        fouten.push("geen object toegekend aan AL.spreadSchetsen");
+      } else {
+        for (const id of Object.keys(sets)) {
+          if (!/^l[1-7]$/.test(id)) {
+            fouten.push("onbekende sleutel '" + id + "' (verwacht l1..l7)");
+          }
+          const set = sets[id];
+          for (const veld of ["schets", "schade", "schadeLinks"]) {
+            if (set[veld] === undefined) continue;
+            if (!Array.isArray(set[veld])) {
+              fouten.push(id + "." + veld + " is geen array");
+              continue;
+            }
+            set[veld].forEach((op, i) =>
+              keurOp(op, id + "." + veld + "[" + i + "]", fouten));
+          }
+          if (!Array.isArray(set.schets) || set.schets.length === 0) {
+            fouten.push(id + ": geen schets — elk level hoort er een te hebben");
+          }
+        }
+        for (let n = 1; n <= 7; n++) {
+          if (!sets["l" + n]) fouten.push("level " + n + " heeft geen set");
+        }
+      }
+      if (fouten.length === 0) {
+        console.log("OK   spread-schetsen.js");
+      } else {
+        gezakt++;
+        console.error("ZAKT spread-schetsen.js");
+        for (const f of fouten) console.error("     - " + f);
+      }
+    }
+  }
+}
+
 if (gezakt > 0) {
   console.error("\n" + gezakt + " scène(s) gezakt.");
   process.exit(1);

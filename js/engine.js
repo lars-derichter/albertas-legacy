@@ -839,14 +839,18 @@ globalThis.AL = globalThis.AL || {};
     if (tpl) AL.gfx.tekenPicture(tpl.picture);
     var data = AL.strings.spreads && AL.strings.spreads[spreadLevelId];
     if (AL.spreads && data) {
-      AL.spreads.tekenInhoud(AL.gfx, data, spreadPagina, toestand.seed);
+      AL.spreads.tekenInhoud(AL.gfx, data, spreadPagina, toestand.seed,
+        spreadLevelId);
     }
-    // Bladerhint rechtsonder, rechts uitgelijnd binnen de rechterbladzijde —
-    // niet tegen de snit, want daar loopt de donkere papierrand van het sjabloon.
+    // Bladerhint onderaan de línkerbladzijde, rechts uitgelijnd tegen de rug.
+    // Ze stond rechtsonder, en dat botste met Alberta's weekregel zodra die over
+    // twee regels ging — wat sinds het handschrift proportioneel gezet wordt
+    // altijd zo is. De onderrand van het rechterblad is nu van haar; het
+    // linkerblad draagt de chroom (bladwijzer links, hint rechts ertegenaan).
     var laatste = spreadPagina >= spreadAantalPaginas() - 1;
     var hint = laatste ? "spatie: pc >" : "spatie >";
-    var rechterrand = AL.spreads ? (AL.spreads.BLAD.rechtsX + AL.spreads.BLAD.kolomB)
-      : 302;
+    var rechterrand = AL.spreads ? (AL.spreads.BLAD.linksX + AL.spreads.BLAD.kolomB)
+      : 152;
     AL.gfx.tekenTekst(hint, rechterrand - hint.length * 8, 178, 40, null);
   }
 
@@ -1108,6 +1112,22 @@ globalThis.AL = globalThis.AL || {};
     titelActief = false;
     if (!toestand) toestand = AL.world.nieuw(seedUitUrl === null ? undefined : seedUitUrl);
     betreedZolder(true);
+  };
+
+  // Testhulp: sla een bepaalde bladzijde van een bepaald notitieboek-spread op.
+  // Alle veertien bladzijden nalopen door het spel te spelen kost zeven levels;
+  // dit is de haak waarmee de rooksmaaktest ze allemaal in één run kan bekijken.
+  AL.debugSpread = function (levelId, pagina) {
+    titelActief = false;
+    openingStap = null;
+    venster = null; naVenster = null;
+    if (!toestand) {
+      toestand = AL.world.laad(storage(), seedUitUrl === null ? undefined : seedUitUrl);
+    }
+    toestand.modus = "spread";
+    spreadLevelId = levelId;
+    spreadPagina = pagina | 0;
+    syncBlokkeer();
   };
 
   // Testhulp (dev): spring rechtstreeks in de pc bij een gegeven level (0 = de

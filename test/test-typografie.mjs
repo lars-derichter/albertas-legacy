@@ -63,6 +63,47 @@ test("een onbekend teken valt terug op de maat van ?", () => {
   assert.deepEqual(font.maat("☃"), font.maat("?"));
 });
 
+// ---- Dekking: heeft elk teken dat het spel print een glyph? ----------------
+//
+// Dit is de controle waar de kop van font.js naar verwees maar die er nooit
+// was: het bestand noemde een `tools/lint-font.mjs` die niet bestaat. Ze staat
+// nu hier, waar ze bij elke run meeloopt.
+//
+// De aanleiding was een echte fout. De kop van het notitieboek-spread van level
+// 3 zegt "validatie ×3", en dat maalteken zat niet in de font — dus stond er
+// op de bladzijde "validatie ?3". Zoiets zie je pas als je toevallig díé
+// bladzijde opslaat.
+
+// Loop door een willekeurig genest object en verzamel elke string.
+function alleStrings(waarde, uit) {
+  if (typeof waarde === "string") { uit.push(waarde); return uit; }
+  if (Array.isArray(waarde)) {
+    for (const v of waarde) alleStrings(v, uit);
+    return uit;
+  }
+  if (waarde && typeof waarde === "object") {
+    for (const k of Object.keys(waarde)) alleStrings(waarde[k], uit);
+  }
+  return uit;
+}
+
+test("elk teken in de spelprose heeft een glyph in de font", () => {
+  const strings = require(join(wortel, "js", "logic", "strings.js"));
+  const ontbreekt = new Map();
+  for (const s of alleStrings(strings, [])) {
+    for (const ch of s) {
+      if (font.glyphs[ch] !== undefined) continue;
+      // Alleen echte drukbare tekens tellen; een \n is een instructie.
+      if (ch === "\n" || ch === "\t") continue;
+      if (!ontbreekt.has(ch)) ontbreekt.set(ch, s.slice(0, 60));
+    }
+  }
+  const lijst = [...ontbreekt.entries()]
+    .map(([ch, ctx]) => JSON.stringify(ch) + " in " + JSON.stringify(ctx));
+  assert.deepEqual(lijst, [],
+    "deze tekens zouden als '?' op het scherm komen:\n  " + lijst.join("\n  "));
+});
+
 // ---- Meten en tekenen ------------------------------------------------------
 
 // Waar zet deze regel inkt neer als hij op x = 0 begint?

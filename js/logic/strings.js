@@ -1225,8 +1225,12 @@ AL.strings = {
         ["In verwijderVoorwerp en de gevechtsrondes loopt een lus één plank",
           "te ver. Zoek de off-by-one en kies de lus die bij de klus past."]),
 
+      // De kop van dit spread droeg de volledige keten mee —
+      // "(getCategorie().getNaam())" — en dat is één woord van zesentwintig
+      // tekens. Een kolom van 136 px kan dat niet breken, dus liep het over de
+      // bladrand. De keten staat in de brief hieronder toch al voluit.
       l7: maakSpread(7, "De speurtocht en de dubbele pijl",
-        "Zoeken + de dubbele pijl (getCategorie().getNaam())",
+        "Zoeken, en dan de dubbele pijl",
         6,
         ["Een zoeklus is een speurtocht: hij geeft het gevonden object terug,",
           "of null als er niets is. En soms volg je twee pijlen na elkaar:",

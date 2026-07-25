@@ -333,11 +333,25 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
 
 - **Papier:** het vlak is de papier-ramp (35–38), met een lichte gradiënt van
   38 in het midden naar 35 in de bocht van de rug. Een verticale rugschaduw
-  (39/40) in het midden verdeelt de twee bladzijden.
+  (39/40) in het midden verdeelt de twee bladzijden. Er hoort **korrel** in —
+  een blad van 320 bij 200 in één egale kleur leest als een gekleurd vlak —
+  maar zuinig: 0,04 op één kleur is genoeg, op het dubbele wordt het jute. En
+  **liniatuur**: een notitieboek is gelinieerd, met de regelafstand van
+  `BLAD.regelH`, zodat het handschrift ín de lijn valt en niet erover.
 - **Beschadiging:** waterschade en koffievlekken als grillige 39/40-vlekken,
   precies waar de puzzel zit — de beschadiging "verklaart" de ontbrekende code.
   Een gescheurde hoek, een ezelsoor, doorgelopen inkt (41 dat uitwaaiert naar
   40) mogen als sfeer.
+  - **Per level, niet gedeeld.** Ze staan in `js/scenes/spread-schetsen.js` en
+    niet in het sjabloon: één vlek op een vaste plek is dezelfde vlek op alle
+    acht de spreads, en dan verklaart ze niets.
+  - **Ze vreet de schets aan, ze gumt hem niet uit.** Een dichtheid rond 0,20
+    op 39 met een binnenlaag rond 0,10 op 40 leest als een wasplek; boven
+    0,35 leest ze als zand en verdwijnt de tekening eronder. Een schets die je
+    niet meer kunt lezen, is geen schets meer.
+  - **Dezelfde vlek op beide bladzijden.** Een vlek trekt door het papier heen.
+    De schets staat alleen op de tweede bladzijde, de vlek op allebei — dus wie
+    doorbladert ziet dezelfde plek terugkomen.
 - **Handschrift:** Alberta's notities in inkt (41) op de papierkleur. De
   handschriftbenadering is de 8×8-bitmapfont van de engine, maar **schuin en
   onregelmatig gezet** zodat het als handschrift leest zonder een aparte
@@ -353,14 +367,28 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   - De **kop staat in dezelfde hand**, alleen rechter en zonder deining: een
     titel schrijft een mens trager op. Wat een kop níét mag zijn is de gedrukte
     prosefont, want dan staan er twee schrijvers op één blad.
-- **Schetsen:** Alberta's diagrammen (een klasse als doos met velden, pijlen
-  tussen dozen voor referenties, een lus als cirkelpijl) in inkt met spaarzame
-  kleuraccenten (12 voor nadruk, 44 voor een groen vinkje). De schetsstijl
-  spiegelt de scharnier-metaforen: de blauwdruk-en-doos-tekening voor level 1,
-  twee-pijlen-één-doos voor level 4, de plankenbrug voor level 6, enzovoort (zie
-  de metafoor-woordenschat in `levels-en-scharnieren.md`).
+- **Schetsen:** Alberta's diagrammen in inkt met spaarzame kleuraccenten (12
+  voor een doorhaling, 44 voor een groen vinkje). Verder niets: het is een
+  balpen op papier, geen illustratie. Inkt (41) voor de lijn die telt, 40 voor
+  wat lichter is aangezet — arcering, hulplijnen, maatstreepjes.
+  - Ze staan in `js/scenes/spread-schetsen.js` en vallen binnen
+    `AL.spreads.BLAD.schets`: de onderste helft van de rechterbladzijde. De
+    tekst van díé kolom stopt daarboven; het linkerblad loopt door tot onderaan.
+  - Ze staan op de **tweede** bladzijde van een spread. Dat is de bladzijde waar
+    Alberta de opdracht geeft, en haar tekst verwijst er ook naar ("schrijf
+    Geitje helemaal uit volgens de schets hieronder"). De eerste bladzijde is de
+    brief.
+  - De schetsstijl spiegelt de scharnier-metaforen (zie de
+    metafoor-woordenschat in `levels-en-scharnieren.md`): blauwdruk-en-doos (1),
+    trechters-en-goot (2), knikkerbaan met klem en splitsing (3),
+    twee-pijlen-één-doos (4), de patroonkaart met turfjes (5), de plankenbrug
+    met genummerde planken (6), het zoekspoor en de dubbele pijl (7).
 - **De weekregel:** onderaan de rechterbladzijde, in Alberta's hand: "Dit zou je
-  moeten kunnen na week X van de cursus."
+  moeten kunnen na week X van de cursus." Drie regels ruimte, niet twee:
+  proportioneel handschrift is breder dan het raster waarop die zin ooit paste.
+- **Chroom hoort op het linkerblad.** Bladwijzer links, bladerhint ertegenaan.
+  De onderrand van het rechterblad is van de weekregel; stond de hint daar ook,
+  dan schreven ze door elkaar heen.
 
 Zo blijft één spread-sjabloon herkenbaar terwijl de schets, de notitie en de
 beschadiging per level verschillen — de goedkope, verhaal-trouwe scène-vorm die
