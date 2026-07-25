@@ -1,19 +1,20 @@
-# Voortgang — opwaardering van presentatie en verhaal
+# Voortgang
 
-Dit is de levende checklist van het tweede programma op deze repo (zie
-`workflow/15-opwaardering-kickoff.md` voor de opdracht, de beslissingen en het
-volledige plan). Anders dan de genummerde entries, die chronologisch zijn en
-blijven staan zoals ze geschreven zijn, verandert dít bestand mee met het werk.
+Dit is de levende checklist van deze repo. Het actieve programma staat
+bovenaan; afgeronde programma's blijven eronder staan als geschiedenis.
+Anders dan de genummerde entries, die chronologisch zijn en blijven staan
+zoals ze geschreven zijn, verandert dít bestand mee met het werk.
 
 **Werkt een sessie hier na een crash verder?** Lees dan in deze volgorde:
 
 1. Dit bestand — waar staat het programma, wat is het volgende pakket. 2.
-`workflow/15-opwaardering-kickoff.md`, §Beslissingen — waarom het zo is. 3.
-Dezelfde entry, Bijlage B — het volledige plan met de QC-poort per pakket. 4.
-`CLAUDE.md`, §Werkafspraken — hoe er gecommit en gelogd wordt.
+`workflow/28-kwaliteitsreview-kickoff.md`, §Beslissingen en Bijlage B — het
+volledige plan met de QC-poort per pakket. 3. `CLAUDE.md`, §Working
+agreements — hoe er gecommit en gelogd wordt.
 
 Daarna: `node --test test/test-*.mjs` en `git log --oneline -5` om te zien of de
-laatste commit compleet is.
+laatste commit compleet is. Branch van het actieve programma:
+`claude/game-quality-review-ynqfkq`; na elk commit volgt onmiddellijk een push.
 
 ## Conventies in dit bestand
 
@@ -22,6 +23,127 @@ laatste commit compleet is.
   het schrijven van dit bestand is de eigen hash nog niet bekend. Staat er
   "(nog in te vullen)" bij het laatst afgewerkte pakket, dan is dat normaal.
 - Een pakket is pas `[x]` als zijn QC-poort geslaagd is. Niet eerder.
+
+# Programma 3 — kwaliteitsreview (actief)
+
+Kickoff en volledige defectenlijst: `workflow/28-kwaliteitsreview-kickoff.md`.
+Manager reviewt en commit; Opus 5-workers voeren uit. Vertrekpunt: 328
+headless tests groen, zes rooksmaaktesten (255 controles), lint en
+check-assets schoon, op `main` commit `689634b`.
+
+Volgorde: 29 en 30 (taal) eerst, dan 31 (namen), dan het zichtbare werk
+32-36, dan 37 (geluid), 38-39 (docs en walkthrough), 40 (slot). Binnen
+die blokken is de volgorde bindend zoals genummerd.
+
+### - [x] WP 28 — Kickoff en programma
+
+Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: (nog in te vullen)
+
+- [x] Kickoff-entry met prompt, verkenning, Q&A, beslissingen en het
+      goedgekeurde plan als Bijlage B
+- [x] Dit bestand herschikt: programma 3 bovenaan als levende checklist
+- [x] QC: markdown op 80 tekens (in tekens gemeten, geen enkele regel
+      erover), geen codewijzigingen, tests ongewijzigd groen (328/328)
+
+### - [ ] WP 29 — Taal en verhaal (proza)
+
+- [ ] Wolf-zin herformuleerd op de drie gespiegelde plaatsen +
+      strings.js:47
+- [ ] Verhaal-bug jongste geitje opgelost in de backstory (drie plaatsen)
+- [ ] "weg gesleten", "de een/de ander", "dit keer", "wiret", "De
+      spanning stijgt.", hint-antecedent, mes-zin, eet/drink,
+      "(praat)", commentaar-typo, trailing comma
+- [ ] Docs mee waar geciteerd proza wijzigt
+- [ ] QC: `node --test` groen incl. sim-cross-check met live `java`;
+      javac-poort schoon; verboden-grep leeg
+
+### - [ ] WP 30 — Alberta's stem in de Java-broncode
+
+- [ ] Doceercommentaar in seven-little-goats/src/*.java herschreven naar
+      Alberta's notitieboekstem; klaslokaal-"we" en "scharnier 7" weg
+- [ ] js/levels/level5.js en level7.js notitie-register hersteld
+- [ ] QC: javac + grep-poort, `node --test` groen, cross-check groen
+
+### - [ ] WP 31 — Levelnamen en spreads
+
+- [ ] Zeven nieuwe hoofdstuktitels (verhaal + scharnierterm) in
+      strings.js, docs/levels-en-scharnieren.md, walkthrough deel2
+- [ ] pc.js toont de levelnaam echt
+- [ ] Week-clash opgelost
+- [ ] Spread-lengtetest (≤ 24 gewrapte regels per pagina)
+- [ ] QC: `node --test` groen incl. nieuwe test
+
+### - [ ] WP 32 — Lopen: uitgangen, muren en collisie
+
+- [ ] Exit-zones per scene; noord/zuid te voet bereikbaar
+- [ ] `blokken` per scene; kist, bureau, stoel, dozenstapels blokkeren
+- [ ] Walkboxen versmald waar een muur geschilderd is
+- [ ] lint-scene: exit-bereikbaarheid, walkbox∩blokken, koffiemok weg
+- [ ] docs/scene-schema.md en docs/sprite-schema.md geschreven
+- [ ] QC: `node --test` + lint schoon + voet-navigatiesmoke groen
+
+### - [ ] WP 33 — Flow en hints op de zolder
+
+- [ ] `?`-hint progress-aware
+- [ ] Afgerond-level-melding bij `ga zitten`
+- [ ] `open doos`/`kist`-woordenschat per kamer
+- [ ] Spread-bladerhint klopt; epiloog saved
+- [ ] Docs en walkthrough deel1 mee
+- [ ] QC: `node --test` + smoke-playthrough groen
+
+### - [ ] WP 34 — Nieuwe spelersprite
+
+- [ ] Neutrale erfgenaam-figuur ~31 px, licht van rechts, alle anims
+- [ ] art-stijlgids en sprite-schema.md mee
+- [ ] QC: `node --test` + screenshots vier kamers beoordeeld door manager
+
+### - [ ] WP 35 — Schaalpas over de scènes
+
+- [ ] Maatregel 1 px ≈ 5 cm in de stijlgids
+- [ ] Koffietas, bureau/stoel/pc, dozen, notitieboek/kist herijkt
+- [ ] Eén dieptescaling-regime (props mee of actor-scaling eruit)
+- [ ] Scale-lint
+- [ ] QC: `node --test` + screenshots beoordeeld door manager
+
+### - [ ] WP 36 — Handschriftfont
+
+- [ ] Echte pixel-handschriftglyphset; tekenHandschrift gebruikt ze
+- [ ] Spread-typografie opgeruimd; stijlgids mee
+- [ ] QC: `node --test` + spread-screenshot beoordeeld door manager
+
+### - [ ] WP 37 — Geluid hoorbaar en volledig
+
+- [ ] Master gain en cue-balans; foley/drones uit de sub-bas
+- [ ] `doos`-cue afgevuurd bij fragmentdoos
+- [ ] Unlock bij click/touch/D-pad/submit; geen oscillator-lek
+- [ ] Voetstapcadans 4.0 Hz
+- [ ] test-geluid-asserties; engine-architectuur.md mee
+- [ ] QC: `node --test`; AudioContext `running` na click/touch in smoke
+
+### - [ ] WP 38 — Doc-drift en dood hout
+
+- [ ] art-stijlgids: twaalf ops; lichtbeschrijving actueel
+- [ ] spelontwerp-legacy.md: intro-spread, scene-tabel, commandolijst
+- [ ] Dode velden beslist en opgeruimd
+- [ ] console.warn bij fallback-scene
+- [ ] QC: `node --test` + lint + docs-grep
+
+### - [ ] WP 39 — Walkthrough herbouwd
+
+- [ ] deel1/deel2 .md actueel (F1, commando's, titels, citaten, routes)
+- [ ] PDF's herbouwd als pandoc+typst installeerbaar zijn, anders open
+      punt
+- [ ] QC: scripted titel/citaat-vergelijking; `node --test` groen
+
+### - [ ] WP 40 — Slotcontrole
+
+- [ ] Alle poorten; screenshots naar Lars
+- [ ] Slotentry + eindstand hier; PR-beschrijving bijgewerkt
+
+# Programma 2 — opwaardering van presentatie en verhaal (afgerond)
+
+Zie `workflow/15-opwaardering-kickoff.md` voor de opdracht, de beslissingen
+en het volledige plan van dit afgeronde programma.
 
 ## Vertrekpunt
 
@@ -473,23 +595,19 @@ de eerste de gemelde is.
       **36** controles, de overige vijf rooksmaaktesten onveranderd groen (255
       samen), lint en check-assets schoon
 
-## Nog open na het programma
+## Nog open na programma 2
 
-Elf pakketten zijn af (0, A t/m J). Dit blijft staan, met de reden:
+Elf pakketten zijn af (0, A t/m J). Wat toen open bleef, heeft nu een adres
+in programma 3:
 
-- **De walkthrough-PDF's zijn niet herbouwd.** `walkthrough/deel1-hints.md` mag
-  de nieuwe parser-tolerantie en F3 vermelden, en beide PDF's horen dan opnieuw
-  gebouwd te worden met `walkthrough/tools/bouw-walkthrough.sh`. Die build
-  vraagt `pandoc` en `typst`, en die staan niet in deze container. Geen enkel
-  citaat in de walkthrough is onwaar geworden; het gaat om een aanvulling, niet
-  om een correctie.
-- **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat ontbreekt
-  hier. `js/touch.js` is in dit hele programma niet aangeraakt.
-- **Hoe het geluid klínkt is niet beoordeeld.** Deze container heeft geen
-  geluidsuitgang; wat gecontroleerd is, is de audiograaf en de data.
-- **De sprite gebruikt zijn toegestane maat niet.** 13×25 binnen een budget van
-  16×32. De animatie had de hoogte nodig, niet de breedte; breder maken betekent
-  de figuur opnieuw tekenen.
+- **De walkthrough-PDF's zijn niet herbouwd.** → WP 39.
+- **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat
+  ontbreekt hier. `js/touch.js` wordt in WP 37 wél aangeraakt (unlock);
+  de smoke blijft afhankelijk van WebKit-beschikbaarheid.
+- **Hoe het geluid klínkt is niet beoordeeld.** De mechanische oorzaken
+  (gain, sub-bas) worden in WP 37 hersteld; de luistertest op speakers
+  blijft een open punt voor Lars.
+- **De sprite gebruikt zijn toegestane maat niet.** → WP 34.
 
 ## Wat bewust niet gebeurt
 
@@ -499,7 +617,9 @@ Zodat een verse sessie deze discussies niet heropent:
   als uitleggen; de regel "nooit een oorzaak noemen" blijft.
 - **Geen faalstaat, geen deadline, geen verliesmechaniek.** De urgentie zit
   volledig in de toon. Staat, save-formaat en logica-laag blijven zoals ze zijn.
-- **De _Seven Little Goats_-prose blijft ongemoeid.** Ze dient als bron voor de
-  donkerte van het kader. Aanpassen zou de Java-broncode én de vier
-  transcript-fixtures meetrekken die `test-sim-cross-check` byte voor byte
-  vergelijkt.
+- ~~De _Seven Little Goats_-prose blijft ongemoeid.~~ **Teruggedraaid in
+  programma 3** (zie `workflow/28-kwaliteitsreview-kickoff.md`,
+  §Beslissingen): Lars vraagt expliciet de wolf-zin en het
+  commentaarregister te herstellen, en de technische vrees bleek
+  onterecht — `test-sim-cross-check` vergelijkt twee live runs, de
+  testscripts zijn invoer, geen golden transcripts.
