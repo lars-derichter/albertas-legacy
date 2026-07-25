@@ -357,6 +357,31 @@ zolder eronder blijft op het canvas staan; de overlay dekt hem af zolang
 `modus === "pc"`. De engine schakelt de overlay in bij `pc:open` en uit bij
 `pc:sluit`.
 
+### Turbo Vision, en waar de 8×8-font níet komt
+
+De chrome is die van een Borland-toepassing, omdat dat de referentie is die een
+speler van 1990 herkent: een **menubalk** op de bovenste regel in inverse video,
+**dubbellijns kaders** om de panelen, en een **F-toetsenstatusbalk** op de
+onderste regel. Die twee balken zijn geen versiering — ze dragen de commando's
+die werkelijk bestaan, en de statusbalk is de enige plek waar een speler kan
+lézen dat F9 compileert en F1 een hint geeft.
+
+Er komen **geen scanlines uit een aparte schakelaar**: de laag hangt aan
+dezelfde `data-crt`-attribuut als het canvas, dus `crt uit` zet ze allebei uit.
+
+Wat er níet is, en dat is een bewuste uitzondering op het plan van WP J: **de
+8×8-bitmapfont van het spel staat niet in de overlay.** Die kan er niet in. De
+editor is een echte `<textarea>` — de beslissing hierboven, om selectie, plakken
+en schermlezers te houden — en een textarea zet zijn tekst met een échte font,
+niet met een glyphtabel die de renderer per pixel uitleest. De font wél
+gebruiken zou betekenen: de tekst zelf op een canvas tekenen met een onzichtbare
+textarea erbovenop voor de invoer, en dan is precies dat "veel werk en fragiel"
+weer terug.
+
+Courier New is er wél uit. Dat is een schrijfmachineletter met schreven en dunne
+stokken; een DOS-terminal had een rasterletter met vlakke einden. De stack
+begint nu bij wat het systeem als terminalletter aanbiedt.
+
 De pc-modules (`js/pc/editor.js`, `terminal.js`, `parsons.js`, hun coördinator
 `pc.js` en de sim-controller `sim-terminal.js`) mogen — als enige naast
 `engine.js` — de DOM aanraken, want zij zíjn de renderlaag van de pc. Ze

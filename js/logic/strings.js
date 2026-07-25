@@ -220,8 +220,20 @@ AL.strings = {
     terugNaarMenu: "— terug naar het menu —",
     typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc voor de zolder.",
     hintKop: "hint",
+    // F1, niet '?'. In de editor was '?' nooit een hint: het zette gewoon een
+    // vraagteken in de code. Alleen de terminal en de zolder kennen '?'; de
+    // editor heeft nu F1, zoals elke Turbo-editor.
     editorGeladen: "geladen. Herstel de code en druk F9 (of 'compileer & test'). " +
-      "'?' geeft een hint, Esc keert terug naar de zolder."
+      "F1 geeft een hint, Esc keert terug naar de zolder.",
+
+    // De labels op de menubalk en de F-toetsenbalk. Kort, want ze staan op één
+    // regel naast elkaar en die regel is 320 logische pixels breed.
+    balkCompileer: "Compileer",
+    balkHint: "Hint",
+    balkMenu: "Menu",
+    balkZolder: "Zolder",
+    balkKies: "Kies een taak",
+    balkNaamplaat: "ALBERTA'S PC"
   },
 
   // Losse systeemmeldingen (verteller: rustig, zuinig).

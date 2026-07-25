@@ -7,13 +7,13 @@ blijven staan zoals ze geschreven zijn, verandert dít bestand mee met het werk.
 
 **Werkt een sessie hier na een crash verder?** Lees dan in deze volgorde:
 
-1. Dit bestand — waar staat het programma, wat is het volgende pakket.
-2. `workflow/15-opwaardering-kickoff.md`, §Beslissingen — waarom het zo is.
-3. Dezelfde entry, Bijlage B — het volledige plan met de QC-poort per pakket.
-4. `CLAUDE.md`, §Werkafspraken — hoe er gecommit en gelogd wordt.
+1. Dit bestand — waar staat het programma, wat is het volgende pakket. 2.
+`workflow/15-opwaardering-kickoff.md`, §Beslissingen — waarom het zo is. 3.
+Dezelfde entry, Bijlage B — het volledige plan met de QC-poort per pakket. 4.
+`CLAUDE.md`, §Werkafspraken — hoe er gecommit en gelogd wordt.
 
-Daarna: `node --test test/test-*.mjs` en `git log --oneline -5` om te zien of
-de laatste commit compleet is.
+Daarna: `node --test test/test-*.mjs` en `git log --oneline -5` om te zien of de
+laatste commit compleet is.
 
 ## Conventies in dit bestand
 
@@ -25,16 +25,16 @@ de laatste commit compleet is.
 
 ## Vertrekpunt
 
-Gemeten op `claude/game-polish-improvements-rhlk70`, commit `7333f78`, met
-Node v22.22.2:
+Gemeten op `claude/game-polish-improvements-rhlk70`, commit `7333f78`, met Node
+v22.22.2:
 
 - `node --test test/test-*.mjs` — 225 tests, **224 groen, 1 rood**
   (`test-sim-cross-check`, codering; wordt in WP A rechtgezet).
 - Zes scènes, 173 draw-ops samen. Eén sprite van de zes wordt geblit.
   Nul overgangen. Negen geluidscues, geen muziek.
 
-Entry 12 rapporteerde 229 tests; `node --test` telt subtests over
-Node-versies heen anders. Er zijn geen testbestanden verdwenen. Vanaf hier is
+Entry 12 rapporteerde 229 tests; `node --test` telt subtests over Node-versies
+heen anders. Er zijn geen testbestanden verdwenen. Vanaf hier is
 **225** het referentiepunt.
 
 ## Bindende volgorde
@@ -196,8 +196,8 @@ Entry: `workflow/20-de-zolder-hertekend.md` · commit: `386d9e3`
 
 Nog open, met adres: de speler wordt niet kleiner naar achter. De
 sprite-schaling uit WP B ligt klaar, maar de loopstrook is 39 px hoog — daar
-valt geen zinnige diepte op te schalen zonder de walkboxes te herzien. Hoort
-bij **WP H**.
+valt geen zinnige diepte op te schalen zonder de walkboxes te herzien. Hoort bij
+**WP H**.
 
 ### - [x] WP E deel 2 — De kaarten, en licht dat eindelijk licht is
 
@@ -351,7 +351,7 @@ achtergrond gebakken dozen en kist laten lopen.
 
 ### - [x] WP I — Geluid
 
-Entry: `workflow/25-geluid.md` · commit: (nog in te vullen)
+Entry: `workflow/25-geluid.md` · commit: `60ac285`
 
 - [x] Echte twee-operator-FM: een modulator die via een gain op de `frequency`
       van een carrier uitkomt. Drie knoppen per stem, dezelfde als op een OPL2:
@@ -393,17 +393,71 @@ in deze container geen geluidsuitgang. Wat gecontroleerd is, is de graaf en de
 data, niet het oordeel van een oor — de mix hoort door iemand met speakers
 nagelopen te worden.
 
-### - [ ] WP J — De gesimuleerde pc
+### - [x] WP J — De gesimuleerde pc
 
-Entry: `workflow/26-*.md` · commit: —
+Entry: `workflow/26-de-gesimuleerde-pc.md` · commit: (nog in te vullen)
 
-- [ ] Borland/Turbo-chrome: menubalk, dubbellijns kader, F-toetsen-statusbalk
-- [ ] Scanlines over het paneel; afgeronde hoeken en CSS-glow eruit
-- [ ] Bitmapfont in plaats van Courier New
-- [ ] `CHECK_OK` groen, `CHECK_FAIL` rood (`--pc-rood` wordt al geïnjecteerd)
-- [ ] Editor scrollt naar boven; uitvoerpaneel snijdt zijn eerste regel niet af
-- [ ] QC: `smoke-pc` groen; de editor blijft een echte `<textarea>`; mobiel
-      toetsenbord werkt nog
+- [x] Menubalk boven in inverse video, met de commando's die **écht bestaan** en
+      per paneel verschillend. Geen `Bestand Bewerken Zoeken Help` dat niets
+      doet: een knop die niets doet is erger dan geen knop
+- [x] F-toetsenstatusbalk onderaan — en dat is de enige plek waar een speler kan
+      lézen dat F9 compileert
+- [x] Dubbellijns kaders, afgeronde hoeken op nul, de gloed rond de kast en de
+      text-shadow op het schermvlak eruit
+- [x] Scanlines over het paneel, aan dezelfde `data-crt`-schakelaar als het
+      canvas: `crt uit` zet ze allebei uit
+- [x] `CHECK_OK` groen, `CHECK_FAIL` rood. `--pc-rood` werd geïnjecteerd en
+      door geen enkele regel gebruikt; de uitvoer was één `textContent`, dus per
+      regel kleuren kón niet. Nu een span per regel, met echte newlines ertussen
+      zodat `textContent` blijft werken voor de tests
+- [x] Editor opent bovenaan. Een textarea scrollt na het zetten van `.value`
+      naar de cursor, en die staat aan het eind — level 1 opende op regel 16,
+      met Alberta's notitie en de klassekop buiten beeld
+- [x] Uitvoerpaneel: **twee** fouten. De eerste regel liep door de bovenrand
+      (border plus padding is minder dan één regelhoogte), en `flex: 0 1 34%`
+      liet het paneel krimpen zodat de láátste regel wegviel — de CHECK_FAIL,
+      het enige dat de speler op dat moment wil lezen. Nu een ondergrens in
+      regels, en de scrollpositie is voorwaardelijk: past het, dan van boven;
+      past het niet, dan naar het eind
+- [x] **F1 is de hint.** De geladen-melding beweerde dat `?` een hint gaf, maar
+      in de editor zette dat gewoon een vraagteken in de code. Er was dus geen
+      enkele manier om in de editor een hint te vragen
+- [x] Courier New uit de schriftstack: een schrijfmachineletter met schreven,
+      waar een DOS-terminal een rasterletter met vlakke einden had
+- [x] QC: `smoke-pc` van 21 naar **32** controles, 322/322 headless groen, lint
+      en check-assets schoon, en de editor is nog een echte `<textarea>`
+      (`page.fill` werkt, en dat werkt alleen op een echt formulierveld)
+
+**De 8×8-bitmapfont komt er niet in**, en dat is de enige plan-eis van het hele
+programma die niet is uitgevoerd. De editor is een echte `<textarea>` — een
+geboekte beslissing in `engine-architectuur.md`, ouder dan dit plan, om
+selectie, klembord en schermlezers te houden — en een textarea zet zijn tekst
+met een échte font. De font wél gebruiken vraagt de tekst op een canvas te
+tekenen met een onzichtbare textarea erbovenop, en dat is precies het "veel werk
+en fragiel" waar die beslissing over gaat. Plan en doc weken hier van elkaar af;
+de doc heeft het betere argument. Zie de entry.
+
+`smoke-touch` kon opnieuw niet draaien (geen WebKit), dus het mobiele
+toetsenbord is niet geautomatiseerd nagekeken. De overlay is niet aangeraakt op
+het punt dat `js/touch.js` gebruikt.
+
+## Nog open na het programma
+
+Elf pakketten zijn af (0, A t/m J). Dit blijft staan, met de reden:
+
+- **De walkthrough-PDF's zijn niet herbouwd.** `walkthrough/deel1-hints.md` mag
+  de nieuwe parser-tolerantie en F3 vermelden, en beide PDF's horen dan opnieuw
+  gebouwd te worden met `walkthrough/tools/bouw-walkthrough.sh`. Die build
+  vraagt `pandoc` en `typst`, en die staan niet in deze container. Geen enkel
+  citaat in de walkthrough is onwaar geworden; het gaat om een aanvulling, niet
+  om een correctie.
+- **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat ontbreekt
+  hier. `js/touch.js` is in dit hele programma niet aangeraakt.
+- **Hoe het geluid klínkt is niet beoordeeld.** Deze container heeft geen
+  geluidsuitgang; wat gecontroleerd is, is de audiograaf en de data.
+- **De sprite gebruikt zijn toegestane maat niet.** 13×25 binnen een budget van
+  16×32. De animatie had de hoogte nodig, niet de breedte; breder maken betekent
+  de figuur opnieuw tekenen.
 
 ## Wat bewust niet gebeurt
 

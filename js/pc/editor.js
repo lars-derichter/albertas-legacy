@@ -130,8 +130,14 @@ globalThis.AL.pc = globalThis.AL.pc || {};
           toestand.seed, def.varianten, def.shuffleLabel || def.id);
     el.kop.textContent = def.titel || def.bron || "";
     el.invoer.value = start || "";
-    el.uitvoer.textContent = (def.titel || def.bron) + " " + S().pc.editorGeladen;
+    schrijfUitvoer([(def.titel || def.bron) + " " + S().pc.editorGeladen]);
     werkGutterBij();
+    // Bovenaan beginnen. Een textarea die net gevuld is, scrollt naar de cursor,
+    // en die staat na het zetten van .value aan het eind — dus opende de editor
+    // middenin het bestand, met de klassekop en de opdracht buiten beeld.
+    el.invoer.selectionStart = el.invoer.selectionEnd = 0;
+    el.invoer.scrollTop = 0;
+    if (el.gutter) el.gutter.scrollTop = 0;
   }
 
   function toon() { if (el.wortel) el.wortel.style.display = "flex"; }
@@ -181,6 +187,14 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     if (e.key === "F9" || (e.key === "Enter" && (e.ctrlKey || e.metaKey))) {
       e.preventDefault();
       compileer();
+      return;
+    }
+    // F1 is de hint. In de editor was '?' er nooit een: dat zette gewoon een
+    // vraagteken in de code, terwijl de geladen-melding beweerde dat het een hint
+    // gaf. Alleen de terminal en de zolder kennen '?'.
+    if (e.key === "F1") {
+      e.preventDefault();
+      if (ctx && ctx.hint) ctx.hint();
       return;
     }
     if (e.key === "Escape") {
@@ -245,15 +259,52 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     }
   }
 
+  // CHECK_OK groen, CHECK_FAIL rood. Dit is de kernfeedbacklus van het hele
+  // spel — slaagt mijn code of niet — en die was één amberkleurige muur tekst:
+  // beide regels hadden exact dezelfde kleur. --pc-rood werd al door engine.js
+  // geïnjecteerd en werd door geen enkele CSS-regel gebruikt.
+  //
+  // Per regel een <span> met een klasse, gescheiden door echte regeleindes, zodat
+  // textContent nog steeds de volledige tekst met newlines teruggeeft — daar
+  // hangen de rooksmaaktesten aan.
+  function klasseVoor(regel) {
+    if (regel.indexOf(S().pc.checkOk) === 0) return "pc-uit-ok";
+    if (regel.indexOf(S().pc.checkFail) === 0) return "pc-uit-fout";
+    if (regel === S().pc.alleChecksOk) return "pc-uit-ok";
+    if (regel.indexOf(S().pc.javacKop) === 0) return "pc-uit-kop";
+    if (regel.indexOf(S().pc.javacGeenFouten) === 0) return "pc-uit-kop";
+    return null;
+  }
+
+  function voegRegelToe(regel, eerste) {
+    if (!eerste) el.uitvoer.appendChild(document.createTextNode("\n"));
+    var klasse = klasseVoor(regel);
+    if (!klasse) {
+      el.uitvoer.appendChild(document.createTextNode(regel));
+      return;
+    }
+    var span = document.createElement("span");
+    span.className = klasse;
+    span.textContent = regel;
+    el.uitvoer.appendChild(span);
+  }
+
   function schrijfUitvoer(regels) {
-    el.uitvoer.textContent = regels.join("\n");
-    el.uitvoer.scrollTop = el.uitvoer.scrollHeight;
+    el.uitvoer.textContent = "";
+    for (var i = 0; i < regels.length; i++) voegRegelToe(regels[i], i === 0);
+    // Past de uitslag volledig in het paneel, dan lezen we van boven naar onder:
+    // eerst javac, dan de controles op volgorde. Past ze níet, dan naar het eind,
+    // want dan is de laatste regel — de CHECK_FAIL of de slotmelding — het enige
+    // dat de speler op dat moment wil zien.
+    el.uitvoer.scrollTop = (el.uitvoer.scrollHeight > el.uitvoer.clientHeight)
+      ? el.uitvoer.scrollHeight
+      : 0;
   }
 
   // Voegt een losse regel toe aan het uitvoerpaneel (bv. een hint).
   function schrijfRegel(tekst) {
     if (!el.uitvoer) return;
-    el.uitvoer.textContent += "\n" + tekst;
+    voegRegelToe(tekst, el.uitvoer.childNodes.length === 0);
     el.uitvoer.scrollTop = el.uitvoer.scrollHeight;
   }
 

@@ -282,7 +282,7 @@ De scène-ids zijn bindend en identiek aan `spelontwerp-legacy.md`.
 | `zolder-midden` | doorgang: balken (22–27), de broncode-doos centraal, licht dat van west naar oost trekt; spil, iets plechtigs |
 | `overloop` (optioneel) | trap/berging, koeler (steen-ramp 49–52), minder avondlicht; ademruimte |
 | `spread-template` | full-screen notitieboek-spread (zie hieronder); herkleed per level |
-| `pc-chrome` | de VGA-styling rond editor/terminal — DOM-overlay, geen canvas (zie `engine-architectuur.md`) |
+| `pc-chrome` | de VGA-styling rond editor/terminal — DOM-overlay, geen canvas (zie `engine-architectuur.md`). Turbo Vision als referentie: menubalk boven in inverse video, dubbellijns kaders, F-toetsenstatusbalk onder, scanlines aan dezelfde `crt`-schakelaar als het canvas. Geen afgeronde hoeken en geen gloed — dat is een filter uit 2015, geen monitor uit 1990. `CHECK_OK` in de gebladerte-ramp (44), `CHECK_FAIL` in helderrood (12) |
 | `eindkaart` | drager voor Alberta's oordeel en de epiloog; de lichtstraal wint terrein, warmer dan de titelkaart |
 
 De sim-kamers van _Seven Little Goats_ (geitenhuisje, molen, rivieroever …)
