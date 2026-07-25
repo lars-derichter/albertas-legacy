@@ -57,6 +57,14 @@ globalThis.AL = globalThis.AL || {};
       { sleutel: "kist", woorden: ["kist", "koffer"] },
       { sleutel: "dakraam", woorden: ["dakraam", "raam", "licht", "streep",
         "zon"] },
+      // De aankleding van WP 35b. "kap" staat bewust niet bij de lamp: het is
+      // een deel van "kapstok", en de eerste treffer wint.
+      { sleutel: "lamp", woorden: ["schemerlamp", "lamp"] },
+      { sleutel: "jassen", woorden: ["jas", "kapstok", "mantel"] },
+      { sleutel: "tapijten", woorden: ["tapijt", "kleed", "rol"] },
+      { sleutel: "kaders", woorden: ["kader", "lijst", "schilderij"] },
+      { sleutel: "plank", woorden: ["plank", "weckpot", "bokaal", "pot",
+        "trommel"] },
       { sleutel: "balken", woorden: ["balk", "dak", "plafond", "haak"] },
       { sleutel: "dozen", woorden: ["doos", "dozen", "karton"] }
     ],
@@ -64,6 +72,10 @@ globalThis.AL = globalThis.AL || {};
       { sleutel: "broncode", woorden: ["broncode"] },
       { sleutel: "label", woorden: ["label", "etiket", "handschrift", "tape"] },
       { sleutel: "trap", woorden: ["trap", "treden", "opening"] },
+      { sleutel: "ladder", woorden: ["ladder", "sport"] },
+      { sleutel: "spiegel", woorden: ["spiegel", "laken", "doek"] },
+      { sleutel: "ventilator", woorden: ["ventilator", "ventilatie"] },
+      { sleutel: "koffers", woorden: ["koffer", "valies"] },
       { sleutel: "balken", woorden: ["balk", "dak", "plafond"] }
     ],
     "zolder-oost": [
@@ -71,11 +83,23 @@ globalThis.AL = globalThis.AL || {};
       { sleutel: "toetsenbord", woorden: ["toetsenbord", "toetsen", "klavier"] },
       { sleutel: "mok", woorden: ["mok", "koffie", "tas", "beker"] },
       { sleutel: "stoel", woorden: ["stoel", "zetel"] },
+      // "naaimachine" staat vóór "pc": pc aanvaardt "machine", en dat is een
+      // deel van "naaimachine". Wie kortweg "machine" typt, krijgt nog altijd
+      // de pc — dat is de machine die deze kamer draagt.
+      { sleutel: "naaimachine", woorden: ["naaimachine", "naai", "garen",
+        "klos"] },
+      { sleutel: "prikbord", woorden: ["prikbord", "bord", "briefje"] },
+      { sleutel: "archiefkast", woorden: ["archiefkast", "archief", "kastje",
+        "lade"] },
+      { sleutel: "klok", woorden: ["klok", "uurwerk"] },
+      { sleutel: "mappen", woorden: ["map", "ordner"] },
       { sleutel: "bureau", woorden: ["bureau", "tafel", "werkblad"] },
       { sleutel: "pc", woorden: ["pc", "computer", "toren", "kast", "machine"] }
     ],
     "overloop": [
       { sleutel: "trap", woorden: ["trap", "treden"] },
+      { sleutel: "wasmand", woorden: ["wasmand", "mand", "linnen"] },
+      { sleutel: "tapijten", woorden: ["tapijt", "kleed", "rol"] },
       { sleutel: "wand", woorden: ["wand", "muur", "pleister"] },
       { sleutel: "dozen", woorden: ["doos", "dozen", "karton", "stapel"] }
     ]

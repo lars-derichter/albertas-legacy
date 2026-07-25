@@ -39,6 +39,86 @@ AL.scenes["zolder-oost"] = {
     ["noise", 23, 0.12, 35, [0, 46, 319, 46, 319, 56, 0, 56]],
     ["rect", 24, 20, 8, 12, 118],
     ["shadow", 1, [20, 8, 24, 8, 24, 126, 20, 126]],
+    // Een tweede staander rechts. De westhoek en de doorgang hebben er allebei
+    // twee; hier stond er één, en dat maakte van de oostelijke helft van de
+    // wand één ononderbroken vlak van honderdtwintig bij zeventig pixels.
+    ["rect", 24, 276, 8, 12, 118],
+    ["shadow", 1, [276, 8, 280, 8, 280, 126, 276, 126]],
+
+    // ---- De rest van de werkhoek (WP 35b) ---------------------------------
+    // Het bureau, de stoel, de pc en de mok blijven zoals WP 35 ze heeft
+    // gezet — die groep is de kamer. Wat hier bij komt, staat eromheen: tegen
+    // de wand links, en in de strook vloer tussen de wandlijn (y126) en de
+    // loopstrook (y150). In die strook komt de speler niet, dus geen enkel
+    // voorwerp hieronder heeft een blok nodig en er gaat geen loopruimte
+    // verloren. Na de schaalpas was deze kamer correct én leeg: een bureau in
+    // een lege loods.
+
+    // Een prikbord met papier erop. In een werkhoek hoort dit ding; het is ook
+    // het enige vlak op deze wand dat licht is, en dat trekt het oog naar links
+    // zonder met de monitor te concurreren — hij staat aan de andere kant.
+    ["rect", 23, 44, 68, 40, 28],
+    ["rect", 39, 46, 70, 36, 24],
+    ["rect", 37, 50, 74, 9, 7],
+    ["rect", 36, 62, 73, 8, 10],
+    ["rect", 38, 52, 84, 11, 7],
+    ["rect", 35, 68, 86, 8, 6],
+    ["px", 56, [[54, 74], [65, 73], [57, 84], [71, 86]]],
+    ["shadow", 1, [44, 68, 48, 68, 48, 96, 44, 96]],
+    // Eén stap over het hele bord: het hangt aan de dónkere kant van de kamer,
+    // en op volle papierhelderheid trok het het oog weg bij de monitor — die is
+    // de lichtbron hier, en dus hoort hij het lichtste vlak te blijven.
+    ["shadow", 1, [44, 68, 84, 68, 84, 96, 44, 96]],
+    ["shadow", 2, [44, 96, 84, 96, 84, 101, 44, 101]],
+
+    // Een wandklok die het niet meer doet, tussen het prikbord en de plank. Ze
+    // breekt de lege lap wand op ooghoogte; verder doet ze niets.
+    ["ellipse", 50, 128, 80, 8, 8],
+    ["ellipse", 52, 128, 80, 6, 6],
+    ["px", 48, [[128, 76], [128, 77], [128, 78], [128, 79], [129, 80],
+      [130, 80], [131, 80]]],
+    ["px", 49, [[128, 74], [122, 80], [134, 80], [128, 86]]],
+    ["shadow", 1, [120, 80, 124, 76, 124, 84, 120, 84]],
+    ["shadow", 2, [120, 88, 136, 88, 136, 92, 120, 92]],
+
+    // Een archiefkastje met drie laden en een tafelventilator erop. Zestien bij
+    // vijfentwintig pixels: tachtig centimeter bij een meter vijfentwintig.
+    ["rect", 49, 56, 124, 16, 25],
+    ["line", 51, [56, 124, 71, 124]],
+    ["line", 51, [71, 125, 71, 148]],
+    ["line", 48, [57, 132, 70, 132]],
+    ["line", 48, [57, 140, 70, 140]],
+    ["rect", 51, 61, 129, 6, 2],
+    ["rect", 51, 61, 137, 6, 2],
+    ["rect", 51, 61, 145, 6, 2],
+    ["shadow", 1, [56, 124, 60, 124, 60, 148, 56, 148]],
+    ["ellipse", 50, 64, 116, 6, 6],
+    ["ellipse", 49, 64, 116, 4, 4],
+    ["ellipse", 51, 64, 116, 2, 2],
+    ["rect", 49, 63, 120, 3, 3],
+    ["ellipse", 50, 64, 123, 4, 1],
+    ["shadow", 2, [52, 147, 76, 147, 78, 152, 50, 152]],
+
+    // Een kader met de achterkant naar voren en een opgerold tapijt ernaast.
+    ["rect", 22, 84, 128, 15, 19],
+    ["rect", 24, 86, 130, 11, 15],
+    ["line", 23, [86, 133, 96, 141]],
+    ["rect", 23, 102, 124, 6, 23],
+    ["ellipse", 24, 104, 124, 3, 2],
+    ["line", 25, [107, 125, 107, 146]],
+    ["shadow", 2, [80, 145, 112, 145, 116, 151, 76, 151]],
+
+    // Een stapel dozen tegen de wand: dezelfde eenheid van 16 × 13 px als in de
+    // andere drie kamers.
+    ["rect", 25, 120, 121, 16, 13],
+    ["rect", 26, 120, 134, 16, 13],
+    ["rect", 25, 136, 134, 16, 13],
+    ["shadow", 1, [120, 121, 126, 121, 126, 146, 120, 146]],
+    ["line", 27, [120, 121, 135, 121]],
+    ["line", 27, [136, 134, 151, 134]],
+    ["line", 22, [120, 133, 135, 133]],
+    ["line", 22, [120, 146, 151, 146]],
+    ["shadow", 2, [116, 145, 156, 145, 160, 151, 112, 151]],
 
     // ---- Het bureau --------------------------------------------------------
     // Een oude werktafel: een blad met een dikke voorrand, twee poten en een
@@ -89,6 +169,66 @@ AL.scenes["zolder-oost"] = {
     ["px", 50, [[182, 140], [182, 141], [182, 142]]],
     ["px", 52, [[186, 140], [186, 141]]],
     ["shadow", 1, [181, 142, 187, 142, 187, 144, 181, 144]],
+
+    // ---- Een plank met mappen boven het bureau -----------------------------
+    // Ná het bureau in de opsomming, want ze hangt ervóór in het beeld. Ze valt
+    // binnen de gloedkoepels van de monitor (die staan achteraan), dus de
+    // mappen krijgen dezelfde amberrand als het blad eronder: zo hoort de plank
+    // bij de werkplek in plaats van ergens los aan de wand te hangen.
+    ["rect", 24, 162, 112, 60, 3],
+    ["line", 27, [162, 112, 221, 112]],
+    ["rect", 23, 168, 115, 2, 5],
+    ["rect", 23, 214, 115, 2, 5],
+    ["shadow", 2, [162, 115, 221, 115, 221, 120, 162, 120]],
+    ["rect", 35, 166, 100, 4, 12],
+    ["rect", 50, 171, 101, 4, 11],
+    ["rect", 31, 176, 99, 5, 13],
+    ["rect", 36, 182, 101, 4, 11],
+    ["rect", 49, 187, 100, 4, 12],
+    ["rect", 39, 192, 102, 3, 10],
+    ["px", 41, [[167, 104], [172, 105], [177, 103], [183, 105], [188, 104]]],
+    ["rect", 24, 200, 102, 14, 10],
+    ["line", 26, [213, 102, 213, 111]],
+
+    // ---- Alberta's andere hoek: het naaitafeltje ---------------------------
+    // Rechts van de pc, tegen de wand: een tafeltje van 34 × 16 px (1,70 m bij
+    // 0,80 m) met haar naaimachine erop. De machine is een C: voetstuk, zuil,
+    // arm. Op twintig pixels breed is dat silhouet alles wat ze is.
+    ["gradient", 26, 27, 236, 133, 34, 4, "v"],
+    ["rect", 23, 236, 137, 34, 2],
+    ["rect", 24, 239, 139, 3, 10],
+    ["rect", 24, 265, 139, 3, 10],
+    ["rect", 48, 242, 129, 22, 4],
+    ["rect", 49, 256, 121, 6, 9],
+    ["rect", 49, 244, 121, 14, 4],
+    ["rect", 48, 245, 125, 2, 4],
+    ["ellipse", 51, 263, 124, 3, 3],
+    ["line", 51, [244, 121, 257, 121]],
+    ["px", 56, [[248, 131], [252, 131], [256, 131]]],
+    ["shadow", 1, [242, 129, 245, 129, 245, 132, 242, 132]],
+    ["shadow", 2, [232, 147, 274, 147, 278, 152, 228, 152]],
+    // Een plankje met garenklosjes erboven: wat op een naaitafel hoort, hoort
+    // er ook boven te hangen.
+    ["rect", 24, 240, 104, 36, 3],
+    ["line", 27, [240, 104, 275, 104]],
+    ["shadow", 2, [240, 107, 275, 107, 275, 111, 240, 111]],
+    ["rect", 44, 244, 99, 3, 5],
+    ["rect", 31, 249, 99, 3, 5],
+    ["rect", 50, 254, 99, 3, 5],
+    ["rect", 39, 259, 99, 3, 5],
+    ["rect", 35, 264, 98, 4, 6],
+
+    // Nog een stapel in de rechterhoek: de werkhoek loopt door tot tegen de
+    // oostwand, en die stond leeg.
+    ["rect", 25, 284, 121, 16, 13],
+    ["rect", 26, 284, 134, 16, 13],
+    ["rect", 25, 300, 134, 16, 13],
+    ["shadow", 1, [284, 121, 290, 121, 290, 146, 284, 146]],
+    ["line", 27, [284, 121, 299, 121]],
+    ["line", 27, [300, 134, 315, 134]],
+    ["line", 22, [284, 133, 299, 133]],
+    ["line", 22, [284, 146, 315, 146]],
+    ["shadow", 2, [280, 145, 319, 145, 319, 151, 276, 151]],
 
     // ---- Naar het westen ---------------------------------------------------
     ["gradient", 28, 29, 0, 56, 20, 70, "h"],

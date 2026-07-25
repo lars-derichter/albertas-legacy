@@ -203,7 +203,7 @@ Entry: `workflow/34-nieuwe-spelersprite.md` · commit: `9c5d4a2`
 
 ### - [x] WP 35 — Schaalpas over de scènes
 
-Entry: `workflow/35-schaalpas.md` · commit: (nog in te vullen)
+Entry: `workflow/35-schaalpas.md` · commit: `8b27572`
 
 - [x] Maatregel 1 px ≈ 5 cm in `art-stijlgids.md`, met referentietabel, de
       regel dat buren belangrijker zijn dan waarheid, en elke
@@ -238,19 +238,45 @@ Entry: `workflow/35-schaalpas.md` · commit: (nog in te vullen)
       smoke-full-playthrough 97/97, screenshots van de vier kamers, de
       zithouding en vier voor-na-stroken in `test-results/wp35-*.png`
 
-### - [ ] WP 35b — De zolder aangekleed (ingelast)
+### - [x] WP 35b — De zolder aangekleed (ingelast)
 
 Ingelast door de manager na de QC van WP 35: de maatregel maakte de
 kamers correct maar leeg — een zolder hoort vol te staan. Afwijking van
 het goedgekeurde plan, gelogd hier en in de entry van WP 35.
 
-- [ ] Vier kamers aangekleed met rommel op de juiste schaal (stapels,
+Entry: `workflow/35b-de-zolder-aangekleed.md` · commit: (nog in te vullen)
+
+- [x] Vier kamers aangekleed met rommel op de juiste schaal (stapels,
       koffers, zolderspullen), zonder de composities en lichttaal te
-      breken
-- [ ] Blokken/lint volgen de nieuwe geometrie; elk zelfstandig
-      naamwoord in de kamerbeschrijvingen blijft aanwijsbaar
-- [ ] QC: `node --test` + lint + smokes groen + screenshots beoordeeld
-      door de manager
+      breken. Straal en kist in de westhoek, trapopening en corridor in
+      de doorgang, de bureaugroep in de werkhoek en het trapgat op de
+      overloop zijn onaangeroerd
+- [x] Alles staat in de strook vloer tussen de wandlijn en de
+      loopstrook, waar de speler niet komt: **geen enkel nieuw blok**,
+      geen stap loopruimte minder, smoke-walk-coördinaten ongewijzigd
+- [x] Nieuw in de kamers: hogere dozenstapels met koffers erop,
+      wandplanken met weckpotten en blikken, een kapstok met twee
+      jassen, opgerolde tapijten, schilderijlijsten met de rug naar
+      voren, een schemerlamp, wasmanden, een ladder, een emmer, twee
+      staande spiegels onder een laken, twee tafelventilatoren, een
+      prikbord, een stilstaande wandklok, een archiefkastje, een
+      naaimachine op een tafeltje met garenklosjes erboven, een plank
+      met mappen boven het bureau, en dekens over drie stapels
+- [x] Veertien nieuwe `onderzoek`-teksten met hun woordkoppeling; geen
+      kamerbeschrijving gewijzigd, elk zelfstandig naamwoord blijft
+      aanwijsbaar. De wand boven het trapgat blijft leeg omdat
+      `onderzoek wand` zegt dat daar nooit iets is opgehangen
+- [x] `art-stijlgids.md` mee: de drapé-regel (bovenste rij één stap
+      lichter, in de ramp van de kamer), de kleurafspraak voor het
+      overige zoldergoed, en twaalf rijen bij de maattabel
+- [x] Op-tellingen picture + overlays: west 82 → 171, doorgang
+      59 → 135, werkhoek 49 → 142, overloop 80 → 137; alle scènes
+      455 → 770. De overlays — het enige dat élk frame getekend wordt —
+      zijn onveranderd
+- [x] QC: **382/382 groen**, `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-walk 25/25, smoke-full-playthrough
+      97/97, vier kamerscreenshots en vier voor-na-stroken in
+      `test-results/wp35b-*.png`
 
 ### - [ ] WP 36 — Handschriftfont
 

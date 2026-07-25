@@ -160,7 +160,20 @@ AL.strings = {
         "lichtstreep die erdoor valt is de enige die er nog is; hij schuift " +
         "traag naar de muur toe.",
       balken: "Ruw hout, ongeschilderd. Er hangt een haak in, waar niets aan " +
-        "hangt."
+        "hangt.",
+      // De aankleding van WP 35b. Ze staan allemaal in de donkere helft van de
+      // kamer, links van de lichtbundel.
+      plank: "Weckpotten op een plank, leeg en zonder deksel. Ernaast een " +
+        "blikken trommel met een deuk in de zijkant.",
+      jassen: "Twee winterjassen aan de kapstok. Ze hangen er lang genoeg om " +
+        "de vorm van de schouders te zijn kwijtgeraakt.",
+      tapijten: "Drie tapijten, opgerold en met touw dichtgebonden. Ze staan " +
+        "rechtop omdat ze liggend de halve zolder zouden innemen.",
+      kaders: "Schilderijlijsten, met de achterkant naar voren. Wat erin " +
+        "zit, heeft niemand omgedraaid — jij ook niet.",
+      lamp: "Een schemerlamp met een kap van perkament, aan één kant " +
+        "verkleurd. Het snoer ligt opgerold naast de voet. Er is hier geen " +
+        "stopcontact."
     },
     "zolder-midden": {
       broncode: "De tape is geel en bros, maar hij zit er nog helemaal op. " +
@@ -171,7 +184,15 @@ AL.strings = {
       balken: "Hier komen de balken samen en zakt het dak tot net boven je " +
         "hoofd. Je hoort de wind erlangs gaan.",
       label: "Haar handschrift, in inkt, met de rustige hand van iemand die " +
-        "de tijd nam."
+        "de tijd nam.",
+      ladder: "Een houten ladder, zes sporten. De bovenste twee zijn lichter " +
+        "dan de rest: daar heeft nooit iemand op gestaan.",
+      spiegel: "Een staande spiegel onder een laken. Je tilt een hoek op. De " +
+        "spiegel is er nog, en jij ook.",
+      ventilator: "Een tafelventilator met een korf van draad. Je draait aan " +
+        "de bladen; ze draaien nog, en dat is het enige geluid hier.",
+      koffers: "Twee koffers op elkaar, sluitingen naar voren. Ze zijn " +
+        "lichter dan ze eruitzien: er zit niets meer in."
     },
     "zolder-oost": {
       pc: "Een beige toren met een bolle monitor erop. Hij staat aan. Wie " +
@@ -185,7 +206,18 @@ AL.strings = {
       toetsenbord: "De letters op de meest gebruikte toetsen zijn " +
         "afgesleten. E, A, R, en de spatiebalk.",
       mok: "Halfvol. Er staat geen ring in, geen schimmel, niets dat " +
-        "vertelt hoe lang hij er staat. Je laat hem staan."
+        "vertelt hoe lang hij er staat. Je laat hem staan.",
+      prikbord: "Een prikbord vol papiertjes, allemaal in haar hand. " +
+        "Lijstjes, telefoonnummers, en één briefje waar enkel een datum op " +
+        "staat.",
+      archiefkast: "Een metalen archiefkastje met drie laden. De bovenste " +
+        "twee zitten vol mappen; de onderste klemt en gaat niet open.",
+      klok: "Een wandklok die stilstaat. Wie hier de stekker uit heeft " +
+        "getrokken, heeft de pc laten staan.",
+      naaimachine: "Een naaimachine op een tafeltje, met het garen er nog " +
+        "in. Ze deed hier meer dan programmeren.",
+      mappen: "Mappen op een plank boven het bureau, op kleur gezet. Wat " +
+        "erin zit, is papier van vóór de pc."
     },
     "overloop": {
       dozen: "Hoger opgestapeld dan de rest, en dieper in het archief. Wat " +
@@ -193,7 +225,11 @@ AL.strings = {
       trap: "Naar beneden loopt hij terug naar de doorgang. Naar boven loopt " +
         "hij niet verder; hier houdt het huis op.",
       wand: "Kaal pleisterwerk, koud aan je hand. Aan deze kant van de " +
-        "zolder is nooit iets opgehangen."
+        "zolder is nooit iets opgehangen.",
+      tapijten: "Opgerolde tapijten tegen de wand, koud en stug. Ze staan " +
+        "hier om ooit nog gelegd te worden.",
+      wasmand: "Een wasmand met linnen erin, netjes gevouwen. Hier boven is " +
+        "het droog genoeg om te blijven wat het was."
     }
   },
 

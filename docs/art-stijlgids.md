@@ -148,6 +148,16 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
   3/11 dag; gras 44/45 met vlekken 42; boomstammen 24 met schaduw 22, kruinen
   43 met zon 46.
 - **De wolf:** koelgrijs-ramp (49/50/51), buik 52, ogen 14.
+- **Drapé (een deken over een stapel, een laken over een spiegel):** de
+  bovenste rij één stap lichter dan de plooi eronder, in de ramp van de kámer:
+  avond (29/30/31) op de zolder beneden, steen (49/50/51) op de overloop, en
+  papier (35–38) voor een stoflaken. Zonder dat hoogteverschil leest de stof
+  als nog een doos in een andere kleur. Zie WP 35b
+  (`workflow/35b-de-zolder-aangekleed.md`).
+- **Het overige zoldergoed:** karton 25/26 en hout 23/24 blijven wat ze zijn
+  (zie de maatregel hieronder); blik, emmers, gieters en archiefkasten komen
+  uit de steen-ramp (48–52), lampenkappen en stoflakens uit de papier-ramp
+  (35–38). Een wandplank is 3 px dik en hangt op twee klossen van 2 × 5 px.
 
 ## De maatregel: 1 px ≈ 5 cm
 
@@ -184,6 +194,17 @@ maat.
 | toetsenbord | 13 × 3 px | 0,65 × 0,15 m | |
 | koffiemok | 4 × 5 px | 0,2 × 0,25 m | ~2× — de kleinste leesbare mok |
 | papier op een blad | 6–8 px breed | 0,3–0,4 m | |
+| koffer | 15 × 9 px | 0,75 × 0,45 m | WP 35b |
+| opgerold tapijt | 6–8 px dik, 25–40 hoog | 0,3 × 1,3–2,0 m | staand |
+| schilderijlijst | 14–15 × 16–19 px | 0,7 × 0,9 m | leunend, rug naar voren |
+| schemerlamp | 14 × 30 px | 0,7 × 1,5 m | kap + voet |
+| wasmand | 14 × 9 px | 0,7 × 0,45 m | |
+| archiefkastje | 16 × 25 px | 0,8 × 1,25 m | drie laden |
+| staande spiegel | 14 × 27 px | 0,7 × 1,35 m | onder een laken |
+| ladder | 17 px breed, 64 hoog | 0,85 × 3,2 m | bomen 3 px, sporten 1 px |
+| naaimachine | 22 × 12 px | 1,1 × 0,6 m | op een tafeltje van 34 × 16 |
+| wandplank | 3 px dik | 0,15 m | 36–64 px lang |
+| weckpot | 4 × 6 px | 0,2 × 0,3 m | ~1,5× — kleinste leesbare pot |
 
 Een stapel wordt hoger door te stapelen, niet door de doos te vergroten. De
 torens op de overloop zijn "hoger dan jij" doordat er vier dozen op elkaar

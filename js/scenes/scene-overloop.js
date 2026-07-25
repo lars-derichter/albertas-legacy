@@ -37,6 +37,84 @@ AL.scenes["overloop"] = {
     ["line", 49, [0, 154, 319, 154]],
     ["line", 49, [0, 176, 319, 176]],
 
+    // ---- Het diepe archief: wat er tegen de wand staat (WP 35b) ------------
+    // Alles hieronder staat mét zijn voet in de strook tussen de wandlijn
+    // (y128) en de loopstrook (y152). Daar komt de speler niet: geen blok, geen
+    // stap loopruimte minder, en de uitgang naar de trap (x148–175) blijft vrij.
+    // Het staat vóór de trap in de opsomming, zodat de leuning en de torens er
+    // overheen komen — van achter naar voor, zoals de stijlgids vraagt.
+
+    // Opgerolde tapijten tegen de wand, staand: zes pixels dik, veertig hoog —
+    // een rol van twee meter. Ze breken de lege lap pleisterwerk boven de
+    // linkertorens, die honderd bij negentig pixels in één verloop was.
+    ["rect", 23, 62, 100, 8, 29],
+    ["rect", 24, 71, 96, 7, 33],
+    ["rect", 22, 79, 104, 6, 25],
+    ["ellipse", 25, 65, 100, 4, 2],
+    ["ellipse", 26, 74, 96, 3, 2],
+    ["line", 26, [69, 101, 69, 128]],
+    ["line", 25, [77, 97, 77, 128]],
+    ["line", 22, [62, 114, 69, 114]],
+    ["line", 22, [71, 110, 77, 110]],
+    ["shadow", 2, [58, 126, 88, 126, 90, 132, 56, 132]],
+
+    // De wand boven het trapgat blijft leeg, en dat is met opzet: `onderzoek
+    // wand` zegt dat er aan deze kant van de zolder nooit iets is opgehangen.
+    // Er staat ook niets onder — daar is een gat in de vloer. Het is het enige
+    // grote lege vlak dat na dit werkpakket overblijft, en het hoort er te
+    // zijn: de overloop is de kale, koude kamer.
+
+    // Nog een toren, een rij naar achter, tussen de linkertorens en de trap,
+    // met een koffer bovenop.
+    ["rect", 25, 106, 123, 16, 13],
+    ["rect", 26, 106, 136, 16, 13],
+    ["shadow", 1, [106, 123, 112, 123, 112, 148, 106, 148]],
+    ["line", 27, [106, 123, 121, 123]],
+    ["line", 22, [106, 135, 121, 135]],
+    ["line", 22, [106, 148, 121, 148]],
+    ["rect", 23, 107, 114, 15, 9],
+    ["rect", 24, 108, 115, 13, 7],
+    ["line", 22, [108, 118, 120, 118]],
+    ["px", 56, [[111, 118], [117, 118]]],
+    ["shadow", 2, [102, 147, 126, 147, 128, 152, 100, 152]],
+
+    // Rechts van de trap: een toren van drie hoog met blikken en boeken erop,
+    // en een wasmand ernaast.
+    ["rect", 26, 200, 110, 16, 13],
+    ["rect", 25, 200, 123, 16, 13],
+    ["rect", 26, 200, 136, 16, 13],
+    ["shadow", 1, [200, 110, 206, 110, 206, 148, 200, 148]],
+    ["line", 27, [200, 110, 215, 110]],
+    ["line", 22, [200, 122, 215, 122]],
+    ["line", 22, [200, 135, 215, 135]],
+    ["line", 22, [200, 148, 215, 148]],
+    ["rect", 50, 201, 101, 9, 9],
+    ["line", 52, [209, 101, 209, 109]],
+    ["rect", 41, 211, 100, 3, 10],
+    ["rect", 40, 214, 101, 2, 9],
+    // De wasmand in de steen-ramp en niet in hout hooglicht (27), zoals in de
+    // westhoek. Op de overloop is het karton de enige warme kleur, en een
+    // lichte mand vlak achter de speler las bovendien als een hoed op zijn
+    // hoofd — precies op de plek waar de engine hem neerzet (`start`).
+    ["rect", 51, 220, 140, 14, 9],
+    ["line", 52, [220, 140, 233, 140]],
+    ["px", 49, [[222, 142], [226, 142], [230, 142], [224, 144], [228, 144],
+      [232, 144], [222, 146], [226, 146], [230, 146]]],
+    ["rect", 50, 222, 137, 10, 3],
+    ["shadow", 2, [196, 147, 238, 147, 242, 152, 192, 152]],
+
+    // En de rechterhoek, waar het licht helemaal niet meer komt: drie dozen in
+    // silhouet. Ze staan er om de kamer smal te doen lijken, niet om gezien te
+    // worden — de hoekschaduw achteraan zet ze nog een stap dieper.
+    ["rect", 25, 284, 123, 16, 13],
+    ["rect", 26, 284, 136, 16, 13],
+    ["rect", 25, 300, 136, 16, 13],
+    ["shadow", 1, [284, 123, 290, 123, 290, 148, 284, 148]],
+    ["line", 27, [284, 123, 299, 123]],
+    ["line", 22, [284, 135, 299, 135]],
+    ["line", 22, [284, 148, 315, 148]],
+    ["shadow", 2, [280, 147, 319, 147, 319, 153, 276, 153]],
+
     // ---- De trap naar beneden ----------------------------------------------
     // Een gat in de vloer met een leuning ernaast: hij loopt naar beneden weg,
     // dus de treden worden donkerder naarmate ze dieper liggen.
@@ -127,6 +205,13 @@ AL.scenes["overloop"] = {
     ["line", 22, [76, 127, 91, 127]],
     ["line", 22, [76, 140, 107, 140]],
     ["line", 22, [76, 153, 107, 153]],
+    // Een koffer bovenop deze toren, sluitingen naar voren.
+    ["rect", 23, 78, 106, 15, 9],
+    ["rect", 24, 79, 107, 13, 7],
+    ["line", 22, [79, 110, 91, 110]],
+    ["px", 56, [[82, 110], [88, 110]]],
+    ["line", 22, [85, 105, 88, 105]],
+    ["line", 26, [92, 106, 92, 114]],
 
     ["rect", 25, 236, 128, 16, 13],
     ["rect", 26, 236, 141, 16, 13],
@@ -136,6 +221,14 @@ AL.scenes["overloop"] = {
     ["line", 27, [252, 141, 267, 141]],
     ["line", 22, [236, 140, 251, 140]],
     ["line", 22, [236, 153, 267, 153]],
+    // Een deken over deze toren. Dezelfde drapé-regel als beneden (bovenste rij
+    // een stap lichter), maar in de steen-ramp en niet in de avond-ramp: op de
+    // overloop is het karton de énige warme kleur, en dat hoort zo te blijven.
+    ["rect", 50, 234, 124, 36, 5],
+    ["line", 51, [234, 124, 269, 124]],
+    ["rect", 49, 234, 129, 5, 12],
+    ["px", 50, [[235, 133], [236, 137], [238, 131]]],
+    ["shadow", 1, [234, 124, 240, 124, 240, 140, 234, 140]],
 
     // Contactschaduwen: de torens staan echt op deze vloer.
     ["shadow", 2, [6, 152, 112, 152, 120, 166, 0, 166]],

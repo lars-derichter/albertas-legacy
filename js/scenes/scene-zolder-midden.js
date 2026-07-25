@@ -67,6 +67,115 @@ AL.scenes["zolder-midden"] = {
     ["line", 26, [199, 24, 199, 124]],
     ["line", 26, [140, 24, 199, 24]],
 
+    // ---- De hoek links, waar het licht binnenvalt --------------------------
+    // Twee dozen in de veeg. Hun voet ligt op y147, drie pixels boven de
+    // loopstrook: de speler loopt er vóór langs en dekt ze af, want hij staat
+    // dichterbij.
+    ["rect", 25, 8, 121, 16, 13],
+    ["rect", 26, 8, 134, 16, 13],
+    ["rect", 25, 24, 134, 16, 13],
+    ["shadow", 1, [8, 121, 14, 121, 14, 147, 8, 147]],
+    ["line", 27, [8, 121, 23, 121]],
+    ["line", 27, [24, 134, 39, 134]],
+    ["line", 22, [8, 133, 23, 133]],
+    ["line", 22, [8, 146, 39, 146]],
+    // Een omtrek van één pixel, want hier valt de lichtveeg het hardst binnen
+    // en zonder rand loopt het karton in de opgelichte vloer over.
+    ["line", 22, [8, 121, 8, 147]],
+    ["line", 22, [23, 121, 23, 133]],
+    ["line", 22, [39, 134, 39, 147]],
+    ["shadow", 2, [4, 145, 42, 145, 46, 151, 0, 151]],
+
+    // ---- Links van de trap: het gewone zoldergoed --------------------------
+    // De trapopening (x140–199) en de corridor eronder blijven onaangeroerd:
+    // dat is de doorgang, en een doorgang die je niet meteen ziet, is er geen.
+    // Alles wat hier bij komt, staat ernáást, met zijn voet in de strook vloer
+    // tussen de wandlijn (y124) en de loopstrook (y150). Daar komt de speler
+    // niet, dus er hoort geen blok bij en er gaat geen stap loopruimte
+    // verloren — dat is de goedkoopste manier om een kamer te vullen.
+    ["rect", 26, 60, 85, 16, 13],
+    ["rect", 25, 60, 98, 16, 13],
+    ["rect", 26, 60, 111, 16, 13],
+    ["rect", 25, 60, 124, 16, 13],
+    ["rect", 25, 76, 111, 16, 13],
+    ["rect", 26, 76, 124, 16, 13],
+    ["shadow", 1, [60, 85, 66, 85, 66, 137, 60, 137]],
+    ["line", 27, [60, 85, 75, 85]],
+    ["line", 27, [76, 111, 91, 111]],
+    ["line", 22, [60, 97, 75, 97]],
+    ["line", 22, [60, 110, 75, 110]],
+    ["line", 22, [60, 123, 91, 123]],
+    ["line", 22, [60, 136, 91, 136]],
+    ["rect", 36, 63, 102, 11, 6],
+    ["line", 39, [63, 102, 73, 102]],
+    ["px", 41, [[65, 104], [67, 104], [69, 104], [72, 104],
+      [65, 106], [68, 106], [71, 106]]],
+
+    // Een houten ladder tegen de wand: twee bomen van drie pixels en zes
+    // sporten van één. Het goedkoopste voorwerp van de hele zolder, en meteen
+    // het best herkenbare — een ladder is enkel nog maar zijn silhouet.
+    ["rect", 23, 102, 72, 3, 64],
+    ["rect", 24, 116, 72, 3, 64],
+    ["line", 26, [118, 73, 118, 134]],
+    ["line", 24, [105, 82, 115, 82]],
+    ["line", 24, [105, 92, 115, 92]],
+    ["line", 24, [105, 102, 115, 102]],
+    ["line", 24, [105, 112, 115, 112]],
+    ["line", 24, [105, 122, 115, 122]],
+    ["line", 24, [105, 132, 115, 132]],
+
+    // Een emmer ernaast, tien centimeter smaller aan de voet dan aan de rand.
+    ["poly", 50, [124, 127, 133, 127, 132, 137, 125, 137]],
+    ["line", 52, [132, 128, 132, 136]],
+    ["line", 51, [124, 127, 133, 127]],
+    ["shadow", 2, [56, 135, 138, 135, 142, 143, 52, 143]],
+
+    // ---- Rechts van de trap: een plank, een spiegel, twee koffers ----------
+    ["rect", 24, 204, 92, 52, 3],
+    ["line", 27, [204, 92, 255, 92]],
+    ["rect", 23, 210, 95, 2, 5],
+    ["rect", 23, 248, 95, 2, 5],
+    ["shadow", 2, [204, 95, 255, 95, 255, 100, 204, 100]],
+    ["rect", 50, 208, 86, 4, 6],
+    ["rect", 51, 214, 86, 4, 6],
+    ["px", 52, [[208, 85], [209, 85], [210, 85], [211, 85],
+      [214, 85], [215, 85], [216, 85], [217, 85]]],
+    ["rect", 24, 226, 83, 12, 9],
+    ["line", 26, [237, 83, 237, 91]],
+
+    // Een staande spiegel onder een stoflaken. De drapé-regel uit de
+    // stijlgids: de bovenrand één stap lichter dan de plooien eronder.
+    ["rect", 23, 204, 110, 14, 27],
+    ["poly", 36, [204, 110, 218, 110, 218, 128, 214, 132, 208, 130,
+      204, 133]],
+    ["line", 38, [204, 110, 217, 110]],
+    ["px", 35, [[206, 116], [206, 121], [211, 118], [215, 123], [209, 126]]],
+    ["shadow", 1, [204, 110, 208, 110, 208, 136, 204, 136]],
+
+    // Twee koffers op elkaar met een tafelventilator erop. De korf is drie
+    // ringen; op veertien pixels zijn bladen niet te tekenen en een ring wel.
+    ["rect", 23, 226, 126, 20, 11],
+    ["rect", 24, 227, 127, 18, 9],
+    ["line", 22, [227, 131, 244, 131]],
+    ["px", 56, [[232, 131], [240, 131]]],
+    ["rect", 22, 229, 116, 17, 10],
+    ["rect", 23, 230, 117, 15, 8],
+    ["line", 22, [230, 120, 244, 120]],
+    ["line", 26, [246, 126, 246, 136]],
+    ["ellipse", 50, 238, 107, 7, 7],
+    ["ellipse", 49, 238, 107, 5, 5],
+    ["ellipse", 51, 238, 107, 2, 2],
+    ["rect", 49, 237, 112, 3, 4],
+    ["ellipse", 50, 238, 115, 5, 1],
+
+    ["rect", 25, 250, 110, 16, 13],
+    ["rect", 26, 250, 123, 16, 13],
+    ["shadow", 1, [250, 110, 256, 110, 256, 136, 250, 136]],
+    ["line", 27, [250, 110, 265, 110]],
+    ["line", 22, [250, 122, 265, 122]],
+    ["line", 22, [250, 135, 265, 135]],
+    ["shadow", 2, [200, 135, 270, 135, 274, 143, 196, 143]],
+
     // ---- Wat er níét als sprite staat --------------------------------------
     // Een lage stapel tegen de rechterwand, puur als vulling: de kamer hoort
     // vol te staan, niet leeg met drie voorwerpen erin. Drie dozen van 17 × 13,
