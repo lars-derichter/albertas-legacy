@@ -54,6 +54,9 @@ globalThis.AL = globalThis.AL || {};
   // kant naar de andere.
   var draaiTikken = 0;
 
+  // Tikken sinds de speler begon te lopen, voor het ritme van de voetstappen.
+  var stapTeller = 0;
+
   // Gaat aan de pc zitten: drie frames vóór de overlay het beeld overneemt.
   // Zonder dit zie je nooit dat het kind gaat zitten. zitStap is null als er niet
   // gezeten wordt; zitKlaar is wat er moet gebeuren als de reeks af is.
@@ -302,8 +305,14 @@ globalThis.AL = globalThis.AL || {};
 
       // --- Systeem ---
       } else if (tag === "geluid") {
-        if (arg === "aan") { AL.sound.zetAan(true); if (toestand) toestand.geluid = true; bewaar(); }
+        if (arg === "aan") {
+          AL.sound.zetAan(true);
+          startBedVoorStand();
+          if (toestand) toestand.geluid = true;
+          bewaar();
+        }
         else if (arg === "uit") { AL.sound.zetAan(false); if (toestand) toestand.geluid = false; bewaar(); }
+        else if (AL.sound.bedden.indexOf(arg) !== -1) { AL.sound.muziek(arg); }
         else { AL.sound.speel(arg); }
       } else if (tag === "crt") {
         var crtAan = (arg === "aan");
@@ -325,7 +334,7 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
-    AL.sound.speel("titel");
+    AL.sound.muziek("titel");
   }
 
   // Vanaf de titel: de openingsreeks, dan de zolder.
@@ -377,6 +386,9 @@ globalThis.AL = globalThis.AL || {};
     verbergOverlay();
     spreadLevelId = null;
     wisselNaarScene(toestand.sceneId, "start");
+    // Het zolderbed. Hetzelfde bed opnieuw starten doet niets, dus een
+    // kamerwissel laat de loop gewoon doorlopen in plaats van hem te herstarten.
+    AL.sound.muziek("ambient-zolder");
     bewaar();
     if (beschrijf) {
       var r = AL.world.kijk(toestand);
@@ -442,7 +454,13 @@ globalThis.AL = globalThis.AL || {};
       bewaar();
       richting = "oost";
       loopt = false;
-      startZitten(function () { toonOverlay(); });
+      // Het warme bed start pas als de overlay opengaat, niet bij het zitten:
+      // de wissel hoort samen te vallen met het moment dat het scherm het beeld
+      // overneemt, want dát is waar de kamer van kou naar warmte gaat.
+      startZitten(function () {
+        AL.sound.muziek("pc");
+        toonOverlay();
+      });
     } else {
       verbergOverlay();
       betreedZolder(false);
@@ -489,6 +507,9 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     verbergOverlay();          // de sim/pc-overlay wijkt voor de oordeelkaart
     AL.input.blokkeer = true;
+    // Het eindbed is eenmalig: het lost op en houdt dan op. Daarna is het stil,
+    // en dat is het punt — de epiloog hoort geen muziek onder zich te hebben.
+    AL.sound.muziek("einde");
     bewaar();
   }
 
@@ -553,6 +574,7 @@ globalThis.AL = globalThis.AL || {};
 
   function tik() {
     animTijd += 1 / 15;
+    AL.sound.tik();
     if (draaiTikken > 0) draaiTikken--;
     if (zitStap !== null) { loopt = false; tikZitten(); return; }
     if (titelActief || !toestand) return;
@@ -614,6 +636,18 @@ globalThis.AL = globalThis.AL || {};
     if (dx !== 0 && inWalkbox(scene, actorX + dx, actorY)) nx = actorX + dx;
     if (dy !== 0 && inWalkbox(scene, nx, actorY + dy)) ny = actorY + dy;
     loopt = (nx !== actorX || ny !== actorY);
+    // Voetstappen op de tel van de loopcyclus: die draait op 8 fps met vier
+    // frames, dus twee steunfases per halve seconde. Elke vierde tik is één stap,
+    // en de twee varianten wisselen af — twee identieke stappen achter elkaar
+    // klinken als een metronoom en niet als iemand die loopt.
+    if (loopt) {
+      if (stapTeller % 4 === 0) {
+        AL.sound.speel((stapTeller % 8 === 0) ? "stap" : "stap-2");
+      }
+      stapTeller++;
+    } else {
+      stapTeller = 0;
+    }
     actorX = nx;
     actorY = ny;
     toestand.speler.x = actorX;
@@ -1151,6 +1185,22 @@ globalThis.AL = globalThis.AL || {};
   }
 
   // Herstel de renderstand voor de opgeslagen modus (na een reload).
+  // Welk muziekbed hoort bij de stand waarin het spel nu staat? Eén plek die dat
+  // beslist, want er zijn drie momenten waarop het antwoord nodig is: bij een
+  // moduswissel, na een reload, en als de speler het geluid weer aanzet.
+  //
+  // Dat laatste was een echte fout: "geluid uit" vergeet het bed (dat moet, want
+  // anders blijft er iets doorlopen waar niemand naar luistert), maar "geluid
+  // aan" zette alleen de meestergain terug. Op de zolder bleef het daarna stil
+  // tot je van kamer wisselde.
+  function startBedVoorStand() {
+    if (titelActief) { AL.sound.muziek("titel"); return; }
+    var modus = toestand ? toestand.modus : null;
+    if (modus === "pc" || modus === "sim") AL.sound.muziek("pc");
+    else if (modus === "oordeel" || modus === "epiloog") AL.sound.muziek(null);
+    else AL.sound.muziek("ambient-zolder");
+  }
+
   function hervat() {
     var modus = toestand.modus;
     if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
@@ -1168,6 +1218,7 @@ globalThis.AL = globalThis.AL || {};
     } else {
       betreedZolder(false);
     }
+    startBedVoorStand();
     syncBlokkeer();
   }
 

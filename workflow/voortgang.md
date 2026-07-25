@@ -316,7 +316,7 @@ niet herbouwd worden.
 
 ### - [x] WP H — Sprites en animatie
 
-Entry: `workflow/24-sprites-en-animatie.md` · commit: (nog in te vullen)
+Entry: `workflow/24-sprites-en-animatie.md` · commit: `6e3f0c8`
 
 - [x] Ademende idle: twee frames op 1 Hz, hoofd één pixel lager
 - [x] Loopcyclus van vier frames met **deining** — de doorzwaaiframes zijn één
@@ -349,17 +349,49 @@ walkboxen van de vier kamers zijn niet herzien — de 39-pixelstrook bleek genoe
 voor zichtbare diepte, en een hogere strook zou de speler dwars door de in de
 achtergrond gebakken dozen en kist laten lopen.
 
-### - [ ] WP I — Geluid
+### - [x] WP I — Geluid
 
-Entry: `workflow/25-*.md` · commit: —
+Entry: `workflow/25-geluid.md` · commit: (nog in te vullen)
 
-- [ ] OPL-achtige stemmen in WebAudio, geen samples
-- [ ] Titelthema, zolder-ambience-loop, pc-laag, eindcue — koud register
-- [ ] Foley: voetstappen, bladzijde, doos, toetsen
-- [ ] `ambient-zolder` wordt eindelijk afgevuurd
-- [ ] QC: geen bestanden, geen deps; headless zonder `AudioContext` crasht
-      niet; `geluid uit` maakt het volledig stil; cue-lijst in
-      `engine-architectuur.md`
+- [x] Echte twee-operator-FM: een modulator die via een gain op de `frequency`
+      van een carrier uitkomt. Drie knoppen per stem, dezelfde als op een OPL2:
+      ratio, index, en een eigen envelope op die index. Niet méér dan twee
+      operatoren — zes klinkt als een DX7 en dus als de verkeerde periode
+- [x] Zes stemmen: `koud`, `bas`, `warm`, `blip`, `hout`, `karton`. De
+      niet-harmonische ratio's (1,41 en 1,73) doen de foley: dat is geen toon
+      meer maar een tik op een plank
+- [x] Vier bedden: `titel`, `ambient-zolder`, `pc`, `einde` (eenmalig)
+- [x] Foley erbij: `stap`, `stap-2`, `doos`. Voetstappen op de tel van de
+      loopcyclus, met twee afwisselende varianten
+- [x] **`ambient-zolder` is gepromoveerd, niet afgevuurd.** Die cue was één
+      blokgolf van 0,4 s op 110 Hz; afvuren zou geen sfeer opleveren maar een
+      pieptoon. De naam bleef, de inhoud is een bed van 19,2 s geworden
+- [x] Vooruitkijkende scheduler op de audioklok, getikt vanuit de logische tik
+      van de engine — WebAudio timet exact, een rAF-lus niet
+- [x] Meestergain, want met vooruitkijken is "uit" niet te halen door te
+      stoppen met plannen: er staan al noten in de toekomst, en die kun je
+      alleen naar nul versterken
+- [x] **Een gemiste noot wordt niet ingehaald** — gevonden door de test, niet
+      door mij. Bij een bevroren tabblad werden bij terugkomst alle gemiste
+      noten in één klap geplaatst op een tijd in het verleden, wat WebAudio
+      uitlegt als "nu"
+- [x] `startBedVoorStand()`: één plek beslist welk bed bij de stand hoort.
+      "Geluid aan" zette alleen de gain terug, dus op de zolder bleef het daarna
+      stil tot je van kamer wisselde
+- [x] Nagemaakte AudioContext in de tests: controleert dát het FM is, dat geen
+      exponentiële ramp naar exact nul gaat (ongeldig per spec, Chromium slikt
+      het, andere engines gooien), en dat elke oscillator ook gestopt wordt
+- [x] Het register als test: de notendichtheid van de zolder moet lager zijn dan
+      die van de pc
+- [x] QC: **322/322 groen** (26 nieuwe), lint schoon, check-assets driftvrij,
+      `smoke-browser` van 21 naar **28** controles, geen bestanden en geen deps,
+      headless zonder `AudioContext` crasht niet, en "geluid uit" zet de
+      meestergain in de browser gemeten op exact nul
+
+Wat níet geverifieerd is en dat hoort hier te staan: **hoe het klinkt.** Er is
+in deze container geen geluidsuitgang. Wat gecontroleerd is, is de graaf en de
+data, niet het oordeel van een oor — de mix hoort door iemand met speakers
+nagelopen te worden.
 
 ### - [ ] WP J — De gesimuleerde pc
 

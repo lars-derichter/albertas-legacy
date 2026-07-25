@@ -226,6 +226,34 @@ async function main() {
   check("na reload: fragment 1 nog ontgrendeld (save hersteld)",
     nogOntgrendeld === true);
 
+  // 10. Geluid. Het zolderbed hoort te draaien, en "geluid uit" hoort écht stil
+  //     te maken. Dat laatste is zonder speaker alleen te controleren aan de
+  //     meestergain — en die moet nul zijn, niet "bijna nul": er staan op dat
+  //     moment noten in de toekomst gepland die niet meer in te trekken zijn.
+  await page.waitForFunction(
+    () => window.AL.sound.huidigBed() === "ambient-zolder",
+    null, { timeout: 15000 });
+  const gAan = await page.evaluate(() => window.AL.sound.debug());
+  check("het zolderbed draait op de zolder", gAan.bed === "ambient-zolder",
+    "bed=" + gAan.bed);
+  check("er staan noten vooruit gepland", gAan.geplaatst > 0,
+    "geplaatst=" + gAan.geplaatst);
+  check("de meestergain staat open", gAan.meesterGain > 0,
+    "gain=" + gAan.meesterGain);
+
+  await typCommando(page, "geluid uit");
+  const gUit = await page.evaluate(() => window.AL.sound.debug());
+  check("geluid uit zet de meestergain op nul", gUit.meesterGain === 0,
+    "gain=" + gUit.meesterGain);
+  check("geluid uit vergeet het bed", gUit.bed === null, "bed=" + gUit.bed);
+
+  await typCommando(page, "geluid aan");
+  const gWeer = await page.evaluate(() => window.AL.sound.debug());
+  check("geluid aan zet de meestergain weer open", gWeer.meesterGain > 0,
+    "gain=" + gWeer.meesterGain);
+  check("geluid aan start het bed van de huidige stand weer",
+    gWeer.bed === "ambient-zolder", "bed=" + gWeer.bed);
+
   await browser.close();
 
   const gefaald = rijen.filter((r) => !r.ok).length;

@@ -31,7 +31,7 @@ met behoud van hun contract:
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
-| `js/sound.js` | WebAudio-bliepjes, aan/uit-toggle | uitgebreide cue-lijst (zie effect-tags) |
+| `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
 | engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc) |
 | scène- en sprite-schema | de draw-op- en frame-formaten uit `docs/scene-schema.md` en `docs/sprite-schema.md` | overgenomen; scène-ids zijn nu zolderkamers en spreads |
@@ -92,6 +92,68 @@ Adapteren en crediteren; niet heruitvinden.
   gebruiken: proportionele prose komt smaller uit dan het raster waarop ze
   gewrapt is, en zonder die stap stond er rechts een handbreed papier waar niets
   op staat. `gfx.vensterKader(venster)` geeft die doos terug zonder te tekenen.
+
+## Geluid
+
+`AL.sound` heeft twee soorten geluid, en het verschil is niet cosmetisch:
+
+- **eenmalige cues** — `speel(naam)`. Kort (de keuring houdt ze onder anderhalve
+  seconde), meteen afgevuurd, geen staat.
+- **muziekbedden** — `muziek(naam)`, en `muziek(null)` stopt. Een bed loopt rond
+  tot iets anders het overneemt; `eenmalig: true` maakt er een die oplost en dan
+  ophoudt (de eindkaart).
+
+Hetzelfde bed opnieuw starten doet niets. Dat is wat een kamerwissel toelaat
+zonder de zolder-loop van voren af aan te laten beginnen.
+
+### FM, niet blokgolven
+
+Er stonden negen cues in, allemaal blokgolf-bliepjes: één oscillator, één
+envelope. Dat is de PC-speaker van 1985, niet de geluidskaart van 1990. De
+periode die dit spel naspeelt klonk uit een AdLib of een Sound Blaster, en die
+deden FM — een OPL2 had twee operatoren per stem.
+
+Elke noot is dus twee oscillatoren: een modulator die via een gain op de
+`frequency` van een carrier uitkomt. Drie knoppen per stem, dezelfde als toen:
+`ratio` (heel getal = harmonisch, niet-heel = klok of tik), `index` (hoe diep de
+modulator verbuigt) en een eigen envelope op die index. Meer dan twee operatoren
+is er niet, en dat is opzet: zes-operator-FM klinkt als een DX7 en dus als 1983
+of 1995, niet als de periode ertussen.
+
+### De scheduler
+
+Noten worden vooruit geplaatst op de audioklok, niet afgevuurd op de beeldklok:
+WebAudio timet exact, een `requestAnimationFrame`-lus niet. De engine roept
+`AL.sound.tik()` aan in zijn logische tik; die kijkt of de volgende noten binnen
+het vooruitkijkvenster van 0,35 s vallen en plaatst ze dan.
+
+Twee gevolgen die het onthouden waard zijn:
+
+- **Er is een meestergain nodig.** Op het moment dat de speler "geluid uit"
+  typt, staan er al noten in de toekomst gepland. Die kun je niet intrekken —
+  alleen naar nul versterken. `zetAan(false)` zet daarom de meestergain op nul
+  én vergeet het actieve bed.
+- **Een gemiste noot wordt niet ingehaald.** Schakelt de speler naar een ander
+  tabblad, dan bevriest de beeldklok en dus de tik, terwijl de audioklok
+  doorloopt. Zonder die regel worden bij terugkomst alle gemiste noten in één
+  keer geplaatst, op een tijd in het verleden — wat WebAudio uitlegt als "nu".
+  Dat is een cluster, geen muziek.
+
+### Welk bed hoort bij welke stand
+
+Eén functie in de engine beslist dat (`startBedVoorStand`), want het antwoord is
+op drie momenten nodig: bij een moduswissel, na een reload, en als de speler het
+geluid weer aanzet. Dat laatste was een echte fout — "geluid uit" vergeet het
+bed en "geluid aan" zette alleen de gain terug, dus op de zolder bleef het
+daarna stil tot je van kamer wisselde.
+
+### Het register
+
+De muziek volgt de koudere toon uit WP C: mineur, traag, veel stilte tussen de
+frasen. De zolder hoort niet gezellig te klinken. Het contrast dat overblijft is
+de pc — het enige warme ding in huis, en het enige bed in een majeur-kleur. Dat
+staat ook als test in `test/test-geluid.mjs`: de notendichtheid van de zolder
+moet lager zijn dan die van de pc.
 
 ## De logica-laag
 
@@ -178,7 +240,7 @@ reageert; de logica produceert ze alleen.
 
 | Tag | Wanneer |
 |---|---|
-| `geluid:<cue>` | speel een geluidscue; vaste cues: `pagina`, `deur`, `toets`, `compileer`, `ok`, `fout`, `boot`, `ambient-zolder` |
+| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
 | `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
 | `herbegin` | het spel is teruggezet naar de begintoestand (zie `save-en-hints.md`) |
