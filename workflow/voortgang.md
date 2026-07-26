@@ -449,10 +449,15 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
-## Fixronde na de speeltest (actief)
+## Fixronde na de speeltest (afgerond)
 
 Kickoff: `workflow/41-fixronde-kickoff.md`. Lars speelde op iOS; vier
 problemen, twee beslissingen (Alberta wist het; notitiekop weg, "— A.").
+
+Eindstand (gemeten na WP 45, één run): 425/425 headless, 349/349 over
+acht Chromium-smokes, javac + verboden-grep schoon, alle vier de linten
+op nul afwijkingen. Open voor Lars: de iPhone-luistertest (belschakelaar
+in beide standen) en het loopgevoel op het echte toestel.
 
 ### - [x] WP 41 — Kickoff fixronde
 
@@ -574,7 +579,7 @@ Entry: `workflow/44-spread-flow.md` · commit: `464bf28`
 
 ### - [x] WP 45 — De stem: overdracht van een programmeur
 
-Entry: `workflow/45-de-stem.md` · commit: (nog in te vullen)
+Entry: `workflow/45-de-stem.md` · commit: `b57bd2d`
 
 - [x] `achtergrond.md`: nieuw beslissingsblok — Alberta wist dat ze het
       niet zou afmaken, het notitieboek is een bewuste overdracht, en een
