@@ -8,7 +8,7 @@
 // Dat is de metafoor-woordenschat van de cursus; sinds WP 31 dragen de
 // hoofdstukken zelf een titel met de scharnierterm vooraan. De schetsen tonen
 // nog altijd het beeld, want dat is wat Alberta in de kantlijn tekende.
-// Er stond er tot nu toe geen enkele in het spel. De acht spreads deelden ook
+// Er stond er tot nu toe geen enkele in het spel. De zeven spreads deelden ook
 // één papierachtergrond, met dezelfde koffievlek op dezelfde plek, terwijl de
 // stijlgids beschadiging vraagt "precies waar de puzzel zit" — de vlek hoort de
 // ontbrekende code te verklaren, en verschilt dus per level.

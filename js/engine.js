@@ -119,17 +119,30 @@ globalThis.AL = globalThis.AL || {};
 
   // ---- Scènes --------------------------------------------------------------
 
+  // Welke ontbrekende scène-ids al gemeld zijn: één waarschuwing per id, niet
+  // één per frame (zorgVoorScene draait bij elke moduswissel).
+  var gemeldeScenes = {};
+
   function haalScene(id) {
     var s = AL.scenes && AL.scenes[id];
     if (s) return s;
     // Terugvalscène, zodat de engine nooit crasht als een scène nog ontbreekt.
+    // Ze crasht dus niet, maar ze zwijgt ook niet meer: een getypte scène-id
+    // ("zolder-oosr") gaf vroeger een lege kamer zonder één spoor van waaróm.
+    // De console is op file:// gewoon te openen, dus daar hoort het te staan.
+    if (!gemeldeScenes[id]) {
+      gemeldeScenes[id] = true;
+      if (typeof console !== "undefined" && console.warn) {
+        console.warn("engine: onbekende scène-id '" + id + "' — terugvalkamer " +
+          "getoond. Staat het bestand in index.html en klopt scene.id?");
+      }
+    }
     return {
       id: id,
       picture: [["fill", 29]],
       walkboxes: [[20, 150, 280, 38]],
       entries: { start: [160, 175] },
-      hotspots: [],
-      props: []
+      hotspots: []
     };
   }
 

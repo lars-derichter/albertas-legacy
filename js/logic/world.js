@@ -130,7 +130,7 @@ globalThis.AL = globalThis.AL || {};
     var lv = {};
     for (var n = 1; n <= 7; n++) {
       lv[String(n)] = {
-        ontgrendeld: false, spreadGelezen: false, puzzels: {}, afgerond: false
+        ontgrendeld: false, puzzels: {}, afgerond: false
       };
     }
     lv["1"].puzzels = {
@@ -431,8 +431,9 @@ globalThis.AL = globalThis.AL || {};
     //   3. Anders: alles gevonden en hersteld.
     //
     // Het spread-lezen krijgt geen eigen tak: de spread is een eigen modus met
-    // een geblokkeerde invoerbalk, dus "?" is daar niet te typen (het veld
-    // spreadGelezen is dode data, zie de defectenlijst).
+    // een geblokkeerde invoerbalk, dus "?" is daar niet te typen. Dáárom heeft
+    // het save-veld `spreadGelezen` nooit een lezer gekregen, en dáárom is het
+    // in WP 38 geschrapt in plaats van alsnog bediend.
     hint: function (toestand) {
       var actief = toestand.levels[String(toestand.levelActief)];
       if (actief && actief.ontgrendeld && !actief.afgerond) {

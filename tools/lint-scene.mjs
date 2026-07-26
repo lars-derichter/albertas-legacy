@@ -437,19 +437,12 @@ function keurScene(scene, verwachteId) {
     }
   }
 
+  // Hier stond ooit een keuring van `scene.props`. Dat veld is in WP 38 uit het
+  // schema gehaald: het stond leeg in élke scène en niets las het. Wie het nu
+  // toch nog zet, krijgt hieronder te horen dat het schema het niet kent.
   if (scene.props !== undefined) {
-    if (!Array.isArray(scene.props)) {
-      fouten.push("props is geen array");
-    } else {
-      scene.props.forEach((p, i) => {
-        if (typeof p.sprite !== "string" || p.sprite.length === 0) {
-          fouten.push("prop[" + i + "]: sprite-naam leeg");
-        }
-        if (!binnenX(p.x) || !binnenY(p.y)) {
-          fouten.push("prop[" + i + "]: anker buiten veld");
-        }
-      });
-    }
+    fouten.push("props bestaat niet meer in het scène-schema; alles wat vroeger " +
+      "een prop was, is een hotspot (docs/scene-schema.md)");
   }
 
   // De sfeerlaag: wat er in deze kamer beweegt. Wordt per frame getekend, dus

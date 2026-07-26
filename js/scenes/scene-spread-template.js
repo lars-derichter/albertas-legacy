@@ -65,7 +65,7 @@ AL.scenes["spread-template"] = {
     ["line", 40, [290, 178, 296, 188]]
 
     // Beschadiging staat hier bewust níét meer. Ze zat als één koffievlek en één
-    // waterplek op vaste plekken in dit sjabloon, en dus op alle acht de spreads
+    // waterplek op vaste plekken in dit sjabloon, en dus op alle zeven de spreads
     // op dezelfde plek — terwijl de stijlgids beschadiging vraagt "precies waar
     // de puzzel zit". Ze staat nu per level in js/scenes/spread-schetsen.js en
     // wordt door AL.spreads.tekenInhoud gelegd, ná de schets en vóór de tekst.
@@ -81,7 +81,6 @@ AL.scenes["spread-template"] = {
   },
 
   hotspots: [],
-  props: [],
   overlays: []
 };
 

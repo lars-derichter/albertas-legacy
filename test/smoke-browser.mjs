@@ -105,6 +105,13 @@ async function main() {
   const context = await browser.newContext();
   const page = await context.newPage();
 
+  // Alles wat de pagina als waarschuwing logt. De laatste controle hieronder
+  // leest deze lijst; de rest van de test raakt hem niet aan.
+  const waarschuwingen = [];
+  page.on("console", (m) => {
+    if (m.type() === "warning") waarschuwingen.push(m.text());
+  });
+
   console.log("Rooksmaaktest — The Legacy of Alberta\n");
 
   // 1. Titelkaart tekent en is niet leeg.
@@ -336,6 +343,36 @@ async function main() {
     sAf.vensterOpen === false && sAf.openingActief === false &&
     sAf.seed === sVers.seed, "venster=" + sAf.vensterOpen +
     " seed=" + sAf.seed);
+
+  // ---- De terugvalkamer klaagt hoorbaar (WP 38) --------------------------
+  // Een scène-id die nergens bestaat — een typfout in een exit, een bestand dat
+  // niet in index.html staat — gaf vroeger een lege bruine kamer en verder
+  // niets: geen fout, geen spoor, alleen een speler die zich afvraagt waar hij
+  // is. De engine mag daar niet op crashen (dat blijft zo), maar ze hoort het
+  // wél te zeggen. Hier halen we een échte kamer weg en lopen we er naartoe.
+  await page.evaluate(() => {
+    window.__alScene = window.AL.scenes["zolder-midden"];
+    delete window.AL.scenes["zolder-midden"];
+  });
+  const warnVoor = waarschuwingen.length;
+  await typCommando(page, "ga oost");
+  await page.waitForTimeout(120);
+  const sVal = await state(page);
+  const warnNa = waarschuwingen.slice(warnVoor);
+  check("een ontbrekende scène laat het spel niet crashen",
+    sVal.modus === "zolder" && sVal.sceneId === "zolder-midden",
+    "modus=" + sVal.modus + " scene=" + sVal.sceneId);
+  check("de terugvalkamer tekent (canvas niet leeg)",
+    await canvasNietLeeg(page));
+  check("een ontbrekende scène meldt zich met haar id in de console",
+    warnNa.some((w) => w.includes("zolder-midden") && w.includes("scène")),
+    "waarschuwingen=" + JSON.stringify(warnNa));
+
+  // De kamer terugzetten, zodat een latere uitbreiding van deze test niet in
+  // een half gesloopte zolder begint.
+  await page.evaluate(() => {
+    window.AL.scenes["zolder-midden"] = window.__alScene;
+  });
 
   await browser.close();
 

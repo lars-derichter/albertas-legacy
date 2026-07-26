@@ -143,7 +143,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 4,
     naam: S.l5.naam,
     puzzels: [editorWrite, parsons, patroonkaart]
   };

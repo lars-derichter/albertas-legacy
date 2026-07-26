@@ -44,7 +44,6 @@ test("level 2 registreert zich met drie puzzels in de juiste vormen", () => {
   const defs = AL.levels.puzzelDefs("2");
   assert.deepEqual(defs.map((d) => d.id), ["l2-editor-repair", "l2-parsons", "l2-trace"]);
   assert.deepEqual(defs.map((d) => d.type), ["editor", "parsons", "trace"]);
-  assert.equal(level2.week, 2);
 });
 
 // ===========================================================================

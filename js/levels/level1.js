@@ -170,7 +170,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 1,
     naam: S.l1.naam,
     puzzels: [editorRepair, editorWrite, verklaar]
   };

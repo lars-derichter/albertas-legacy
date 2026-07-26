@@ -131,12 +131,24 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
 
 ### Vaste toewijzingen (samenhang tussen scènes)
 
-- **Zolderlicht:** de avond-ramp (28–34); de lichtstraal uit het dakraam is
-  34 met een kern van 58, schuin over de vloer.
+- **Zolderlicht:** de avond-ramp (28–34); de lichtstraal uit het dakraam heeft
+  geen eigen kleur meer. Ze bestaat uit vijf `light`-plakken die schuin over de
+  vloer naar beneden toe breder én zwakker worden (3 stappen bij het raam, 1
+  onderaan; dichtheid 0,80 → 0,30), plus één zachte plak waar ze het hout
+  haalt. Ze staan achteráán in de picture, zodat alles waar de straal op valt —
+  de kist, de dozen, de planken — in zijn éigen ramp lichter wordt. Als
+  dekkende veelhoek in 34/58 lag hij vroeger als een oranje plaat ónder de
+  meubels door (`js/scenes/scene-zolder-west.js`, §"De lichtstraal").
 - **Zoldervloer en balken:** hout-ramp (22–27), planklijnen in 22.
 - **Dozen:** karton in 26/25 met schaduw 23; labels als 41-inkt op 36-papier.
-- **De pc:** beige kast in 51/52, scherm-gloed 56→58 (amber CRT), aan-staat met
-  een 34-halo.
+- **De pc:** beige kast en monitorrand in 50–52, donker scherm in 49; de
+  aan-staat is amber CRT (55 gloedschaduw, 56 amber, 58 schermwit — het enige
+  plekje waar de gloed-ramp als échte kleur staat, want dáár zit de lichtbron).
+  De halo op de wand is geen kleur maar vijf `light`-koepels die op het
+  bureaublad staan en naar buiten toe uitdoven (dichtheid 0,12 → 0,55), met één
+  zachte plak van 0,28 over het blad, het toetsenbord en de mok. Zo wordt de
+  wand lichter in háár eigen ramp in plaats van er een bruine of paarse vlek op
+  te krijgen (`js/scenes/scene-zolder-oost.js`, §"De gloed van de monitor").
 - **De speler:** Alberta's kleinkind, alledaags gekleed. Trui uit de
   gebladerte-ramp (42 naad, 43 schaduw, 44 mid, 45 licht), jeans uit de
   nacht-ramp (59 binnenbeen, 60 schaduw, 61 licht), huid 18/19/20, kort haar
@@ -239,8 +251,8 @@ doos-sprite. Een kist die in kartonkleur geschilderd staat, breekt die maat.
 
 ## De draw-ops, en wanneer je ze gebruikt
 
-De renderer kent elf ops. De eerste zeven zijn de basis uit de
-predecessor-engine; de laatste vier zijn erbij gekomen omdat de stijlregels
+De renderer kent twaalf ops. De eerste zeven zijn de basis uit de
+predecessor-engine; de laatste vijf zijn erbij gekomen omdat de stijlregels
 hierboven zonder hen niet uitvoerbaar waren — met alleen platte vullingen en
 één 50 %-schaakbord kán een vlak niet graderen.
 
@@ -457,7 +469,7 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   40) mogen als sfeer.
   - **Per level, niet gedeeld.** Ze staan in `js/scenes/spread-schetsen.js` en
     niet in het sjabloon: één vlek op een vaste plek is dezelfde vlek op alle
-    acht de spreads, en dan verklaart ze niets.
+    zeven de spreads, en dan verklaart ze niets.
   - **Ze vreet de schets aan, ze gumt hem niet uit.** Een dichtheid rond 0,20
     op 39 met een binnenlaag rond 0,10 op 40 leest als een wasplek; boven
     0,35 leest ze als zand en verdwijnt de tekening eronder. Een schets die je

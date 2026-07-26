@@ -328,7 +328,6 @@ AL.scenes["zolder-oost"] = {
     { item: "stoel", sprite: "stoel", x: 186, y: 162 }
   ],
 
-  props: [],
 
   // Geen stof hier: het dakraam is ver. Wat er gloeit, gloeit uit het scherm.
   sfeer: [],

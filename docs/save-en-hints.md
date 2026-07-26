@@ -12,9 +12,14 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
 - **Waarde:** het staat-object uit `engine-architectuur.md`, door
   `JSON.stringify` geserialiseerd. De staat is plat en cyclusvrij, dus dit
   round-tript zonder verlies.
-- **Wanneer geschreven:** na elke echte voortgang — een puzzel opgelost,
-  een level af, een editor-concept gewijzigd, geluid getoggeld. Elke schrijf
-  zendt de effect-tag `voortgang:opgeslagen` (zie `engine-architectuur.md`).
+- **Wanneer geschreven:** na elke echte voortgang — een puzzel opgelost, een
+  level af, een editor-concept gewijzigd, geluid getoggeld, een kamer verlaten,
+  de pc geopend of gesloten. De engine schrijft dan gewoon; ze meldt het niet.
+  De effect-tag `voortgang:opgeslagen` is géén verslag van een schrijf maar een
+  **verzoek** om er een: de DOM-vrije logica kan zelf niet bij localStorage, dus
+  ze vraagt het via die tag aan de engine (zie `engine-architectuur.md`). Vier
+  plaatsen zenden hem: level af, oordeel, epiloog en een gewijzigd
+  editor-concept.
 - **Wanneer gelezen:** bij de start leest `js/engine.js` de sleutel. Bestaat
   ze en is de versie leesbaar, dan wordt ze teruggeladen; anders start een verse
   staat via `AL.world.nieuw(seed)`.
@@ -40,6 +45,16 @@ de opgeslagen `versie` met de huidige:
 `versie` verhoogt alleen bij een breking van het staat-schema; kleine
 contentwijzigingen (nieuwe prose, nieuwe puzzelvarianten) breken de save niet.
 
+> Beslissing (WP 38): het veld `levels[*].spreadGelezen` is uit de verse staat
+> gehaald en `versie` blijft daarbij `1`. Een veld wégnemen dat nooit
+> geschreven en nooit gelezen werd, is geen schemabreking: een save van vóór
+> WP 38 draagt het nog, `migreer` neemt `levels` in zijn geheel over, en niets
+> in de code kijkt ernaar. Zo'n oude save laadt dus ongewijzigd en speelt
+> ongewijzigd verder — hij sleept alleen één sleutel mee die bij de
+> eerstvolgende `herbegin` verdwijnt. De versie ophogen zou de save van elke
+> speler door `migreer` en terug naar localStorage sturen om er niets aan te
+> veranderen; dat is risico zonder winst.
+
 ## `herbegin`
 
 Het in-game commando `herbegin` (beschikbaar in de zolder-modus, zie
@@ -58,9 +73,10 @@ gedeeltelijke reset; het is alles of niets. Een enkel level opnieuw doen gebeurt
 niet via `herbegin` maar door de puzzel opnieuw te openen (de checker beoordeelt
 elke inzending vers).
 
-De bevestiging is een getypt antwoord (`herbegin ja`) en geen toets, zodat ze
-stateless blijft en dus in Node testbaar is. Het vraagvenster draagt daarom de
-effect-tag `vraag`: het laat de invoerbalk vrij zolang het openstaat. Blokkeerde
+De bevestiging is een getypt antwoord (`herbegin ja`, of `herbegin bevestig`)
+en geen toets, zodat ze stateless blijft en dus in Node testbaar is. Het
+vraagvenster draagt daarom de effect-tag `vraag`: het laat de invoerbalk vrij
+zolang het openstaat. Blokkeerde
 het de invoer zoals een gewoon venster, dan was het antwoord dat de vraag zelf
 noemt onmogelijk te typen. Escape trekt de vraag in en laat alles staan; elk
 ander commando vervangt de vraag door zijn eigen antwoord.
@@ -94,9 +110,11 @@ beschadiging of dezelfde getallen.
 Om een hint vragen doe je met `?` in de zolder en in de terminal van de
 gesimuleerde pc, en met **F1** in de editor. Die uitzondering is geen
 slordigheid maar een noodzaak: in een code-editor zet `?` een vraagteken in de
-code, dus daar neemt F1 het over, zoals in elke Turbo-editor uit die tijd. De
-spread-modus kent geen hint — daar is de invoerbalk geblokkeerd en bladert elke
-toets gewoon door.
+code, dus daar neemt F1 het over, zoals in elke Turbo-editor uit die tijd. F1
+werkt trouwens in beide panelen van de pc — de statusbalk zet hem er ook in de
+terminal bij, zodat één toets overal in de pc hetzelfde doet. De spread-modus
+kent geen hint — daar is de invoerbalk geblokkeerd en bladert elke toets gewoon
+door.
 
 Binnen een puzzel geeft `?` (of F1) een hint in **drie stadia**, oplopend, en
 **nooit het letterlijke antwoord**. De tellerstand per puzzel staat in

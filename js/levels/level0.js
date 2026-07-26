@@ -229,8 +229,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 0,
-    dev: true,
     naam: S.l0.naam,
     puzzels: [
       editorRepair, editorWrite, parsons, trace, vindfout, verklaar, patroonkaart

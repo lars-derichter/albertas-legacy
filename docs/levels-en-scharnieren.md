@@ -43,11 +43,12 @@ dubbelpunt, dan een beeld uit Alberta's eigen verhaal.**
 
 Tot WP 31 droegen de levels de titels van de andere minigames van de cursus
 ("De knikkerbaan", "De plankenbrug boven het ravijn", "De speurtocht…",
-letterlijk uit `games/home/hub-data.js`). Die namen zeggen een speler niets
-over de leerstof: het scharnier stond wél op bladzijde 2, maar de titel zelf
-had geen enkele band met de cursusterminologie. De nieuwe titels zetten de term
-vooraan, zodat een speler die vastzit weet waarnaar hij in zijn cursus moet
-zoeken, en houden het verhaal in de tweede helft.
+letterlijk uit `games/home/hub-data.js` in de cursusrepo — niet in deze repo).
+Die namen zeggen een speler niets over de leerstof: het scharnier stond wél op
+bladzijde 2, maar de titel zelf had geen enkele band met de cursusterminologie.
+De nieuwe titels zetten de term vooraan, zodat een speler die vastzit weet
+waarnaar hij in zijn cursus moet zoeken, en houden het verhaal in de tweede
+helft.
 
 De metafoor-woordenschat uit de cursus-hub blíjft in het spel — in de hints van
 stap 1, in Alberta's briefteksten en in de schetsen op bladzijde 2 van elk
@@ -103,8 +104,10 @@ fragment.
 | 6 | 6 | 5 | les 12–13 | vóór toets 2 |
 | 7 | 7 | 6 | les 17–18 | vóór de eindtoets |
 
-De in-game intro van elk level toont letterlijk: "Dit zou je moeten kunnen na
-week X van de cursus", met X uit de kolom "Na cursusweek". Elke andere plek die
+De **voet van bladzijde 2** van elk notitieboek-spread toont letterlijk: "Dit
+zou je moeten kunnen na week X van de cursus", met X uit de kolom "Na
+cursusweek". Er is geen aparte level-intro die die regel draagt; het spread is
+de plek. Elke andere plek die
 Alberta's weekregel citeert, citeert diezelfde X: de onderzoektekst van het
 notitieboek op zolder-west leest het spread van level 1 en zegt dus week 1
 (ze zei week 3 tot WP 31), en de walkthrough herhaalt de week per level.
@@ -125,11 +128,16 @@ cursus: zichtbaar, niet verplicht.
 
 ## Tijdsbudget per level
 
-Elk level is ontworpen op **± 15 minuten** en **± 3 puzzels**:
+Elk level is ontworpen op **± 15 minuten** en **precies 3 puzzels**, meestal:
 
 - **1 editor-puzzel** in de gesimuleerde editor (herstel of schrijf-van-nul), en
 - **2 terminal-puzzels** in de gesimuleerde terminal (trace, vind-de-fout,
   verklaar-in-één-zin, Parsons, welke-patroonkaart).
+
+Twee levels wijken af, en de leveltabel hierboven zegt dat ook: **level 1** en
+**level 7** dragen twee editor-puzzels en één terminal-puzzel. Level 1 laat de
+speler een klasse eerst herstellen en dan zelf schrijven — dat is precies het
+scharnier; level 7 heeft de zoeklus én de getter-keten nodig voor de endgame.
 
 Zeven levels × ~15 min codewerk ≈ 90 minuten puzzels. Met de zolder-
 verbindingsstukjes (spread lezen, lopen, intro/outro) erbij komt een volledige
@@ -137,20 +145,22 @@ playthrough op **± 2 uur** — de kalibratie die WP 11 met een getimede dry run
 controleert.
 
 De verdeling per level (editor eerst, dan terminal) is een richtlijn, geen wet:
-een level mag de volgorde variëren zolang de mix één editor-item en twee
-terminal-items blijft, en zolang de editor-puzzel het bestand herstelt dat in de
-kolom "herstelt" staat. De precieze puzzeldefinities (beschadigde varianten,
-modeloplossingen, hints, traces) leven in `js/levels/levelN.js`; dit document
+een level mag de volgorde variëren zolang het er drie blijven, zolang er
+minstens één editor-puzzel bij zit, en zolang die editor-puzzel het bestand
+herstelt dat in de kolom "herstelt" staat. De precieze puzzeldefinities
+(beschadigde varianten, modeloplossingen, hints, traces) leven in
+`js/levels/levelN.js`; dit document
 legt alleen het contract vast waaraan die bestanden moeten voldoen.
 
 ### Getimede controle (WP 11)
 
 De doorlopende playthrough-test (`test/smoke-full-playthrough.mjs`) speelt het
 hele spel in één run en levert de harde telling voor de kalibratie: **21
-puzzels** (3 per level × 7), **8 spreads** om te lezen (de intro plus één per
-level, elk ± 2 pagina's), een goede vijftien zoek-, loop- en zit-commando's om
-de zeven fragmenten in de zolder op te diepen, en de endgame-sim van _Seven
-Little Goats_ tot aan één van de vier eindes.
+puzzels** (3 per level × 7), **7 spreads** om te lezen (één per level, elk ± 2
+pagina's — de intro is bewust géén spread, zie `spelontwerp-legacy.md`),
+drieëntwintig getypte zolder-commando's om de zeven fragmenten op te diepen en
+zeven keer aan de pc te gaan zitten, en de endgame-sim van _Seven Little Goats_
+tot aan één van de vier eindes.
 
 Omgerekend naar een échte speler (niet de scriptsnelheid):
 

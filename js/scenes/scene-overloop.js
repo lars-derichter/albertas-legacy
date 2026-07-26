@@ -277,7 +277,6 @@ AL.scenes["overloop"] = {
     { item: "doos", sprite: "doos", x: 262, y: 168 }
   ],
 
-  props: [],
   sfeer: [],
 
   overlays: [

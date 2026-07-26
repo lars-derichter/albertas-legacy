@@ -369,7 +369,6 @@ AL.scenes["zolder-west"] = {
     { item: "notitieboek", sprite: "notitieboek", x: 196, y: 157 }
   ],
 
-  props: [],
 
   // Stof in de lichtstraal — de stijlgids vraagt er al om. Het waren tot nu toe
   // acht stilstaande pixels in de gecachete achtergrond; nu zakken ze echt.

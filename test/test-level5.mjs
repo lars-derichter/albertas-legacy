@@ -41,7 +41,6 @@ test("level 5 registreert zich met drie puzzels in de juiste vormen", () => {
   const defs = AL.levels.puzzelDefs("5");
   assert.deepEqual(defs.map((d) => d.id), ["l5-editor-write", "l5-parsons", "l5-patroonkaart"]);
   assert.deepEqual(defs.map((d) => d.type), ["editor", "parsons", "patroonkaart"]);
-  assert.equal(level5.week, 4);
 });
 
 // ===========================================================================

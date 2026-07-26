@@ -33,13 +33,27 @@ De engine kent één modus per scherm (het `modus`-veld uit
 
 - **Titelkaart** (`titel`): het logo "THE LEGACY OF ALBERTA" in VGA-stijl, een
   stille zolder met avondlicht, één prompt om te beginnen. Effect: `titel`.
-- **Intro**: een korte reeks berichtvensters (of één inleidende spread,
-  `spread:intro`) die de kernfictie zet: je erft de zolder, je vindt de pc en
-  het beschadigde notitieboek, en — de cruciale zin — "Alberta bouwde elk spel
-  eerst als tekstversie in de terminal. Zo begon ze altijd." De intro maakt de
-  prototype-fictie expliciet (zie `achtergrond.md`).
+- **Opening**: vijf onderschrift-vensters over drie beelden — het huis van
+  buiten (`opening-huis`), de trap naar de zolder (`opening-trap`, twee
+  alinea's) en de monitor die nagloeit (`opening-pc`, twee alinea's). Elk beeld
+  komt op uit het zwart; de tekst staat in `AL.strings.intro` en de reeks zelf
+  in `OPENING` (js/engine.js). Ze zet de kernfictie: je erft de zolder, je
+  vindt de pc en het beschadigde notitieboek, en — de cruciale zin — "Alberta
+  bouwde elk spel eerst als tekstversie in de terminal. Zo begon ze altijd."
+  (zie `achtergrond.md`). De laatste alinea leert de besturing aan. Rechtsboven
+  staat `Esc: overslaan`; Escape slaat de hele reeks over.
 
-De intro eindigt in de zolder (`modus: "zolder"`), bij de eerste scène.
+> Beslissing: de opening is **géén** notitieboek-spread. Er is ooit een
+> `spread:intro` geweest en die klopte op drie manieren niet: je las wat er in
+> het boek stond vóór je het boek had, de verteller sprak jou aan op papier dat
+> Alberta's handschrift draagt, en de voet vroeg om het notitieboek te openen
+> dat je aan het lezen was. De openingstekst staat nu in de stem van de
+> verteller, vóór de zolder. De motivering staat bij de spread-data zelf
+> (`js/logic/strings.js`, §"Er staat hier bewust géén intro-spread meer") en in
+> `workflow/15-opwaardering-kickoff.md`; `test-world-hub.mjs` bewaakt dat
+> `AL.strings.spreads.intro` niet terugkomt.
+
+De opening eindigt in de zolder (`modus: "zolder"`), in `zolder-west`.
 
 ## De zolder-hub
 
@@ -73,24 +87,28 @@ case en bindend; `art-stijlgids.md` levert de mood-notities en de tekening.
 | Scène-id | Type | Rol |
 |---|---|---|
 | `titelkaart` | kaart | titelscherm |
+| `opening-huis` | beeld | het huis van buiten, bij avond; alinea 1 van de opening |
+| `opening-trap` | beeld | de trap naar de zolder, van onderaan; alinea's 2–3 |
+| `opening-pc` | beeld | de monitor die nagloeit; alinea's 4–5 |
 | `zolder-west` | kamer | starthoek: dozen, dakraam, het notitieboek op een kist |
 | `zolder-oost` | kamer | Alberta's werkhoek: de pc op een bureau (de toegang tot `pc`-modus) |
 | `zolder-midden` | kamer | doorgang/spil: verbindt west, oost en de overloop; de broncode-doos |
-| `overloop` | kamer | optioneel vierde scène: trap/berging, extra sfeer en props |
+| `overloop` | kamer | het archief boven de trap: de bladen van de hoofdstukken 5–7 |
 | `spread-template` | spread | herbruikbaar notitieboek-spread, per level herkleed |
 | `eindkaart` | kaart | drager voor Alberta's oordeel + epiloog |
 
-> Beslissing: drie zolderscènes zijn verplicht (`zolder-west`, `zolder-oost`,
-> `zolder-midden`); `overloop` is een vierde, optionele scène die WP 6 mag
-> toevoegen voor ademruimte maar niet nodig is voor de speelbaarheid. De hub is
-> bewust compact: de spreads dragen de meeste "nieuwe" beelden, niet nieuwe
-> kamers.
+> Beslissing: drie zolderscènes waren verplicht (`zolder-west`, `zolder-oost`,
+> `zolder-midden`) en `overloop` was een optionele vierde. WP 6 heeft haar
+> gebouwd en ze is sindsdien niet meer optioneel: `FRAGMENT_LOCATIE`
+> (js/logic/world.js) legt de bladen van de hoofdstukken 5, 6 en 7 daar neer.
+> De hub blijft verder bewust compact: de spreads dragen de meeste "nieuwe"
+> beelden, niet nieuwe kamers.
 
 ### Sprite-inventaris
 
 | Sprite | Anims | Rol |
 |---|---|---|
-| `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid | het kleinkind, klein en neutraal, van achter/opzij (west = gespiegeld oost) |
+| `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid, draai, zit-oost | het kleinkind, klein en neutraal, van achter/opzij (west = gespiegeld oost); `zit-oost` is de houding aan de pc |
 | `notitieboek` | idle | hotspot op `zolder-west` |
 | `pc` | idle, aan | prop op `zolder-oost`; "aan" toont een gloeiend scherm |
 | `doos` | idle | herbruikbare doos-prop (labels als overlay-tekst) |

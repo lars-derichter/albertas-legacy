@@ -95,7 +95,6 @@ AL.scenes["eindkaart"] = {
   },
 
   hotspots: [],
-  props: [],
   sfeer: [
     { soort: "stof", x: 160, y: 74, b: 140, h: 112, aantal: 22, kleur: 58,
       seed: 7, snelheid: 0.015 }

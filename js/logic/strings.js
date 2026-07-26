@@ -313,7 +313,6 @@ AL.strings = {
     menuOnder: "Kies een taak: cijfertoets of klik. Esc — terug naar de zolder.",
     knopCompileer: "compileer & test  [F9]",
     knopTerug: "terug  [menu]",
-    knopMenu: "menu",
     statusOpen: "open",
     statusBezig: "bezig",
     statusAf: "af",

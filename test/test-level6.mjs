@@ -40,7 +40,6 @@ test("level 6 registreert zich met drie puzzels in de juiste vormen", () => {
   const defs = AL.levels.puzzelDefs("6");
   assert.deepEqual(defs.map((d) => d.id), ["l6-editor-repair", "l6-trace", "l6-vindfout"]);
   assert.deepEqual(defs.map((d) => d.type), ["editor", "trace", "vindfout"]);
-  assert.equal(level6.week, 5);
 });
 
 // ===========================================================================

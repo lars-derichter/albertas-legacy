@@ -70,7 +70,15 @@ globalThis.AL = globalThis.AL || {};
     // ---- Registry ----------------------------------------------------------
 
     // Een level registreert zichzelf (aangeroepen door js/levels/levelN.js).
-    // def.puzzels is een lijst puzzeldefinities met minstens een id.
+    // def.puzzels is een lijst puzzeldefinities met minstens een id — en dat is
+    // het enige veld dat de registry léést. `naam` staat er als leesbaar label
+    // bij (een verwijzing naar S.lN.naam, dus zonder eigen waarheid); de
+    // hoofdstuknaam die de speler ziet, haalt js/pc/pc.js rechtstreeks uit
+    // AL.strings. Er stonden hier tot WP 38 ook `week` en `dev`: allebei
+    // hardgecodeerde waarden die niemand las, en `week` was in de testfixture
+    // hieronder al naar 3 gedreven terwijl level 1 na week 1 komt. De week van
+    // een hoofdstuk staat in AL.strings.spreads.lN.week (de voet van bladzijde
+    // 2) en in docs/levels-en-scharnieren.md, en nergens anders.
     registreer: function (levelId, def) {
       registry[String(levelId)] = def || { puzzels: [] };
       return this;
@@ -110,9 +118,12 @@ globalThis.AL = globalThis.AL || {};
           if (d.type === "editor") p.draft = "";   // concept-behoud
           puzzels[d.id] = p;
         }
+        // Er heeft hier een vierde veld gestaan, `spreadGelezen`. Het werd bij
+        // elke verse staat op false gezet en daarna door niemand meer aangeraakt
+        // — niet geschreven, niet gelezen. WP 38 heeft het geschrapt; de reden
+        // dat het nooit een lezer kreeg, staat bij AL.world.hint.
         lv[sleutel] = {
           ontgrendeld: false,
-          spreadGelezen: false,
           puzzels: puzzels,
           afgerond: false
         };
@@ -267,7 +278,6 @@ globalThis.AL = globalThis.AL || {};
   // (l1-editor-repair, l1-editor-write, l1-verklaar). Verplaats dit dus niet
   // zomaar — het is een testfixture, geen restant.
   levels.registreer("1", {
-    week: 3,
     puzzels: [
       { id: "l1-editor",   type: "editor" },
       { id: "l1-trace",    type: "trace" },

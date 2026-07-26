@@ -41,7 +41,6 @@ test("level 7 registreert zich met twee editor-puzzels + één terminal", () => 
   const defs = AL.levels.puzzelDefs("7");
   assert.deepEqual(defs.map((d) => d.id), ["l7-editor-write", "l7-editor-repair", "l7-trace"]);
   assert.deepEqual(defs.map((d) => d.type), ["editor", "editor", "trace"]);
-  assert.equal(level7.week, 6);
 });
 
 // ===========================================================================

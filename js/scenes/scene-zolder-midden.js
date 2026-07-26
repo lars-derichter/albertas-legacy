@@ -264,7 +264,6 @@ AL.scenes["zolder-midden"] = {
     { item: "doos", sprite: "doos", x: 236, y: 170 }
   ],
 
-  props: [],
 
   sfeer: [
     { soort: "stof", x: 8, y: 84, b: 70, h: 96, aantal: 12, kleur: 32,

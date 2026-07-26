@@ -111,7 +111,6 @@ AL.scenes["titelkaart"] = {
   },
 
   hotspots: [],
-  props: [],
   sfeer: [
     { soort: "stof", x: 182, y: 52, b: 118, h: 132, aantal: 18, kleur: 34,
       seed: 5, snelheid: 0.012 }

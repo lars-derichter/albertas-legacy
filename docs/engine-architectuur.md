@@ -31,7 +31,7 @@ met behoud van hun contract:
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/font-hand.js` | — | nieuw in WP 36: een eigen 8×10-handschriftglyphset (`AL.fontHand`), niet overgenomen |
-| `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
+| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, en de `pijlAan`/`pijlUit`-haken voor `js/touch.js`. De parser-verben zijn uitgebreid met de zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
 | engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc); de vloermeetkunde staat apart in `js/loopveld.js` (zie §De vloer) |
@@ -258,7 +258,8 @@ Modules hangen aan `globalThis.AL` (browser, `file://`) en exporteren via
 tegenover `RRH` in de predecessor.
 
 Laadvolgorde binnen de logica (elke leest wat de vorige nodig heeft):
-`strings.js` → `world.js` → `levels.js` → checker-modules → `sim/*`.
+`strings.js` → `world.js` → checker-modules → `levels.js` → `sim/*`. De volle
+laadvolgorde van álle bestanden staat onderaan dit document.
 
 ## De vloer: walkboxes, blokken en uitgangszones
 
@@ -319,7 +320,7 @@ reageert; de logica produceert ze alleen.
 | Tag | Wanneer |
 |---|---|
 | `scene:<id>` | wissel naar een zolder-/huisscène (scène-id uit `art-stijlgids.md`) |
-| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7`, plus `intro` en `outro` (dus `spread:l1`, `spread:intro`) |
+| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md` |
 | `titel` | toon de titelkaart |
 | `betreed:<richting>` | de speler ging te voet naar de buurkamer (`noord`/`oost`/`zuid`/`west`): over de oost-/westrand of door een uitgangszone; engine-hint voor de camera |
 | `fragment-gevonden:<levelId>` | het notitieboek-fragment voor dit level is ontgrendeld in de adventure |
@@ -396,7 +397,6 @@ Velden (bindend voor de save in `save-en-hints.md`):
   levels: {                // per level de voortgang
     "1": {
       ontgrendeld: true,   // fragment gevonden, spread leesbaar
-      spreadGelezen: false,
       puzzels: {           // per puzzel-id de staat
         "l1-editor": { status: "open", hints: 0, draft: "" },
         "l1-trace":  { status: "open", hints: 0 },
@@ -450,7 +450,9 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 12. js/logic/checker/asserts.js
 13. js/logic/checker/javacsim.js
 14. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
-15. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
+15. js/levels/level1.js … level7.js       // puzzeldefinities
+    (js/levels/level0.js — de proefdruk — wordt er alleen bij ?dev=1 vóór
+     geschreven; een gewone playthrough laadt hem nooit)
 16. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
 17. js/scenes/*.js         // zolderscènes + spreads
 18. js/sprites/*.js        // sprites
@@ -460,9 +462,11 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 22. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
 ```
 
-`js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en
-de pc-overlays aanraakt. Het roept `AL.gfx.init(canvas)`, leest de save (of
-maakt een verse staat), en start de frame-lus.
+`js/engine.js` laadt als voorlaatste (alleen `js/touch.js` komt erna, want dat
+hangt zijn D-pad aan een engine die er al is) en is samen met `js/touch.js` het
+enige dat het canvas, `document` en de pc-overlays aanraakt. Het roept
+`AL.gfx.init(canvas)`, leest de save (of maakt een verse staat), en start de
+frame-lus.
 
 ## De gesimuleerde pc: DOM-overlay, geen canvas-tekst
 
@@ -557,6 +561,7 @@ pc heeft zijn eigen, altijd al werkende invoer.
 js/
 ├── palette.js                 // AL.palet: ~64-kleuren VGA-ish tabel
 ├── font.js  gfx.js            // renderer (overgenomen, palet-aangepast)
+├── font-hand.js               // Alberta's hand (8×10), enkel het notitieboek
 ├── input.js  sound.js         // invoer + geluid (overgenomen, uitgebreid)
 ├── parser.js                  // parse + dispatchpatroon (overgenomen)
 ├── loopveld.js                // DOM-vrij: walkboxes, blokken, uitgangszones

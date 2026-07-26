@@ -31,7 +31,6 @@ AL.scenes["zolder-west"] = {
   exits:     [],
   entries:   { start: [80, 175], vanOost: [300, 175] },
   hotspots:  [ { item: "notitieboek", sprite: "notitieboek", x: 196, y: 140 } ],
-  props:     [],
   sfeer:     [ { soort: "stof", x: 174, y: 82, b: 104, h: 104, aantal: 22,
                  kleur: 34, seed: 3, snelheid: 0.018 } ],
   overlays:  [ { baselineY: 200, ops: [ /* draw-ops */ ] } ]
@@ -46,8 +45,7 @@ AL.scenes["zolder-west"] = {
 | `blokken` | `[[x,y,b,h]]` | `loopveld.beloopbaar` |
 | `exits` | `[{richting, rect}]` | `loopveld.uitgangBij` in de engine-tik |
 | `entries` | `{naam: [x,y]}` | `engine.positioneerActor` |
-| `hotspots` | `[{item, sprite, …}]` | `engine.tekenPropsEnActor` |
-| `props` | array | niets (zie §Dode velden) |
+| `hotspots` | `[{item, sprite, …}]` | `engine.tekenPropsEnActor`, `engine.startZitten` |
 | `sfeer` | `[{soort, …}]` | `engine.tekenSfeer` |
 | `overlays` | `[{baselineY, ops}]` | `engine.tekenOverlays` |
 
@@ -212,15 +210,18 @@ Een overlay is geen muur. De stapel op de oostrand van `zolder-midden` staat
 er juist om de speler achterlangs te laten verdwijnen terwijl hij de kamer uit
 loopt; er hoort dus géén blok bij.
 
-## Dode velden
+## Wat er niet (meer) in het schema staat
 
-- `props` — leeg in elke scène en door niets gelezen. Alles wat vroeger een prop
-  was, is nu een `hotspot`. De lint keurt het veld nog wel, zodat een oude scène
-  niet stilletjes iets tekent wat niemand blit.
-- `hotspot.item` was tot WP 35 dood: de renderlaag las het niet en de
-  wereldlogica kent haar voorwerpen bij naam. Sindsdien leest `startZitten` het
-  wél — het zoekt er de stoel mee op — en is het dus een gewoon veld met een
-  gebruiker. De lint blijft de namen keuren.
+`props` is er niet. Het veld heeft bestaan, stond leeg in élke scène en werd
+door niets gelezen: alles wat een prop had moeten zijn, is een `hotspot`
+geworden. WP 38 heeft het uit de tien scènebestanden, uit de terugvalscène van
+de engine en uit dit schema gehaald; de lint keurt een scène af die het nog
+zet, zodat een oud bestand niet stilletjes iets meebrengt wat niemand blit.
+
+`hotspot.item` was tot WP 35 wél dood — de renderlaag las het niet en de
+wereldlogica kent haar voorwerpen bij naam — maar het is dat niet meer:
+`engine.startZitten` zoekt er de stoel mee op (zie §hotspots hierboven). Het is
+dus een gewoon veld met een gebruiker, en de lint blijft de namen keuren.
 
 ## Wat de lint controleert
 

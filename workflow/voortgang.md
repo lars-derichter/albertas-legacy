@@ -356,13 +356,54 @@ Commit: (nog in te vullen) — entry: `workflow/37-geluid-hoorbaar.md`
       context vóór de eerste actie, muisklik én touch-tik ontgrendelen,
       geen nodegroei vóór de ontgrendeling, de stap op de steunfase)
 
-### - [ ] WP 38 — Doc-drift en dood hout
+### - [x] WP 38 — Doc-drift en dood hout
 
-- [ ] art-stijlgids: twaalf ops; lichtbeschrijving actueel
-- [ ] spelontwerp-legacy.md: intro-spread, scene-tabel, commandolijst
-- [ ] Dode velden beslist en opgeruimd
-- [ ] console.warn bij fallback-scene
-- [ ] QC: `node --test` + lint + docs-grep
+Commit: (nog in te vullen) — entry: `workflow/38-doc-drift-en-dood-hout.md`
+
+- [x] art-stijlgids: elf → **twaalf** ops (zeven overgenomen + vijf nieuwe,
+      nageteld in `voerOpsUit` en in `OP_LENGTE`); de lichtstraal (vijf
+      `light`-plakken, 0,80 → 0,30) en de pc-halo (vijf koepels 0,12 →
+      0,55, sprite-aan-staat 55/56/58) beschreven zoals ze getekend zijn
+- [x] spelontwerp-legacy.md: de intro-spread-passage vervangen door de
+      echte opening (vijf onderschriften over drie beelden) mét het
+      `Beslissing`-blok en de test die de terugkeer bewaakt; de drie
+      opening-scenes in de scène-tabel; `overloop` niet meer "optioneel";
+      `draai` en `zit-oost` in de sprite-tabel. Commandolijst nagekeken —
+      klopt sinds WP 33, niets te doen
+- [x] Dode velden beslist (elke beslissing met reden in de entry):
+      `scene.props` **weg** uit tien scènes, de terugvalscène, het schema
+      én de lint (die zakt er nu op); `hotspot.item` **leeft** sinds WP 35
+      (`startZitten` zoekt er de stoel mee) en is als gewoon veld
+      gedocumenteerd; `spreadGelezen` **weg**, `VERSIE` blijft 1 met de
+      migratieredenering in `save-en-hints.md`; `week` **weg** uit de
+      level-definities (de fixture stond al op week 3 voor level 1) en
+      behouden in `AL.strings.spreads.lN.week`, waar hij gelezen wordt;
+      `dev: true` **weg**; `naam` behouden (verwijzing, geen kopie)
+- [x] Sweep naar dode strings-sleutels met een scriptje over `AL.strings`
+      en `AL.sim.strings` (bladsleutels, dus dynamische toegang blijft
+      zichtbaar): één vondst, `pc.knopMenu`, verwijderd. Nul in de sim
+- [x] console.warn bij de terugvalkamer, mét de ontbrekende id en de twee
+      dingen die je dan nakijkt; één melding per id. End-to-end bewezen in
+      `smoke-browser` (kamer uit `AL.scenes` halen, ernaartoe lopen, geen
+      crash + terugvalkamer tekent + waarschuwing noemt de id)
+- [x] Brede waarheidscontrole van de overige docs: `checker-contract.md`
+      (verklaar-in-één-zin is een zelf-check, de twee tolerantieschakelaars
+      bestaan niet, javacsim kent vijf controles, plus acht kleinere),
+      `save-en-hints.md` (`voortgang:opgeslagen` is een verzoek, geen
+      verslag; F1 werkt in beide pc-panelen), `engine-architectuur.md`
+      (`spread:intro`/`outro` bestaan niet, laadvolgorde, `font-hand.js`,
+      `input.js`), `levels-en-scharnieren.md` (7 spreads geen 8; de
+      1+2-mix is niet bindend voor de levels 1 en 7; 23 commando's),
+      `achtergrond.md` (de sprite heeft wél een vooraanzicht; geen
+      "dusk-ramp"; geen einde héét "koud en onaf"), `README.md` (28+9
+      testbestanden, 400 tests; F1 in de editor; scènelijst),
+      `roberta-williams.md` schoon
+- [x] `tools/check-docpaden.mjs`: elk pad dat een document aanhaalt moet
+      bestaan. `docs/`, `walkthrough/` en de README's zijn de poort;
+      `workflow/` wordt gerapporteerd maar is historie
+- [x] QC: **400/400** headless, `lint-scene` en `check-assets` schoon,
+      smoke-browser **41/41** (was 38/38), smoke-full-playthrough **97/97**,
+      `check-docpaden` 757 paden — 0 dood in een contractdocument
 
 ### - [ ] WP 39 — Walkthrough herbouwd
 

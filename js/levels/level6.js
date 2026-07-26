@@ -110,7 +110,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 5,
     naam: S.l6.naam,
     puzzels: [editorRepair, trace, vindfout]
   };
