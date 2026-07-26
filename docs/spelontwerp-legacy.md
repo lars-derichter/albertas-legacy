@@ -26,8 +26,9 @@ De engine kent één modus per scherm (het `modus`-veld uit
 | `spread` | full-screen notitieboek-spread | doorbladeren, dan valt het boek dicht waar je staat |
 | `pc` | gesimuleerde editor/terminal (DOM-overlay) | typen, "compileer & test", `?` |
 | `sim` | _Seven Little Goats_ als speelbare simulatie | getypte commando's |
-| `oordeel` | Alberta's oordeel-eindscherm | lezen, dan epiloog |
-| `epiloog` | slottekst die naar de broncode wijst | een toets om af te sluiten |
+| `oordeel` | Alberta's oordeel-eindscherm | lezen, dan de diskette |
+| `diskette` | de diskette groot in beeld: de drive schrijft weg, dan ligt ze in je hand | een toets per beat (twee), dan de epiloog |
+| `epiloog` | slottekst die naar de diskette en de broncode wijst | een toets om af te sluiten |
 
 ## Titelscherm en intro
 
@@ -96,6 +97,7 @@ case en bindend; `art-stijlgids.md` levert de mood-notities en de tekening.
 | `overloop` | kamer | het archief boven de trap: de bladen van de hoofdstukken 5–7 |
 | `spread-template` | spread | herbruikbaar notitieboek-spread, per level herkleed |
 | `eindkaart` | kaart | drager voor Alberta's oordeel + epiloog |
+| `diskette` | beeld | de 3,5"-diskette van dichtbij, tussen oordeel en epiloog |
 
 > Beslissing: drie zolderscènes waren verplicht (`zolder-west`, `zolder-oost`,
 > `zolder-midden`) en `overloop` was een optionele vierde. WP 6 heeft haar
@@ -128,8 +130,14 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    Effect: `fragment-gevonden:<levelId>`. Voor level 1 is dat simpelweg het
    notitieboek zelf op `zolder-west`; latere fragmenten zitten verder in de
    zolder (dozen op `zolder-midden`/`overloop`), zodat er lichte progressie is.
+   **Vinden volgt oplossen:** blad `n` komt pas uit zijn doos als hoofdstuk
+   `n-1` hersteld is. Is dat niet zo, dan weigert de doos in de fictie
+   (`AL.strings.dozen.nogDicht`) en verandert er niets aan de staat. Het
+   notitieboek van level 1 heeft geen voorganger en blijft vrij.
 2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
-   puzzelbrief, en de regel "Week X in mijn schema." (haar eigen planning; zie
+   spec voor dat stuk (bladzijde 1 wat het moet zijn, bladzijde 2 wat er stuk
+   of onaf is — zie `levels-en-scharnieren.md`, §"Wat een spread draagt"), en
+   de regel "Week X in mijn schema." (haar eigen planning; zie
    `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
    `geluid:pagina`. Na de laatste bladzijde gaat het boek dicht en staat de
    speler **waar hij het blad vond** — bij het notitieboek in de westhoek, bij
@@ -139,10 +147,11 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    wijst `?` hem die: de eerste tak van de zolder-hint zegt "Het hoofdstuk dat
    je opensloeg, is nog niet hersteld. Dat werk ligt op de pc, in de werkhoek
    aan de oostkant van de zolder." (`save-en-hints.md`, §"De zolder-hint").
-4. **Los de puzzels op.** Eén editor-puzzel + twee terminal-puzzels (zie het
-   tijdsbudget in `levels-en-scharnieren.md`). Elke opgeloste puzzel:
-   `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` — "dit hoofdstuk van
-   Alberta's spel is hersteld".
+4. **Los de puzzels op, op volgorde.** Eén editor-puzzel + twee
+   terminal-puzzels (zie het tijdsbudget in `levels-en-scharnieren.md`). Het
+   menu geeft ze één voor één vrij (zie §"De gesimuleerde pc" hieronder). Elke
+   opgeloste puzzel: `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` —
+   "dit hoofdstuk van Alberta's spel is hersteld".
 5. **Keer terug.** De pc sluit (`pc:sluit`), de staat wordt opgeslagen
    (`voortgang:opgeslagen`), en de speler staat weer op de zolder, klaar voor
    het volgende fragment. Gaat hij daarna opnieuw zitten terwijl dat hoofdstuk
@@ -157,6 +166,15 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
 > dichtdoen is nu een handeling zonder bijwerking; de wandeling naar de pc is de
 > zaak van de speler, en de progressie-hint uit WP 33 draagt de begeleiding die
 > de teleport moest goedmaken.
+
+> Beslissing (WP 47): de lus is lineair, en de poort staat aan de doos. Stap 1
+> was tot dan vrij — drie keer `open doos` ontgrendelde drie bladen zonder één
+> puzzel op te lossen, en omdat `levelActief` met het nieuwe blad meeging en het
+> pc-menu geen levelkeuze kent, waren de overgeslagen hoofdstukken daarna
+> onbereikbaar. De poort zit in de doos en niet in de pc: ze past in de fictie
+> (Alberta's schema loopt op volgorde), houdt één model aan, en vermijdt
+> half-ontgrendelde toestanden. Zie `workflow/46-lineariteit-kickoff.md` voor de
+> feedback van de docent die eraan ten grondslag ligt.
 
 Na level 7 volgt de endgame in plaats van "keer terug" (zie onder).
 
@@ -175,6 +193,24 @@ Het hart van het codewerk. Een DOM-overlay in VGA-stijl (zie
   fout, verklaar-in-één-zin.
 - **Parsons** (`js/pc/parsons.js`): sleep- of nummer-de-stroken-UI voor Parsons-
   puzzels, in de terminal getoond.
+
+Ervóór staat het **menu** (`js/pc/pc.js`): de drie taken van het actieve
+hoofdstuk, genummerd, met hun status ernaast (`open` / `bezig` / `af`). Het
+menu is de enige ingang tot een puzzel — klik of cijfertoets — en het bewaakt
+de volgorde.
+
+> Beslissing (WP 48b): **de taken van een hoofdstuk gaan op volgorde.** Taak k
+> is speelbaar zodra 0..k-1 op `af` staan (`AL.levels.puzzelSpeelbaar`, de
+> logica-laag; het menu consumeert het predicaat). Een wachtende taak blijft
+> zichtbaar — de speler hoort te zien wat er nog komt — maar staat gedoofd met
+> het plaatje `wacht`, en klik en cijfertoets doen niets behalve de statusregel
+> onder het menu uitleggen waarom. Een taak die `af` staat, gaat wél gewoon
+> weer open: de poort kijkt alleen vooruit. Reden: sommige puzzels tónen de
+> oplossing van een andere puzzel uit hetzelfde hoofdstuk (de trace van level 6
+> drukt de herstelde for-kop af, die van level 7 de null-veilige keten), en met
+> vrije keuze begon een speler daar. De regel en het bewijs per level staan in
+> `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"; de poort
+> voegt geen veld aan de save toe (`save-en-hints.md`).
 
 De puzzelvormen per level staan in `levels-en-scharnieren.md`; de checker-
 semantiek in `checker-contract.md`.
@@ -250,10 +286,21 @@ Level 7 afronden "voltooit" Alberta's spel:
    `spelontwerp-seven-little-goats.md`; de sim spiegelt de Java één-op-één.
 3. `sim:einde:<naam>` → een van de vier eindes is bereikt.
 4. `oordeel:<tier>` → Alberta's oordeel.
-5. `epiloog` → de slottekst wijst naar de echte Java-broncode: "De broncode
-   ligt op zolder — neem ze mee." De speler wordt naar `seven-little-goats/`
-   verwezen om de code in IntelliJ te openen en zelf te draaien. Hier valt ook
-   de eenmalige vermelding van Roberta Williams (zie `roberta-williams.md`).
+5. `diskette` → de pc schrijft de herstelde broncode weg naar de diskette die in
+   de drive zat, en de speler klikt ze eruit. Twee beats op één beeld
+   (`scene-diskette.js`): eerst de amberband met wat de drive afdrukt, dan het
+   onderschrift onder de kaart. Het etiket draagt Alberta's handschrift.
+6. `epiloog` → de slottekst wijst naar de diskette en naar de echte
+   Java-broncode: wat erop staat, staat ook in `seven-little-goats/`. De speler
+   wordt verwezen om de code in IntelliJ te openen en zelf te draaien. Hier valt
+   ook de eenmalige vermelding van Roberta Williams (zie
+   `roberta-williams.md`).
+
+> Beslissing (WP 48c, op vraag van de docent): de afgewerkte broncode ligt niet
+> meer "de hele tijd al" op zolder te wachten. Ze wordt op het einde geschreven,
+> op het enige medium dat in deze fictie klopt: een HD-diskette van 1,44 MB die
+> je uit de pc meeneemt. De broncode-doos blijft daardoor wat ze was — een
+> dichtgeplakte doos met haar materiaal van toen — en gaat nooit open.
 
 ## Speelduur
 

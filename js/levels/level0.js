@@ -60,11 +60,12 @@ globalThis.AL = globalThis.AL || {};
   // één weggevallen this-verwijzing (waterschade op het notitieboek). Beide
   // compileren (javac-schoon) maar zakken op een constructorToewijzing-check.
   // De notitie draagt geen kop en geen schoolimperatief meer, en ze eindigt op
-  // "— A." (WP 45; achtergrond.md, §"Toon en register").
+  // "— A." (WP 45; achtergrond.md, §"Toon en register"). WP 48 zet haar in
+  // dezelfde spec-vorm als level 1: velden met hun types, en wat er niet klopt.
   var voorwerpNotitie =
-"// Een voorwerp heeft naam, beschrijving en kracht. De constructor vult de\n" +
-"// velden van een vers object; bij één veld ontbreekt de verwijzing naar het\n" +
-"// object zelf. Nog niet af. — A.\n" +
+"// Een voorwerp heeft een naam (String), een beschrijving (String) en kracht\n" +
+"// (int). De constructor zet die drie velden; bij één veld klopt de\n" +
+"// toewijzing niet. Nog niet af. — A.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +
@@ -156,6 +157,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l0-parsons",
     type: "parsons",
+    titel: S.l0.parsonsTitel,
     shuffleLabel: "l0-parsons",
     regels: [
       "int verdubbel(int getal) {",
@@ -178,6 +180,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l0-trace",
     type: "trace",
+    titel: S.l0.traceTitel,
     pool: [3, 4, 5],
     label: "l0-trace",
     verwacht: function (n) { return String((n * (n + 1)) / 2); },
@@ -192,6 +195,7 @@ globalThis.AL = globalThis.AL || {};
   var vindfout = {
     id: "l0-vindfout",
     type: "vindfout",
+    titel: S.l0.vindfoutTitel,
     regelnummer: 1,
     aanvaard: ["<=", "kleiner of gelijk", "kleiner dan of gelijk", "lusgrens",
       "grens", "off-by-one", "off by one", "een te ver", "te ver"],
@@ -206,6 +210,7 @@ globalThis.AL = globalThis.AL || {};
   var verklaar = {
     id: "l0-verklaar",
     type: "verklaar",
+    titel: S.l0.verklaarTitel,
     vraag: S.l0.verklaar.vraag,
     toon: S.l0.verklaar.toon,
     model: S.l0.verklaar.model,
@@ -220,6 +225,7 @@ globalThis.AL = globalThis.AL || {};
   var patroonkaart = {
     id: "l0-patroonkaart",
     type: "patroonkaart",
+    titel: S.l0.patroonkaartTitel,
     antwoord: 1,
     vraag: S.l0.patroonkaart.vraag,
     opties: S.l0.patroonkaart.opties,

@@ -70,6 +70,13 @@ globalThis.AL = globalThis.AL || {};
   var spreadLevelId = null;    // welke spread nu open staat (modus "spread")
   var spreadPagina = 0;        // huidige pagina binnen de open spread
 
+  // De diskette-beat (modus "diskette", WP 48c): 0 = de drive schrijft weg (de
+  // amberband onder het beeld), 1 = de diskette is eruit (het onderschrift).
+  // Hij staat bewust níét in de save: twee toetsaanslagen lang, en wie er
+  // middenin herlaadt hoort de beat gewoon opnieuw te zien in plaats van in een
+  // half beeld te landen.
+  var disketteStap = 0;
+
   // De openingsreeks: drie getekende beelden met de verteller eroverheen, vóór
   // de speler zelf de zolder op stapt. openingStap is de index in OPENING, of
   // null als de reeks niet loopt.
@@ -374,6 +381,8 @@ globalThis.AL = globalThis.AL || {};
         if (arg === "boot") { AL.sound.speel("boot"); startSim(); }
         // sim:einde:<naam> wordt door de sim-controller zelf afgehandeld (die
         // roept AL.world.simVoltooid aan); hier is geen extra actie nodig.
+      } else if (tag === "diskette") {
+        toonDiskette();
       } else if (tag === "epiloog") {
         toonEpiloog();
 
@@ -649,6 +658,33 @@ globalThis.AL = globalThis.AL || {};
     bewaar();
   }
 
+  // De diskette-beat tussen het oordeel en de epiloog (WP 48c). Twee beats op
+  // één beeld: eerst schrijft de drive weg (de amberband), dan ligt de diskette
+  // in je hand (het onderschrift). Geen muziekbed — het eindbed is bij het
+  // oordeel eenmalig opgelost en de stilte hoort tot de epiloog te duren.
+  function toonDiskette() {
+    toestand.modus = "diskette";
+    disketteStap = 0;
+    venster = null;
+    naVenster = null;
+    verbergOverlay();
+    AL.input.blokkeer = true;
+    stopBesturing();
+    // De drive doet zijn werk: de "compileer & test"-cue is de enige machine-
+    // cue in huis en klinkt precies als een pc die even iets afhandelt.
+    AL.sound.speel("compileer");
+    bewaar();
+  }
+
+  // Van beat 0 (wegschrijven) naar beat 1 (de diskette eruit).
+  function disketteVerder() {
+    disketteStap = 1;
+    // Karton dat meegeeft: de dichtstbijzijnde cue voor een schuifje dat uit
+    // een drive klikt. Een eigen cue erbij zou het geluidsregister uitbreiden
+    // voor twee seconden beeld.
+    AL.sound.speel("doos");
+  }
+
   function toonEpiloog() {
     toestand.modus = "epiloog";
     venster = null;
@@ -700,6 +736,11 @@ globalThis.AL = globalThis.AL || {};
     if (!toestand) return;
     if (toestand.modus === "spread") { spreadBlader(); return; }
     if (toestand.modus === "oordeel") {
+      verwerkEffecten(AL.world.startDiskette(toestand).effecten, null);
+      return;
+    }
+    if (toestand.modus === "diskette") {
+      if (disketteStap === 0) { disketteVerder(); return; }
       verwerkEffecten(AL.world.startEpiloog(toestand).effecten, null);
       return;
     }
@@ -922,6 +963,11 @@ globalThis.AL = globalThis.AL || {};
     }
     if (modus === "oordeel") {
       tekenOordeelKaart();
+      toonBeeld();
+      return;
+    }
+    if (modus === "diskette") {
+      tekenDisketteKaart();
       toonBeeld();
       return;
     }
@@ -1219,6 +1265,72 @@ globalThis.AL = globalThis.AL || {};
     AL.gfx.tekenVenster(v);
   }
 
+  // De diskette-kaart (WP 48c). Het beeld komt uit scene-diskette.js; de engine
+  // legt er twee dingen op die geen picture-op kúnnen zijn: het handschrift op
+  // het etiket, en de beat-laag onderaan — eerst de amberband waarin de drive
+  // wegschrijft, daarna het onderschrift op papier.
+  function tekenDisketteKaart() {
+    zorgVoorScene("diskette");
+    AL.gfx.blitScene("diskette");
+    tekenDisketteEtiket();
+    if (disketteStap === 0) {
+      tekenDriveBand();
+      return;
+    }
+    var d = AL.strings.endgame.diskette;
+    // Onderschrift, niet luik: het beeld is hier het punt — dezelfde plaatsing
+    // als de openingsbeelden (zie toonOpeningStap).
+    var v = AL.gfx.maakVenster([d.onderschrift, d.onderschriftHint],
+      { maxTekens: 34, maxRegels: 6, plaatsing: "onder" });
+    AL.gfx.tekenVenster(v);
+  }
+
+  // Het etiket in Alberta's hand. Het blad ligt scheef op het plastic (drie
+  // pixels verval over honderd, zie scene-diskette.js), dus de regels lopen mee:
+  // horizontaal handschrift op een schuin etiket leest als een sticker en niet
+  // als een hand. De titelregel staat in inkt (41), haar eigen nummering
+  // eronder een stap flauwer (40) — die schreef ze er later bij.
+  function tekenDisketteEtiket() {
+    var d = AL.strings.endgame.diskette;
+    // De hand van een opschrift: trager en gelijkmatiger dan lopende tekst, dus
+    // zonder spatievariatie (zoals de koppen in het notitieboek-spread).
+    var hand = { schuin: 0, ruimte: 1, seed: 1, variatie: false };
+    var helling = function (i) { return Math.round(i * 0.17); };
+    var midden = 156;                      // het etiket loopt van x 108 tot 204
+    var bA = AL.gfx.handschriftBreedte(d.etiketA, hand);
+    AL.gfx.tekenHandschrift(d.etiketA, midden - Math.floor(bA / 2), 66, 41,
+      helling, hand);
+    var bB = AL.gfx.handschriftBreedte(d.etiketB, hand);
+    AL.gfx.tekenHandschrift(d.etiketB, midden - Math.floor(bB / 2), 86, 40,
+      helling, hand);
+  }
+
+  // De band waarin de drive wegschrijft. Het enige stuk canvas waar de
+  // pc-chrome buiten zijn DOM-overlay komt, dus alles eraan zegt "scherm" en
+  // niet "papier": de gloed-ramp uit de monitorkast, de gedrukte 8×8-font, en
+  // een blokcursor die knippert zoals in de invoerbalk.
+  function tekenDriveBand() {
+    var regels = AL.strings.endgame.diskette.terminal;
+    var regelH = 10;
+    var h = regels.length * regelH + 8;
+    var y = 189 - h - 3;
+    AL.gfx.rect(54, 4, y, 312, h);              // de kast eromheen
+    AL.gfx.rect(0, 6, y + 2, 308, h - 4);       // het schermvlak
+    for (var i = 0; i < regels.length; i++) {
+      // De eerste regel is wat er getypt werd (helder), de rest is wat de
+      // machine antwoordt (amber) — zoals elke terminal in dit spel.
+      AL.gfx.tekenTekst(regels[i], 10, y + 5 + i * regelH,
+        i === 0 ? 57 : 56, null);
+    }
+    if (Math.floor(animTijd * 2) % 2 === 0) {
+      var laatste = regels[regels.length - 1];
+      var cx = 10 + (laatste.length + 1) * AL.font.breedte;
+      if (cx <= 306) {
+        AL.gfx.rect(58, cx, y + 5 + (regels.length - 1) * regelH, 7, 7);
+      }
+    }
+  }
+
   function tekenEpiloogKaart() {
     tekenEindkaartAchtergrond();
     var ep = AL.strings.epiloog;
@@ -1407,7 +1519,9 @@ globalThis.AL = globalThis.AL || {};
     if (titelActief) { AL.sound.muziek("titel"); return; }
     var modus = toestand ? toestand.modus : null;
     if (modus === "pc" || modus === "sim") AL.sound.muziek("pc");
-    else if (modus === "oordeel" || modus === "epiloog") AL.sound.muziek(null);
+    else if (modus === "oordeel" || modus === "diskette" || modus === "epiloog") {
+      AL.sound.muziek(null);
+    }
     else AL.sound.muziek("ambient-zolder");
   }
 
@@ -1427,6 +1541,12 @@ globalThis.AL = globalThis.AL || {};
       herstelStand();
     } else if (modus === "oordeel" || modus === "epiloog") {
       wisselNaarScene(toestand.sceneId, "start");
+    } else if (modus === "diskette") {
+      // De beat begint opnieuw bij het wegschrijven: hij is twee toetsen lang
+      // en zijn teller staat niet in de save (zie disketteStap). Enter brengt
+      // van daaruit gewoon weer de epiloog — een reload strandt dus niet.
+      wisselNaarScene(toestand.sceneId, "start");
+      disketteStap = 0;
     } else if (modus === "sim") {
       // De sim-substaat wordt niet mee-opgeslagen (engine-architectuur.md); een
       // reload midden in het eindspel herstart de sim gewoon van voren af.
@@ -1454,6 +1574,9 @@ globalThis.AL = globalThis.AL || {};
         hintsTotaal: toestand ? toestand.hintsTotaal : null,
         spreadLevelId: spreadLevelId,
         spreadPagina: spreadPagina,
+        // Welke beat van de diskette-kaart staat er (0 = wegschrijven,
+        // 1 = de diskette eruit)? Alleen betekenisvol in modus "diskette".
+        disketteStap: disketteStap,
         einde: toestand ? toestand.einde : null,
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
@@ -1528,6 +1651,20 @@ globalThis.AL = globalThis.AL || {};
     toestand.levelActief = n;
     wisselNaarScene(toestand.sceneId, "start");
     opADePc(true);
+  };
+
+  // Testhulp: spring rechtstreeks naar een beat van de diskette-kaart (WP 48c).
+  // De kaart ligt achter de volledige endgame; dit is de haak waarmee de
+  // rooksmaaktest en een screenshot-run er in één stap bij kunnen.
+  AL.debugDiskette = function (stap) {
+    titelActief = false;
+    openingStap = null;
+    venster = null; naVenster = null;
+    if (!toestand) {
+      toestand = AL.world.laad(storage(), seedUitUrl === null ? undefined : seedUitUrl);
+    }
+    verwerkEffecten(AL.world.startDiskette(toestand).effecten, null);
+    disketteStap = (stap | 0) === 1 ? 1 : 0;
   };
 
   // Testhulp (dev): de endgame-sequence na level 7 zonder de echte sim (WP 9).

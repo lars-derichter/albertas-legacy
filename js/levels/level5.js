@@ -60,12 +60,17 @@ globalThis.AL = globalThis.AL || {};
   // De typewoorden `int` en `Voorwerp` blijven in de notitie staan (beslissing
   // van WP 30): de stub geeft geen signaturen en de checker eist ze exact, dus
   // zonder die twee woorden is de puzzel vanuit de notitie niet oplosbaar.
+  //
+  // WP 48 haalt de kaart-woordenschat eruit ("zoekt het uiterste", "andere
+  // kaart erop"): de patroontaxonomie is precies wat de derde puzzel van dit
+  // level vraagt, en ze in de kantlijn zetten is het antwoord voorzeggen. De
+  // lusvorm (for over inventaris) staat er nu wél bij — dat is spec, geen les,
+  // en de checker eist hem (lusVorm + lusGrenzen).
   var lusStub =
-"// Twee kaarten in de kantlijn, geen rompen. telWapens() telt: hoeveel van wat\n" +
-"// ze draagt heeft kracht boven 0? Eén int voor de statusregel.\n" +
-"// sterksteVoorwerp() zoekt het uiterste: het Voorwerp waarmee ze het hardst\n" +
-"// uithaalt, of null als haar mand leeg is. Zelfde inventaris, zelfde lus,\n" +
-"// andere kaart erop. — A.\n" +
+"// Twee methoden erbij, rompen nog leeg. telWapens(): int — hoeveel voorwerpen\n" +
+"// in de inventaris kracht boven 0 hebben. sterksteVoorwerp(): Voorwerp — het\n" +
+"// voorwerp met de grootste kracht, of null bij een lege inventaris. Allebei\n" +
+"// een for-lus over inventaris, i < inventaris.size(). — A.\n" +
 "\n" +
 "class Speler {\n" +
 "\n" +
@@ -111,6 +116,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l5-parsons",
     type: "parsons",
+    titel: S.l5.parsonsTitel,
     shuffleLabel: "l5-parsons",
     regels: [
       "String regel = \"Je kan hier meenemen: \";",
@@ -138,6 +144,7 @@ globalThis.AL = globalThis.AL || {};
   var patroonkaart = {
     id: "l5-patroonkaart",
     type: "patroonkaart",
+    titel: S.l5.patroonkaartTitel,
     antwoord: 2,
     vraag: S.l5.patroonkaart.vraag,
     opties: S.l5.patroonkaart.opties,

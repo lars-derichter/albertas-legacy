@@ -258,6 +258,27 @@ async function main() {
   check("na de spread loop je te voet de doorgang in (invoer weer vrij)",
     (await state(page)).sceneId === "zolder-midden",
     "scene=" + (await state(page)).sceneId);
+
+  // 7c. De poort aan de doos (WP 47). Hoofdstuk 1 ligt open en is niet
+  //     hersteld, dus de gemerkte dozen in deze doorgang geven hun blad niet.
+  //     Vóór de poort ontgrendelde 'open doos' hier fragment 2 — en omdat
+  //     levelActief meeging en het pc-menu geen levelkeuze kent, waren de
+  //     puzzels van hoofdstuk 1 daarna onbereikbaar.
+  await typCommando(page, "open doos");
+  const sPoort = await state(page);
+  const poortTekst = sPoort.vensterRegels.join(" ");
+  const verwachtPoort = await page.evaluate(
+    () => window.AL.strings.dozen.nogDicht(1).slice(0, 40));
+  check("'open doos' weigert zolang hoofdstuk 1 niet hersteld is",
+    sPoort.vensterOpen === true && poortTekst.includes(verwachtPoort),
+    poortTekst);
+  check("de weigering opent geen spread en ontgrendelt niets",
+    sPoort.modus === "zolder" && sPoort.levelActief === 1 &&
+    (await page.evaluate(() =>
+      window.AL.debugToestand.levels["2"].ontgrendeld)) === false,
+    "modus=" + sPoort.modus + " levelActief=" + sPoort.levelActief);
+  await sluitVensters(page);
+
   await typCommando(page, "ga oost");
   check("en verder naar de werkhoek, waar de pc staat",
     (await state(page)).sceneId === "zolder-oost",

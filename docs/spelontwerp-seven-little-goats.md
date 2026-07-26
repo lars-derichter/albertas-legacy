@@ -269,5 +269,6 @@ klassen), en hij **speelt** het uit als de pc het na level 7 boot als simulatie
 (`js/sim/`, WP 9). De simulatie moet exact deze kamers, voorwerpen, gevechten en
 eindes reproduceren; WP 9 bewaakt dat met een transcript-cross-check tussen
 `java Main` en de browsersimulatie op identieke commando-scripts (alle vier de
-eindes). De epiloog wijst de speler naar `seven-little-goats/` voor de echte
-broncode: "De broncode ligt op zolder — neem ze mee."
+eindes). Op het einde schrijft de pc die broncode weg naar de diskette in de
+drive (WP 48c) en wijst de epiloog de speler naar `seven-little-goats/`: wat op
+de diskette staat, staat ook daar.

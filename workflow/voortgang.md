@@ -449,6 +449,195 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
+# Programma 4 — lineariteit en spec-notities (afgerond)
+
+Kickoff: `workflow/46-lineariteit-kickoff.md`. Branch:
+`claude/lineariteit-en-notities` (vanaf main fb70ed7); schone PR aan het
+einde. Twee beslissingen: de poort zit aan de doos (blad N+1 pas
+vindbaar als hoofdstuk N hersteld is) en de notities worden pure spec.
+
+### - [x] WP 46 — Kickoff programma 4
+
+Entry: `workflow/46-lineariteit-kickoff.md` · commit: `e9b77a7`
+
+- [x] Feedback verbatim, Q&A, wortels en plan vastgelegd; branch staat
+- [x] QC: docs only, wrap 80, tests ongewijzigd 425/425
+
+### - [x] WP 47 — De poort aan de doos
+
+Entry: `workflow/47-poort-aan-de-doos.md` · commit: `f5bb77d`
+
+- [x] Voortgangspoort in _openFragmentDoos (n alleen als n-1 afgerond);
+      notitieboek blijft vrij; de poort staat vóór de kamercheck en wint
+      van dozen.nietHier — afwijking van de kickoff, gemotiveerd in de
+      entry (een gepoorte speler naar een andere kamer sturen klopt niet)
+- [x] Weigering-string dozen.nogDicht(n) in Alberta-register, geen effect
+- [x] Comments "geen harde sloten" + docs (spelontwerp-legacy,
+      save-en-hints) + walkthrough deel 1 mee (PDF's herbouwd; alleen
+      deel 1 wijzigt, deel 2 verschilde enkel in datums)
+- [x] Tests: drie volgorde-tests met afronding-tussenstappen, zes nieuwe
+      poort-tests (weigering, kamer-precedentie, doorgang, alle zes de
+      dozen, notitieboek vrij, uitputtende regressie), smoke-assert in
+      smoke-browser; smoke-levels-4-7-sneltoets is een expliciete
+      testhaak (zetVoortgangKlaar, geen nieuwe haak in engine.js)
+- [x] QC: 431/431 headless, lint-scene/check-assets/check-walkthrough/
+      check-docpaden schoon, smokes 46/36/53/104/38 groen
+
+### - [x] WP 48 — Notities als spec
+
+Entry: `workflow/48-notities-als-spec.md` · commit: `3585163`
+
+- [x] Zeven briefA's naar steno-spec (klassekaart op bladzijde 1,
+      schadelijst op bladzijde 2); spoilers uit briefB's (l3 `||`/`&&`,
+      l6 modeloplossing + rondes) en uit acht stub-notities;
+      MAX_LEVENSPUNTEN (l3), int/Voorwerp (l5) en variantneutraliteit
+      bewaard
+- [x] l1-schets is een klassekaart geworden (haalbaarheid eerst gemeten:
+      kader 128×62, labels 25–55 px, vier van de vijf regels gebruikt);
+      nieuw `labels`-veld in een schets-set, gekeurd door lint-scene én
+      een nieuwe test in test-spreads
+- [x] Checker-dekking per level geverifieerd — tabel in de entry. Twee
+      bewuste gaten, allebei gemotiveerd: de lusgrens van l6 (dat is de
+      reparatie van variant A) en die van l7-write (ongewijzigd)
+- [x] Hints nagekeken: stadium 1 van l4-verklaar en l4-trace was het
+      antwoord zelf en is een vraag geworden; l2-trace was al een vraag
+- [x] Docs mee (levels-en-scharnieren §"Wat een spread draagt",
+      achtergrond §"Het notitieboek", art-stijlgids) + walkthrough deel 1
+      (PDF herbouwd; deel 2 verschilde enkel in datums, teruggezet)
+- [x] Adversariële checker-agent gedraaid (drie passen). Bevestigd: de
+      vijf lekken weg, variantneutraliteit overal in orde. Drie
+      bevindingen hersteld (null-eis terug in de l7-notitie, eerste
+      persoon terug in vijf brieven, l3-briefB wees nog naar de
+      conditie); vier erkend en doorgeschoven naar de manager (de
+      trace-opgaven tonen de modeloplossing van hun eigen level en de
+      puzzelvolgorde is vrij; het l2-fragment bevat het parsons-antwoord;
+      de termen-kop van bladzijde 2 draagt nog leerstof) — zie de entry
+- [x] QC: 432/432 headless, lint-scene/check-assets/check-walkthrough/
+      check-docpaden schoon, javac + verboden-grep schoon, smokes
+      46/36/53/104 groen, screenshots wp48-* in test-results/
+
+### - [x] WP 48b — Puzzelvolgorde binnen een level
+
+Entry: `workflow/48b-puzzelvolgorde.md` · commit: `27bdd21`
+
+Ingelast door de manager ná de adversariële pas van WP 48: die pas vond
+dat `l6-trace` en `l7-trace` de modeloplossing van hun eigen hoofdstuk
+afdrukken terwijl `kies()` de volgorde niet poortte. Zelfde vraag van de
+docent als WP 47, één niveau lager.
+
+- [x] Poort in de logica: `puzzelSpeelbaar(toestand, levelId, index)` +
+      `puzzelIndex` + `puzzelSpeelbaarId` in `js/logic/levels.js`.
+      Predicaat over de bestaande staat — geen veld erbij in de save, dus
+      een oude save hervat gewoon; ze kijkt alleen vooruit (afgewerkte
+      taken blijven heropenbaar)
+- [x] Het pc-menu consumeert de poort: wachtende taak gedoofd met het
+      plaatje `wacht` + `aria-disabled`, nieuwe strings `pc.statusWacht`
+      en `pc.menuVergrendeld`, CSS `.pc-menu-status-wacht` in het
+      bestaande `pc-menu-status-*`-patroon. De poort zit in `kies()`
+      (klik, cijfertoets en debug-haak lopen daar alle drie door); de
+      statusregel onder het menu zegt waarom er niets gebeurt
+- [x] Volgorde per level nagekeken (tabel in de entry). Zes van de zeven
+      stonden al goed; alleen **level 2** herschikt naar `parsons,
+      editor-repair, trace` — het editor-fragment toont `zoek`
+      ongeschonden en dat zijn woordelijk de stroken van `l2-parsons`
+- [x] `l6.repairTitel` "herstel de off-by-one" → "herstel de
+      verwijder-lus": de oude titel verklapte variant A en loog tegen
+      variant B, en stond in het menu vóór de eerste regel code
+- [x] Tests: zes poort-tests in test-levels (waarheidstabel,
+      heropenen, randgevallen, JSON-rondreis), volgorde-pins in
+      test-level2/6/7 mét het letterlijke fragment; smoke-pc kreeg het
+      vergrendelde menu, de dode cijfertoets, de dode klik en het
+      één-voor-één ontgrendelen, plus het hervatten mid-hoofdstuk na een
+      herlaad. smoke-pc sprong over `l0-editor-write`
+      heen en lost hem nu op; de twee variatie-controles
+      (`herstelVarianten`, `variantCode`) krijgen de testhaak
+      `ontgrendelTot` (directe state-manipulatie, geen spelpad, zoals
+      `zetVoortgangKlaar` in WP 47); full-playthrough en smoke-browser
+      ongewijzigd
+- [x] Docs mee: levels-en-scharnieren §"Puzzelvolgorde binnen een level"
+      + leveltabel (rij 2 en 6), spelontwerp-legacy §"De gesimuleerde pc"
+      (het menu stond er niet in) + stap 4, save-en-hints (de save draagt
+      geen poortvelden); walkthrough deel 1 én deel 2 (level 2 omgewisseld
+      en hernummerd, l6-kop hernoemd, stap 4 beschrijft de poort). Beide
+      PDF's herbouwd — deel 2 groeit van 190 naar 214 KB bij gelijk
+      paginatal, gemeten toolchain-effect (Courier New ontbreekt hier,
+      Liberation Mono is de metrisch gelijke terugval), geen inhoud
+- [x] QC: **441/441** headless, lint-scene/check-assets/check-walkthrough
+      (276)/check-docpaden schoon, smokes 42/46/40/58/104 groen,
+      screenshots `wp48b-menu-vergrendeld(-l0).png` in test-results/
+
+### - [x] WP 48c — De diskette
+
+Entry: `workflow/48c-de-diskette.md` · commit: `c114725`
+
+Ingelast door de manager op vraag van de docent, tussen WP 48b en WP 49.
+Lars: de afgewerkte broncode kon er niet "de hele tijd al" geweest zijn;
+ze hoort op een diskette van 1,44 MB die je uit de pc meeneemt, met een
+etiket in Alberta's handschrift.
+
+- [x] Nieuwe kaart `js/scenes/scene-diskette.js`: een 3,5"-HD-diskette
+      groot in beeld (130 × 112 px — breder dan hoog, want mode 13h heeft
+      pixels die 20 % hoger zijn dan breed), sluiter, twee gaten, scheef
+      etiket; plastic uit de nacht-ramp, sluiter uit de steen-ramp,
+      etiket uit de papier-ramp, licht van rechts. In `index.html`
+      geregistreerd; `lint-scene` keurt haar mee
+- [x] Het etiket is handschrift uit de renderlaag
+      (`tekenDisketteEtiket`), niet uit de picture: "7 little goats" in
+      inkt 41 en "hfst. 1 — 7" eronder in 40, allebei met dezelfde
+      helling als het blad
+- [x] Flow: `world.startDiskette` tussen oordeel en epiloog, effect
+      `diskette`, modus `"diskette"` met twee beats — de amberband waarin
+      de drive wegschrijft (kaal DOS, `C:\GOATS> copy *.java a:`), dan
+      het onderschrift onder de kaart. Enter/spatie/schermtik per beat.
+      De beat-teller staat níét in de save: een reload begint de beat
+      opnieuw en strandt niet
+- [x] Proza: de epiloog hangt aan de diskette in plaats van aan "de
+      broncode ligt op zolder"; `dozen.broncodeDicht` en de
+      onderzoek-tekst van de doos beloven niets meer wat erin zou liggen
+      (haar materiaal van toen; de doos gaat nooit open, en dat blijft
+      zo); `dozen.allesGevonden` verwijst niet meer naar het einde in de
+      doos
+- [x] Bijvangst uit WP 48b: alle vijftien terminalpuzzels (+ de proefdruk)
+      krijgen een menutitel in de vorm `<onderwerp> — <wat je doet>`, met
+      een vaste opdracht per soort; geen enkele verklapt zijn antwoord
+- [x] Docs mee: achtergrond (mandaat vervangen, beslissingsblok met Lars'
+      redenering), spelontwerp-legacy (modustabel, scènetabel, endgame
+      stap 5–6 + beslissing), art-stijlgids (paletregel + scène-rij),
+      engine-architectuur (effect-tag, modus-enum), save-en-hints
+      (de beat staat niet in de save), scene-schema, spelontwerp-seven-
+      little-goats. Walkthrough deel 1 (de doos-belofte) en deel 2 (nieuwe
+      sectie "En dan de diskette"); beide PDF's herbouwd
+- [x] Tests: vijf nieuwe in `test-world-hub` (keten, drive-regels,
+      etiket, epiloog, doos), nieuw `test-puzzeltitels.mjs` (elke puzzel
+      een titel, uniek per level, vaste vorm, breedte); smoke-sim dekt de
+      beat inclusief pixelcontrole en een reload middenin;
+      full-playthrough en smoke-pc mee
+- [x] QC: **450/450** headless, lint-scene/check-assets/check-walkthrough
+      (277)/check-docpaden schoon, smokes groen — sim 19/19, pc 44/44,
+      browser 46/46, full-playthrough 105/105 (smoke-touch draait hier
+      niet: geen WebKit-build) — screenshots `wp48c-diskette.png`,
+      `wp48c-epiloog.png`, `wp48c-menu-titels.png`
+
+### - [x] WP 49 — Slot en PR
+
+Entry: `workflow/49-slot-programma-4.md` · commit: `31a1451`
+
+- [x] Alle poorten in één run: 450/450 headless, 380/380 over acht
+      smokes, javac + grep schoon, vier linten op nul
+- [x] Screenshots naar Lars; draft-PR aangemaakt
+
+**Programma 4 is hiermee af.** Open blijven: de iPhone-luistertest,
+smoke-touch (geen WebKit) en de PDF-fontterugval.
+
+### - [x] Na het programma: de ide kent geen zolder
+
+Entry: `workflow/50-esc-zonder-zolder.md` · commit: (nog in te vullen)
+
+- [x] Vier chrome-teksten van de pc spreken programmataal ("Esc —
+      afsluiten", balk "Afsluiten") — het programma weet niet dat het
+      op een zolder staat
+- [x] QC: 450/450 groen, check-walkthrough 0, smoke-pc 44/44
+
 ## Fixronde na de speeltest (afgerond)
 
 Kickoff: `workflow/41-fixronde-kickoff.md`. Lars speelde op iOS; vier

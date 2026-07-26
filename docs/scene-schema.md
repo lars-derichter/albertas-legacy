@@ -243,5 +243,5 @@ dus een gewoon veld met een gebruiker, en de lint blijft de namen keuren.
 10. een overlay zonder `baselineY` of zonder `ops`.
 
 De navigatiecontroles (5 t/m 7) draaien alleen voor de kamers die in
-`js/logic/world.js` op de kaart staan; de titelkaart, de openingsbeelden en de
-eindkaart hebben een pro-formastrook en geen buren.
+`js/logic/world.js` op de kaart staan; de titelkaart, de openingsbeelden, de
+eindkaart en de diskette-kaart hebben een pro-formastrook en geen buren.

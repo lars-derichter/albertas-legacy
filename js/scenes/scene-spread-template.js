@@ -175,6 +175,19 @@ AL.spreads = {
     var meetHand = function (t) { return gfx.handschriftBreedte(t, hand); };
     var meetKop = function (t) { return gfx.handschriftBreedte(t, kopHand); };
 
+    // De labels van de schets (WP 48): de klassekaart van level 1 draagt de
+    // naam van de klasse en haar velden in Alberta's hand. Ze staan ná de
+    // schade, want een koffiering hoort door een tekening te vreten, niet door
+    // wat ze erbij schreef. In kopHand: een label is één woord dat je traag
+    // neerzet, en zonder spatievariatie meet het altijd hetzelfde — de lint
+    // rekent het kader ermee na.
+    if (heeftSchets && set.labels) {
+      for (i = 0; i < set.labels.length; i++) {
+        gfx.tekenHandschrift(set.labels[i][2], set.labels[i][0],
+          set.labels[i][1], 41, null, kopHand);
+      }
+    }
+
     // Alles eerst tot één lijst regels maken, dan pas over de twee bladzijden
     // verdelen — zo loopt een kop die net onderaan links valt netjes door.
     var regels = [];

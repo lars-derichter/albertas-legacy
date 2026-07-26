@@ -193,8 +193,7 @@ AL.strings = {
     "zolder-midden": {
       broncode: "De tape is geel en bros, maar hij zit er nog helemaal op. " +
         "Op het label staat BRONCODE, en daaronder, kleiner: pas op het einde. " +
-        "Ze heeft die doos dichtgemaakt met de bedoeling dat iemand hem later " +
-        "zou openen.",
+        "Ze heeft die doos dichtgemaakt en dichtgelaten.",
       trap: "Een smalle trap zonder leuning. Boven is het donkerder dan hier.",
       balken: "Hier komen de balken samen en zakt het dak tot net boven je " +
         "hoofd. Je hoort de wind erlangs gaan.",
@@ -249,16 +248,29 @@ AL.strings = {
   },
 
   // De gemerkte dozen: de latere notitieboek-fragmenten (levels 2–7) zitten in
-  // dozen dieper in de zolder (zolder-midden en de overloop), zodat er lichte
-  // progressie is (spelontwerp-legacy.md, §"De lus per level", stap 1). De
-  // broncode-doos is een aparte prop en telt pas op het einde.
+  // dozen dieper in de zolder (zolder-midden en de overloop), zodat er
+  // ruimtelijke progressie is (spelontwerp-legacy.md, §"De lus per level",
+  // stap 1). Sinds WP 47 dragen ze ook de volgorde: een doos gaat pas open als
+  // het vorige hoofdstuk hersteld is (nogDicht). De broncode-doos is een aparte
+  // prop en telt pas op het einde.
   dozen: {
     onderzoek: "Kartonnen dozen, dichtgeplakt, gemerkt in Alberta's hand. Op " +
       "één staat DIVERSEN, en daaronder kleiner: ook rommel. In een van deze " +
       "dozen zit het volgende blad van haar notitieboek — als je aan dat " +
       "hoofdstuk toe bent.",
     allesGevonden: "Je hebt elk fragment van het notitieboek gevonden. Alles wat " +
-      "je nog rest, ligt op de pc — en op het einde, in de broncode-doos.",
+      "je nog rest, ligt op de pc.",
+    // De weigering van de poort (WP 47): een doos geeft haar blad pas als het
+    // vorige hoofdstuk hersteld is. Het nummer is het hoofdstuk dat nog
+    // openstaat, niet het blad dat in de doos zit. Dezelfde belofte als
+    // onderzoek hierboven ("als je aan dat hoofdstuk toe bent"), maar nu op het
+    // moment dat de speler het probeert.
+    nogDicht: function (n) {
+      return "Je legt je hand op de flap en laat hem weer los. Het blad dat " +
+        "hierin zit, hoort bij een later hoofdstuk, en zo werkte Alberta niet: " +
+        "haar schema loopt op volgorde. Eerst hoofdstuk " + n + " herstellen — " +
+        "dat werk ligt op de pc — en dan pas het volgende blad.";
+    },
     // Waar het eerstvolgende fragment ligt als het niet in deze kamer zit.
     nietHier: {
       "zolder-west": "Het eerstvolgende blad zit niet hier. Het notitieboek zelf " +
@@ -277,10 +289,15 @@ AL.strings = {
       "rol behangpapier, schroeven in een jampot. Niets van Alberta's papier — " +
       "wat zij achterliet, ligt in het notitieboek en dieper in de zolder.",
 
-    // De prijs-doos op zolder-midden. Ze gaat pas op het einde open; dit is
-    // wat 'open broncode-doos' antwoordt.
-    broncodeDicht: "De tape zit er nog helemaal op, en dat laat je zo. Deze " +
-      "doos is voor het einde, als haar spel weer draait."
+    // De doos op zolder-midden, en wat 'open broncode-doos' antwoordt. Ze
+    // blíjft dicht: sinds WP 48c zit de prijs niet meer in een doos maar op de
+    // diskette die de pc op het einde beschrijft. Wat hier ligt is haar eigen
+    // materiaal van toen — uitdraaien en haar diskettes van de versie die
+    // stukging. Niets waar de speler iets aan heeft, en dat is precies waarom
+    // het dicht mag blijven.
+    broncodeDicht: "De tape zit er nog helemaal op, en dat laat je zo. Hierin " +
+      "zit haar werk van toen: uitdraaien, schetsen, haar eigen diskettes van " +
+      "de versie die stukging. Wat af moet raken, raakt niet af in een doos."
   },
 
   // De kist in de westhoek, waar het notitieboek op ligt. Ze is te openen, en
@@ -324,12 +341,20 @@ AL.strings = {
     editTitel: "ALBERTA'S EDIT  v2.3",
     terminalTitel: "ALBERTA'S TERMINAL  —  seven little goats",
     menuTitel: "Alberta's pc",
-    menuOnder: "Kies een taak: cijfertoets of klik. Esc — terug naar de zolder.",
+    menuOnder: "Kies een taak: cijfertoets of klik. Esc — afsluiten.",
+    // De statusregel na een greep naar een taak die nog wacht (WP 48b: de
+    // taken van een hoofdstuk gaan op volgorde). Alberta's stem, geen
+    // foutmelding: haar schema loopt van boven naar onder.
+    menuVergrendeld: "Die taak wacht nog. Alberta's lijst loopt van boven naar " +
+      "onder: werk eerst af wat erboven staat.",
     knopCompileer: "compileer & test  [F9]",
     knopTerug: "terug  [menu]",
     statusOpen: "open",
     statusBezig: "bezig",
     statusAf: "af",
+    // Het vierde plaatje is geen puzzelstatus in de save: het is de poort van
+    // WP 48b, uitgerekend uit de statussen van de taken erboven.
+    statusWacht: "wacht",
     prompt: "> ",
     javacKop: "javac Voorwerp:",
     javacGeenFouten: "javac: geen fouten — de tests draaien…",
@@ -337,20 +362,20 @@ AL.strings = {
     checkOk: "CHECK_OK   ",
     checkFail: "CHECK_FAIL ",
     terugNaarMenu: "— terug naar het menu —",
-    typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc voor de zolder.",
+    typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc sluit af.",
     hintKop: "hint",
     // F1, niet '?'. In de editor was '?' nooit een hint: het zette gewoon een
     // vraagteken in de code. Alleen de terminal en de zolder kennen '?'; de
     // editor heeft nu F1, zoals elke Turbo-editor.
     editorGeladen: "geladen. Herstel de code en druk F9 (of 'compileer & test'). " +
-      "F1 geeft een hint, Esc keert terug naar de zolder.",
+      "F1 geeft een hint, Esc sluit af.",
 
     // De labels op de menubalk en de F-toetsenbalk. Kort, want ze staan op één
     // regel naast elkaar en die regel is 320 logische pixels breed.
     balkCompileer: "Compileer",
     balkHint: "Hint",
     balkMenu: "Menu",
-    balkZolder: "Zolder",
+    balkAfsluiten: "Afsluiten",
     balkKies: "Kies een taak",
     balkNaamplaat: "ALBERTA'S PC"
   },
@@ -547,14 +572,22 @@ AL.strings = {
       "Vorm: eerste.set<Richting>(tweede); en tweede.set<Tegengestelde>(eerste); " +
         "— de vier richtingen in één if / else if-cascade."
     ],
+    // WP 48: stadium 1 van deze twee hints was het antwoord zelf. Zolang de
+    // brief het ook zei, viel dat niet op; nu de brieven pure spec zijn, is de
+    // hintladder de enige plaats waar de uitleg nog staat, en dan hoort de
+    // eerste trede een vraag te zijn en niet de oplossing. Stadium 2 en 3 zijn
+    // ongewijzigd: die mógen uitleggen — daar betaalt de speler voor in het
+    // oordeel (docs/save-en-hints.md).
     "l4-trace": [
-      "Twee pijlen, één doos: eerste en tweede wijzen naar dezelfde kamer.",
+      "Twee pijlen, één doos: lees de tweede regel nog eens — hoeveel kamers " +
+        "maakt deze code eigenlijk aan?",
       "Wat je via tweede zet, staat ook in eerste — het blijft dezelfde doos.",
       "eerste.getNoord() geeft precies de kamer terug die je met tweede." +
         "setNoord(...) hebt gezet."
     ],
     "l4-verklaar": [
-      "Twee pijlen, één doos: en null is een pijl die naar géén doos wijst.",
+      "Twee pijlen, één doos: waar komt déze pijl uit als er in die richting " +
+        "geen kamer bestaat?",
       "Denk aan een kamer zonder uitgang in die richting: waar wijst de buur-" +
         "referentie dan heen?",
       "null = geen enkele doos aan het eind van de pijl: in die richting is er " +
@@ -811,6 +844,14 @@ AL.strings = {
 
     repairTitel: "Voorwerp.java — herstel de constructor",
     writeTitel: "Geitje.java — schrijf de klasse",
+    // De titels van de terminalpuzzels (WP 48c). Zelfde vorm als hierboven —
+    // "<onderwerp> — <wat je doet>" — met een vaste opdracht per soort, zodat
+    // het menu leesbaar is zonder te verklappen wat het antwoord is.
+    parsonsTitel: "verdubbel(...) — leg de stroken op volgorde",
+    traceTitel: "de optellus — wat drukt ze af?",
+    vindfoutTitel: "de lus over de lijst — vind de fout",
+    verklaarTitel: "null uit zoek(...) — zeg het in één zin",
+    patroonkaartTitel: "de lus — welke kaart?",
 
     trace: {
       vraag: function (n) {
@@ -906,6 +947,7 @@ AL.strings = {
     naam: "Level 1 — Klasse en instantie: zeven uit één vorm",
     repairTitel: "Voorwerp.java — herstel de constructor",
     writeTitel: "Geitje.java — schrijf de klasse",
+    verklaarTitel: "klasse en instantie — zeg het in één zin",
 
     verklaar: {
       vraag: [
@@ -931,6 +973,8 @@ AL.strings = {
   l2: {
     naam: "Level 2 — Signaturen: wat erin gaat, wat eruit komt",
     repairTitel: "Speler.java — herstel de signaturen",
+    parsonsTitel: "zoek(...) — leg de stroken op volgorde",
+    traceTitel: "toon(...) — wat drukt ze af?",
 
     parsons: {
       vraag: [
@@ -978,6 +1022,8 @@ AL.strings = {
   l3: {
     naam: "Level 3 — Voorwaarden: de deur op slot",
     repairTitel: "Speler.java — herstel de klem",
+    vindfoutTitel: "de poort — vind de fout",
+    traceTitel: "de cascade — wat drukt ze af?",
 
     vindfout: {
       vraag: [
@@ -1027,6 +1073,8 @@ AL.strings = {
   l4: {
     naam: "Level 4 — Referenties: twee pijlen, één doos",
     repairTitel: "Spel.java — herstel de buur-bedrading",
+    traceTitel: "de buurkamer — wat drukt ze af?",
+    verklaarTitel: "null — zeg het in één zin",
 
     trace: {
       vraag: function (naam) {
@@ -1075,6 +1123,8 @@ AL.strings = {
   l5: {
     naam: "Level 5 — Luspatronen: geitje voor geitje",
     writeTitel: "Speler.java — schrijf de twee lus-methoden",
+    parsonsTitel: "de kamerregel — leg de stroken op volgorde",
+    patroonkaartTitel: "de schadelus — welke kaart?",
 
     parsons: {
       vraag: [
@@ -1121,7 +1171,14 @@ AL.strings = {
   // off-by-one, welke lus). De Java-fragmenten leven in js/levels/level6.js.
   l6: {
     naam: "Level 6 — Index en off-by-one: de laatste plank",
-    repairTitel: "Kamer.java — herstel de off-by-one",
+    // De titel noemt wát er hersteld wordt, niet wát er mis is. "Herstel de
+    // off-by-one" (tot WP 48b) verklapte variant A vóór de speler de code zag
+    // én loog tegen variant B, waar de lus van de verkeerde soort is. De
+    // andere zes titels doen het al zo: "herstel de constructor", "herstel de
+    // klem", "herstel de null-veilige keten".
+    repairTitel: "Kamer.java — herstel de verwijder-lus",
+    traceTitel: "de indexlus — wat drukt ze af?",
+    vindfoutTitel: "de gevechtslus — vind de fout",
 
     trace: {
       vraag: function (n) {
@@ -1165,6 +1222,7 @@ AL.strings = {
     naam: "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit",
     writeTitel: "Spel.java — schrijf de zoeklus",
     repairTitel: "Spel.java — herstel de null-veilige keten",
+    traceTitel: "de keten — wat drukt ze af?",
 
     trace: {
       vraag: function (wie) {
@@ -1249,22 +1307,52 @@ AL.strings = {
     // verhaal, en dat hoort hij te weten voor hij het uitspeelt.
     bootSim: "SEVEN LITTLE GOATS — de tekstversie boot in de terminal. Speel " +
       "het spel dat je grootmoeder niet heeft afgemaakt. Het loopt niet voor " +
-      "iedereen goed af; dat hangt van jou af."
+      "iedereen goed af; dat hangt van jou af.",
+
+    // De diskette-beat (WP 48c, op vraag van de docent): tussen het oordeel en
+    // de epiloog schrijft de pc de herstelde build weg naar de diskette die al
+    // die tijd in de drive zat, en klik je ze eruit. Zonder deze stap "lag" de
+    // afgewerkte broncode de hele tijd al ergens op zolder te wachten, en dat
+    // was precies wat niet klopte.
+    diskette: {
+      // Wat de drive afdrukt, in de amber van de pc. Kaal DOS, want dat is wat
+      // een machine uit 1993 zegt: geen enkele regel breder dan 38 tekens (de
+      // 8×8-font haalt er veertig in 320 px), en niets buiten ASCII.
+      terminal: [
+        "C:\\GOATS> copy *.java a:",
+        "  12 bestand(en) gekopieerd naar A:",
+        "  wegschrijven klaar.  A: 1.44 MB"
+      ],
+      // Het etiket, in haar hand. Twee regels: de titel zoals ze hem altijd
+      // schreef, en eronder haar eigen nummering — de zeven hoofdstukken uit
+      // het notitieboek. Ze heeft dat etiket geschreven voor een spel dat toen
+      // nog niet af was; nu staat er eindelijk op wat erop hoort.
+      etiketA: "7 little goats",
+      etiketB: "hfst. 1 — 7",
+      // Het onderschrift onder de kaart, in de stem van de verteller.
+      onderschrift: "Je klikt de diskette uit de drive. Het etiket schreef ze " +
+        "jaren geleden al.",
+      onderschriftHint: "(Enter: de epiloog)"
+    }
   },
 
-  // De epiloog (spelontwerp-legacy.md, §"Endgame", stap 5; achtergrond.md,
+  // De epiloog (spelontwerp-legacy.md, §"Endgame", stap 6; achtergrond.md,
   // §"Het einde geeft de prijs"). Wijst naar de echte Java-broncode in
   // seven-little-goats/ en draagt de eenmalige opdracht aan Roberta Williams
   // (roberta-williams.md, §Beslissing) — verbatim.
+  //
+  // De prijs hangt sinds WP 48c aan de diskette en niet meer aan een doos: de
+  // broncode lág niet op zolder, ze is er net op geschreven. De derde alinea
+  // draagt die wissel.
   epiloog: {
     titel: "Epiloog",
     alineas: [
       "Je hebt het afgemaakt. Zeven hoofdstukken, stuk voor stuk hersteld, tot " +
         "Alberta's spel weer draaide. Zij kreeg het niet af. Jij wel.",
       "Boven blijft de zolder staan zoals hij stond: de dozen, het stof, de " +
-        "mok naast het toetsenbord. Alleen het scherm is nu uit.",
-      "De broncode ligt op zolder — neem ze mee. Ze staat in " +
-        "seven-little-goats/. Open ze in IntelliJ, lees ze, draai ze zelf. " +
+        "mok naast het toetsenbord. Het scherm is nu uit en de drive staat leeg.",
+      "De diskette gaat mee. Wat erop staat, staat ook in " +
+        "seven-little-goats/. Open het in IntelliJ, lees het, draai het zelf. " +
         "Wat je in de terminal herstelde, is nu gewoon Java in jouw handen.",
       "Het is ook precies het soort spel dat je zelf leert schrijven. " +
         "Toeval is dat niet.",
@@ -1330,84 +1418,95 @@ AL.strings = {
     // openingstekst staat nu in AL.strings.intro, in de stem van de verteller,
     // vóór de zolder. Zie workflow/15-opwaardering-kickoff.md.
     return {
+      // WP 48 — de brieven zijn spec, geen les. Bladzijde 1 is haar
+      // klassekaart (klasse, velden met hun types, signaturen), bladzijde 2 is
+      // wat er stuk of onaf is. Wat een `this` doet, wat aliasing is, waarom
+      // een lus één plank te ver loopt: dat leren studenten in de les en in de
+      // cursus, en in het spel staat het alleen nog in de gefaseerde hints —
+      // die meetellen voor het oordeel, zodat uitleg een prijs heeft. Zie
+      // workflow/48-notities-als-spec.md; de vorm is die van de geitjeStub in
+      // js/levels/level1.js.
       l1: maakSpread(1, "Klasse en instantie: zeven uit één vorm",
         "Velden, constructor, this",
         1,
         ["Wie dit boek vindt: maak het af. Ik kom er niet meer aan toe, dus",
           "staat bij elk hoofdstuk wat er nog aan ontbreekt.",
           "",
-          "Voorwerp en Geitje teken ik één keer — de velden, de constructor —",
-          "en daar giet ik er zeven uit, elk met eigen waarden. Veld en",
-          "parameter heten in die constructor hetzelfde; 'this' is het enige",
-          "wat ze uit elkaar houdt."],
-        ["Voorwerp is maar half ingevuld: één veld krijgt nooit wat de",
-          "constructor ervoor klaarzet. Geitje staat er nog helemaal niet —",
-          "naam, schuilplaats, gered (begint op false), en de twee getters.",
+          "Voorwerp: naam (String), beschrijving (String), kracht (int). " +
+            "De twee constructors, en de getters getNaam() en getKracht().",
+          "",
+          "Geitje: naam (String), schuilplaats (Schuilplaats), gered " +
+            "(boolean, start false). De constructor voor naam en " +
+            "schuilplaats, en de twee getters erbij. Meer heeft het huisje " +
+            "niet nodig."],
+        ["Voorwerp is maar half ingevuld: één veld krijgt nooit wat de " +
+          "constructor ervoor klaarzet. Geitje staat er nog helemaal niet.",
           "— A."]),
 
       l2: maakSpread(2, "Signaturen: wat erin gaat, wat eruit komt",
         "Return vs. void; attribuut / parameter / lokaal",
         2,
-        ["Speler is de klasse waar alles langs komt, dus daar hou ik de",
-          "koppen streng: wat eruit komt staat vooraan (int, Voorwerp,",
-          "boolean) of void als er niets uit komt, en wat erin gaat staat",
-          "tussen de haakjes. Let ook op waaruit je leest — attribuut,",
-          "parameter of lokale variabele. In toon() drukt de kale naam de",
-          "parameter af en this.levenspunten het attribuut."],
-        ["De koppen van Speler heb ik zelf door elkaar gehaald en nooit",
-          "rechtgezet: getLevenspunten geeft een int, setLevenspunten neemt",
-          "er een en geeft niets terug, zoek geeft een Voorwerp, verwijder",
-          "een boolean."]),
+        ["Speler is de klasse waar alles langs komt; daar hou ik de koppen " +
+          "streng.",
+          "",
+          "Velden: levenspunten (int), MAX_LEVENSPUNTEN (int, 20), " +
+            "inventaris (ArrayList<Voorwerp>).",
+          "",
+          "Koppen: getLevenspunten(): int, zonder parameters. " +
+            "setLevenspunten(int): void. zoek(String): Voorwerp. " +
+            "verwijder(String): boolean."],
+        ["De koppen van Speler heb ik zelf door elkaar gehaald en nooit " +
+          "rechtgezet. Eén ervan staat er nog verkeerd."]),
 
       l3: maakSpread(3, "Voorwaarden: de deur op slot",
         "Validatie ×3, cascade, && / || / !",
         2,
-        ["Haar levenspunten blijven tussen 0 en MAX_LEVENSPUNTEN. Een kruik",
-          "geitenmelk geeft +6, en wie op zeventien staat zou daarmee over",
-          "het plafond gaan; onder 0 staat er na de laatste klap een negatief",
-          "getal in de statusregel terwijl ze al dood is. Dus klem ik in de",
-          "setter, met twee losse controles, voor de waarde het veld in gaat.",
-          "Een knikkerbaan met een rand links en een rand rechts."],
-        ["De klem in setLevenspunten is niet meer heel — een rand staat de",
-          "verkeerde kant op of hij is weg. En in de poortcheck staat een ||",
-          "waar && hoort: hij ging bij mij al open op één van de twee."]),
+        ["setLevenspunten(int): void. Haar levenspunten hou ik tussen 0 " +
+          "en MAX_LEVENSPUNTEN.",
+          "",
+          "Twee losse controles in de setter, vóór de waarde het veld in " +
+            "gaat."],
+        ["De klem in setLevenspunten is niet meer heel — een rand staat de " +
+          "verkeerde kant op of hij is weg. En de poortcheck klopt niet."]),
 
       l4: maakSpread(4, "Referenties: twee pijlen, één doos",
         "Twee variabelen, één object; null",
         3,
-        ["Elke gang loopt twee kanten op: twee pijlen, één doos. Leg ik de",
-          "noord-buur van de molen, dan legt de molen zuid terug — anders",
-          "loop je een kamer binnen en nooit meer buiten. Verander ik de kamer",
-          "via de ene verwijzing, dan ziet de andere het ook: het is dezelfde",
-          "doos. En waar geen gang is, blijft de buur null."],
-        ["In verbindKamers is één van de vier setters overal door een andere",
-          "vervangen; die richting wordt nergens meer gelegd. Vier richtingen",
-          "in één if / else if-cascade, elke richting beide kanten."]),
+        ["verbindKamers(Kamer, String, Kamer): void.",
+          "",
+          "Vier richtingen leg ik in één if / else if-cascade: noord, oost, " +
+            "zuid, west. Per tak setNoord, setZuid, setOost of setWest, en " +
+            "telkens de tegengestelde erbij — elke verbinding staat aan " +
+            "twee kanten."],
+        ["In verbindKamers is één van de vier setters overal door een " +
+          "andere vervangen; die richting wordt nergens meer gelegd."]),
 
       l5: maakSpread(5, "Luspatronen: geitje voor geitje",
         "Tellen, totaliseren, opbouwen, filteren, uiterste",
         4,
-        ["Ik kies eerst de kaart, dan schrijft de romp zich bijna zelf:",
-          "tellen, totaliseren, opbouwen, filteren, of het uiterste zoeken.",
-          "De statusregel van toonStats wil twee dingen weten: hoeveel wapens",
-          "Roodkapje op zak heeft, en welk voorwerp het hardst uithaalt.",
-          "Zelfde inventaris, zelfde lus, andere kaart erop."],
-        ["Twee lus-methoden ontbreken nog in Speler: telWapens (een int)",
-          "en sterksteVoorwerp (een Voorwerp, of null bij een lege mand).",
-          "De kaarten staan in de kantlijn, de rompen niet. En de opbouw",
-          "van de kamerregel ligt in stroken door elkaar."]),
+        ["Twee lus-methoden ontbreken nog in Speler.",
+          "",
+          "telWapens(): int, zonder parameters — hoeveel voorwerpen in de " +
+            "inventaris kracht boven 0 hebben.",
+          "",
+          "sterksteVoorwerp(): Voorwerp, zonder parameters — het voorwerp " +
+            "met de grootste kracht, of null bij een lege inventaris.",
+          "",
+          "Allebei laat ik een for-lus over inventaris lopen, " +
+            "i < inventaris.size()."],
+        ["De rompen van die twee staan er niet. En de opbouw van de " +
+          "kamerregel ligt in stroken door elkaar."]),
 
       l6: maakSpread(6, "Index en off-by-one: de laatste plank",
         "Eerste index 0, laatste size() min 1; welke lus kies ik",
         5,
-        ["Een lijst is een plankenbrug over een ravijn: de eerste plank is",
-          "nummer 0, de laatste size() min één. Eén plank te ver en je ligt",
-          "in het water, en zo'n lus ziet er precies goed uit. Daarom neem ik",
-          "de for-lus: dan staat de grens waar ik ze kan zien."],
-        ["In verwijderVoorwerp klopt de lus niet meer. De vorm die er hoort",
-          "te staan: een for-lus van 0 tot size(), strikt kleiner,",
-          "verwijderen op de index en meteen stoppen. En in de gevechtsrondes",
-          "loopt er één ronde te veel."]),
+        ["verwijderVoorwerp(String): void. Het voorwerp met die naam gaat " +
+          "uit de lijst van de kamer, en daar stopt ze. Ik loop met een " +
+          "for-lus over de index.",
+          "",
+          "In de Gevecht-rondes staat de lus die de rondes afspeelt."],
+        ["In verwijderVoorwerp klopt de lus niet meer. En in de " +
+          "gevechtsrondes evenmin."]),
 
       // De kop van dit spread droeg de volledige keten mee —
       // "(getCategorie().getNaam())" — en dat is één woord van zesentwintig
@@ -1418,12 +1517,14 @@ AL.strings = {
       l7: maakSpread(7, "Zoeken en de dubbele pijl: waar het jongste zit",
         "Zoeklus geeft object of null; ketting van getters",
         6,
-        ["Het laatste stuk. Ik roep de zeven af tot er één antwoordt: de",
-          "zoeklus geeft dat geitje terug, of null als de tocht doodloopt.",
-          "In het schuilplaatsen-overzicht volg ik daarna pijl na pijl:",
-          "getSchuilplaats(), en op wat dat teruggeeft getKamer() en dan",
-          "getNaam(). Wie nog in de wolf zit heeft geen schuilplaats, en dan",
-          "wijst de eerste pijl naar niets."],
+        ["Het laatste stuk.",
+          "",
+          "zoekGeitje(String): Geitje — de zoeklus loopt de rij af en geeft " +
+            "dat geitje terug, of null.",
+          "",
+          "toonSchuilplaatsen(): void — per geitje volg ik " +
+            "getSchuilplaats(), en op wat dat teruggeeft getKamer() en dan " +
+            "getNaam(). Null-veilig."],
         ["zoekGeitje en de keten van de endgame zijn wat er nog van mij",
           "ontbreekt: de lus die een Geitje of null teruggeeft staat er niet,",
           "en aan de keten mankeert iets — ze mist de null-controle of een",

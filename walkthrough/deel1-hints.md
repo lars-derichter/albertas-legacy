@@ -53,33 +53,47 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
 1. **Vind het fragment.** Elk level begint met een blad uit Alberta's
    beschadigde notitieboek. Het eerste ligt gewoon open in de westhoek. De
    latere bladen zitten in dichtgeplakte, gemerkte dozen, dieper in de zolder
-   (de doorgang in het midden en de overloop boven aan de trap).
+   (de doorgang in het midden en de overloop boven aan de trap). Eén blad
+   tegelijk: een doos geeft het volgende pas als het hoofdstuk dat je openhebt
+   hersteld is. Vooruitlopen kan dus niet, en dat is met opzet — haar schema
+   loopt op volgorde.
 2. **Lees de spread.** Het notitieboek klapt open: Alberta's schets, haar
-   puzzelbrief, en rechtsonder de regel "Week X in mijn schema" — haar eigen
+   spec, en rechtsonder de regel "Week X in mijn schema" — haar eigen
    planning voor dat hoofdstuk, en tegelijk een prima maat voor of je er al aan
-   toe bent. Ze schreef die bladen voor wie ze niet kende: hoofdstuk 1 opent
-   met een aanhef, en daarna zegt ze per hoofdstuk gewoon wat er nog ontbreekt.
+   toe bent. Verwacht van die bladen geen uitleg: links staat wat het stuk moet
+   zíjn (de klasse, haar velden met hun types, de koppen), rechts wat er stuk
+   of onaf is. Waaróm iets zo werkt, staat in je cursus — en in nood in de
+   hints hieronder. Ze schreef die bladen voor wie ze niet kende: hoofdstuk 1
+   opent met een aanhef, en daarna zegt ze per hoofdstuk gewoon wat er nog
+   ontbreekt.
    Met de spatiebalk blader je door; onderaan het linkerblad staat waar die je
    brengt, en op de laatste bladzijde staat er "spatie: terug". Het boek gaat
    dan gewoon dicht en je staat nog precies waar je het blad vond.
 3. **Ga aan de pc zitten.** Loop zelf naar de werkhoek in het oosten en typ
    `ga zitten`. Daar werk je aan haar Java-code. Kwijt? Typ `?` — zolang er een
    hoofdstuk open staat, wijst de hint je naar de pc.
-4. **Los de puzzels op.** Meestal één editor-puzzel en twee terminal-puzzels
-   per level. Alle drie af? Dan is dat hoofdstuk van Alberta's spel hersteld.
+4. **Los de puzzels op, van boven naar onder.** Meestal één editor-puzzel en
+   twee terminal-puzzels per level. Het menu geeft ze één voor één vrij: wat nog
+   niet aan de beurt is, staat gedoofd met "wacht" ernaast en reageert niet op
+   je klik of cijfertoets. Een taak die je al af hebt, mag je wél opnieuw
+   openen. Alle drie af? Dan is dat hoofdstuk van Alberta's spel hersteld.
 5. **Keer terug.** De pc sluit (`Esc`), je voortgang wordt bewaard, en je staat
    weer op de zolder, klaar voor het volgende fragment. Ga je daarna nog eens
    zitten terwijl dat hoofdstuk al hersteld is, dan blijft de pc dicht en zegt
    hij zelf waar het volgende blad ligt.
 
 **Vastgelopen op de zolder zelf?** Bijna altijd is het antwoord: je hebt het
-volgende blad nog niet, of je zit in de verkeerde kamer. Typ `?`. De hint kijkt
-naar hoe ver je staat, niet naar waar je staat: ligt er nog een hoofdstuk open
-op de pc, dan stuurt hij je daarheen; anders zegt hij in welke kamer het
-eerstvolgende blad ligt — of dat het in déze kamer in een doos zit. Die hints
-zijn gratis en tellen niet mee in Alberta's terugblik. De grote doos in het
-midden met "BRONCODE" erop telt trouwens pas op het einde; laat die nog even
-dicht.
+volgende blad nog niet, je zit in de verkeerde kamer, of er staat nog een
+hoofdstuk open. Typ `?`. De hint kijkt naar hoe ver je staat, niet naar waar je
+staat: ligt er nog een hoofdstuk open op de pc, dan stuurt hij je daarheen;
+anders zegt hij in welke kamer het eerstvolgende blad ligt — of dat het in déze
+kamer in een doos zit. Weigert een doos gewoon open te gaan terwijl je `open
+doos` typt? Dan is het dat derde geval: er is nog een hoofdstuk te herstellen,
+en de doos zegt zelf welk. Ga eerst dát afwerken aan de pc; daarna geeft ze het
+blad zonder morren. Die hints zijn gratis en tellen niet mee in Alberta's
+terugblik. De grote doos in het midden met "BRONCODE" erop blijft dicht, en dat
+hoort zo: daar zit háár materiaal van toen in, niets wat jij nodig hebt. Het
+spel laat je hem niet open krijgen, hoe vaak je het ook probeert.
 
 Meer dan dit zeggen we niet over de zolder. Het is een kleine, warme ruimte —
 je hebt ze zo in de vingers.
@@ -104,7 +118,8 @@ verwijzing naar de doos zelf op.
   de verwijzing naar de doos zelf, of ze staat net omgekeerd.
 
 **Puzzel 2 — schrijf `Geitje` van nul.** Alberta somt in de kantlijn op wat
-een geitje heeft; jij tikt de klasse uit.
+een geitje heeft — en op bladzijde 2 van het spread staat haar klassekaart met
+dezelfde drie velden erop; jij tikt de klasse uit.
 
 - *Hint 1:* Een klasse is een blauwdruk: eerst de velden (wat een geitje
   heeft), dan de constructor die de verse doos vult, dan de getters.
@@ -130,7 +145,15 @@ Trechters erin (de parameters), een goot eruit (het returntype) — of niets
 eruit (`void`). En drie soorten dozen om waarden in te bewaren: attribuut,
 parameter, lokale variabele.
 
-**Puzzel 1 — herstel de signaturen van `Speler`.** De koppen zijn tot pap
+**Puzzel 1 — Parsons: orden de zoekmethode.** Sleep de stroken in de juiste
+volgorde. Let op: één strook hoort er níét bij.
+
+- *Hint 1:* De methode begint met haar kop, werkt van boven naar onder, en
+  sluit met een accolade.
+- *Hint 2:* Eén strook geeft de verkeerde doos terug — de parameter in plaats
+  van het gevonden object. Die afleider laat je liggen.
+
+**Puzzel 2 — herstel de signaturen van `Speler`.** De koppen zijn tot pap
 doorgelopen: eentje geeft iets terug maar zegt `void`, of een trechter is
 verdwenen.
 
@@ -138,14 +161,6 @@ verdwenen.
   gaat erin, wat komt eruit?
 - *Hint 2:* Kijk naar de koppen. Eén geeft iets terug maar zegt `void`; bij een
   andere is de trechter (de parameter) verdwenen.
-
-**Puzzel 2 — Parsons: orden de zoekmethode.** Sleep de stroken in de juiste
-volgorde. Let op: één strook hoort er níét bij.
-
-- *Hint 1:* De methode begint met haar kop, werkt van boven naar onder, en
-  sluit met een accolade.
-- *Hint 2:* Eén strook geeft de verkeerde doos terug — de parameter in plaats
-  van het gevonden object. Die afleider laat je liggen.
 
 **Puzzel 3 — trace: een parameter schaduwt een attribuut.** Voorspel de twee
 getallen die verschijnen.
@@ -209,15 +224,15 @@ terugleggen.
 **Puzzel 2 — trace: aliasing.** Twee variabelen wijzen naar dezelfde kamer; je
 zet de buur via de ene en leest hem via de andere.
 
-- *Hint 1:* Twee pijlen, één doos: `eerste` en `tweede` wijzen naar dezelfde
-  kamer.
+- *Hint 1:* Twee pijlen, één doos: lees de tweede regel nog eens — hoeveel
+  kamers maakt deze code eigenlijk aan?
 - *Hint 2:* Wat je via `tweede` zet, staat ook in `eerste` — het blijft
   dezelfde doos.
 
 **Puzzel 3 — verklaar in één zin: wat betekent `null` hier?**
 
-- *Hint 1:* Twee pijlen, één doos — en `null` is een pijl die naar géén doos
-  wijst.
+- *Hint 1:* Twee pijlen, één doos: waar komt die pijl uit als er in die
+  richting geen kamer bestaat?
 - *Hint 2:* Denk aan een kamer zonder uitgang in die richting: waar wijst de
   buur-referentie dan heen?
 
@@ -261,8 +276,8 @@ Toets 2 en de eindtoets, allebei. Het beeld: een lijst is een plankenbrug boven
 een ravijn. De eerste plank is nummer 0; de laatste is `size()` min één. Eén
 plank te ver en je ligt in het water.
 
-**Puzzel 1 — herstel de off-by-one in `verwijderVoorwerp`.** Een lus loopt één
-plank te ver, of het is de verkeerde soort lus.
+**Puzzel 1 — herstel de verwijder-lus.** In `verwijderVoorwerp` loopt een lus
+één plank te ver, of het is de verkeerde soort lus.
 
 - *Hint 1:* De plankenbrug: de eerste plank is 0, de laatste is `size()` min
   één. Eén plank te ver en je ligt in het water.

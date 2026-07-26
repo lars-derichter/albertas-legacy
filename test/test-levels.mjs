@@ -75,6 +75,72 @@ test("hints tellen per puzzel op in hintsTotaal", () => {
   assert.equal(t.levels["1"].puzzels["l1-trace"].hints, 1);
 });
 
+// ===========================================================================
+// De volgorde-poort binnen een level (WP 48b)
+// ===========================================================================
+
+test("poort: de eerste puzzel is altijd speelbaar, de rest wacht", () => {
+  const t = world.nieuw(1);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 0), true);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 1), false);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 2), false);
+});
+
+test("poort: puzzel k opent zodra 0..k-1 af zijn, één stap per keer", () => {
+  const t = world.nieuw(1);
+  // "bezig" is niet genoeg — alleen "af" opent de volgende.
+  levels.markeerBezig(t, "1", "l1-editor");
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 1), false);
+
+  levels.voltooiPuzzel(t, "1", "l1-editor");
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 1), true);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 2), false);   // nog één te gaan
+
+  levels.voltooiPuzzel(t, "1", "l1-trace");
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 2), true);
+});
+
+test("poort: een afgewerkte puzzel blijft opnieuw te openen", () => {
+  const t = world.nieuw(1);
+  levels.voltooiPuzzel(t, "1", "l1-editor");
+  levels.voltooiPuzzel(t, "1", "l1-trace");
+  // De poort kijkt alleen vooruit: alle drie blijven bereikbaar, ook de twee
+  // die al "af" staan.
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 0), true);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 1), true);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 2), true);
+});
+
+test("poort: onbekende indexen en levels zijn niet speelbaar", () => {
+  const t = world.nieuw(1);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", -1), false);
+  assert.equal(levels.puzzelSpeelbaar(t, "1", 3), false);
+  assert.equal(levels.puzzelSpeelbaar(t, "geen-level", 0), false);
+});
+
+test("poort: op id — puzzelIndex en puzzelSpeelbaarId", () => {
+  const t = world.nieuw(1);
+  assert.equal(levels.puzzelIndex("1", "l1-trace"), 1);
+  assert.equal(levels.puzzelIndex("1", "bestaat-niet"), -1);
+  assert.equal(levels.puzzelSpeelbaarId(t, "1", "l1-editor"), true);
+  assert.equal(levels.puzzelSpeelbaarId(t, "1", "l1-trace"), false);
+  assert.equal(levels.puzzelSpeelbaarId(t, "1", "bestaat-niet"), false);
+  levels.voltooiPuzzel(t, "1", "l1-editor");
+  assert.equal(levels.puzzelSpeelbaarId(t, "1", "l1-trace"), true);
+});
+
+test("poort: hij leest de save en voegt er niets aan toe (hervatten werkt)", () => {
+  const t = world.nieuw(1);
+  levels.voltooiPuzzel(t, "1", "l1-editor");
+  // Rondreis door JSON, zoals de save doet: de poort staat daarna gelijk.
+  const herladen = JSON.parse(JSON.stringify(t));
+  assert.equal(levels.puzzelSpeelbaar(herladen, "1", 1), true);
+  assert.equal(levels.puzzelSpeelbaar(herladen, "1", 2), false);
+  // Geen nieuw veld in de puzzelstaat.
+  assert.deepEqual(Object.keys(herladen.levels["1"].puzzels["l1-trace"]).sort(),
+    ["hints", "status"]);
+});
+
 test("variatie: dezelfde seed geeft dezelfde picks", () => {
   const opties = ["a", "b", "c", "d"];
   assert.equal(levels.kiesVariant(777, opties, "variant"),

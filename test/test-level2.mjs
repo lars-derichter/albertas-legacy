@@ -42,8 +42,30 @@ function seedVoorIndex(def, idx) {
 test("level 2 registreert zich met drie puzzels in de juiste vormen", () => {
   assert.ok(AL.levels.isGeregistreerd("2"));
   const defs = AL.levels.puzzelDefs("2");
-  assert.deepEqual(defs.map((d) => d.id), ["l2-editor-repair", "l2-parsons", "l2-trace"]);
-  assert.deepEqual(defs.map((d) => d.type), ["editor", "parsons", "trace"]);
+  assert.deepEqual(defs.map((d) => d.id), ["l2-parsons", "l2-editor-repair", "l2-trace"]);
+  assert.deepEqual(defs.map((d) => d.type), ["parsons", "editor", "trace"]);
+});
+
+// De volgorde is sinds WP 48b een eis, geen smaak: de defs-volgorde is de
+// speelvolgorde (AL.levels.puzzelSpeelbaar), en het editor-fragment toont
+// `zoek` ongeschonden — precies de stroken van de Parsons. Wie de editor eerst
+// mag openen, krijgt die oplossing cadeau.
+test("volgorde: de Parsons komt vóór het editor-fragment dat zijn stroken toont", () => {
+  const defs = AL.levels.puzzelDefs("2");
+  const iParsons = defs.findIndex((d) => d.id === "l2-parsons");
+  const iEditor = defs.findIndex((d) => d.id === "l2-editor-repair");
+  assert.ok(iParsons < iEditor, "de Parsons hoort vóór de editor te staan");
+  // Het bewijs dat het om dezelfde regels gaat: elke strook staat, op
+  // inspringing na, in beide beschadigde varianten van de editor.
+  const parsons = puzzel("l2-parsons");
+  const editorDef = puzzel("l2-editor-repair");
+  for (const variant of editorDef.varianten) {
+    const regels = variant.split("\n").map((r) => r.trim());
+    for (const strook of parsons.regels) {
+      assert.ok(regels.includes(strook.trim()),
+        "strook staat niet in de variant: " + strook);
+    }
+  }
 });
 
 // ===========================================================================

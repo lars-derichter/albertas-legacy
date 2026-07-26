@@ -36,10 +36,14 @@ globalThis.AL = globalThis.AL || {};
 "    return null;\n" +
 "}\n";
 
+  // WP 48: dezelfde spec-vorm als de andere stubs — signatuur, wat eruit komt,
+  // en de lussoort. Die laatste stond er niet, terwijl de checker hem eist
+  // (lusVorm "for"); de speurtocht-zin blijft, want dat is wat de methode dóét,
+  // geen les over zoeklussen.
   var zoekStub =
-"// Ze roept een naam in het huisje en luistert de rij af tot er één antwoordt.\n" +
-"// Dat geitje geef je terug; antwoordt er niemand, dan liep de speurtocht\n" +
-"// dood: null. De lus zelf staat er nog niet. — A.\n" +
+"// zoekGeitje(String): Geitje. Ze roept een naam in het huisje en luistert de\n" +
+"// rij af tot er één antwoordt: dat geitje geef je terug, anders null. Eén\n" +
+"// for-lus over geitjes. De romp staat er nog niet. — A.\n" +
 "\n" +
 "Geitje zoekGeitje(String gezochteNaam) {\n" +
 "    // hier verder\n" +
@@ -86,11 +90,23 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // WP 48: de notitie noemt de keten, niet de reparatie. "Eerst op null
+  // controleren, dan de tweede pijl volgen" was letterlijk het herstel van
+  // variant A, en de zin erboven was het antwoord op l7-trace. De drie schakels
+  // blijven staan — de checker eist ze bij naam (aanroepKeten.stappen) — en dat
+  // er iets aan mankeert, dekt allebei de varianten.
+  //
+  // Het woord "null-veilig" moet er wél in. Zonder dat woord is de notitie
+  // volledig waar van variant A: die heeft alle drie de schakels in de juiste
+  // volgorde en zakt enkel op `nullVeilig`. De speler zou dan geen enkel
+  // signaal op het scherm hebben dat er nog iets moet — briefB zegt het, maar
+  // de spread is één keer te lezen. "Null-veilig" is de eis; "eerst op null
+  // controleren, dan de tweede pijl volgen" was het recept. Alleen de eis
+  // hoort hier.
   var ketenNotitie =
-"// Voor elk geitje twee pijlen naar de kamernaam:\n" +
-"// schuilplaats.getKamer().getNaam(). Maar een geitje zonder schuilplaats heeft\n" +
-"// geen kamer om naar te wijzen — eerst op null controleren, dan de tweede\n" +
-"// pijl volgen. Aan de keten die er nu staat, mankeert iets. — A.\n" +
+"// toonSchuilplaatsen: per geitje de keten getSchuilplaats(), en op wat dat\n" +
+"// teruggeeft getKamer() en dan getNaam(). Null-veilig. Aan de keten die er\n" +
+"// nu staat, mankeert iets. — A.\n" +
 "\n";
 
   var ketenBeschadigdA = ketenNotitie +
@@ -137,6 +153,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l7-trace",
     type: "trace",
+    titel: S.l7.traceTitel,
     pool: ["jongste", "broer"],
     label: "l7-trace",
     verwacht: function (wie) {

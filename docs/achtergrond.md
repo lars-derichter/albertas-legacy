@@ -34,7 +34,9 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
   klopte, tekende ze eroverheen. Die gewoonte is het scharnier van de hele
   fictie (zie _Prototype-fase_ hieronder).
 - **Nalatenschap:** de zolder. Dozen, stof, een pc die nog aanslaat, en het
-  notitieboek. En, verborgen tussen alles, de echte broncode — de hoofdprijs.
+  notitieboek. De echte broncode is de hoofdprijs, maar ze ligt er niet: ze
+  bestaat pas als de speler haar afmaakt (zie de beslissing bij _De
+  broncode-doos_ hieronder).
 
 ## De verdwijning
 
@@ -95,9 +97,28 @@ Vaste elementen die in de prose en de scènes terugkomen:
   (zie `spelontwerp-legacy.md`).
 - **Het notitieboek**: beschadigd, bladen los, vlekken. Elk level ontgrendelt
   één fragment ervan.
-- **De broncode-doos**: pas op het einde relevant. Hierin ligt, letterlijk, de
-  echte Java van `seven-little-goats/`. "De broncode ligt op zolder — neem ze
-  mee."
+- **De broncode-doos**: dichtgeplakt, gemerkt BRONCODE, en daaronder kleiner
+  "pas op het einde". Wat erin zit is háár materiaal van toen — uitdraaien,
+  schetsen, haar eigen diskettes van de versie die stukging. De doos gaat
+  nooit open; ze is er om te tonen dat ze wist wat ze achterliet, niet om iets
+  uit te delen.
+- **De diskette**: in de drive van de pc zit een HD-diskette van 1,44 MB met
+  een etiket in haar hand: "7 little goats", en daaronder haar nummering. Ze
+  heeft dat etiket geschreven voor een spel dat toen nog niet af was. Op het
+  einde schrijft de pc de herstelde broncode ernaartoe en neemt de speler de
+  diskette mee van zolder. Dát is de prijs, en ze bestaat pas als hij hem
+  verdiend heeft.
+
+> Beslissing (WP 48c, op vraag van de docent): tot dit pakket lag de afgewerkte
+> broncode "de hele tijd al" in een doos op zolder, en dat klopte niet — het
+> spel is nét niet af, dat is de hele premisse. Lars stelde de diskette voor:
+> _"Ik vind het niet logisch dat de afgewerkte broncode er de hele tijd al was.
+> In de plaats daarvan zou de bewaarde, gerepareerde broncode op een floppy disk
+> kunnen bewaard worden die je kan meenemen uit de pc."_ De prijs verhuist
+> daarmee van een doos naar een medium dat pas op het einde beschreven wordt.
+> De oude regel "De broncode ligt op zolder — neem ze mee", die dit document
+> voorschreef, vervalt; wat blijft is dat de speler met echte, draaibare Java
+> naar huis gaat.
 
 ## Het notitieboek
 
@@ -111,17 +132,26 @@ fictie-verklaring waarom de code "hersteld" moet worden: stukken zijn
 onleesbaar of ontbreken.
 
 De hand is die van een programmeur, niet die van een lesgeefster. Ze schrijft op
-wat haar spel nodig heeft en waarom het zo in elkaar zit, niet wat een klasse
-is; haar beelden (blauwdruk en doos, de plankenbrug, de speurtocht) zijn haar
-eigen steno, geen didactisch materiaal. De aanhef aan de onbekende lezer staat
-één keer in het boek — hoofdstuk 1 — en daarna doet ze wat een programmeur in
-een overdracht doet: zeggen wat er nog niet af is.
+wat haar spel nodig heeft, niet wat een klasse is. Sinds WP 48 is dat scherper
+gesteld dan "niet didactisch": haar bladen zijn **spec**. Ze noemt klassen,
+velden met hun types en signaturen — een klassekaart, zoals een programmeur er
+een op papier zet vóór ze typt — en daarna wat er stuk of onaf is. Ze legt
+níéts uit: niet wat `this` doet, niet wat aliasing is, niet waarom een index bij
+0 begint. Dat leren studenten in de les en in de cursus, en in het spel staat
+het in de gefaseerde hints, die meetellen voor het oordeel. Haar oudere beelden
+(blauwdruk en doos, de plankenbrug, de speurtocht) leven daar verder, niet meer
+op papier. De aanhef aan de onbekende lezer staat één keer in het boek —
+hoofdstuk 1 — en daarna doet ze wat een programmeur in een overdracht doet:
+zeggen wat er nog niet af is.
 
 Elk level draait rond één **spread** (dubbele bladzijde) uit dat boek. Een
 spread bevat:
 
-- Alberta's schets of diagram voor dat stuk van het spel.
-- Haar notitie over wat de code moet doen (dit wordt de puzzelbrief).
+- Alberta's schets of diagram voor dat stuk van het spel — voor hoofdstuk 1 is
+  dat letterlijk een klassekaart met de velden van `Geitje` erop.
+- Haar spec voor dat stuk: bladzijde 1 wat het moet zijn, bladzijde 2 wat er
+  stuk of onaf is. De bindende vorm staat in `levels-en-scharnieren.md`,
+  §"Wat een spread draagt".
 - De regel "Week X in mijn schema" — haar eigen planning voor dat hoofdstuk.
   Buiten de fictie is het de cursusweek uit `levels-en-scharnieren.md`; in haar
   hand is het niets van onze cursus, alleen de week waarin zij dat stuk wilde
@@ -191,23 +221,27 @@ De frame-logica die elk stukje prose moet respecteren:
 - **Elk hersteld hoofdstuk is dubbel winst.** Het herstelt een stuk van _Seven
   Little Goats_ én markeert dat de speler een scharnier van de cursus beheerst.
 - **Het einde geeft de prijs.** Level 7 af = Alberta's spel draait. De pc boot
-  _Seven Little Goats_ als speelbare simulatie. De epiloog wijst naar de echte
-  Java-broncode in `seven-little-goats/`: neem ze mee van zolder, open ze in
-  IntelliJ, draai ze zelf.
+  _Seven Little Goats_ als speelbare simulatie. Daarna schrijft hij de herstelde
+  broncode weg naar de diskette in de drive; de speler klikt ze eruit en neemt
+  ze mee. De epiloog hangt aan dat beeld: wat op de diskette staat, staat ook in
+  `seven-little-goats/` — open het in IntelliJ, draai het zelf.
 
 ## Toon en register (voor alle in-game tekst)
 
 - **Vlaams Nederlands**, geen hollandismen (zie de projectrichtlijnen). Tech-
   termen blijven Engels (parser, editor, compiler) en krijgen Nederlandse
   lidwoorden.
-- **Alberta's stem** (kantlijnnotities, puzzelbriefjes, het oordeel): droog,
+- **Alberta's stem** (kantlijnnotities, notitieboek-spec, het oordeel): droog,
   competent, kort. Ze draagt werk over in plaats van les te geven: eerste
   persoon over haar eigen spel, concreet over haar eigen klassen, en wat er
   ontbreekt vóór wat het betekent. Nooit een imperatief die naar een klaslokaal
   ruikt ("Schrijf de private velden…"); wel de stand van zaken ("de bedrading
-  tussen de kamers ligt los"). Warm is ze in het oordeel en in de enkele
-  knipoog, niet in elke regel — zij is het enige warme in dit spel, en dat
-  blijft zo: de kou zit in de kamer, niet in haar. Dat contrast is het punt.
+  tussen de kamers ligt los"). Sinds WP 48 is dat ook een grens op de inhoud en
+  niet enkel op de toon: op papier specificeert ze, ze legt niet uit. Eén zin
+  kleur per hoofdstuk is het maximum ("Meer heeft het huisje niet nodig.").
+  Warm is ze in het oordeel en in de enkele knipoog, niet in elke regel — zij
+  is het enige warme in dit spel, en dat blijft zo: de kou zit in de kamer,
+  niet in haar. Dat contrast is het punt.
 - **De verteller** (zolderbeschrijvingen, systeemtekst): rustig, observerend,
   King's Quest-achtig zuinig, en koel. Hij oordeelt niet en hij troost niet; hij
   noemt wat er staat. Lopen herbeschrijft niet; `kijk` wel (zie

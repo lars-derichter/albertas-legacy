@@ -30,6 +30,12 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
   herlaadt met het notitieboek open en het dan dichtdoet, staat weer op de plek
   waar hij het blad vond. De sim-substaat (`modus === "sim"`) wordt niet
   bewaard: de simulatie is een eindstuk, geen doorlopende voortgang.
+- **Draagt géén poortvelden.** De twee lineariteitspoorten worden uitgerekend,
+  niet opgeslagen: de doos kijkt naar `levels[n-1].afgerond` (WP 47) en het
+  pc-menu naar `levels[n].puzzels[*].status` van de taken erboven (WP 48b, zie
+  `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"). Een save van
+  vóór die pakketten laadt daardoor ongewijzigd en hervat halverwege een
+  hoofdstuk op precies de juiste taak.
 
 ### Versionering en migratie
 
@@ -177,6 +183,13 @@ teksten, zodat de pc en `?` elkaar niet kunnen tegenspreken: gaat de speler
 zitten terwijl het actieve hoofdstuk al hersteld is en er nog een blad op de
 zolder ligt, dan blijft de pc dicht en zegt hij waar dat blad ligt.
 
+De drie takken sluiten sinds WP 47 ook de dozen in: staat er een hoofdstuk
+open (tak 1), dan geeft géén doos haar blad — `AL.world._openFragmentDoos`
+weigert met `AL.strings.dozen.nogDicht` en laat de staat ongemoeid. De hint en
+de doos zeggen dan hetzelfde: eerst dat hoofdstuk herstellen. Tak 2 wijst pas
+naar een doos wanneer die ook echt opengaat. Het notitieboek van level 1 heeft
+geen voorganger en staat altijd open.
+
 > Beslissing (WP 33): de vaste `hint` per scène is verdwenen. Eén tekst per hoek
 > kan de spelstand niet volgen, en ze loog ook echt: de hint van de doorgang
 > stuurde de speler naar de pc in het oosten terwijl de fragmenten 2, 3 en 4 in
@@ -205,7 +218,9 @@ zou hebben. Effect-tag: `oordeel:<tier>`.
 | `samen-geraakt` | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints. Het spel draait. Dat is wat telt." |
 
 Alle vier de tiers zijn positief; het verschil is de knipoog, niet de waarde.
-Het oordeel sluit af richting de epiloog (`epiloog`), die naar de echte broncode
-in `seven-little-goats/` wijst. De volledige oordeel-teksten leven in
-`js/logic/strings.js`, in Alberta's stem (zie `achtergrond.md`, §"Toon en
-register").
+Het oordeel sluit af richting de diskette (`diskette`) en van daaruit naar de
+epiloog (`epiloog`), die naar de echte broncode in `seven-little-goats/` wijst.
+De beat-teller van die diskette-kaart staat niet in de save: hij duurt twee
+toetsaanslagen, en wie er middenin herlaadt ziet de beat gewoon opnieuw. De
+volledige oordeel-teksten leven in `js/logic/strings.js`, in Alberta's stem (zie
+`achtergrond.md`, §"Toon en register").

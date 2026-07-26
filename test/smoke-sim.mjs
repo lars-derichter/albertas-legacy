@@ -3,7 +3,10 @@
 // drie puzzels op met de modeloplossingen zodat level-af:7 valt, en bewijst dan
 // de VOLLEDIGE, niet-gestubte endgame-keten in de UI:
 //   level-af:7 → sim:boot (de sim boot in het terminalpaneel) → de speler speelt
-//   een winnend script → sim:einde → oordeel → epiloog.
+//   een winnend script → sim:einde → oordeel → diskette → epiloog.
+//
+// De diskette-beat kwam er in WP 48c bij; deze test dekt hem mee, inclusief een
+// reload middenin (de beat begint dan opnieuw en strandt niet).
 //
 // Beslissing: het bereiken van level 7 via de zolder-lus is al gedekt door
 // smoke-levels-4-7.mjs; deze test gebruikt de bestaande debughaak debugStartPc(7)
@@ -91,7 +94,7 @@ async function main() {
     executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
-  console.log("Rooksmaaktest — de endgame: level-af:7 → sim → oordeel → epiloog\n");
+  console.log("Rooksmaaktest — de endgame: level-af:7 → sim → oordeel → diskette → epiloog\n");
 
   const context = await browser.newContext({ viewport: { width: 1100, height: 800 } });
   const page = await context.newPage();
@@ -149,13 +152,65 @@ async function main() {
 
   await page.screenshot({ path: join(SCRATCH, "wp9-oordeel.png") });
 
-  // oordeel → epiloog (Enter bladert door).
+  // oordeel → diskette (WP 48c). Twee beats op één kaart: eerst schrijft de
+  // drive weg, dan ligt de diskette in je hand. Pas daarna komt de epiloog.
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => window.AL.debugState.modus === "diskette",
+    null, { timeout: 8000 }).catch(() => {});
+  const sDisk = await state(page);
+  check("oordeel → diskette: de diskettekaart verschijnt",
+    sDisk.modus === "diskette", "modus=" + sDisk.modus);
+  check("de diskette begint bij het wegschrijven (beat 0)",
+    sDisk.disketteStap === 0, "stap=" + sDisk.disketteStap);
+
+  // Wordt de kaart écht getekend? Twee pixels: het etiket is papier (licht), de
+  // achtergrond is koel en donker. Een modus zonder beeld zou dat niet halen.
+  // Eerst een frame afwachten: de modus wisselt in de effect-dispatch, het
+  // canvas pas in de volgende render — zonder deze pauze leest de test nog de
+  // oordeelkaart die er nog op staat.
+  await page.waitForTimeout(200);
+  const pix = await ev(page, () => {
+    const c = document.getElementById("scherm");
+    const g = c.getContext("2d");
+    const p1 = g.getImageData(196, 80, 1, 1).data;   // midden van het etiket
+    const p2 = g.getImageData(20, 20, 1, 1).data;    // de donkere achtergrond
+    return { etiket: [p1[0], p1[1], p1[2]], achter: [p2[0], p2[1], p2[2]] };
+  });
+  check("de diskettekaart is getekend: papier op het etiket, donker eromheen",
+    pix.etiket[0] > 180 && pix.etiket[2] > 150 && pix.achter[0] < 90,
+    "etiket=" + pix.etiket.join(",") + " achter=" + pix.achter.join(","));
+
+  await page.screenshot({ path: join(SCRATCH, "wp48c-diskette.png") });
+
+  // Een reload middenin de beat mag de speler niet stranden: de save staat op
+  // modus "diskette", de beat begint opnieuw bij het wegschrijven, en Enter
+  // brengt hem van daaruit gewoon verder.
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
+  const naReload = await state(page);
+  check("reload tijdens de diskette-beat: de kaart staat er weer",
+    naReload.modus === "diskette" && naReload.disketteStap === 0,
+    "modus=" + naReload.modus + " stap=" + naReload.disketteStap);
+
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => window.AL.debugState.disketteStap === 1,
+    null, { timeout: 8000 }).catch(() => {});
+  const sDisk2 = await state(page);
+  check("Enter: de diskette komt uit de drive (beat 1)",
+    sDisk2.modus === "diskette" && sDisk2.disketteStap === 1,
+    "modus=" + sDisk2.modus + " stap=" + sDisk2.disketteStap);
+
+  // diskette → epiloog (Enter bladert door).
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => window.AL.debugState.modus === "epiloog",
     null, { timeout: 8000 }).catch(() => {});
   const sEpiloog = await state(page);
-  check("oordeel → epiloog: de slottekst verschijnt", sEpiloog.modus === "epiloog",
+  check("diskette → epiloog: de slottekst verschijnt", sEpiloog.modus === "epiloog",
     "modus=" + sEpiloog.modus);
+  const epiloogTekst = await ev(page, () => window.AL.strings.epiloog.alineas.join(" "));
+  check("de epiloog draagt de diskette, niet een doos op zolder",
+    epiloogTekst.includes("diskette") && !epiloogTekst.includes("ligt op zolder"));
+  await page.screenshot({ path: join(SCRATCH, "wp48c-epiloog.png") });
   await page.screenshot({ path: join(SCRATCH, "wp9-epiloog.png") });
 
   check("geen JavaScript-fouten tijdens de endgame", paginaFouten.length === 0,

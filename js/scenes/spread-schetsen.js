@@ -3,11 +3,13 @@
 //
 // Waarom dit bestand bestaat: `docs/spelontwerp-legacy.md` zegt dat de spreads
 // "de meeste nieuwe beelden" dragen, en `docs/art-stijlgids.md` somt per level
-// een schets op die de scharnier-metafoor spiegelt — blauwdruk-en-doos,
-// trechters, knikkerbaan, twee pijlen, patroonkaart, plankenbrug, dubbele pijl.
+// een schets op die de scharnier-metafoor spiegelt — trechters, knikkerbaan,
+// twee pijlen, patroonkaart, plankenbrug, dubbele pijl.
 // Dat is de metafoor-woordenschat van de cursus; sinds WP 31 dragen de
 // hoofdstukken zelf een titel met de scharnierterm vooraan. De schetsen tonen
 // nog altijd het beeld, want dat is wat Alberta in de kantlijn tekende.
+// Uitzondering sinds WP 48: level 1 tekent geen metafoor meer maar een
+// klassekaart met de velden van Geitje erop, op vraag van de docent.
 // Er stond er tot nu toe geen enkele in het spel. De zeven spreads deelden ook
 // één papierachtergrond, met dezelfde koffievlek op dezelfde plek, terwijl de
 // stijlgids beschadiging vraagt "precies waar de puzzel zit" — de vlek hoort de
@@ -24,6 +26,13 @@
 // helft van de rechterbladzijde, x 170–298, y 100–162. Alle coördinaten
 // hieronder staan absoluut, want een op-lijst kent geen oorsprong.
 //
+// Naast `schets` en `schade` mag een set een `labels` dragen: een lijst
+// [x, y, tekst] die de spread-renderer in Alberta's hand binnen datzelfde
+// kader zet (WP 48). Een draw-op-lijst kent geen tekst, en er is bewust géén
+// nieuwe gfx-op voor bijgekomen — tekenHandschrift schrijft rechtstreeks in de
+// backing store, dus een op zou de doelbuffer moeten kennen die voerOpsUit
+// doorgeeft. tools/lint-scene.mjs keurt de labels mee.
+//
 // Tekenstijl: inkt (41) voor de lijn die telt, 40 voor wat lichter is
 // aangezet — arcering, hulplijnen, maatstreepjes. Spaarzame kleur volgens de
 // stijlgids: 12 voor een rode doorhaling, 44 voor een groen vinkje. Verder
@@ -33,56 +42,59 @@ globalThis.AL = globalThis.AL || {};
 
 AL.spreadSchetsen = {
 
-  // ---- Level 1 — schets: de blauwdruk en de doos ------------------------
-  // Links het plan (gestippeld, want het is een tekening van iets), rechts het
-  // ding zelf (doorgetrokken, met een deksel en twee ingevulde velden). De pijl
-  // ertussen is het hele scharnier: van klasse naar object.
+  // ---- Level 1 — schets: de klassekaart van Geitje ----------------------
+  // Hier stond tot WP 48 "de blauwdruk en de doos": een gestippeld plan, een
+  // pijl, en een driekwart doos met twee ingevulde velden. Dat beeld legde uit
+  // wat een klasse tegenover een instantie is — en dat is precies wat de docent
+  // niet in het notitieboek wil: "Logischer zou bijv zijn om de velden op te
+  // sommen die bij geitje horen of om een soort klassendiagram te schetsen."
+  // Dus is de kantlijntekening nu wat een programmeur op papier zet vóór ze
+  // typt: een kaart met de klassenaam bovenaan en haar velden eronder. Geen
+  // types in de tekening — die staan in de brief op bladzijde 1.
+  //
+  // De labels zijn echt handschrift (het `labels`-veld hieronder; de
+  // spread-renderer zet ze met gfx.tekenHandschrift ná de schade, zodat de
+  // koffiering ze niet onleesbaar maakt). Ze meten 24 tot 55 px in een kader
+  // van 128 px breed en staan op vier van de vijf regels die er passen.
   l1: {
     schets: [
-      // De blauwdruk: een gestippeld kader.
-      ["px", 41, [[172, 104], [176, 104], [180, 104], [184, 104], [188, 104],
-        [192, 104], [196, 104], [200, 104], [204, 104], [208, 104], [212, 104],
-        [172, 146], [176, 146], [180, 146], [184, 146], [188, 146], [192, 146],
-        [196, 146], [200, 146], [204, 146], [208, 146], [212, 146],
-        [172, 108], [172, 112], [172, 116], [172, 120], [172, 124], [172, 128],
-        [172, 132], [172, 136], [172, 140], [172, 144],
-        [212, 108], [212, 112], [212, 116], [212, 120], [212, 124], [212, 128],
-        [212, 132], [212, 136], [212, 140], [212, 144]]],
-      // De tekening óp de blauwdruk: dezelfde doos, maar in dunne lijn.
-      ["line", 40, [180, 120, 204, 120]],
-      ["line", 40, [180, 120, 180, 138]],
-      ["line", 40, [204, 120, 204, 138]],
-      ["line", 40, [180, 138, 204, 138]],
-      ["line", 40, [180, 126, 204, 126]],
-      ["line", 40, [180, 132, 204, 132]],
-      // Maatstreepjes, zoals op een echte blauwdruk.
-      ["line", 40, [176, 116, 176, 142]],
-      ["line", 40, [174, 116, 178, 116]],
-      ["line", 40, [174, 142, 178, 142]],
-      // De pijl: bouw dit.
-      ["line", 41, [218, 126, 234, 126]],
-      ["line", 41, [230, 122, 234, 126]],
-      ["line", 41, [230, 130, 234, 126]],
-      // De doos zelf, in driekwart. Het bovenvlak in papierkleur, zodat het
-      // deksel als een vlak leest en niet als nog een lijnenkluwen.
-      ["poly", 38, [244, 116, 284, 116, 292, 108, 252, 108]],
-      ["line", 41, [244, 116, 284, 116]],
-      ["line", 41, [244, 116, 252, 108]],
-      ["line", 41, [252, 108, 292, 108]],
-      ["line", 41, [284, 116, 292, 108]],
-      ["line", 41, [244, 116, 244, 148]],
-      ["line", 41, [284, 116, 284, 148]],
-      ["line", 41, [244, 148, 284, 148]],
-      ["line", 41, [292, 108, 292, 140]],
-      ["line", 41, [284, 148, 292, 140]],
-      // De velden, ingevuld: dat is wat de constructor doet. In 39 en niet in
-      // 40, want de vlek die er straks overheen komt is óók 40 — twee dingen in
-      // dezelfde kleur op dezelfde plek worden samen één modderige veeg.
-      ["rect", 39, 250, 124, 28, 3],
-      ["rect", 39, 250, 132, 20, 3]
+      // De kaart: kader met een naamvak bovenaan.
+      ["rect", 38, 172, 102, 86, 54],
+      ["line", 41, [172, 102, 258, 102]],
+      ["line", 41, [172, 102, 172, 156]],
+      ["line", 41, [258, 102, 258, 156]],
+      ["line", 41, [172, 156, 258, 156]],
+      ["line", 41, [172, 116, 258, 116]],
+      // Streepjes vóór elk veld, zoals ze een lijstje afvinkt.
+      ["px", 40, [[176, 123], [177, 123], [178, 123],
+        [176, 135], [177, 135], [178, 135],
+        [176, 147], [177, 147], [178, 147]]],
+      // Een tweede kaart, half buiten beeld: Voorwerp staat er al. Haar
+      // veldregels staan in 39 en niet in 40, want de vlek die er straks
+      // overheen komt is óók 40 — twee dingen in dezelfde kleur op dezelfde
+      // plek worden samen één modderige veeg.
+      ["line", 40, [264, 108, 296, 108]],
+      ["line", 40, [264, 108, 264, 152]],
+      ["line", 40, [296, 108, 296, 152]],
+      ["line", 40, [264, 152, 296, 152]],
+      ["line", 40, [264, 120, 296, 120]],
+      ["px", 40, [[268, 127], [269, 127], [270, 127],
+        [268, 135], [269, 135], [270, 135],
+        [268, 143], [269, 143], [270, 143]]],
+      ["line", 39, [274, 127, 292, 127]],
+      ["line", 39, [274, 135, 290, 135]],
+      ["line", 39, [274, 143, 288, 143]]
     ],
-    // De koffiering staat op de doos, niet ernaast: de constructor is half
-    // ingevuld, en dít is waarom.
+    // De labels van de kaart, in haar hand. [x, y, tekst]; y is de bovenrand
+    // van de tienrijige handfont, dus een regel hoger dan de streep eronder.
+    labels: [
+      [178, 105, "Geitje"],
+      [184, 119, "naam"],
+      [184, 131, "schuilplaats"],
+      [184, 143, "gered"]
+    ],
+    // De koffiering staat op de rechterkaart en op de onderste regel van de
+    // linker: Voorwerp is half ingevuld, en dít is waarom.
     schade: [
       ["noise", 39, 0.20, 101, [252, 122, 288, 118, 296, 134, 288, 150,
         264, 152, 250, 142]],
@@ -171,12 +183,15 @@ AL.spreadSchetsen = {
       ["px", 40, [[280, 108], [284, 108], [288, 108],
         [282, 158], [286, 158], [290, 158], [294, 158]]],
       // De operatoren in de kantlijn: && als twee streepjes, || als twee palen.
+      // Er stond tot WP 48 een rode doorhaling náást die twee, en op acht
+      // pixels breed leest die als "niet ||" — precies het antwoord van
+      // l3-vindfout, in de kantlijn van de bladzijde die de vraag stelt. De
+      // twee operatoren blijven staan (het is het scharnier van dit
+      // hoofdstuk), het kruis niet.
       ["px", 41, [[174, 148], [174, 150], [174, 152], [174, 154],
         [178, 148], [178, 150], [178, 152], [178, 154]]],
       ["line", 41, [186, 148, 186, 154]],
-      ["line", 41, [190, 148, 190, 154]],
-      ["line", 12, [198, 148, 206, 156]],
-      ["line", 12, [206, 148, 198, 156]]
+      ["line", 41, [190, 148, 190, 154]]
     ],
     // Een lange veeg dwars over de klem: de plek waar de grenzen stonden.
     schade: [

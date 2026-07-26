@@ -68,9 +68,15 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // WP 48: de notitie is de koppentabel zelf, niet de anatomie van een
+  // signatuur ("wat eruit komt staat vooraan, wat erin gaat tussen de haakjes"
+  // — dat stond hier, en dat is de les). De vier koppen staan er wél, want de
+  // spread is maar één keer te lezen (world.js zegt bij een tweede keer "Je hebt
+  // dit fragment al") en de checker eist ze exact.
   var spelerNotitie =
-"// De koppen van Speler heb ik zelf door elkaar gehaald en nooit rechtgezet:\n" +
-"// wat eruit komt staat vooraan, wat erin gaat tussen de haakjes. — A.\n" +
+"// De koppen van Speler heb ik zelf door elkaar gehaald en nooit rechtgezet.\n" +
+"// getLevenspunten(): int. setLevenspunten(int): void. zoek(String):\n" +
+"// Voorwerp. verwijder(String): boolean. — A.\n" +
 "\n";
 
   var spelerBeschadigdA = spelerNotitie +
@@ -110,6 +116,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l2-parsons",
     type: "parsons",
+    titel: S.l2.parsonsTitel,
     shuffleLabel: "l2-parsons",
     regels: [
       "Voorwerp zoek(String gezochteNaam) {",
@@ -140,6 +147,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l2-trace",
     type: "trace",
+    titel: S.l2.traceTitel,
     pool: [3, 5, 7],
     label: "l2-trace",
     verwacht: function (n) { return String(n) + " 20"; },
@@ -148,9 +156,19 @@ globalThis.AL = globalThis.AL || {};
     fout: S.l2.trace.fout
   };
 
+  // De Parsons staat vóór de editor, en dat is de enige plaats waar hij kan
+  // staan (WP 48b). Beide beschadigde varianten van het editor-fragment dragen
+  // `zoek` ONGESCHONDEN, en die negen regels zijn — op één inspringniveau na —
+  // woordelijk `parsons.regels` in de juiste volgorde. Zolang de editor eerst
+  // kwam, kreeg de speler de oplossing van de Parsons cadeau. Andersom lekt er
+  // niets: wie de stroken geordend heeft, ziet daarna een `zoek` die hij zelf
+  // net gebouwd heeft, en de vier signatuur-checks van de editor gaan over de
+  // koppen erboven. De regel staat in docs/levels-en-scharnieren.md,
+  // §"Puzzelvolgorde binnen een level": wat de oplossing van een andere puzzel
+  // tóónt, komt erná.
   var definitie = {
     naam: S.l2.naam,
-    puzzels: [editorRepair, parsons, trace]
+    puzzels: [parsons, editorRepair, trace]
   };
 
   var isNode = (typeof module !== "undefined" && module.exports);

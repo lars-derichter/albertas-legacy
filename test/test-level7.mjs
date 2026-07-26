@@ -43,6 +43,21 @@ test("level 7 registreert zich met twee editor-puzzels + één terminal", () => 
   assert.deepEqual(defs.map((d) => d.type), ["editor", "editor", "trace"]);
 });
 
+// Dezelfde regel als in level 6: de trace toont de null-veilige keten die
+// l7-editor-repair moet herstellen (variant A mist precies die null-controle),
+// dus de trace hoort achteraan. De poort van WP 48b dwingt dat af.
+test("volgorde: de keten-trace komt ná de reparatie waarvan ze de vorm toont", () => {
+  const defs = AL.levels.puzzelDefs("7");
+  const iRepair = defs.findIndex((d) => d.id === "l7-editor-repair");
+  const iTrace = defs.findIndex((d) => d.id === "l7-trace");
+  assert.ok(iRepair < iTrace, "de trace hoort ná de herstel-puzzel te staan");
+  const traceTekst = puzzel("l7-trace").vraag("jongste").join("\n");
+  assert.ok(traceTekst.includes("if (s == null) {"),
+    "de trace toont de null-controle niet meer");
+  assert.ok(puzzel("l7-editor-repair").model.includes("if (schuilplaats == null) {"),
+    "het model draagt de null-controle niet meer");
+});
+
 // ===========================================================================
 // Editor-write — de zoeklus (geeft Geitje of null)
 // ===========================================================================

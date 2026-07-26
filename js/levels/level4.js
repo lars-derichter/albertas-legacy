@@ -47,11 +47,16 @@ globalThis.AL = globalThis.AL || {};
   // Neutraal over wat er mis is: in variant A staat setNoord waar setZuid hoort,
   // in variant B setOost waar setWest hoort — telkens overal, dus die ene
   // richting wordt in geen enkele tak meer gelegd.
+  //
+  // WP 48: de conceptzin ("Elke verbinding loopt twee kanten op: leg ik de
+  // noord-buur, dan legt de andere kamer zuid terug") stond hier én was het
+  // antwoord op l4-trace en l4-verklaar. Wat blijft is de spec: vier setters,
+  // één cascade, beide kanten.
   var verbindNotitie =
-"// Elke verbinding loopt twee kanten op: leg ik de noord-buur, dan legt de\n" +
-"// andere kamer zuid terug. Vier richtingen in één if / else if-cascade. Hier\n" +
-"// is één van de vier setters overal door een andere vervangen; die richting\n" +
-"// wordt nergens meer gelegd. — A.\n" +
+"// verbindKamers: vier richtingen in één if / else if-cascade, met setNoord,\n" +
+"// setZuid, setOost en setWest, elke richting aan twee kanten. Hier is één van\n" +
+"// de vier setters overal door een andere vervangen; die richting wordt\n" +
+"// nergens meer gelegd. — A.\n" +
 "\n";
 
   var verbindBeschadigdA = verbindNotitie +
@@ -92,6 +97,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l4-trace",
     type: "trace",
+    titel: S.l4.traceTitel,
     pool: ["Dorpsplein", "Bospad", "Rivieroever"],
     label: "l4-trace",
     verwacht: function (naam) { return naam; },
@@ -107,6 +113,7 @@ globalThis.AL = globalThis.AL || {};
   var verklaar = {
     id: "l4-verklaar",
     type: "verklaar",
+    titel: S.l4.verklaarTitel,
     vraag: S.l4.verklaar.vraag,
     toon: S.l4.verklaar.toon,
     model: S.l4.verklaar.model,

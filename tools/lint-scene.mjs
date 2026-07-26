@@ -62,6 +62,28 @@ function laadLoopveld() {
 const uitgangenVan = laadUitgangen();
 const loopveld = laadLoopveld();
 
+// Het schetskader en de handschrift-maten, uit de bron en niet uit een kopie:
+// de labels van een schets (WP 48) horen binnen AL.spreads.BLAD.schets te
+// vallen, en hoe breed een label wordt weet alleen gfx.handschriftBreedte. De
+// renderer zet ze zonder spatievariatie (kopHand), dus meten we zo ook.
+const KOPHAND = { schuin: 0, ruimte: 1, seed: 1, variatie: false };
+let SCHETSKADER = { x: 170, y: 100, b: 128, h: 62 };
+let HANDHOOGTE = 10;
+let meetHandschrift = (t) => t.length * 8;
+try {
+  const sandbox = {};
+  vm.createContext(sandbox);
+  for (const p of ["js/palette.js", "js/font.js", "js/font-hand.js", "js/gfx.js",
+    "js/scenes/scene-spread-template.js"]) {
+    const pad = join(wortel, p);
+    vm.runInContext(readFileSync(pad, "utf8"), sandbox, { filename: pad });
+  }
+  const al = sandbox.AL;
+  if (al && al.spreads && al.spreads.BLAD) SCHETSKADER = al.spreads.BLAD.schets;
+  if (al && al.fontHand) HANDHOOGTE = al.fontHand.hoogte;
+  if (al && al.gfx) meetHandschrift = (t) => al.gfx.handschriftBreedte(t, KOPHAND);
+} catch (_e) { /* val terug op de maten hierboven */ }
+
 // Laad het palet één keer en lees de grootte, zodat de kleurgrens de bron volgt.
 let MAX_KLEUR = 63;
 try {
@@ -578,6 +600,44 @@ if (process.argv.slice(2).length === 0) {
           }
           if (!Array.isArray(set.schets) || set.schets.length === 0) {
             fouten.push(id + ": geen schets — elk level hoort er een te hebben");
+          }
+          // De handschrift-labels van een schets (WP 48): [x, y, tekst]. Geen
+          // draw-op, dus keurOp kent ze niet; ze krijgen hier hun eigen
+          // keuring. Het kader is dat van de schets zelf
+          // (AL.spreads.BLAD.schets), want een label dat erbuiten valt, staat
+          // op de tekst van de bladzijde of over de bladrand.
+          if (set.labels !== undefined) {
+            if (!Array.isArray(set.labels)) {
+              fouten.push(id + ".labels is geen array");
+            } else {
+              set.labels.forEach((lab, i) => {
+                const waar = id + ".labels[" + i + "]";
+                if (!Array.isArray(lab) || lab.length !== 3) {
+                  fouten.push(waar + ": verwacht [x, y, tekst]");
+                  return;
+                }
+                const [x, y, tekst] = lab;
+                if (typeof x !== "number" || typeof y !== "number") {
+                  fouten.push(waar + ": x en y horen getallen te zijn");
+                  return;
+                }
+                if (typeof tekst !== "string" || tekst.length === 0) {
+                  fouten.push(waar + ": lege of ontbrekende tekst");
+                  return;
+                }
+                if (x < SCHETSKADER.x || y < SCHETSKADER.y ||
+                  y + HANDHOOGTE > SCHETSKADER.y + SCHETSKADER.h) {
+                  fouten.push(waar + ": \"" + tekst + "\" op (" + x + ", " + y +
+                    ") valt buiten het schetskader");
+                  return;
+                }
+                const breed = meetHandschrift(tekst);
+                if (x + breed > SCHETSKADER.x + SCHETSKADER.b) {
+                  fouten.push(waar + ": \"" + tekst + "\" meet " + breed +
+                    " px en loopt voorbij de rechterrand van het schetskader");
+                }
+              });
+            }
           }
         }
         for (let n = 1; n <= 7; n++) {

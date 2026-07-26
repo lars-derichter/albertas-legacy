@@ -115,6 +115,13 @@ test("volgendFragment loopt strikt oplopend 1..7 en dan null", () => {
   assert.equal(world.volgendFragment(t), null);
 });
 
+// Het hoofdstuk dat nu open staat, herstellen — wat de pc doet als alle drie de
+// puzzels af zijn. Sinds de poort van WP 47 is dit de enige manier om aan het
+// volgende blad te raken, dus staat het in elke volgorde-test tussen de dozen.
+function herstelActief(t) {
+  t.levels[String(t.levelActief)].afgerond = true;
+}
+
 test("de fragmenten liggen west → midden → overloop, in volgorde", () => {
   const t = world.nieuw();
   // Level 1: het notitieboek in de westhoek.
@@ -122,14 +129,17 @@ test("de fragmenten liggen west → midden → overloop, in volgorde", () => {
   assert.ok(r.effecten.includes("fragment-gevonden:l1"));
   assert.ok(r.effecten.includes("spread:l1"));
 
-  // Levels 2–4: de gemerkte dozen in de doorgang.
+  // Levels 2–4: de gemerkte dozen in de doorgang. Elk blad komt er pas uit als
+  // het vorige hoofdstuk hersteld is.
   t.sceneId = "zolder-midden";
   for (const n of [2, 3, 4]) {
+    herstelActief(t);
     r = world.open(t, "doos");
     assert.ok(r.effecten.includes("fragment-gevonden:l" + n), "l" + n);
     assert.equal(t.levels[String(n)].ontgrendeld, true);
   }
   // Het vijfde fragment ligt niet meer hier: de doos wijst naar de overloop.
+  herstelActief(t);
   r = world.open(t, "doos");
   assert.deepEqual(r.effecten, []);
   assert.deepEqual(r.tekst, [strings.dozen.nietHier["overloop"]]);
@@ -137,6 +147,7 @@ test("de fragmenten liggen west → midden → overloop, in volgorde", () => {
   // Levels 5–7: de dozen op de overloop.
   t.sceneId = "overloop";
   for (const n of [5, 6, 7]) {
+    if (n > 5) herstelActief(t);
     r = world.open(t, "doos");
     assert.ok(r.effecten.includes("fragment-gevonden:l" + n), "l" + n);
   }
@@ -153,6 +164,143 @@ test("een doos in de verkeerde kamer wijst naar de juiste plek", () => {
   const r = world.open(t, "doos");
   assert.deepEqual(r.effecten, []);
   assert.deepEqual(r.tekst, [strings.dozen.nietHier["zolder-west"]]);
+});
+
+// ---- De poort aan de doos (WP 47): vinden volgt oplossen -------------------
+
+test("de doos weigert zolang het vorige hoofdstuk niet hersteld is", () => {
+  // Het gemelde defect: blad 2 was te vinden vóór hoofdstuk 1 opgelost was, en
+  // omdat ontgrendelFragment levelActief meeneemt en het pc-menu geen
+  // levelkeuze kent, waren de puzzels van hoofdstuk 1 daarna onbereikbaar.
+  const t = world.nieuw();
+  world.open(t, "notitieboek");                  // l1 ontgrendeld, niet af
+  t.sceneId = "zolder-midden";
+  const r = world.open(t, "doos");
+  assert.deepEqual(r.tekst, [strings.dozen.nogDicht(1)]);
+  assert.deepEqual(r.effecten, [], "een weigering maakt geen geluid");
+  assert.equal(t.levels["2"].ontgrendeld, false, "l2 blijft dicht");
+  assert.equal(t.levelActief, 1, "levelActief blijft bij het open hoofdstuk");
+  assert.equal(t.hintsTotaal, 0);
+});
+
+test("de weigering wint van de kamerverwijzing: die zou naar een even dichte doos sturen", () => {
+  // Gepoort én in de verkeerde kamer. dozen.nietHier zou hier naar de doorgang
+  // wijzen, maar de doos daar is even goed dicht — de echte volgende zet is
+  // hoofdstuk 1 herstellen, en dát zegt nogDicht.
+  const t = world.nieuw();
+  world.open(t, "notitieboek");                  // volgende blad = 2 (doorgang)
+  t.sceneId = "overloop";
+  const r = world.open(t, "doos");
+  assert.deepEqual(r.tekst, [strings.dozen.nogDicht(1)]);
+  assert.deepEqual(r.effecten, []);
+  // Staat de poort wél open, dan wijst dezelfde doos weer gewoon de weg.
+  herstelActief(t);
+  assert.deepEqual(world.open(t, "doos").tekst,
+    [strings.dozen.nietHier["zolder-midden"]]);
+});
+
+test("de doos gaat open zodra het hoofdstuk hersteld is", () => {
+  const t = world.nieuw();
+  world.open(t, "notitieboek");
+  t.sceneId = "zolder-midden";
+  world.open(t, "doos");                         // geweigerd
+  t.levels["1"].afgerond = true;
+  const r = world.open(t, "doos");
+  assert.ok(r.effecten.includes("fragment-gevonden:l2"));
+  assert.equal(t.levels["2"].ontgrendeld, true);
+  assert.equal(t.levelActief, 2);
+});
+
+test("de poort staat voor elk van de zes dozen, en telkens noemt ze het juiste hoofdstuk", () => {
+  const t = world.nieuw();
+  world.open(t, "notitieboek");
+  for (let n = 2; n <= 7; n++) {
+    t.sceneId = world.FRAGMENT_LOCATIE[n];
+    const geweigerd = world.open(t, "doos");
+    assert.deepEqual(geweigerd.tekst, [strings.dozen.nogDicht(n - 1)], "l" + n);
+    assert.deepEqual(geweigerd.effecten, [], "l" + n);
+    t.levels[String(n - 1)].afgerond = true;
+    assert.ok(world.open(t, "doos").effecten.includes("fragment-gevonden:l" + n),
+      "l" + n);
+  }
+});
+
+test("het notitieboek heeft geen voorganger en blijft vrij", () => {
+  // Fragment 1 hangt aan niets: een verse speler moet er altijd in kunnen.
+  const t = world.nieuw();
+  const r = world.open(t, "notitieboek");
+  assert.ok(r.effecten.includes("fragment-gevonden:l1"));
+  assert.equal(t.levels["1"].ontgrendeld, true);
+  // En de dozen in de doorgang weigeren vóór dat boek open ging niet met de
+  // poort maar met de kamerverwijzing: er is geen hoofdstuk 0.
+  const t2 = world.nieuw();
+  t2.sceneId = "zolder-midden";
+  assert.deepEqual(world.open(t2, "doos").tekst,
+    [strings.dozen.nietHier["zolder-west"]]);
+});
+
+test("geen enkele bereikbare staat laat levelActief boven een onafgewerkt hoofdstuk staan", () => {
+  // De regressietest op het echte defect, en bewust uitputtend in plaats van
+  // steekproefsgewijs: een toevallige wandeling raakt zelden voorbij hoofdstuk
+  // 1, want vooruitkomen vergt een keten (herstellen → juiste kamer → 'open
+  // doos'). Daarom een breedte-eerst doorloop van álle staten die via de
+  // publieke API bereikbaar zijn: lopen, het boek en de dozen openen, aan de pc
+  // gaan zitten, en het actieve hoofdstuk herstellen — dat laatste is wat de
+  // pc-laag doet zodra de drie puzzels af zijn, en het is de enige stap die
+  // deze test zelf in de staat schrijft.
+  const acties = [];
+  for (const r of ["noord", "oost", "zuid", "west"]) {
+    acties.push(["ga " + r, (t) => world.betreed(t, r)]);
+  }
+  for (const d of ["doos", "karton", "notitieboek", "kist", "broncode-doos"]) {
+    acties.push(["open " + d, (t) => world.open(t, d)]);
+  }
+  acties.push(["ga zitten", (t) => world.gebruikPc(t)]);
+  acties.push(["hoofdstuk hersteld", (t) => {
+    // De pc-laag kan alleen een hoofdstuk afronden dat ze ook kon openen.
+    const actief = t.levels[String(t.levelActief)];
+    if (actief.ontgrendeld) actief.afgerond = true;
+  }]);
+
+  // De sleutel draagt alles waar bovenstaande functies op beslissen.
+  const sleutel = (t) => t.sceneId + "|" + t.levelActief + "|" +
+    [1, 2, 3, 4, 5, 6, 7].map((n) => (t.levels[String(n)].ontgrendeld ? "1" : "0") +
+      (t.levels[String(n)].afgerond ? "1" : "0")).join("");
+
+  const start = world.nieuw(1);
+  const gezien = new Set([sleutel(start)]);
+  const wachtrij = [[JSON.stringify(start), []]];
+  let bezocht = 0;
+
+  while (wachtrij.length) {
+    const [rauw, pad] = wachtrij.shift();
+    bezocht++;
+    for (const [naam, doe] of acties) {
+      const t = JSON.parse(rauw);          // de staat round-tript: geen cycli
+      doe(t);
+      t.modus = "zolder";                  // gebruikPc zet de modus; de engine
+      const weg = pad.concat(naam);        // brengt de speler weer terug
+      for (let k = 1; k < t.levelActief; k++) {
+        assert.equal(t.levels[String(k)].afgerond, true,
+          "hoofdstuk " + k + " staat nog open terwijl levelActief " +
+          t.levelActief + " is, via: " + weg.join(" → "));
+      }
+      for (let k = 2; k <= 7; k++) {
+        if (t.levels[String(k)].ontgrendeld) {
+          assert.equal(t.levels[String(k - 1)].afgerond, true,
+            "l" + k + " ontgrendeld terwijl hoofdstuk " + (k - 1) +
+            " nog open staat, via: " + weg.join(" → "));
+        }
+      }
+      const s = sleutel(t);
+      if (!gezien.has(s)) { gezien.add(s); wachtrij.push([JSON.stringify(t), weg]); }
+    }
+  }
+
+  // De doorloop moet écht tot het einde geraken, anders bewijst hij niets.
+  assert.ok(bezocht > 20, "te weinig staten doorlopen: " + bezocht);
+  assert.ok([...gezien].some((s) => s.indexOf("|7|") !== -1 && s.endsWith("11")),
+    "de doorloop bereikt hoofdstuk 7 hersteld nooit");
 });
 
 // ---- De woordenschat per kamer: doos, kist, karton -------------------------
@@ -192,8 +340,10 @@ test("in de doorgang en op de overloop is 'kist' geen open-woord meer", () => {
 test("'open doos' en 'open karton' blijven de fragment-dozen openen", () => {
   const t = world.nieuw();
   world.open(t, "notitieboek");                  // l1 uit de weg
+  herstelActief(t);                              // en hersteld: de poort open
   t.sceneId = "zolder-midden";
   assert.ok(world.open(t, "karton").effecten.includes("fragment-gevonden:l2"));
+  herstelActief(t);
   assert.ok(world.open(t, "doos").effecten.includes("fragment-gevonden:l3"));
 });
 
@@ -205,6 +355,7 @@ test("een fragmentdoos klinkt als karton, en pas daarna als papier", () => {
   // hoorde `pagina` te spelen, hetzelfde geluid als het omslaan van een blad.
   const t = world.nieuw();
   world.open(t, "notitieboek");                  // l1 uit de weg
+  herstelActief(t);                              // en hersteld: de poort open
   t.sceneId = "zolder-midden";
   const r = world.open(t, "karton");
   assert.ok(r.effecten.includes("geluid:doos"),
@@ -468,6 +619,56 @@ test("bootSim kondigt de endgame aan", () => {
   const r = world.bootSim(t);
   assert.ok(r.effecten.includes("sim:boot"));
   assert.ok(r.effecten.includes("geluid:boot"));
+});
+
+// ---- De diskette-beat (WP 48c) -------------------------------------------
+
+test("na het oordeel komt de diskette, en pas daarna de epiloog", () => {
+  const t = world.nieuw();
+  world.startOordeel(t);
+  const r = world.startDiskette(t);
+  assert.equal(t.modus, "diskette");
+  assert.ok(r.effecten.includes("diskette"));
+  assert.ok(r.effecten.includes("voortgang:opgeslagen"));
+  // De tekst van de beat: wat de drive afdrukt, plus het onderschrift.
+  const d = strings.endgame.diskette;
+  assert.deepEqual(r.tekst, d.terminal.concat([d.onderschrift]));
+  // En van daaruit gewoon verder naar de epiloog.
+  const e = world.startEpiloog(t);
+  assert.equal(t.modus, "epiloog");
+  assert.ok(e.effecten.includes("epiloog"));
+});
+
+test("de drive-regels passen op het scherm en zijn kaal DOS", () => {
+  // De amberband zet met de gedrukte 8×8-font: veertig tekens op 320 px, en de
+  // band houdt links en rechts marge. Meer dan achtendertig tekens loopt eruit.
+  // Buiten ASCII heeft die font geen glyph die een DOS-scherm zou tonen.
+  for (const regel of strings.endgame.diskette.terminal) {
+    assert.ok(regel.length <= 38, "te breed voor de band: " + regel);
+    assert.ok(/^[\x20-\x7E]*$/.test(regel), "geen kale ASCII: " + regel);
+  }
+});
+
+test("het etiket draagt haar titel en haar nummering", () => {
+  const d = strings.endgame.diskette;
+  assert.equal(d.etiketA, "7 little goats");
+  assert.ok(d.etiketB.length > 0, "de tweede etiketregel ontbreekt");
+  assert.ok(d.onderschrift.length > 0);
+});
+
+test("de epiloog hangt aan de diskette, niet aan een doos op zolder", () => {
+  // WP 48c: de afgewerkte broncode lág niet op zolder, ze is er net op
+  // geschreven. Zodra deze zin terugkeert, is de fictie weer stuk.
+  const tekst = strings.epiloog.alineas.join(" ");
+  assert.ok(tekst.includes("diskette"), "de epiloog noemt de diskette niet");
+  assert.ok(!/ligt op zolder/.test(tekst), "de oude doos-belofte is terug");
+});
+
+test("de broncode-doos belooft niets meer wat erin zou liggen", () => {
+  const t = world.nieuw(); t.sceneId = "zolder-midden";
+  const tekst = world.open(t, "broncode-doos").tekst.join(" ") + " " +
+    world.onderzoek(t, "broncode-doos").tekst.join(" ");
+  assert.ok(!/broncode ligt|neem ze mee/i.test(tekst));
 });
 
 test("de epiloog is bereikbaar en wijst naar de broncode + Roberta", () => {
