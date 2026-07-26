@@ -458,20 +458,30 @@ vindbaar als hoofdstuk N hersteld is) en de notities worden pure spec.
 
 ### - [x] WP 46 — Kickoff programma 4
 
-Entry: `workflow/46-lineariteit-kickoff.md` · commit: (nog in te vullen)
+Entry: `workflow/46-lineariteit-kickoff.md` · commit: `e9b77a7`
 
 - [x] Feedback verbatim, Q&A, wortels en plan vastgelegd; branch staat
 - [x] QC: docs only, wrap 80, tests ongewijzigd 425/425
 
-### - [ ] WP 47 — De poort aan de doos
+### - [x] WP 47 — De poort aan de doos
 
-- [ ] Voortgangspoort in _openFragmentDoos (n alleen als n-1 afgerond);
-      notitieboek blijft vrij; kamercheck blijft eerst
-- [ ] Weigering-string dozen.nogDicht in Alberta-register
-- [ ] Comments "geen harde sloten" + docs + walkthrough deel 1 mee
-- [ ] Tests: volgorde-tests met afronding, poort-tests, smoke-assert;
-      smoke-levels-4-7-sneltoets wordt een expliciete testhaak
-- [ ] QC: `node --test` + linten + alle smokes groen
+Entry: `workflow/47-poort-aan-de-doos.md` · commit: (nog in te vullen)
+
+- [x] Voortgangspoort in _openFragmentDoos (n alleen als n-1 afgerond);
+      notitieboek blijft vrij; de poort staat vóór de kamercheck en wint
+      van dozen.nietHier — afwijking van de kickoff, gemotiveerd in de
+      entry (een gepoorte speler naar een andere kamer sturen klopt niet)
+- [x] Weigering-string dozen.nogDicht(n) in Alberta-register, geen effect
+- [x] Comments "geen harde sloten" + docs (spelontwerp-legacy,
+      save-en-hints) + walkthrough deel 1 mee (PDF's herbouwd; alleen
+      deel 1 wijzigt, deel 2 verschilde enkel in datums)
+- [x] Tests: drie volgorde-tests met afronding-tussenstappen, zes nieuwe
+      poort-tests (weigering, kamer-precedentie, doorgang, alle zes de
+      dozen, notitieboek vrij, uitputtende regressie), smoke-assert in
+      smoke-browser; smoke-levels-4-7-sneltoets is een expliciete
+      testhaak (zetVoortgangKlaar, geen nieuwe haak in engine.js)
+- [x] QC: 431/431 headless, lint-scene/check-assets/check-walkthrough/
+      check-docpaden schoon, smokes 46/36/53/104/38 groen
 
 ### - [ ] WP 48 — Notities als spec
 

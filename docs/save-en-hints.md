@@ -177,6 +177,13 @@ teksten, zodat de pc en `?` elkaar niet kunnen tegenspreken: gaat de speler
 zitten terwijl het actieve hoofdstuk al hersteld is en er nog een blad op de
 zolder ligt, dan blijft de pc dicht en zegt hij waar dat blad ligt.
 
+De drie takken sluiten sinds WP 47 ook de dozen in: staat er een hoofdstuk
+open (tak 1), dan geeft géén doos haar blad — `AL.world._openFragmentDoos`
+weigert met `AL.strings.dozen.nogDicht` en laat de staat ongemoeid. De hint en
+de doos zeggen dan hetzelfde: eerst dat hoofdstuk herstellen. Tak 2 wijst pas
+naar een doos wanneer die ook echt opengaat. Het notitieboek van level 1 heeft
+geen voorganger en staat altijd open.
+
 > Beslissing (WP 33): de vaste `hint` per scène is verdwenen. Eén tekst per hoek
 > kan de spelstand niet volgen, en ze loog ook echt: de hint van de doorgang
 > stuurde de speler naar de pc in het oosten terwijl de fragmenten 2, 3 en 4 in

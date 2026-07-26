@@ -1,10 +1,12 @@
 // smoke-levels-4-7.mjs — end-to-end rooksmaaktest van de vier laatste
 // productielevels (WP 8). Opent de ECHTE index.html (?seed=1, GEEN dev-gate),
-// ontgrendelt eerst levels 1–3 (zonder ze op te lossen) zodat de latere fragmenten
-// bereikbaar zijn, en speelt dan voor elk van level 4, 5, 6 en 7 de volledige lus
-// uit spelontwerp-legacy.md: vind het fragment → lees de spread (het boek valt
-// dicht waar je staat) → loop naar de werkhoek → ga aan de pc zitten → los alle
-// puzzels op met de modeloplossingen → level-af → terug de zolder in. Daarna
+// zet eerst de hoofdstukken 1–3 op "hersteld" via een expliciete testhaak (sinds
+// de poort van WP 47 is dat geen spelpad meer; zie zetVoortgangKlaar) zodat de
+// latere fragmenten door de poort komen, en speelt dan voor level 4, 5, 6 en 7
+// de volledige lus uit spelontwerp-legacy.md: vind het fragment → lees de
+// spread (het boek valt dicht waar je staat) → loop naar de werkhoek → ga aan
+// de pc zitten → los alle puzzels op met de modeloplossingen → level-af →
+// terug de zolder in. Daarna
 // bewijst hij de seed-variatie: met ?seed=1 tegenover ?seed=2 toont elke
 // herstel-puzzel met varianten (levels 4, 6, 7) een ANDERE beschadiging.
 //
@@ -112,15 +114,28 @@ async function naarWerkhoek(page) {
   return van;
 }
 
-// Ontgrendel een fragment zonder het op te lossen: open het, blader de spread
-// door (het boek valt dicht waar de speler staat) en loop terug naar de werkhoek,
-// want daar begint de navigatie naar het volgende fragment hieronder.
-async function ontgrendel(page, naarFragment) {
-  await naarFragment(page);
-  await page.waitForFunction(() => window.AL.debugState.modus === "spread",
-    null, { timeout: 15000 });
-  await doorbladerSpread(page);
-  await naarWerkhoek(page);
+// Testhaak: zet de eerste `tot` hoofdstukken klaar als hersteld, zonder ze te
+// spelen. Dit was hier een sneltoets in spelcommando's — drie keer een doos
+// openen en de spread doorbladeren — maar sinds de poort van WP 47 bestaat dat
+// pad niet meer: een doos geeft haar blad pas als het vorige hoofdstuk hersteld
+// is. Dat is precies de bedoeling, dus schrijft deze test de voortgang
+// rechtstreeks in de levende staat (`window.AL.debugToestand`, dezelfde haak
+// die de checks hieronder al lezen). Expliciet géén spelpad: een speler kan dit
+// niet, en deze test doet niet alsof.
+//
+// De save blijft ongemoeid; de engine schrijft vanzelf bij de eerstvolgende
+// echte voortgang (`level-start` van level 4).
+async function zetVoortgangKlaar(page, tot) {
+  await ev(page, (n) => {
+    const t = window.AL.debugToestand;
+    for (let k = 1; k <= n; k++) {
+      const lvl = t.levels[String(k)];
+      lvl.ontgrendeld = true;
+      lvl.afgerond = true;
+      for (const id of Object.keys(lvl.puzzels)) lvl.puzzels[id].status = "af";
+    }
+    t.levelActief = n;
+  }, tot);
 }
 
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type.
@@ -253,14 +268,23 @@ async function main() {
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
   await naarZolder(page);
 
-  // Ontgrendel levels 1–3 (zonder oplossen) zodat de fragmenten 4–7 bereikbaar zijn.
-  await ontgrendel(page, async (p) => { await typCommando(p, "open notitieboek"); });
-  await ontgrendel(page, naarDoorgangDoos);
-  await ontgrendel(page, naarDoorgangDoos);
-  const na123 = await ev(page, () => [1, 2, 3].map(
-    (n) => window.AL.debugToestand.levels[String(n)].ontgrendeld));
-  check("setup: levels 1–3 ontgrendeld (fragmenten 4–7 nu bereikbaar)",
-    na123.every(Boolean), na123.join(","));
+  // Zet de hoofdstukken 1–3 klaar als hersteld, zodat fragment 4 door de poort
+  // komt. Dit gebeurt via de testhaak hierboven, niet via spelcommando's.
+  await zetVoortgangKlaar(page, 3);
+  const na123 = await ev(page, () => [1, 2, 3].map((n) => {
+    const l = window.AL.debugToestand.levels[String(n)];
+    return l.ontgrendeld && l.afgerond;
+  }));
+  check("setup: hoofdstukken 1–3 hersteld via de testhaak (fragment 4 door de poort)",
+    na123.every(Boolean) && (await state(page)).levelActief === 3,
+    na123.join(",") + " levelActief=" + (await state(page)).levelActief);
+
+  // De navigatie hieronder vertrekt uit de werkhoek; loop er te voet heen.
+  await naarWerkhoek(page);
+  check("setup: in de werkhoek, klaar voor level 4",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
+
 
   // De volledige lus voor level 4 (doorgang) en 5–7 (overloop).
   await speelLevel(page, 4, naarDoorgangDoos);

@@ -249,9 +249,11 @@ AL.strings = {
   },
 
   // De gemerkte dozen: de latere notitieboek-fragmenten (levels 2–7) zitten in
-  // dozen dieper in de zolder (zolder-midden en de overloop), zodat er lichte
-  // progressie is (spelontwerp-legacy.md, §"De lus per level", stap 1). De
-  // broncode-doos is een aparte prop en telt pas op het einde.
+  // dozen dieper in de zolder (zolder-midden en de overloop), zodat er
+  // ruimtelijke progressie is (spelontwerp-legacy.md, §"De lus per level",
+  // stap 1). Sinds WP 47 dragen ze ook de volgorde: een doos gaat pas open als
+  // het vorige hoofdstuk hersteld is (nogDicht). De broncode-doos is een aparte
+  // prop en telt pas op het einde.
   dozen: {
     onderzoek: "Kartonnen dozen, dichtgeplakt, gemerkt in Alberta's hand. Op " +
       "één staat DIVERSEN, en daaronder kleiner: ook rommel. In een van deze " +
@@ -259,6 +261,17 @@ AL.strings = {
       "hoofdstuk toe bent.",
     allesGevonden: "Je hebt elk fragment van het notitieboek gevonden. Alles wat " +
       "je nog rest, ligt op de pc — en op het einde, in de broncode-doos.",
+    // De weigering van de poort (WP 47): een doos geeft haar blad pas als het
+    // vorige hoofdstuk hersteld is. Het nummer is het hoofdstuk dat nog
+    // openstaat, niet het blad dat in de doos zit. Dezelfde belofte als
+    // onderzoek hierboven ("als je aan dat hoofdstuk toe bent"), maar nu op het
+    // moment dat de speler het probeert.
+    nogDicht: function (n) {
+      return "Je legt je hand op de flap en laat hem weer los. Het blad dat " +
+        "hierin zit, hoort bij een later hoofdstuk, en zo werkte Alberta niet: " +
+        "haar schema loopt op volgorde. Eerst hoofdstuk " + n + " herstellen — " +
+        "dat werk ligt op de pc — en dan pas het volgende blad.";
+    },
     // Waar het eerstvolgende fragment ligt als het niet in deze kamer zit.
     nietHier: {
       "zolder-west": "Het eerstvolgende blad zit niet hier. Het notitieboek zelf " +

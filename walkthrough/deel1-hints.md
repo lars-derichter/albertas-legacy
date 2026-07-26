@@ -53,7 +53,10 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
 1. **Vind het fragment.** Elk level begint met een blad uit Alberta's
    beschadigde notitieboek. Het eerste ligt gewoon open in de westhoek. De
    latere bladen zitten in dichtgeplakte, gemerkte dozen, dieper in de zolder
-   (de doorgang in het midden en de overloop boven aan de trap).
+   (de doorgang in het midden en de overloop boven aan de trap). Eén blad
+   tegelijk: een doos geeft het volgende pas als het hoofdstuk dat je openhebt
+   hersteld is. Vooruitlopen kan dus niet, en dat is met opzet — haar schema
+   loopt op volgorde.
 2. **Lees de spread.** Het notitieboek klapt open: Alberta's schets, haar
    puzzelbrief, en rechtsonder de regel "Week X in mijn schema" — haar eigen
    planning voor dat hoofdstuk, en tegelijk een prima maat voor of je er al aan
@@ -73,13 +76,16 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
    hij zelf waar het volgende blad ligt.
 
 **Vastgelopen op de zolder zelf?** Bijna altijd is het antwoord: je hebt het
-volgende blad nog niet, of je zit in de verkeerde kamer. Typ `?`. De hint kijkt
-naar hoe ver je staat, niet naar waar je staat: ligt er nog een hoofdstuk open
-op de pc, dan stuurt hij je daarheen; anders zegt hij in welke kamer het
-eerstvolgende blad ligt — of dat het in déze kamer in een doos zit. Die hints
-zijn gratis en tellen niet mee in Alberta's terugblik. De grote doos in het
-midden met "BRONCODE" erop telt trouwens pas op het einde; laat die nog even
-dicht.
+volgende blad nog niet, je zit in de verkeerde kamer, of er staat nog een
+hoofdstuk open. Typ `?`. De hint kijkt naar hoe ver je staat, niet naar waar je
+staat: ligt er nog een hoofdstuk open op de pc, dan stuurt hij je daarheen;
+anders zegt hij in welke kamer het eerstvolgende blad ligt — of dat het in déze
+kamer in een doos zit. Weigert een doos gewoon open te gaan terwijl je `open
+doos` typt? Dan is het dat derde geval: er is nog een hoofdstuk te herstellen,
+en de doos zegt zelf welk. Ga eerst dát afwerken aan de pc; daarna geeft ze het
+blad zonder morren. Die hints zijn gratis en tellen niet mee in Alberta's
+terugblik. De grote doos in het midden met "BRONCODE" erop telt trouwens pas op
+het einde; laat die nog even dicht.
 
 Meer dan dit zeggen we niet over de zolder. Het is een kleine, warme ruimte —
 je hebt ze zo in de vingers.

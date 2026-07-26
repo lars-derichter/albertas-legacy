@@ -39,8 +39,14 @@ globalThis.AL = globalThis.AL || {};
   // Waar het fragment van elk level ligt (spelontwerp-legacy.md, §"De lus per
   // level", stap 1: "latere fragmenten zitten verder in de zolder"). Level 1 is
   // het notitieboek in de westhoek; 2–4 zitten in dozen in de doorgang; 5–7
-  // dieper in het archief, op de overloop. Zo is er lichte, ruimtelijke
-  // progressie zonder harde sloten (save-en-hints.md: "zichtbaar, niet verplicht").
+  // dieper in het archief, op de overloop. Dat is de ruimtelijke kant van de
+  // progressie: verder in de zolder is later in haar schema.
+  //
+  // De kaart alléén dwingt geen volgorde af — drie keer 'open doos' in de
+  // doorgang ontgrendelde vroeger drie bladen zonder één puzzel op te lossen.
+  // Sinds WP 47 zit de volgorde in de doos zelf: vinden volgt oplossen (zie
+  // _openFragmentDoos en workflow/46-lineariteit-kickoff.md — een bewuste
+  // ontwerpwijziging op vraag van de docent).
   var FRAGMENT_LOCATIE = {
     1: "zolder-west",
     2: "zolder-midden", 3: "zolder-midden", 4: "zolder-midden",
@@ -317,13 +323,34 @@ globalThis.AL = globalThis.AL || {};
       return null;
     },
 
-    // Open een gemerkte doos: onthult het eerstvolgende fragment als dat in deze
-    // kamer thuishoort, anders wijst het je naar de juiste plek (lichte
-    // ruimtelijke progressie, geen harde sloten).
+    // Open een gemerkte doos: onthult het eerstvolgende fragment als de speler
+    // eraan toe is én het in deze kamer thuishoort; anders weigert de doos, of
+    // wijst ze naar de juiste plek.
+    //
+    // De poort (WP 47): blad n komt er pas uit als hoofdstuk n-1 hersteld is.
+    // Vinden volgt oplossen. Zonder die poort kon de speler drie dozen na
+    // elkaar openen en zat hij daarna vast: ontgrendelFragment zet levelActief
+    // op het nieuwe level en het pc-menu kent geen levelkeuze (pc.js), dus de
+    // puzzels van het overgeslagen hoofdstuk waren onbereikbaar.
+    //
+    // Volgorde van de checks — de poort staat vóór de kamercheck, en dat is een
+    // afwijking van de kickoff-notitie ("de poort komt ná de kamercheck"). De
+    // reden staat in het spel zelf: wie gepoort is, heeft niets aan
+    // dozen.nietHier. Die tekst stuurt hem naar een andere kamer, en de doos
+    // daar is even goed dicht — een verwijzing die niet klopt. De echte
+    // volgende zet is "herstel hoofdstuk n-1", en dat zegt nogDicht. In elk
+    // geval waar de poort ópen staat (n = 1, of hoofdstuk n-1 afgerond) blijft
+    // de kamerverwijzing precies doen wat ze deed.
     _openFragmentDoos: function (toestand) {
       var n = this.volgendFragment(toestand);
       if (n === null) {
         return { tekst: [AL.strings.dozen.allesGevonden], effecten: [] };
+      }
+      if (n > 1) {
+        var vorige = toestand.levels[String(n - 1)];
+        if (!vorige || !vorige.afgerond) {
+          return { tekst: [AL.strings.dozen.nogDicht(n - 1)], effecten: [] };
+        }
       }
       var loc = FRAGMENT_LOCATIE[n];
       if (loc === toestand.sceneId) {

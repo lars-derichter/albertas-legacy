@@ -128,6 +128,10 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    Effect: `fragment-gevonden:<levelId>`. Voor level 1 is dat simpelweg het
    notitieboek zelf op `zolder-west`; latere fragmenten zitten verder in de
    zolder (dozen op `zolder-midden`/`overloop`), zodat er lichte progressie is.
+   **Vinden volgt oplossen:** blad `n` komt pas uit zijn doos als hoofdstuk
+   `n-1` hersteld is. Is dat niet zo, dan weigert de doos in de fictie
+   (`AL.strings.dozen.nogDicht`) en verandert er niets aan de staat. Het
+   notitieboek van level 1 heeft geen voorganger en blijft vrij.
 2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
    puzzelbrief, en de regel "Week X in mijn schema." (haar eigen planning; zie
    `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
@@ -157,6 +161,15 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
 > dichtdoen is nu een handeling zonder bijwerking; de wandeling naar de pc is de
 > zaak van de speler, en de progressie-hint uit WP 33 draagt de begeleiding die
 > de teleport moest goedmaken.
+
+> Beslissing (WP 47): de lus is lineair, en de poort staat aan de doos. Stap 1
+> was tot dan vrij — drie keer `open doos` ontgrendelde drie bladen zonder één
+> puzzel op te lossen, en omdat `levelActief` met het nieuwe blad meeging en het
+> pc-menu geen levelkeuze kent, waren de overgeslagen hoofdstukken daarna
+> onbereikbaar. De poort zit in de doos en niet in de pc: ze past in de fictie
+> (Alberta's schema loopt op volgorde), houdt één model aan, en vermijdt
+> half-ontgrendelde toestanden. Zie `workflow/46-lineariteit-kickoff.md` voor de
+> feedback van de docent die eraan ten grondslag ligt.
 
 Na level 7 volgt de endgame in plaats van "keer terug" (zie onder).
 
