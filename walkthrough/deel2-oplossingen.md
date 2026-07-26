@@ -200,9 +200,9 @@ void setLevenspunten(int nieuweWaarde) {
 ## Puzzel 2 — vind de fout: `&&` versus `||`
 
 De fout zit op **regel 1**. De code gebruikt `||` (of) waar `&&` (en) hoort:
-"de wolf verslagen ÉN de sleutel" vraagt dat béide waar zijn. Met `||` gaat de
-poort al open bij alleen de sleutel. Typ `regel 1`, of `&&`, of "beide moeten
-waar zijn".
+"de wolf verslagen is EN je de sleutel hebt" vraagt dat béide waar zijn. Met
+`||` gaat de poort al open bij alleen de sleutel. Typ `regel 1`, of `&&`, of
+"beide moeten waar zijn".
 
 ## Puzzel 3 — trace: de validatie-cascade
 
@@ -416,9 +416,9 @@ Alles ligt op één zuid-lijn, met het dorpsplein als spil:
 ```
 [Geitenhuisje]   (klokkast: het jongste geitje)
      | zuid
-[Dorpsplein]--oost--[Molen]  (bloem, kruik melk; jachthond bewaakt ze)
-     |         west
-     +--west--[Kruidenier]   (krijt)
+[Dorpsplein]     (twee koeken op de marktkraam)
+     |--oost--[Molen]        (bloem, kruik melk; jachthond)
+     |--west--[Kruidenier]   (krijt)
      | zuid
 [Bospad]
      | zuid
@@ -555,10 +555,10 @@ tiers is positief; het verschil is de knipoog.
 
 | Tier | Hints totaal | Alberta zegt (kort) |
 |---|---|---|
-| De meesterhand | 0–3 | "Bijna geen spieken. Ik had het niet beter gekund." |
-| De vakvrouw | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer dóór." |
-| De doorzetter | 11–20 | "Vaak om hulp gevraagd, telkens weer verder gewerkt." |
-| Samen geraakt | 21+ | "We hebben dit samen gedaan. En het spel draait." |
+| De meesterhand | 0–3 | "Ik had het niet beter gekund, en dat zeg ik niet snel." |
+| De vakvrouw | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer door." |
+| De doorzetter | 11–20 | "Je hebt vaak om hulp gevraagd en telkens opnieuw doorgezet." |
+| Samen geraakt | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints." |
 
 Het zegel verbroken en deel 2 gebruikt? Dat telt niet mee in Alberta's som —
 alleen de `?`-hints in het spel doen dat. Maar je weet het zelf. Eén repository,

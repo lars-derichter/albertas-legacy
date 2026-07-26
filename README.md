@@ -85,8 +85,8 @@ albertas-legacy/
 ├── walkthrough/           hints en oplossingen (deel 2 verzegeld) als .md + .pdf
 ├── test/                  28 Node --test-suites (400 tests) + 9 Playwright-
 │                          smokes, plus de checker-corpus
-├── tools/                 asset-check, scene-lint, doc-padcheck en het
-│                          screenshotscript (Node)
+├── tools/                 asset-check, scene-lint, doc-padcheck, walkthrough-
+│                          check en het screenshotscript (Node)
 └── workflow/              verhalend logboek van het genAI-proces
 ```
 
@@ -97,7 +97,10 @@ staat een gids in twee delen: deel 1 met milde hints
 ([`deel1-hints.pdf`](walkthrough/deel1-hints.pdf)), deel 2 met de volledige
 oplossingen ([`deel2-oplossingen.pdf`](walkthrough/deel2-oplossingen.pdf)).
 Beide delen staan er ook als Markdown naast, mocht je liever in de browser
-lezen.
+lezen. De Markdown is de bron: `bash walkthrough/tools/bouw-walkthrough.sh`
+zet ze om naar de twee PDF's (pandoc + typst), en
+`node tools/check-walkthrough.mjs` bewijst dat elk citaat in de gids nog
+woordelijk in het spel staat.
 
 > **VERBREEK HET ZEGEL NIET** tenzij je écht niet verder kan. Deel 2 zit
 > achter een verzegelde pagina — 90's-stijl, ere-systeem. Eén repository,

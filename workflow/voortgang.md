@@ -405,12 +405,49 @@ Commit: (nog in te vullen) — entry: `workflow/38-doc-drift-en-dood-hout.md`
       smoke-browser **41/41** (was 38/38), smoke-full-playthrough **97/97**,
       `check-docpaden` 757 paden — 0 dood in een contractdocument
 
-### - [ ] WP 39 — Walkthrough herbouwd
+### - [x] WP 39 — Walkthrough herbouwd
 
-- [ ] deel1/deel2 .md actueel (F1, commando's, titels, citaten, routes)
-- [ ] PDF's herbouwd als pandoc+typst installeerbaar zijn, anders open
-      punt
-- [ ] QC: scripted titel/citaat-vergelijking; `node --test` groen
+Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
+
+- [x] `tools/check-walkthrough.mjs`: vijf keuringen die de gids tegen het
+      spel houden — hoofdstuktitels + weken tegen `AL.strings.lN`, elk
+      Java-blok tegen de modeloplossingen, de vier eindescripts tegen
+      `seven-little-goats/test-scripts/`, elk citaat en commando tegen de
+      tekstcorpus (mét de trace-sjablonen over hun hele pool uitgerekend),
+      en een poort die bewijst dat deel 1 geen hintstadium 3 lekt. Elke
+      keuring is met een negatieve test nagemeten
+- [x] Deel 1: navigatie herschreven (alle vier de richtingen te voet sinds
+      WP 32, D-pad op een aanraakscherm, zwijgende muren), de WP 33-melding
+      bij stap 5, "twee of drie hints" → twee, en het onbestaande commando
+      `bekijk` vervangen door `inventaris` / `stats`
+- [x] Deel 1: negen hints gingen verder dan stadium 2 — bij `l3-vindfout`
+      en `l6-vindfout` stond het antwoord er zelfs bij. Bij alle negen is
+      die ene slotzin geschrapt, de rest van de hint blijft
+- [x] Deel 1: de sim-alinea vertelt weer wat `goats-strings.js` vertelt (de
+      neef van de oude wolf, zes opgeslokte geitjes, het jongste in de
+      klokkast, de keuze aan de rivier is van de speler); het mandje is
+      alleen voor de koeken nodig
+- [x] Deel 2: de vier oordeel-citaten woordelijk uit `AL.strings.oordeel`
+      (één had er zelfs een accent bij dat Alberta niet schrijft), het
+      opgave-citaat bij `&&`/`||` verbeterd, en de kaart heeft geen
+      zwevende "west"-regel meer. De negen Java-blokken, de vier
+      eindescripts, de vechtrekenkunde en de trace-tabellen bleken
+      ongeschonden — dat is nu ook mechanisch bewezen
+- [x] PDF's herbouwd: pandoc 3.10 + typst 0.15.0 van GitHub gehaald (de
+      machine had 3.1.3 en 0.10.0), script exit 0, 8 en 13 pagina's.
+      `bouw-walkthrough.sh` kiest zelf tussen `--syntax-highlighting=none`
+      en het oudere `--no-highlight`; `zine.typ` heeft een font-ketting
+      (Courier New vooraan, Liberation Mono erachter) omdat Courier New
+      hier niet meer geïnstalleerd staat
+- [x] `README.md`: hoe je de PDF's herbouwt en de citaten keurt — daarmee
+      staat het júíste pad (`walkthrough/tools/bouw-walkthrough.sh`) in een
+      contractdocument. De oude vermeldingen zonder `walkthrough/` staan
+      alleen in `workflow/` en blijven historie
+- [x] QC: `check-walkthrough` **276 gekeurd, 0 afwijkingen**; **400/400**
+      headless ongewijzigd; `check-docpaden` 817 paden — 0 dood in een
+      contractdocument; `lint-scene` en `check-assets` schoon;
+      `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
+      13 p., inhoud met `pdftotext` nagelezen)
 
 ### - [ ] WP 40 — Slotcontrole
 
@@ -877,7 +914,12 @@ de eerste de gemelde is.
 Elf pakketten zijn af (0, A t/m J). Wat toen open bleef, heeft nu een adres
 in programma 3:
 
-- **De walkthrough-PDF's zijn niet herbouwd.** → WP 39.
+- ~~De walkthrough-PDF's zijn niet herbouwd.~~ **Opgelost in WP 39**: pandoc
+  3.10 en typst 0.15.0 opgehaald, beide PDF's herbouwd uit de bijgewerkte
+  Markdown (8 en 13 pagina's). Wat er wél voor in de plaats komt: Courier New
+  staat niet meer op deze machine, dus de vastgelegde PDF's zijn in Liberation
+  Mono gezet — metrisch identiek, en het sjabloon vraagt Courier New nog altijd
+  als eerste, dus een machine die hem heeft bouwt het origineel terug.
 - **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat
   ontbreekt hier. `js/touch.js` is in WP 37 aangeraakt (unlock op D-pad,
   commandobalk en canvas-tik); die kant is gedekt door `smoke-geluid`, dat
