@@ -58,10 +58,14 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
    hersteld is. Vooruitlopen kan dus niet, en dat is met opzet — haar schema
    loopt op volgorde.
 2. **Lees de spread.** Het notitieboek klapt open: Alberta's schets, haar
-   puzzelbrief, en rechtsonder de regel "Week X in mijn schema" — haar eigen
+   spec, en rechtsonder de regel "Week X in mijn schema" — haar eigen
    planning voor dat hoofdstuk, en tegelijk een prima maat voor of je er al aan
-   toe bent. Ze schreef die bladen voor wie ze niet kende: hoofdstuk 1 opent
-   met een aanhef, en daarna zegt ze per hoofdstuk gewoon wat er nog ontbreekt.
+   toe bent. Verwacht van die bladen geen uitleg: links staat wat het stuk moet
+   zíjn (de klasse, haar velden met hun types, de koppen), rechts wat er stuk
+   of onaf is. Waaróm iets zo werkt, staat in je cursus — en in nood in de
+   hints hieronder. Ze schreef die bladen voor wie ze niet kende: hoofdstuk 1
+   opent met een aanhef, en daarna zegt ze per hoofdstuk gewoon wat er nog
+   ontbreekt.
    Met de spatiebalk blader je door; onderaan het linkerblad staat waar die je
    brengt, en op de laatste bladzijde staat er "spatie: terug". Het boek gaat
    dan gewoon dicht en je staat nog precies waar je het blad vond.
@@ -110,7 +114,8 @@ verwijzing naar de doos zelf op.
   de verwijzing naar de doos zelf, of ze staat net omgekeerd.
 
 **Puzzel 2 — schrijf `Geitje` van nul.** Alberta somt in de kantlijn op wat
-een geitje heeft; jij tikt de klasse uit.
+een geitje heeft — en op bladzijde 2 van het spread staat haar klassekaart met
+dezelfde drie velden erop; jij tikt de klasse uit.
 
 - *Hint 1:* Een klasse is een blauwdruk: eerst de velden (wat een geitje
   heeft), dan de constructor die de verse doos vult, dan de getters.
@@ -215,15 +220,15 @@ terugleggen.
 **Puzzel 2 — trace: aliasing.** Twee variabelen wijzen naar dezelfde kamer; je
 zet de buur via de ene en leest hem via de andere.
 
-- *Hint 1:* Twee pijlen, één doos: `eerste` en `tweede` wijzen naar dezelfde
-  kamer.
+- *Hint 1:* Twee pijlen, één doos: lees de tweede regel nog eens — hoeveel
+  kamers maakt deze code eigenlijk aan?
 - *Hint 2:* Wat je via `tweede` zet, staat ook in `eerste` — het blijft
   dezelfde doos.
 
 **Puzzel 3 — verklaar in één zin: wat betekent `null` hier?**
 
-- *Hint 1:* Twee pijlen, één doos — en `null` is een pijl die naar géén doos
-  wijst.
+- *Hint 1:* Twee pijlen, één doos: waar komt die pijl uit als er in die
+  richting geen kamer bestaat?
 - *Hint 2:* Denk aan een kamer zonder uitgang in die richting: waar wijst de
   buur-referentie dan heen?
 

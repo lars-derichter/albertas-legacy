@@ -50,13 +50,16 @@ De nieuwe titels zetten de term vooraan, zodat een speler die vastzit weet
 waarnaar hij in zijn cursus moet zoeken, en houden het verhaal in de tweede
 helft.
 
-De metafoor-woordenschat uit de cursus-hub blíjft in het spel — in de hints van
-stap 1, in Alberta's briefteksten en in de schetsen op bladzijde 2 van elk
-spread (`js/scenes/spread-schetsen.js`). Alleen de titels dragen ze niet meer:
+De metafoor-woordenschat uit de cursus-hub blíjft in het spel — in de
+gefaseerde hints en in de schetsen op bladzijde 2 van elk spread
+(`js/scenes/spread-schetsen.js`). Alleen de titels dragen ze niet meer, en
+sinds WP 48 ook Alberta's briefteksten niet: die zijn pure spec geworden (zie
+§"Wat een spread draagt" hieronder). De schets van level 1 is om dezelfde reden
+een klassekaart geworden in plaats van de blauwdruk-en-doos.
 
-| # | Metafoor (hints, brieven, schetsen) | Kernbeeld |
-|---|-------------------------------------|-----------|
-| 1 | De blauwdruk en de doos | klasse = blauwdruk, instantie = doos; `this` = "deze doos" |
+| # | Metafoor (hints, schetsen) | Kernbeeld |
+|---|----------------------------|-----------|
+| 1 | De blauwdruk en de doos (alleen nog in de hints) | klasse = blauwdruk, instantie = doos; `this` = "deze doos" |
 | 2 | Trechters erin, goot eruit; drie dozen | parameter in, return uit; attribuut/parameter/lokaal |
 | 3 | De knikkerbaan | validatie klemt, de cascade splitst, `&&`/`\|\|`/`!` sturen |
 | 4 | Twee pijlen, één doos | twee variabelen wijzen naar hetzelfde object; `null` = geen doos |
@@ -113,6 +116,46 @@ de plek. Elke andere plek die Alberta's weekregel citeert, citeert diezelfde X:
 de onderzoektekst van het notitieboek op zolder-west leest het spread van level 1
 en zegt dus week 1 (ze zei week 3 tot WP 31), en de walkthrough herhaalt de week
 per level.
+
+## Wat een spread draagt
+
+Bindend sinds WP 48, op vraag van de docent: *"Het notitieboek geeft ook nog
+steeds veel uitleg over de code en geeft zo al bijna de oplossing. Studenten
+moeten dit zelf kunnen. Logischer zou bijv zijn om de velden op te sommen die
+bij geitje horen of om een soort klassendiagram te schetsen. Niet om (quasi) uit
+te leggen hoe this werkt. Dat leren studenten in de les en in de cursus."*
+
+Een spread is **spec, geen les**. De verdeling ligt vast:
+
+- **Bladzijde 1 — de kaart.** Wat het stuk moet zíjn: de klasse, haar velden met
+  hun types, de signaturen met hun returntypes, en waar het van toepassing is de
+  structuur (één cascade, één for-lus, de schakels van een keten). De vorm is
+  die van de `geitjeStub` in `js/levels/level1.js`: namen, types, wat ontbreekt.
+- **Bladzijde 2 — wat stuk of onaf is.** Kort, en **variantneutraal**: waar twee
+  beschadigde varianten één brief delen, mag de brief niet zeggen welke van de
+  twee de speler voor zich heeft. Geen operator, geen grens, geen modeloplossing
+  in proza.
+- **De schets** (bladzijde 2) mag een klassekaart zijn — level 1 is er een — of
+  het scharnierbeeld. Zie `art-stijlgids.md`.
+- **Nul conceptuitleg.** Niet wat `this` doet, niet wat aliasing is, niet waarom
+  een index bij 0 begint, niet welke patroonkaart bij welke lus hoort. Die
+  uitleg staat in de **gefaseerde hints**, en die tellen mee voor het oordeel
+  (`save-en-hints.md`): uitleg heeft daar een prijs, op papier is ze gratis.
+- **Nooit het antwoord van een puzzel van hetzelfde level.** De brieven lekten
+  het `||`/`&&`-antwoord van de vindfout van level 3, de modeloplossing van
+  level 6, en de trace- en verklaar-antwoorden van level 4 en 7.
+
+Wat een spread wél mag houden is Alberta's toon: kort, koel, en hoogstens één
+zin kleur per hoofdstuk ("Meer heeft het huisje niet nodig.").
+
+**Dekkingsplicht.** De speler leest een spread precies één keer — `open doos`
+een tweede keer zegt "Je hebt dit fragment al" (`world.js`) — dus de
+kantlijnnotitie bóven het fragment in `js/levels/levelN.js` is de dragende
+laag, niet de brief. Alles wat `checks[]` eist en niet uit de getoonde code
+volgt, hoort in die notitie te staan: `MAX_LEVENSPUNTEN` in level 3 (variant B
+wist de constante), `int` en `Voorwerp` in level 5 (WP 30), de lussoort in de
+levels 5, 6 en 7, de vier setters in level 4, de drie schakels van de keten in
+level 7.
 
 ## Toetsritme
 

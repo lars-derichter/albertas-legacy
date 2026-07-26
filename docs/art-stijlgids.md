@@ -499,10 +499,23 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
     zaken: wie leest dat twee lus-methoden ontbreken (level 5), ziet eronder de
     kaarten waar ze het over heeft. De eerste bladzijde is de brief.
   - De schetsstijl spiegelt de scharnier-metaforen (zie de
-    metafoor-woordenschat in `levels-en-scharnieren.md`): blauwdruk-en-doos (1),
+    metafoor-woordenschat in `levels-en-scharnieren.md`): de klassekaart (1),
     trechters-en-goot (2), knikkerbaan met klem en splitsing (3),
     twee-pijlen-één-doos (4), de patroonkaart met turfjes (5), de plankenbrug
     met genummerde planken (6), het zoekspoor en de dubbele pijl (7).
+  - **Level 1 is de uitzondering, en met opzet (WP 48).** Daar stond de
+    blauwdruk-en-doos: een gestippeld plan, een pijl, een driekwart doos. Die
+    tekening lééft de metafoor uit, en dat is uitleg — precies wat de docent uit
+    het notitieboek weg wilde ("Logischer zou bijv zijn om de velden op te
+    sommen die bij geitje horen of om een soort klassendiagram te schetsen").
+    Level 1 draagt nu een klassekaart: een kader met een naamvak bovenaan en de
+    velden eronder, met een tweede kaart half buiten beeld.
+  - **Labels in een schets** mogen, sinds diezelfde kaart. Ze staan in het veld
+    `labels` van een set — `[x, y, tekst]` — en de spread-renderer zet ze in
+    Alberta's hand (kleur 41, zonder spatievariatie) ná de beschadiging: een
+    koffiering vreet een tekening aan, niet wat ze erbij schreef. Types horen er
+    niet in; die staan in de spec op bladzijde 1. `tools/lint-scene.mjs` en
+    `test/test-spreads.mjs` rekenen na dat een label in het schetskader valt.
 - **De weekregel:** onderaan de rechterbladzijde, in Alberta's hand: "Week X in
   mijn schema." Sinds WP 45 is dat één regel (de oude, langere zin nam er twee).
   De renderer houdt er nog altijd ruimte voor drie: proportioneel handschrift is

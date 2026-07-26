@@ -39,11 +39,13 @@ globalThis.AL = globalThis.AL || {};
   // De notitie noemt MAX_LEVENSPUNTEN bij naam. Dat is niet decoratief: in
   // variant B is het hele bovengrens-blok weggevallen, en dan staat de constante
   // nergens meer in het fragment. Zonder haar naam is de klem niet te herstellen
-  // (de checker aanvaardt MAX_LEVENSPUNTEN of 20).
+  // (de checker aanvaardt MAX_LEVENSPUNTEN of 20). WP 48 haalt de knikker eruit
+  // — waaróm een waarde geklemd wordt is de les, niet de spec — en houdt de
+  // grenzen, het aantal controles en hun plaats over.
   var klemNotitie =
-"// De waarde moet tussen twee randen blijven: nooit onder 0, nooit boven\n" +
-"// MAX_LEVENSPUNTEN. Twee losse controles die de knikker naar binnen duwen\n" +
-"// voor hij wordt opgeslagen. Aan één van de twee randen mankeert iets. — A.\n" +
+"// De waarde blijft tussen 0 en MAX_LEVENSPUNTEN. Twee losse controles in de\n" +
+"// setter, vóór de waarde het veld in gaat. Aan één van de twee mankeert\n" +
+"// iets. — A.\n" +
 "\n";
 
   var klemBovengrensBlok =

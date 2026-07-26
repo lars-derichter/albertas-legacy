@@ -465,7 +465,7 @@ Entry: `workflow/46-lineariteit-kickoff.md` · commit: `e9b77a7`
 
 ### - [x] WP 47 — De poort aan de doos
 
-Entry: `workflow/47-poort-aan-de-doos.md` · commit: (nog in te vullen)
+Entry: `workflow/47-poort-aan-de-doos.md` · commit: `f5bb77d`
 
 - [x] Voortgangspoort in _openFragmentDoos (n alleen als n-1 afgerond);
       notitieboek blijft vrij; de poort staat vóór de kamercheck en wint
@@ -483,16 +483,38 @@ Entry: `workflow/47-poort-aan-de-doos.md` · commit: (nog in te vullen)
 - [x] QC: 431/431 headless, lint-scene/check-assets/check-walkthrough/
       check-docpaden schoon, smokes 46/36/53/104/38 groen
 
-### - [ ] WP 48 — Notities als spec
+### - [x] WP 48 — Notities als spec
 
-- [ ] Zeven briefA's naar steno-spec; spoilers uit briefB's en
-      stub-notities; MAX_LEVENSPUNTEN/int/Voorwerp/variantneutraliteit
+Entry: `workflow/48-notities-als-spec.md` · commit: (nog in te vullen)
+
+- [x] Zeven briefA's naar steno-spec (klassekaart op bladzijde 1,
+      schadelijst op bladzijde 2); spoilers uit briefB's (l3 `||`/`&&`,
+      l6 modeloplossing + rondes) en uit acht stub-notities;
+      MAX_LEVENSPUNTEN (l3), int/Voorwerp (l5) en variantneutraliteit
       bewaard
-- [ ] l1-schets richting klassendiagram (haalbaarheid eerst gemeten)
-- [ ] Checker-dekking per level geverifieerd
-- [ ] Walkthrough + PDF's mee
-- [ ] Adversariële checker-agent vóór manager-QC
-- [ ] QC: alle poorten + screenshots beoordeeld door manager
+- [x] l1-schets is een klassekaart geworden (haalbaarheid eerst gemeten:
+      kader 128×62, labels 25–55 px, vier van de vijf regels gebruikt);
+      nieuw `labels`-veld in een schets-set, gekeurd door lint-scene én
+      een nieuwe test in test-spreads
+- [x] Checker-dekking per level geverifieerd — tabel in de entry. Twee
+      bewuste gaten, allebei gemotiveerd: de lusgrens van l6 (dat is de
+      reparatie van variant A) en die van l7-write (ongewijzigd)
+- [x] Hints nagekeken: stadium 1 van l4-verklaar en l4-trace was het
+      antwoord zelf en is een vraag geworden; l2-trace was al een vraag
+- [x] Docs mee (levels-en-scharnieren §"Wat een spread draagt",
+      achtergrond §"Het notitieboek", art-stijlgids) + walkthrough deel 1
+      (PDF herbouwd; deel 2 verschilde enkel in datums, teruggezet)
+- [x] Adversariële checker-agent gedraaid (drie passen). Bevestigd: de
+      vijf lekken weg, variantneutraliteit overal in orde. Drie
+      bevindingen hersteld (null-eis terug in de l7-notitie, eerste
+      persoon terug in vijf brieven, l3-briefB wees nog naar de
+      conditie); vier erkend en doorgeschoven naar de manager (de
+      trace-opgaven tonen de modeloplossing van hun eigen level en de
+      puzzelvolgorde is vrij; het l2-fragment bevat het parsons-antwoord;
+      de termen-kop van bladzijde 2 draagt nog leerstof) — zie de entry
+- [x] QC: 432/432 headless, lint-scene/check-assets/check-walkthrough/
+      check-docpaden schoon, javac + verboden-grep schoon, smokes
+      46/36/53/104 groen, screenshots wp48-* in test-results/
 
 ### - [ ] WP 49 — Slot en PR
 

@@ -38,10 +38,19 @@ globalThis.AL = globalThis.AL || {};
   // Neutraal over wat er mis is: variant A loopt één plank te ver, variant B is
   // de verkeerde soort lus. Een notitie die "hier loopt ze te ver" zegt, liegt
   // dus bij de helft van de spelers.
+  //
+  // WP 48 haalt er twee dingen uit die er niet in hoorden: de modeloplossing in
+  // proza ("een for-lus van 0 tot size(), strikt kleiner; verwijder op de index
+  // en stop meteen") en de plankenbrug-les ("de eerste plank is 0, de laatste
+  // size() min één; eén plank te ver en je ligt in het water"). Wat blijft is
+  // de spec: wat de methode moet doen, en dat ze met een for-lus over de index
+  // loopt. Die lussoort moet blijven staan — variant B ís een while, en zonder
+  // haar is er geen enkel spoor dat er een for hoort. De grens ("<", niet "<=")
+  // staat er níét: dat is de reparatie van variant A.
   var verwijderNotitie =
-"// De eerste plank is 0, de laatste size() min één. Een for-lus van 0 tot\n" +
-"// size(), strikt kleiner; verwijder op de index en stop meteen. Eén plank te\n" +
-"// ver en je ligt in het water. Wat er nu staat, klopt niet. — A.\n" +
+"// verwijderVoorwerp: het voorwerp met die naam gaat uit de lijst, en daar\n" +
+"// stopt ze. Ik loop met een for-lus over de index. Wat er nu staat, klopt\n" +
+"// niet. — A.\n" +
 "\n";
 
   var verwijderBeschadigdA = verwijderNotitie +

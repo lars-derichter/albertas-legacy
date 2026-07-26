@@ -58,16 +58,19 @@ globalThis.AL = globalThis.AL || {};
 
   // De notitie boven de code is Alberta's kantlijn, niet een opgavebrief: geen
   // kop, geen imperatief uit een klaslokaal, en ze eindigt op "— A." (WP 45;
-  // achtergrond.md, §"Toon en register"). Wat ze zegt is wat er ontbreekt; de
-  // vorm this.<veld> = <parameter>; staat twee regels lager in de code zelf, en
+  // achtergrond.md, §"Toon en register"). Sinds WP 48 is ze bovendien pure spec:
+  // de velden met hun types en wat er niet klopt, in de vorm van de geitjeStub
+  // hieronder. De metafoor van de "verse doos" is eruit — dat was uitleg over
+  // wat een constructor dóét, en dat leren studenten in de les. De vorm
+  // this.<veld> = <parameter>; staat twee regels lager in de code zelf, en
   // hintfase 3 draagt hem voor wie hem niet ziet. Ze blijft neutraal over wát er
   // mis is, want de twee varianten verschillen: in A ontbreekt de this-
   // verwijzing, in B staat de toewijzing omgekeerd (this staat er dan wél, aan de
-  // verkeerde kant).
+  // verkeerde kant); "de toewijzing klopt niet" dekt allebei.
   var voorwerpNotitie =
-"// Een voorwerp heeft naam, beschrijving en kracht. De constructor vult de\n" +
-"// velden van een verse doos, maar bij één veld krijgt het veld nooit wat de\n" +
-"// parameter ervoor klaarzet. Nog niet af. — A.\n" +
+"// Een voorwerp heeft een naam (String), een beschrijving (String) en kracht\n" +
+"// (int). De constructor zet die drie velden; bij één veld klopt de\n" +
+"// toewijzing niet. Nog niet af. — A.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +

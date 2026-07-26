@@ -146,6 +146,30 @@ test("elke kop past in ten hoogste drie regels en blijft binnen de kolom", () =>
   }
 });
 
+// De handschrift-labels van een schets (WP 48). De klassekaart van level 1
+// draagt "Geitje" en haar drie velden in Alberta's hand; die woorden worden
+// niet gewrapt (het zijn losse labels op vaste plekken), dus een label dat te
+// breed is of te laag staat, loopt over de bladrand of over de weekregel. De
+// renderer zet ze met kopHand — zonder spatievariatie, dus deterministisch.
+test("elk schets-label past binnen het schetskader", () => {
+  const kader = AL.spreads.BLAD.schets;
+  const hoogte = globalThis.AL.fontHand.hoogte;
+  for (const n of NIVEAUS) {
+    const set = AL.spreadSchetsen["l" + n];
+    if (!set || !set.labels) continue;
+    for (const [x, y, tekst] of set.labels) {
+      assert.ok(typeof tekst === "string" && tekst.length > 0,
+        `l${n}: leeg label`);
+      assert.ok(x >= kader.x && x + meetKop(tekst) <= kader.x + kader.b,
+        `l${n}: "${tekst}" op x${x} meet ${meetKop(tekst)} px in een kader van ` +
+        `${kader.b} px vanaf x${kader.x}`);
+      assert.ok(y >= kader.y && y + hoogte <= kader.y + kader.h,
+        `l${n}: "${tekst}" op y${y} valt buiten het kader ${kader.y}..` +
+        `${kader.y + kader.h}`);
+    }
+  }
+});
+
 test("de weekregel is haar eigen schema, niet die van onze cursus", () => {
   // WP 45: "Dit zou je moeten kunnen na week N van de cursus" stond in haar
   // handschrift van 1993 — onze cursus bestaat daar niet (achtergrond.md,

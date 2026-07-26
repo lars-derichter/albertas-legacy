@@ -133,7 +133,9 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    (`AL.strings.dozen.nogDicht`) en verandert er niets aan de staat. Het
    notitieboek van level 1 heeft geen voorganger en blijft vrij.
 2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
-   puzzelbrief, en de regel "Week X in mijn schema." (haar eigen planning; zie
+   spec voor dat stuk (bladzijde 1 wat het moet zijn, bladzijde 2 wat er stuk
+   of onaf is — zie `levels-en-scharnieren.md`, §"Wat een spread draagt"), en
+   de regel "Week X in mijn schema." (haar eigen planning; zie
    `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
    `geluid:pagina`. Na de laatste bladzijde gaat het boek dicht en staat de
    speler **waar hij het blad vond** — bij het notitieboek in de westhoek, bij

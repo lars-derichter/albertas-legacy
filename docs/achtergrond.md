@@ -111,17 +111,26 @@ fictie-verklaring waarom de code "hersteld" moet worden: stukken zijn
 onleesbaar of ontbreken.
 
 De hand is die van een programmeur, niet die van een lesgeefster. Ze schrijft op
-wat haar spel nodig heeft en waarom het zo in elkaar zit, niet wat een klasse
-is; haar beelden (blauwdruk en doos, de plankenbrug, de speurtocht) zijn haar
-eigen steno, geen didactisch materiaal. De aanhef aan de onbekende lezer staat
-één keer in het boek — hoofdstuk 1 — en daarna doet ze wat een programmeur in
-een overdracht doet: zeggen wat er nog niet af is.
+wat haar spel nodig heeft, niet wat een klasse is. Sinds WP 48 is dat scherper
+gesteld dan "niet didactisch": haar bladen zijn **spec**. Ze noemt klassen,
+velden met hun types en signaturen — een klassekaart, zoals een programmeur er
+een op papier zet vóór ze typt — en daarna wat er stuk of onaf is. Ze legt
+níéts uit: niet wat `this` doet, niet wat aliasing is, niet waarom een index bij
+0 begint. Dat leren studenten in de les en in de cursus, en in het spel staat
+het in de gefaseerde hints, die meetellen voor het oordeel. Haar oudere beelden
+(blauwdruk en doos, de plankenbrug, de speurtocht) leven daar verder, niet meer
+op papier. De aanhef aan de onbekende lezer staat één keer in het boek —
+hoofdstuk 1 — en daarna doet ze wat een programmeur in een overdracht doet:
+zeggen wat er nog niet af is.
 
 Elk level draait rond één **spread** (dubbele bladzijde) uit dat boek. Een
 spread bevat:
 
-- Alberta's schets of diagram voor dat stuk van het spel.
-- Haar notitie over wat de code moet doen (dit wordt de puzzelbrief).
+- Alberta's schets of diagram voor dat stuk van het spel — voor hoofdstuk 1 is
+  dat letterlijk een klassekaart met de velden van `Geitje` erop.
+- Haar spec voor dat stuk: bladzijde 1 wat het moet zijn, bladzijde 2 wat er
+  stuk of onaf is. De bindende vorm staat in `levels-en-scharnieren.md`,
+  §"Wat een spread draagt".
 - De regel "Week X in mijn schema" — haar eigen planning voor dat hoofdstuk.
   Buiten de fictie is het de cursusweek uit `levels-en-scharnieren.md`; in haar
   hand is het niets van onze cursus, alleen de week waarin zij dat stuk wilde
@@ -200,14 +209,17 @@ De frame-logica die elk stukje prose moet respecteren:
 - **Vlaams Nederlands**, geen hollandismen (zie de projectrichtlijnen). Tech-
   termen blijven Engels (parser, editor, compiler) en krijgen Nederlandse
   lidwoorden.
-- **Alberta's stem** (kantlijnnotities, puzzelbriefjes, het oordeel): droog,
+- **Alberta's stem** (kantlijnnotities, notitieboek-spec, het oordeel): droog,
   competent, kort. Ze draagt werk over in plaats van les te geven: eerste
   persoon over haar eigen spel, concreet over haar eigen klassen, en wat er
   ontbreekt vóór wat het betekent. Nooit een imperatief die naar een klaslokaal
   ruikt ("Schrijf de private velden…"); wel de stand van zaken ("de bedrading
-  tussen de kamers ligt los"). Warm is ze in het oordeel en in de enkele
-  knipoog, niet in elke regel — zij is het enige warme in dit spel, en dat
-  blijft zo: de kou zit in de kamer, niet in haar. Dat contrast is het punt.
+  tussen de kamers ligt los"). Sinds WP 48 is dat ook een grens op de inhoud en
+  niet enkel op de toon: op papier specificeert ze, ze legt niet uit. Eén zin
+  kleur per hoofdstuk is het maximum ("Meer heeft het huisje niet nodig.").
+  Warm is ze in het oordeel en in de enkele knipoog, niet in elke regel — zij
+  is het enige warme in dit spel, en dat blijft zo: de kou zit in de kamer,
+  niet in haar. Dat contrast is het punt.
 - **De verteller** (zolderbeschrijvingen, systeemtekst): rustig, observerend,
   King's Quest-achtig zuinig, en koel. Hij oordeelt niet en hij troost niet; hij
   noemt wat er staat. Lopen herbeschrijft niet; `kijk` wel (zie

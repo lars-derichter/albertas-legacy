@@ -60,11 +60,12 @@ globalThis.AL = globalThis.AL || {};
   // één weggevallen this-verwijzing (waterschade op het notitieboek). Beide
   // compileren (javac-schoon) maar zakken op een constructorToewijzing-check.
   // De notitie draagt geen kop en geen schoolimperatief meer, en ze eindigt op
-  // "— A." (WP 45; achtergrond.md, §"Toon en register").
+  // "— A." (WP 45; achtergrond.md, §"Toon en register"). WP 48 zet haar in
+  // dezelfde spec-vorm als level 1: velden met hun types, en wat er niet klopt.
   var voorwerpNotitie =
-"// Een voorwerp heeft naam, beschrijving en kracht. De constructor vult de\n" +
-"// velden van een vers object; bij één veld ontbreekt de verwijzing naar het\n" +
-"// object zelf. Nog niet af. — A.\n" +
+"// Een voorwerp heeft een naam (String), een beschrijving (String) en kracht\n" +
+"// (int). De constructor zet die drie velden; bij één veld klopt de\n" +
+"// toewijzing niet. Nog niet af. — A.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +

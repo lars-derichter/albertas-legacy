@@ -68,9 +68,15 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // WP 48: de notitie is de koppentabel zelf, niet de anatomie van een
+  // signatuur ("wat eruit komt staat vooraan, wat erin gaat tussen de haakjes"
+  // — dat stond hier, en dat is de les). De vier koppen staan er wél, want de
+  // spread is maar één keer te lezen (world.js zegt bij een tweede keer "Je hebt
+  // dit fragment al") en de checker eist ze exact.
   var spelerNotitie =
-"// De koppen van Speler heb ik zelf door elkaar gehaald en nooit rechtgezet:\n" +
-"// wat eruit komt staat vooraan, wat erin gaat tussen de haakjes. — A.\n" +
+"// De koppen van Speler heb ik zelf door elkaar gehaald en nooit rechtgezet.\n" +
+"// getLevenspunten(): int. setLevenspunten(int): void. zoek(String):\n" +
+"// Voorwerp. verwijder(String): boolean. — A.\n" +
 "\n";
 
   var spelerBeschadigdA = spelerNotitie +
