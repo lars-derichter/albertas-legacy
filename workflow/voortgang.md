@@ -449,10 +449,21 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
-### - [ ] WP 40 — Slotcontrole
+### - [x] WP 40 — Slotcontrole
 
-- [ ] Alle poorten; screenshots naar Lars
-- [ ] Slotentry + eindstand hier; PR-beschrijving bijgewerkt
+Entry: `workflow/40-slotcontrole.md` · commit: (nog in te vullen)
+
+- [x] Alle poorten in één run op één werkkopie: 400/400 headless,
+      305/305 over acht Chromium-smokes, javac + verboden-grep schoon,
+      lint-scene, check-assets, check-docpaden (842 paden) en
+      check-walkthrough (276 citaten) schoon
+- [x] Verse screenshots van titelkaart, vier kamers, spread, pc-editor,
+      sim, oordeel en epiloog aan Lars bezorgd
+- [x] Slotentry geschreven; PR-beschrijving bijgewerkt
+
+**Programma 3 is hiermee af.** Open blijven: de luistertest op speakers,
+smoke-touch (WebKit ontbreekt), en de PDF-fontterugval (Liberation Mono
+tot een machine met Courier New herbouwt).
 
 # Programma 2 — opwaardering van presentatie en verhaal (afgerond)
 
