@@ -338,11 +338,19 @@ AL.strings = {
     terminalTitel: "ALBERTA'S TERMINAL  —  seven little goats",
     menuTitel: "Alberta's pc",
     menuOnder: "Kies een taak: cijfertoets of klik. Esc — terug naar de zolder.",
+    // De statusregel na een greep naar een taak die nog wacht (WP 48b: de
+    // taken van een hoofdstuk gaan op volgorde). Alberta's stem, geen
+    // foutmelding: haar schema loopt van boven naar onder.
+    menuVergrendeld: "Die taak wacht nog. Alberta's lijst loopt van boven naar " +
+      "onder: werk eerst af wat erboven staat.",
     knopCompileer: "compileer & test  [F9]",
     knopTerug: "terug  [menu]",
     statusOpen: "open",
     statusBezig: "bezig",
     statusAf: "af",
+    // Het vierde plaatje is geen puzzelstatus in de save: het is de poort van
+    // WP 48b, uitgerekend uit de statussen van de taken erboven.
+    statusWacht: "wacht",
     prompt: "> ",
     javacKop: "javac Voorwerp:",
     javacGeenFouten: "javac: geen fouten — de tests draaien…",
@@ -1142,7 +1150,12 @@ AL.strings = {
   // off-by-one, welke lus). De Java-fragmenten leven in js/levels/level6.js.
   l6: {
     naam: "Level 6 — Index en off-by-one: de laatste plank",
-    repairTitel: "Kamer.java — herstel de off-by-one",
+    // De titel noemt wát er hersteld wordt, niet wát er mis is. "Herstel de
+    // off-by-one" (tot WP 48b) verklapte variant A vóór de speler de code zag
+    // én loog tegen variant B, waar de lus van de verkeerde soort is. De
+    // andere zes titels doen het al zo: "herstel de constructor", "herstel de
+    // klem", "herstel de null-veilige keten".
+    repairTitel: "Kamer.java — herstel de verwijder-lus",
 
     trace: {
       vraag: function (n) {

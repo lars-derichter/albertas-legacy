@@ -164,6 +164,55 @@ globalThis.AL = globalThis.AL || {};
       return { tekst: [], effecten: effecten };
     },
 
+    // ---- De volgorde-poort binnen een level (WP 48b) -----------------------
+
+    // Puzzel k van een level is pas speelbaar als de puzzels 0..k-1 "af" zijn.
+    // De poort is nodig omdat een puzzel de oplossing van een andere kan tónen:
+    // l6-trace drukt de herstelde for-kop van l6-editor-repair af, l7-trace de
+    // null-veilige keten van l7-editor-repair. Zolang het pc-menu vrije keuze
+    // gaf, kon een speler met die trace beginnen en het antwoord meenemen naar
+    // de editor. De docent vroeg om lineariteit; WP 47 zette de poort aan de
+    // doos (level n-1 vóór blad n), dit is dezelfde regel één niveau lager.
+    //
+    // De poort is een PREDICAAT over de bestaande staat: hij leidt alles af uit
+    // puzzels[*].status en voegt geen veld aan de save toe. Een save van vóór
+    // WP 48b werkt dus ongewijzigd, en wie halverwege een level hervat, staat
+    // precies waar hij stopte.
+    //
+    // Ze kijkt alleen vooruit: een puzzel die al "af" is blijft open te doen.
+    // Afgewerkt werk opnieuw bekijken is geen vooruitlopen, en de checker
+    // beoordeelt elke inzending vers (save-en-hints.md, §herbegin).
+    puzzelSpeelbaar: function (toestand, levelId, index) {
+      var defs = this.puzzelDefs(levelId);
+      var i = index | 0;
+      if (i < 0 || i >= defs.length) return false;
+      if (i === 0) return true;                       // de eerste is altijd open
+      var level = toestand && toestand.levels
+        ? toestand.levels[String(levelId)] : null;
+      if (!level) return false;
+      for (var k = 0; k < i; k++) {
+        var p = level.puzzels[defs[k].id];
+        if (!p || p.status !== "af") return false;
+      }
+      return true;
+    },
+
+    // De positie van een puzzel in de defs van zijn level (-1 als hij er niet
+    // in staat). De poort werkt op een index; de pc kent alleen een id.
+    puzzelIndex: function (levelId, puzzleId) {
+      var defs = this.puzzelDefs(levelId);
+      for (var i = 0; i < defs.length; i++) {
+        if (defs[i].id === puzzleId) return i;
+      }
+      return -1;
+    },
+
+    // Dezelfde poort, op id. Een onbekende id is niet speelbaar.
+    puzzelSpeelbaarId: function (toestand, levelId, puzzleId) {
+      return this.puzzelSpeelbaar(toestand, levelId,
+        this.puzzelIndex(levelId, puzzleId));
+    },
+
     allePuzzelsAf: function (toestand, levelId) {
       var level = toestand.levels[String(levelId)];
       if (!level) return false;

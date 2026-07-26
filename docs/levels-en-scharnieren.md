@@ -75,11 +75,11 @@ Overgenomen uit het goedgekeurde plan. Deze tabel is bindend; de
 | L | Scharnier (na week) | Herstelt (Java-bestanden) | Puzzelvormen |
 |---|---------------------|---------------------------|--------------|
 | 1 | klasse/instantie, velden, constructor, this (1) | `Voorwerp`, `Geitje` | herstel constructor; schrijf `Geitje` uit de notities; verklaar blauwdruk/doos |
-| 2 | signaturen: return vs void, param/lokaal (2) | `Speler` | herstel signaturen; Parsons-methode; trace shadowing |
+| 2 | signaturen: return vs void, param/lokaal (2) | `Speler` | Parsons-methode; herstel signaturen; trace shadowing |
 | 3 | voorwaarden: validatie ×3, cascade, &&/\|\|/! (2) | `Speler.setLevenspunten`, `Gevecht` | herstel clamp; vind-de-fout && vs \|\|; trace cascade |
 | 4 | referenties: twee pijlen één doos, null (3) | `Kamer`, `Spel.verbindKamers` | herstel buur-bedrading; trace aliasing; verklaar null |
 | 5 | lus-romp + patroonkeuze (4) | lus-methoden (tel/opbouw/filter/uiterste) | schrijf 2 lussen uit de notities; Parsons string-builder; welke patroonkaart |
-| 6 | index & off-by-one, welke lus (5) | `Kamer.verwijderVoorwerp`, `Gevecht`-rondes | herstel off-by-one; trace indices; vind-de-fout luskeuze |
+| 6 | index & off-by-one, welke lus (5) | `Kamer.verwijderVoorwerp`, `Gevecht`-rondes | herstel de verwijder-lus (grens óf luskeuze); trace indices; vind-de-fout luskeuze |
 | 7 | zoeken + dubbele pijl (6) | `Spel.zoekGeitje`, endgame-keten | schrijf zoeklus die `Geitje`/null teruggeeft; herstel null-veilige getter-keten; trace keten |
 
 De klassenamen in de kolom "herstelt" zijn identiek aan de klassenlijst in
@@ -156,6 +156,40 @@ volgt, hoort in die notitie te staan: `MAX_LEVENSPUNTEN` in level 3 (variant B
 wist de constante), `int` en `Voorwerp` in level 5 (WP 30), de lussoort in de
 levels 5, 6 en 7, de vier setters in level 4, de drie schakels van de keten in
 level 7.
+
+## Puzzelvolgorde binnen een level
+
+Bindend sinds WP 48b, op dezelfde vraag van de docent die WP 47 de poort aan de
+doos gaf: *"Er moet wel gezorgd worden dat het oplossen van de code puzzels
+lineair gebeurt."* WP 47 legde de volgorde tussen de hoofdstukken vast; deze
+regel legt ze binnen een hoofdstuk vast.
+
+- **De volgorde van `puzzels[]` in `js/levels/levelN.js` is de speelvolgorde.**
+  Puzzel k is speelbaar zodra de puzzels 0..k-1 op `af` staan
+  (`AL.levels.puzzelSpeelbaar`, DOM-vrij en headless getest). Het pc-menu toont
+  een wachtende taak gedoofd met het plaatje "wacht"; klik en cijfertoets doen
+  niets behalve de statusregel uitleggen waarom.
+- **De poort kijkt alleen vooruit.** Een taak die `af` staat, blijft opnieuw te
+  openen — nakijken of overdoen is geen vooruitlopen, en de checker beoordeelt
+  elke inzending vers (`save-en-hints.md`).
+- **De poort staat in de staat, niet naast de staat.** Ze wordt uitgerekend uit
+  `levels[n].puzzels[*].status`; er komt geen veld in de save bij, en een save
+  van vóór WP 48b hervat gewoon op de plaats waar de speler stopte.
+- **Wat de oplossing van een andere puzzel tóónt, komt erná.** Dat is de reden
+  dat de poort er is. `l6-trace` drukt `for (int i = 0; i < voorwerpen.size();
+  i++)` af — teken voor teken de herstelde kop van `l6-editor-repair` variant A
+  — en `l7-trace` toont de null-veilige keten van `l7-editor-repair` variant A;
+  allebei staan ze dus achteraan. In level 2 werkt het andersom: het
+  editor-fragment draagt `zoek` ongeschonden, en die negen regels zijn
+  woordelijk de stroken van `l2-parsons`, dus daar staat de **Parsons vooraan**.
+  Dat is de enige plaats waar dit level de regel kan halen, en de reden dat de
+  leveltabel hierboven voor level 2 "Parsons-methode; herstel signaturen" zegt.
+  De pin ligt in `test/test-level2.mjs`, `test-level6.mjs` en `test-level7.mjs`.
+- **Een titel verklapt de fout niet.** De kop van een editor-puzzel noemt wát er
+  hersteld wordt, niet wát er mis is: hij staat in het menu vóór de speler de
+  code ziet, en bij twee varianten is elke fout-benoeming de helft van de tijd
+  een leugen. "Kamer.java — herstel de off-by-one" was daarom fout op allebei de
+  manieren en heet sinds WP 48b "herstel de verwijder-lus".
 
 ## Toetsritme
 

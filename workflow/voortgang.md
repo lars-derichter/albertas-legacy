@@ -485,7 +485,7 @@ Entry: `workflow/47-poort-aan-de-doos.md` · commit: `f5bb77d`
 
 ### - [x] WP 48 — Notities als spec
 
-Entry: `workflow/48-notities-als-spec.md` · commit: (nog in te vullen)
+Entry: `workflow/48-notities-als-spec.md` · commit: `3585163`
 
 - [x] Zeven briefA's naar steno-spec (klassekaart op bladzijde 1,
       schadelijst op bladzijde 2); spoilers uit briefB's (l3 `||`/`&&`,
@@ -515,6 +515,56 @@ Entry: `workflow/48-notities-als-spec.md` · commit: (nog in te vullen)
 - [x] QC: 432/432 headless, lint-scene/check-assets/check-walkthrough/
       check-docpaden schoon, javac + verboden-grep schoon, smokes
       46/36/53/104 groen, screenshots wp48-* in test-results/
+
+### - [x] WP 48b — Puzzelvolgorde binnen een level
+
+Entry: `workflow/48b-puzzelvolgorde.md` · commit: (nog in te vullen)
+
+Ingelast door de manager ná de adversariële pas van WP 48: die pas vond
+dat `l6-trace` en `l7-trace` de modeloplossing van hun eigen hoofdstuk
+afdrukken terwijl `kies()` de volgorde niet poortte. Zelfde vraag van de
+docent als WP 47, één niveau lager.
+
+- [x] Poort in de logica: `puzzelSpeelbaar(toestand, levelId, index)` +
+      `puzzelIndex` + `puzzelSpeelbaarId` in `js/logic/levels.js`.
+      Predicaat over de bestaande staat — geen veld erbij in de save, dus
+      een oude save hervat gewoon; ze kijkt alleen vooruit (afgewerkte
+      taken blijven heropenbaar)
+- [x] Het pc-menu consumeert de poort: wachtende taak gedoofd met het
+      plaatje `wacht` + `aria-disabled`, nieuwe strings `pc.statusWacht`
+      en `pc.menuVergrendeld`, CSS `.pc-menu-status-wacht` in het
+      bestaande `pc-menu-status-*`-patroon. De poort zit in `kies()`
+      (klik, cijfertoets en debug-haak lopen daar alle drie door); de
+      statusregel onder het menu zegt waarom er niets gebeurt
+- [x] Volgorde per level nagekeken (tabel in de entry). Zes van de zeven
+      stonden al goed; alleen **level 2** herschikt naar `parsons,
+      editor-repair, trace` — het editor-fragment toont `zoek`
+      ongeschonden en dat zijn woordelijk de stroken van `l2-parsons`
+- [x] `l6.repairTitel` "herstel de off-by-one" → "herstel de
+      verwijder-lus": de oude titel verklapte variant A en loog tegen
+      variant B, en stond in het menu vóór de eerste regel code
+- [x] Tests: zes poort-tests in test-levels (waarheidstabel,
+      heropenen, randgevallen, JSON-rondreis), volgorde-pins in
+      test-level2/6/7 mét het letterlijke fragment; smoke-pc kreeg het
+      vergrendelde menu, de dode cijfertoets, de dode klik en het
+      één-voor-één ontgrendelen, plus het hervatten mid-hoofdstuk na een
+      herlaad. smoke-pc sprong over `l0-editor-write`
+      heen en lost hem nu op; de twee variatie-controles
+      (`herstelVarianten`, `variantCode`) krijgen de testhaak
+      `ontgrendelTot` (directe state-manipulatie, geen spelpad, zoals
+      `zetVoortgangKlaar` in WP 47); full-playthrough en smoke-browser
+      ongewijzigd
+- [x] Docs mee: levels-en-scharnieren §"Puzzelvolgorde binnen een level"
+      + leveltabel (rij 2 en 6), spelontwerp-legacy §"De gesimuleerde pc"
+      (het menu stond er niet in) + stap 4, save-en-hints (de save draagt
+      geen poortvelden); walkthrough deel 1 én deel 2 (level 2 omgewisseld
+      en hernummerd, l6-kop hernoemd, stap 4 beschrijft de poort). Beide
+      PDF's herbouwd — deel 2 groeit van 190 naar 214 KB bij gelijk
+      paginatal, gemeten toolchain-effect (Courier New ontbreekt hier,
+      Liberation Mono is de metrisch gelijke terugval), geen inhoud
+- [x] QC: **441/441** headless, lint-scene/check-assets/check-walkthrough
+      (276)/check-docpaden schoon, smokes 42/46/40/58/104 groen,
+      screenshots `wp48b-menu-vergrendeld(-l0).png` in test-results/
 
 ### - [ ] WP 49 — Slot en PR
 

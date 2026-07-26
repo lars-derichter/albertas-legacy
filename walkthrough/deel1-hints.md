@@ -72,8 +72,11 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
 3. **Ga aan de pc zitten.** Loop zelf naar de werkhoek in het oosten en typ
    `ga zitten`. Daar werk je aan haar Java-code. Kwijt? Typ `?` — zolang er een
    hoofdstuk open staat, wijst de hint je naar de pc.
-4. **Los de puzzels op.** Meestal één editor-puzzel en twee terminal-puzzels
-   per level. Alle drie af? Dan is dat hoofdstuk van Alberta's spel hersteld.
+4. **Los de puzzels op, van boven naar onder.** Meestal één editor-puzzel en
+   twee terminal-puzzels per level. Het menu geeft ze één voor één vrij: wat nog
+   niet aan de beurt is, staat gedoofd met "wacht" ernaast en reageert niet op
+   je klik of cijfertoets. Een taak die je al af hebt, mag je wél opnieuw
+   openen. Alle drie af? Dan is dat hoofdstuk van Alberta's spel hersteld.
 5. **Keer terug.** De pc sluit (`Esc`), je voortgang wordt bewaard, en je staat
    weer op de zolder, klaar voor het volgende fragment. Ga je daarna nog eens
    zitten terwijl dat hoofdstuk al hersteld is, dan blijft de pc dicht en zegt
@@ -141,7 +144,15 @@ Trechters erin (de parameters), een goot eruit (het returntype) — of niets
 eruit (`void`). En drie soorten dozen om waarden in te bewaren: attribuut,
 parameter, lokale variabele.
 
-**Puzzel 1 — herstel de signaturen van `Speler`.** De koppen zijn tot pap
+**Puzzel 1 — Parsons: orden de zoekmethode.** Sleep de stroken in de juiste
+volgorde. Let op: één strook hoort er níét bij.
+
+- *Hint 1:* De methode begint met haar kop, werkt van boven naar onder, en
+  sluit met een accolade.
+- *Hint 2:* Eén strook geeft de verkeerde doos terug — de parameter in plaats
+  van het gevonden object. Die afleider laat je liggen.
+
+**Puzzel 2 — herstel de signaturen van `Speler`.** De koppen zijn tot pap
 doorgelopen: eentje geeft iets terug maar zegt `void`, of een trechter is
 verdwenen.
 
@@ -149,14 +160,6 @@ verdwenen.
   gaat erin, wat komt eruit?
 - *Hint 2:* Kijk naar de koppen. Eén geeft iets terug maar zegt `void`; bij een
   andere is de trechter (de parameter) verdwenen.
-
-**Puzzel 2 — Parsons: orden de zoekmethode.** Sleep de stroken in de juiste
-volgorde. Let op: één strook hoort er níét bij.
-
-- *Hint 1:* De methode begint met haar kop, werkt van boven naar onder, en
-  sluit met een accolade.
-- *Hint 2:* Eén strook geeft de verkeerde doos terug — de parameter in plaats
-  van het gevonden object. Die afleider laat je liggen.
 
 **Puzzel 3 — trace: een parameter schaduwt een attribuut.** Voorspel de twee
 getallen die verschijnen.
@@ -272,8 +275,8 @@ Toets 2 en de eindtoets, allebei. Het beeld: een lijst is een plankenbrug boven
 een ravijn. De eerste plank is nummer 0; de laatste is `size()` min één. Eén
 plank te ver en je ligt in het water.
 
-**Puzzel 1 — herstel de off-by-one in `verwijderVoorwerp`.** Een lus loopt één
-plank te ver, of het is de verkeerde soort lus.
+**Puzzel 1 — herstel de verwijder-lus.** In `verwijderVoorwerp` loopt een lus
+één plank te ver, of het is de verkeerde soort lus.
 
 - *Hint 1:* De plankenbrug: de eerste plank is 0, de laatste is `size()` min
   één. Eén plank te ver en je ligt in het water.

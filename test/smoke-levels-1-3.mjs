@@ -114,6 +114,22 @@ async function loopWestTot(page, doelX) {
   await page.waitForTimeout(90);
 }
 
+// Zet de taken vóór `puzzelId` in dat level op "af", zodat de volgorde-poort
+// van WP 48b hem doorlaat. Een expliciete testhaak (directe state-manipulatie),
+// geen spelpad: de variatie-controle onderaan wil alleen wéten welke
+// beschadigde variant een seed toont, en sinds WP 48b staat l2-editor-repair
+// achter de Parsons.
+async function ontgrendelTot(page, levelId, puzzelId) {
+  await ev(page, (arg) => {
+    const t = window.AL.debugToestand;
+    const defs = window.AL.levels.puzzelDefs(String(arg.n));
+    for (const d of defs) {
+      if (d.id === arg.id) break;
+      t.levels[String(arg.n)].puzzels[d.id].status = "af";
+    }
+  }, { n: levelId, id: puzzelId });
+}
+
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type.
 async function losPuzzelOp(page, def) {
   await ev(page, (id) => window.AL.pc.debug.kies(id), def.id);
@@ -198,6 +214,20 @@ async function speelLevel(page, n, naarFragment) {
   const defs = await ev(page, (id) =>
     window.AL.levels.puzzelDefs(id).map((d) => ({ id: d.id, type: d.type })), String(n));
   check("L" + n + ": het menu toont drie puzzels", defs.length === 3, "n=" + defs.length);
+
+  // De volgorde-poort (WP 48b): op een vers hoofdstuk is alleen de eerste taak
+  // speelbaar. In level 2 is dat de Parsons — het editor-fragment toont `zoek`
+  // ongeschonden en dat zijn precies de stroken.
+  const poort = await ev(page, (ids) =>
+    ids.map((id) => window.AL.pc.debug.speelbaar(id)), defs.map((d) => d.id));
+  check("L" + n + ": alleen de eerste taak is speelbaar, de andere twee wachten",
+    poort[0] === true && poort[1] === false && poort[2] === false,
+    poort.join(","));
+  if (n === 2) {
+    check("L2: de Parsons staat vooraan, vóór het fragment dat zijn stroken toont",
+      defs[0].id === "l2-parsons", defs.map((d) => d.id).join(","));
+  }
+
   for (const def of defs) {
     await losPuzzelOp(page, def);
     const status = await ev(page, (id) => window.AL.pc.debug.statussen()[id], def.id);
@@ -275,6 +305,7 @@ async function main() {
     for (const n of [1, 2, 3]) {
       await ev(pg, (k) => window.AL.debugStartPc(k), n);
       await pg.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
+      await ontgrendelTot(pg, n, "l" + n + "-editor-repair");
       await ev(pg, (id) => window.AL.pc.debug.kies(id), "l" + n + "-editor-repair");
       await wachtView(pg, "editor");
       uit[n] = await ev(pg, () => window.AL.pc.debug.editorCode());

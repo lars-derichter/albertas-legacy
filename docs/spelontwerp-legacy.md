@@ -145,10 +145,11 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    wijst `?` hem die: de eerste tak van de zolder-hint zegt "Het hoofdstuk dat
    je opensloeg, is nog niet hersteld. Dat werk ligt op de pc, in de werkhoek
    aan de oostkant van de zolder." (`save-en-hints.md`, §"De zolder-hint").
-4. **Los de puzzels op.** Eén editor-puzzel + twee terminal-puzzels (zie het
-   tijdsbudget in `levels-en-scharnieren.md`). Elke opgeloste puzzel:
-   `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` — "dit hoofdstuk van
-   Alberta's spel is hersteld".
+4. **Los de puzzels op, op volgorde.** Eén editor-puzzel + twee
+   terminal-puzzels (zie het tijdsbudget in `levels-en-scharnieren.md`). Het
+   menu geeft ze één voor één vrij (zie §"De gesimuleerde pc" hieronder). Elke
+   opgeloste puzzel: `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` —
+   "dit hoofdstuk van Alberta's spel is hersteld".
 5. **Keer terug.** De pc sluit (`pc:sluit`), de staat wordt opgeslagen
    (`voortgang:opgeslagen`), en de speler staat weer op de zolder, klaar voor
    het volgende fragment. Gaat hij daarna opnieuw zitten terwijl dat hoofdstuk
@@ -190,6 +191,24 @@ Het hart van het codewerk. Een DOM-overlay in VGA-stijl (zie
   fout, verklaar-in-één-zin.
 - **Parsons** (`js/pc/parsons.js`): sleep- of nummer-de-stroken-UI voor Parsons-
   puzzels, in de terminal getoond.
+
+Ervóór staat het **menu** (`js/pc/pc.js`): de drie taken van het actieve
+hoofdstuk, genummerd, met hun status ernaast (`open` / `bezig` / `af`). Het
+menu is de enige ingang tot een puzzel — klik of cijfertoets — en het bewaakt
+de volgorde.
+
+> Beslissing (WP 48b): **de taken van een hoofdstuk gaan op volgorde.** Taak k
+> is speelbaar zodra 0..k-1 op `af` staan (`AL.levels.puzzelSpeelbaar`, de
+> logica-laag; het menu consumeert het predicaat). Een wachtende taak blijft
+> zichtbaar — de speler hoort te zien wat er nog komt — maar staat gedoofd met
+> het plaatje `wacht`, en klik en cijfertoets doen niets behalve de statusregel
+> onder het menu uitleggen waarom. Een taak die `af` staat, gaat wél gewoon
+> weer open: de poort kijkt alleen vooruit. Reden: sommige puzzels tónen de
+> oplossing van een andere puzzel uit hetzelfde hoofdstuk (de trace van level 6
+> drukt de herstelde for-kop af, die van level 7 de null-veilige keten), en met
+> vrije keuze begon een speler daar. De regel en het bewijs per level staan in
+> `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"; de poort
+> voegt geen veld aan de save toe (`save-en-hints.md`).
 
 De puzzelvormen per level staan in `levels-en-scharnieren.md`; de checker-
 semantiek in `checker-contract.md`.

@@ -42,6 +42,23 @@ test("level 6 registreert zich met drie puzzels in de juiste vormen", () => {
   assert.deepEqual(defs.map((d) => d.type), ["editor", "trace", "vindfout"]);
 });
 
+// De trace toont de HERSTELDE lus-kop van de editor-puzzel, teken voor teken.
+// Dat mag — maar alleen nadat de speler die kop zelf geschreven heeft. De
+// volgorde-poort van WP 48b maakt dat hard; deze test pint de volgorde die de
+// poort moet afdwingen (docs/levels-en-scharnieren.md, §"Puzzelvolgorde binnen
+// een level").
+test("volgorde: de index-trace komt ná de reparatie waarvan ze de kop toont", () => {
+  const defs = AL.levels.puzzelDefs("6");
+  const iRepair = defs.findIndex((d) => d.id === "l6-editor-repair");
+  const iTrace = defs.findIndex((d) => d.id === "l6-trace");
+  assert.ok(iRepair < iTrace, "de trace hoort ná de editor-puzzel te staan");
+  const kop = "for (int i = 0; i < voorwerpen.size(); i++) {";
+  const traceTekst = puzzel("l6-trace").vraag(5).join("\n");
+  assert.ok(traceTekst.includes(kop), "de trace toont de herstelde kop niet meer");
+  assert.ok(puzzel("l6-editor-repair").model.includes(kop),
+    "het model draagt die kop niet meer");
+});
+
 // ===========================================================================
 // Editor-repair — verwijderVoorwerp (off-by-one / luskeuze)
 // ===========================================================================

@@ -30,6 +30,12 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
   herlaadt met het notitieboek open en het dan dichtdoet, staat weer op de plek
   waar hij het blad vond. De sim-substaat (`modus === "sim"`) wordt niet
   bewaard: de simulatie is een eindstuk, geen doorlopende voortgang.
+- **Draagt géén poortvelden.** De twee lineariteitspoorten worden uitgerekend,
+  niet opgeslagen: de doos kijkt naar `levels[n-1].afgerond` (WP 47) en het
+  pc-menu naar `levels[n].puzzels[*].status` van de taken erboven (WP 48b, zie
+  `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"). Een save van
+  vóór die pakketten laadt daardoor ongewijzigd en hervat halverwege een
+  hoofdstuk op precies de juiste taak.
 
 ### Versionering en migratie
 

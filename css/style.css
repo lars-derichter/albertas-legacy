@@ -301,6 +301,13 @@ body {
 .pc-menu-status-bezig .pc-menu-badge { color: var(--pc-amber-licht, #ffbf3a); }
 .pc-menu-status-af { color: var(--pc-groen, #52a94a); }
 .pc-menu-status-af .pc-menu-badge { color: var(--pc-groen, #52a94a); }
+/* De volgorde-poort (WP 48b): een taak die op de taken erboven wacht. Geen
+   eigen kleur — gedoofd amber, zoals een uitgegrijsde regel in een Turbo-menu,
+   en zonder de klik-cursor of de oplichtende rand van een levende regel. */
+.pc-menu-status-wacht { opacity: 0.45; cursor: default; }
+.pc-menu-status-wacht .pc-menu-badge { color: var(--pc-amber, #c98400); }
+.pc-menu-status-wacht:hover,
+.pc-menu-status-wacht:focus { background: transparent; border-color: transparent; }
 
 /* ---- Editor -------------------------------------------------------------- */
 

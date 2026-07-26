@@ -23,7 +23,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
 
   var overlay = null;
   var elHeader = null, elMenu = null, elEditor = null, elTerminal = null;
-  var elMenubalk = null, elFbalk = null;
+  var elMenubalk = null, elFbalk = null, elMenuOnder = null;
   var ctx = null;
 
   var view = "menu";            // "menu" | "editor" | "terminal"
@@ -142,9 +142,9 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     var lijst = defs();
     elMenu.innerHTML = "";
 
-    var onder = document.createElement("div");
-    onder.className = "pc-menu-onder";
-    onder.textContent = S().pc.menuOnder;
+    elMenuOnder = document.createElement("div");
+    elMenuOnder.className = "pc-menu-onder";
+    elMenuOnder.textContent = S().pc.menuOnder;
 
     var ol = document.createElement("ol");
     ol.className = "pc-menu-lijst";
@@ -152,10 +152,16 @@ globalThis.AL.pc = globalThis.AL.pc || {};
       (function (def, idx) {
         var p = t.levels[levelId].puzzels[def.id];
         var status = p ? p.status : "open";
+        // De volgorde-poort (WP 48b): puzzel k wacht op 0..k-1. Een
+        // vergrendelde regel blijft staan — de speler hoort te zien wat er nog
+        // komt — maar draagt het "wacht"-plaatje en reageert niet.
+        var vrij = globalThis.AL.levels.puzzelSpeelbaar(t, levelId, idx);
         var li = document.createElement("li");
         var btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "pc-menu-item pc-menu-status-" + status;
+        btn.className = "pc-menu-item pc-menu-status-" +
+          (vrij ? status : "wacht");
+        if (!vrij) btn.setAttribute("aria-disabled", "true");
         btn.setAttribute("data-puzzel-id", def.id);
         var titel = def.titel || def.id;
         btn.innerHTML = "";
@@ -167,7 +173,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
         naam.textContent = titel;
         var badge = document.createElement("span");
         badge.className = "pc-menu-badge";
-        badge.textContent = statusTekst(status);
+        badge.textContent = vrij ? statusTekst(status) : S().pc.statusWacht;
         btn.appendChild(nr);
         btn.appendChild(naam);
         btn.appendChild(badge);
@@ -176,7 +182,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
         ol.appendChild(li);
       })(lijst[i], i);
     }
-    elMenu.appendChild(onder);
+    elMenu.appendChild(elMenuOnder);
     elMenu.appendChild(ol);
   }
 
@@ -184,6 +190,14 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     if (status === "af") return S().pc.statusAf;
     if (status === "bezig") return S().pc.statusBezig;
     return S().pc.statusOpen;
+  }
+
+  // De onderregel van het menu is de statusregel: normaal zegt ze hoe je kiest,
+  // en na een greep naar een vergrendelde taak zegt ze waarom er niets gebeurt.
+  // Ze staat er tot het menu opnieuw getekend wordt (elke terugkeer uit een
+  // puzzel doet dat), zoals een Turbo-scherm zijn melding liet staan.
+  function meldVergrendeld() {
+    if (elMenuOnder) elMenuOnder.textContent = S().pc.menuVergrendeld;
   }
 
   function opMenuKeydown(e) {
@@ -211,6 +225,13 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     var def = vindDef(puzzelId);
     if (!def) return;
     var t = toestand();
+    // De poort zit hier en niet op de knop: klikken, de cijfertoets en de
+    // debug-haak lopen alle drie door kies(), en een `disabled`-knop zou geen
+    // klik meer geven om de speler mee te antwoorden.
+    if (!globalThis.AL.levels.puzzelSpeelbaarId(t, levelId, puzzelId)) {
+      meldVergrendeld();
+      return;
+    }
     actieveDef = def;
     actievePuzzelId = puzzelId;
     globalThis.AL.levels.markeerBezig(t, levelId, puzzelId);
@@ -398,6 +419,10 @@ globalThis.AL.pc = globalThis.AL.pc || {};
       return uit;
     },
     kies: function (id) { kies(id); },
+    speelbaar: function (id) {
+      return globalThis.AL.levels.puzzelSpeelbaarId(toestand(), levelId, id);
+    },
+    menuOnder: function () { return elMenuOnder ? elMenuOnder.textContent : ""; },
     editorCode: function () { return AL.pc.editor._huidigeCode(); },
     zetEditorCode: function (code) { AL.pc.editor._zetCode(code); },
     compileer: function () { AL.pc.editor.compileer(); },

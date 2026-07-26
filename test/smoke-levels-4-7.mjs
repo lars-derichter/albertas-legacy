@@ -138,6 +138,22 @@ async function zetVoortgangKlaar(page, tot) {
   }, tot);
 }
 
+// Zet de taken vóór `puzzelId` in dat level op "af", zodat de volgorde-poort
+// van WP 48b hem doorlaat. Dezelfde soort testhaak als zetVoortgangKlaar
+// hierboven: expliciet géén spelpad — een speler lost die taken echt op. De
+// variatie-controle onderaan wil alleen wéten welke beschadigde variant het
+// editor-fragment toont; ze speelt het hoofdstuk niet.
+async function ontgrendelTot(page, levelId, puzzelId) {
+  await ev(page, (arg) => {
+    const t = window.AL.debugToestand;
+    const defs = window.AL.levels.puzzelDefs(String(arg.n));
+    for (const d of defs) {
+      if (d.id === arg.id) break;
+      t.levels[String(arg.n)].puzzels[d.id].status = "af";
+    }
+  }, { n: levelId, id: puzzelId });
+}
+
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type.
 async function losPuzzelOp(page, def) {
   await ev(page, (id) => window.AL.pc.debug.kies(id), def.id);
@@ -205,6 +221,22 @@ async function speelLevel(page, n, naarFragment) {
   const defs = await ev(page, (id) =>
     window.AL.levels.puzzelDefs(id).map((d) => ({ id: d.id, type: d.type })), String(n));
   check("L" + n + ": het menu toont drie puzzels", defs.length === 3, "n=" + defs.length);
+
+  // De volgorde-poort (WP 48b) op een vers hoofdstuk: alleen de eerste taak is
+  // open. Dat is precies wat het lek van level 6 en 7 dichtlegt — de trace daar
+  // toont de herstelde code van de editor-puzzel erboven.
+  const poort = await ev(page, (ids) =>
+    ids.map((id) => window.AL.pc.debug.speelbaar(id)), defs.map((d) => d.id));
+  check("L" + n + ": alleen de eerste taak is speelbaar, de andere twee wachten",
+    poort[0] === true && poort[1] === false && poort[2] === false,
+    poort.join(","));
+  if (n === 6) {
+    await page.waitForTimeout(120);
+    await page.screenshot({ path: join(SCRATCH, "wp48b-menu-vergrendeld.png") });
+    check("L6: screenshot van het vergrendelde menu bewaard", true,
+      "wp48b-menu-vergrendeld.png");
+  }
+
   for (const def of defs) {
     await losPuzzelOp(page, def);
     const status = await ev(page, (id) => window.AL.pc.debug.statussen()[id], def.id);
@@ -307,6 +339,7 @@ async function main() {
     await pg.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
     await ev(pg, (k) => window.AL.debugStartPc(k), n);
     await pg.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
+    await ontgrendelTot(pg, n, "l" + n + "-editor-repair");
     await ev(pg, (id) => window.AL.pc.debug.kies(id), "l" + n + "-editor-repair");
     await wachtView(pg, "editor");
     const code = await ev(pg, () => window.AL.pc.debug.editorCode());

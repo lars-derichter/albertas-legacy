@@ -154,9 +154,19 @@ globalThis.AL = globalThis.AL || {};
     fout: S.l2.trace.fout
   };
 
+  // De Parsons staat vóór de editor, en dat is de enige plaats waar hij kan
+  // staan (WP 48b). Beide beschadigde varianten van het editor-fragment dragen
+  // `zoek` ONGESCHONDEN, en die negen regels zijn — op één inspringniveau na —
+  // woordelijk `parsons.regels` in de juiste volgorde. Zolang de editor eerst
+  // kwam, kreeg de speler de oplossing van de Parsons cadeau. Andersom lekt er
+  // niets: wie de stroken geordend heeft, ziet daarna een `zoek` die hij zelf
+  // net gebouwd heeft, en de vier signatuur-checks van de editor gaan over de
+  // koppen erboven. De regel staat in docs/levels-en-scharnieren.md,
+  // §"Puzzelvolgorde binnen een level": wat de oplossing van een andere puzzel
+  // tóónt, komt erná.
   var definitie = {
     naam: S.l2.naam,
-    puzzels: [editorRepair, parsons, trace]
+    puzzels: [parsons, editorRepair, trace]
   };
 
   var isNode = (typeof module !== "undefined" && module.exports);

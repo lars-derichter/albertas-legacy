@@ -1,7 +1,9 @@
 // smoke-pc.mjs — end-to-end rooksmaaktest van de gesimuleerde pc (WP 5). Opent
 // de ECHTE index.html met ?seed=42&dev=1 (level 0, de proefdruk), en bewijst dat
 // elke puzzelsoort speelbaar is via de DOM-overlay:
-//   - het pc-menu toont de level-0-puzzels;
+//   - het pc-menu toont de level-0-puzzels, met de volgorde-poort van WP 48b:
+//     alleen de eerste taak is open, de rest draagt "wacht" en reageert niet op
+//     klik of cijfertoets; elke opgeloste taak ontgrendelt precies de volgende;
 //   - de editor-herstelpuzzel: fout eerst → CHECK_FAIL met vriendelijke tekst,
 //     dan het model → CHECK_OK + puzzle-af;
 //   - Parsons: foute volgorde → feedback, juiste volgorde (uit de seeded shuffle)
@@ -73,6 +75,53 @@ async function main() {
   check("menu toont zeven level-0-puzzels", menuAantal === 7 && ids.length === 7,
     "n=" + menuAantal);
   check("menu bevat de editor-herstelpuzzel", ids.includes("l0-editor-repair"));
+
+  // 2b. De volgorde-poort (WP 48b): op een vers level is alleen de eerste taak
+  //     open; de zes eronder dragen het "wacht"-plaatje en reageren niet.
+  const poort = await ev(page, () => {
+    const items = [...document.querySelectorAll(".pc-menu-item")];
+    return items.map((el) => ({
+      id: el.getAttribute("data-puzzel-id"),
+      wacht: el.classList.contains("pc-menu-status-wacht"),
+      badge: el.querySelector(".pc-menu-badge").textContent,
+      aria: el.getAttribute("aria-disabled")
+    }));
+  });
+  check("poort: de eerste taak is open, de zes eronder wachten",
+    poort[0].wacht === false && poort.slice(1).every((r) => r.wacht === true),
+    poort.map((r) => (r.wacht ? "×" : "○")).join(""));
+  check("poort: een wachtende taak draagt het 'wacht'-plaatje",
+    poort[1].badge === "wacht" && poort[1].aria === "true", poort[1].badge);
+  await page.waitForTimeout(120);
+  await page.screenshot({ path: join(SCRATCH, "wp48b-menu-vergrendeld-l0.png") });
+  check("screenshot van het vergrendelde menu bewaard", true,
+    "wp48b-menu-vergrendeld-l0.png");
+
+  // Een cijfertoets op een wachtende taak doet niets — behalve de statusregel
+  // uitleggen waarom.
+  await page.focus(".pc-menu");
+  await page.keyboard.press("3");
+  await page.waitForTimeout(80);
+  const naToets = await ev(page, () => ({
+    view: window.AL.pc.debug.view(),
+    puzzel: window.AL.pc.debug.puzzelId(),
+    onder: window.AL.pc.debug.menuOnder()
+  }));
+  check("poort: de cijfertoets van een wachtende taak opent niets",
+    naToets.view === "menu" && naToets.puzzel === null,
+    "view=" + naToets.view + " puzzel=" + naToets.puzzel);
+  check("poort: de statusregel zegt waarom er niets gebeurt",
+    naToets.onder === await ev(page, () => window.AL.strings.pc.menuVergrendeld),
+    naToets.onder);
+
+  // En een echte klik erop evenmin. `force: true` is nodig omdat Playwright een
+  // knop met aria-disabled="true" niet aanklikt — een echte muis doet dat wél
+  // (aria-disabled is een signaal, geen slot), en juist dát pad hoort de poort
+  // in kies() te vangen.
+  await page.click('.pc-menu-item[data-puzzel-id="l0-parsons"]', { force: true });
+  await page.waitForTimeout(80);
+  check("poort: klikken op een wachtende taak opent niets",
+    await ev(page, () => window.AL.pc.debug.view()) === "menu");
 
   // 3. Editor-herstelpuzzel via een echte menuklik.
   await page.click('.pc-menu-item[data-puzzel-id="l0-editor-repair"]');
@@ -159,6 +208,31 @@ async function main() {
       .classList.contains("pc-menu-status-af"));
   check("het menu markeert de opgeloste puzzel als 'af'", badgeAf === true);
 
+  // 6b. De poort schuift één plaats op: de tweede taak is nu open, de derde
+  //     wacht nog. Daarna lossen we die tweede op — sinds WP 48b is dat de weg
+  //     naar de Parsons, en de vorige versie van deze test sprong eroverheen.
+  const naEerste = await ev(page, () => ({
+    write: window.AL.pc.debug.speelbaar("l0-editor-write"),
+    parsons: window.AL.pc.debug.speelbaar("l0-parsons"),
+    klasse: document.querySelector('.pc-menu-item[data-puzzel-id="l0-parsons"]')
+      .classList.contains("pc-menu-status-wacht")
+  }));
+  check("poort: de opgeloste taak ontgrendelt precies de volgende",
+    naEerste.write === true && naEerste.parsons === false &&
+    naEerste.klasse === true,
+    "write=" + naEerste.write + " parsons=" + naEerste.parsons);
+
+  await ev(page, () => window.AL.pc.debug.kies("l0-editor-write"));
+  await page.waitForFunction(() => window.AL.pc.debug.view() === "editor", null, { timeout: 5000 });
+  const modelWrite = await ev(page, () => window.AL.pc.debug.model("l0-editor-write"));
+  await page.fill(".pc-editor-invoer", modelWrite);
+  await page.click(".pc-knop-compileer");
+  await page.waitForTimeout(150);
+  const statusWrite = await ev(page, () => window.AL.pc.debug.statussen()["l0-editor-write"]);
+  check("de schrijf-puzzel staat op 'af' (de poort schuift op)", statusWrite === "af");
+  check("poort: de Parsons is nu open",
+    await ev(page, () => window.AL.pc.debug.speelbaar("l0-parsons")) === true);
+
   // 7. Parsons: foute volgorde → feedback; juiste volgorde (uit de shuffle) → af.
   await ev(page, () => window.AL.pc.debug.kies("l0-parsons"));
   await page.waitForFunction(() => window.AL.pc.debug.view() === "terminal", null, { timeout: 5000 });
@@ -211,7 +285,9 @@ async function main() {
   const naVier = await ev(page, () => window.AL.pc.debug.laatsteHint());
   check("een vierde '?' geeft hint:geen-meer", naVier === "hint:geen-meer");
 
-  // 10. Concept-behoud: typen in de editor, herladen, draft hersteld.
+  // 10. Concept-behoud: typen in de editor, herladen, draft hersteld. Meteen
+  //     het bewijs dat de poort alleen vooruit kijkt: l0-editor-write staat al
+  //     op "af" en gaat gewoon weer open.
   await ev(page, () => window.AL.pc.debug.kies("l0-editor-write"));
   await page.waitForFunction(() => window.AL.pc.debug.view() === "editor", null, { timeout: 5000 });
   const merk = "// DRAFT-MERK-4242";
@@ -225,6 +301,24 @@ async function main() {
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
   await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen), null, { timeout: 15000 });
+
+  // Hervatten midden in een hoofdstuk: de poort komt uit de save terug op de
+  // plaats waar de speler stopte. Vier taken staan af, de vijfde (l0-vindfout,
+  // waar hierboven alleen hints gevraagd zijn) is aan de beurt, de zesde wacht.
+  // En de tweede, die al af is, blijft heropenbaar.
+  const naHerladen = await ev(page, () => ({
+    statussen: window.AL.pc.debug.statussen(),
+    vindfout: window.AL.pc.debug.speelbaar("l0-vindfout"),
+    verklaar: window.AL.pc.debug.speelbaar("l0-verklaar"),
+    write: window.AL.pc.debug.speelbaar("l0-editor-write")
+  }));
+  check("poort: na herladen staat de voortgang er nog (hervatten mid-hoofdstuk)",
+    naHerladen.vindfout === true && naHerladen.verklaar === false &&
+    naHerladen.write === true,
+    "vindfout=" + naHerladen.vindfout + " verklaar=" + naHerladen.verklaar +
+    " write=" + naHerladen.write + " status=" +
+    JSON.stringify(naHerladen.statussen));
+
   await ev(page, () => window.AL.pc.debug.kies("l0-editor-write"));
   await page.waitForFunction(() => window.AL.pc.debug.view() === "editor", null, { timeout: 5000 });
   const codeNa = await ev(page, () => window.AL.pc.debug.editorCode());
