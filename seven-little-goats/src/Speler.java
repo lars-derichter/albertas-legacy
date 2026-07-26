@@ -5,7 +5,8 @@ import java.util.ArrayList;
 // De levenspunten blijven altijd tussen 0 en 20; de setter zorgt daarvoor.
 class Speler {
 
-    // Een final constante: de bovengrens van de levenspunten ligt vast op 20.
+    // Twintig is het plafond. Genoeg om een paar missers te overleven, te weinig
+    // om de rivier te halen zonder onderweg iets te eten.
     private final int MAX_LEVENSPUNTEN = 20;
 
     private int levenspunten;
@@ -22,10 +23,9 @@ class Speler {
         return levenspunten;
     }
 
-    // Zet de levenspunten, maar nooit onder 0 en nooit boven het maximum.
-    // Zo kan genezen niet boven 20 gaan en schade niet onder 0. Dit is de
-    // klemmende setter: twee losse controles die de waarde binnen de grenzen
-    // duwen voor ze wordt opgeslagen.
+    // Nooit onder 0, nooit boven het plafond. Anders eet ze zich boven twintig
+    // aan koeken, of staat er na de laatste klap een negatief getal in de
+    // statusregel terwijl ze al dood is.
     void setLevenspunten(int nieuweWaarde) {
         if (nieuweWaarde < 0) {
             nieuweWaarde = 0;
@@ -48,13 +48,13 @@ class Speler {
         return inventaris;
     }
 
-    // Voegt een voorwerp toe aan de inventaris.
+    // In haar mand ermee.
     void pak(Voorwerp voorwerp) {
         inventaris.add(voorwerp);
     }
 
-    // Zoekt een voorwerp in de inventaris op naam. Geeft het voorwerp terug, of
-    // null als de speler het niet bij zich heeft. De klassieke zoeklus.
+    // Het voorwerp met die naam, of null als ze het niet bij zich draagt. null
+    // betekent hier "niet in haar mand", niet "bestaat niet".
     Voorwerp zoek(String gezochteNaam) {
         for (int i = 0; i < inventaris.size(); i++) {
             Voorwerp huidig = inventaris.get(i);
@@ -65,14 +65,14 @@ class Speler {
         return null;
     }
 
-    // Handig kortschrift: heeft de speler dit voorwerp bij zich?
+    // Kortschrift; ik vraag dit overal: mandje, koek, mantel, schaar.
     boolean heeft(String gezochteNaam) {
         return zoek(gezochteNaam) != null;
     }
 
-    // Verwijdert één voorwerp uit de inventaris (na eten of ruilen). Zoekt eerst
-    // de index in de lus en verwijdert dan op die index. Geeft true als er iets
-    // verwijderd is.
+    // Eén exemplaar weg: na een koek of na de ruil met de raaf. Eén, niet alle —
+    // ze draagt er twee van het plein mee en de raaf krijgt er maar één. true
+    // als er echt iets verdween.
     boolean verwijder(String teVerwijderenNaam) {
         for (int i = 0; i < inventaris.size(); i++) {
             if (inventaris.get(i).getNaam().equals(teVerwijderenNaam)) {
@@ -83,8 +83,8 @@ class Speler {
         return false;
     }
 
-    // Telt hoeveel wapens de speler draagt: voorwerpen met een kracht boven 0.
-    // De tel-patroonkaart: een teller die bij 0 begint en per treffer ophoogt.
+    // Voor de statusregel: hoeveel wapens draagt ze? Alles met kracht boven 0,
+    // dus het keukenmes wel en het mandje niet.
     int telWapens() {
         int aantal = 0;
         for (int i = 0; i < inventaris.size(); i++) {
@@ -95,9 +95,8 @@ class Speler {
         return aantal;
     }
 
-    // Zoekt het voorwerp met de grootste kracht, of null bij een lege inventaris.
-    // De uiterste-patroonkaart: onthoud de sterkste tot nog toe en vergelijk elk
-    // volgend voorwerp daarmee.
+    // Waarmee ze het hardst uithaalt, of null als haar mand leeg is. Ook voor de
+    // statusregel — ik wil dat ze vóór de rivier ziet wat ze in handen heeft.
     Voorwerp sterksteVoorwerp() {
         Voorwerp sterkste = null;
         for (int i = 0; i < inventaris.size(); i++) {

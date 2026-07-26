@@ -1,7 +1,7 @@
-// Een Tegenstander is iets waar de speler tegen vecht: de jachthond in de molen
-// of de jonge wolf aan de rivier.
-// De aanvallen liggen op voorhand vast in een array (het aanvalspatroon): één
-// waarde per ronde. Zo is elk gevecht deterministisch, zonder toeval.
+// Waar ze tegen vecht: de jachthond in de molen, de jonge wolf aan de rivier.
+// De klappen liggen op voorhand vast, één waarde per ronde. Geen dobbelsteen —
+// wie meetelt en rekent haalt het, wie er blind op ramt niet. Zo hoort het te
+// voelen.
 class Tegenstander {
 
     private String naam;
@@ -38,7 +38,7 @@ class Tegenstander {
         return levenspunten;
     }
 
-    // Zet de levenspunten, maar nooit onder 0 (dan is de tegenstander dood).
+    // Nooit onder 0; anders staat de wolf op -3 nog te grommen aan de oever.
     void setLevenspunten(int nieuweWaarde) {
         if (nieuweWaarde < 0) {
             nieuweWaarde = 0;

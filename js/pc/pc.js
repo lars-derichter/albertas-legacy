@@ -92,9 +92,20 @@ globalThis.AL.pc = globalThis.AL.pc || {};
 
   function toestand() { return ctx.getToestand(); }
 
+  // De kop van het scherm draagt de échte hoofdstuknaam ("Level 3 —
+  // Voorwaarden: de deur op slot"), niet enkel "Level 3". Tot WP 31 werd
+  // lN.naam alleen voor testlevel 0 gelezen en was hij voor de zeven echte
+  // levels dode data: de speler kreeg nergens te zien welk scharnier hij aan
+  // het oefenen was. De naam staat in de strings (AL.strings.lN.naam) en is
+  // woord voor woord dezelfde als de kop van bladzijde 1 van het spread.
+  //
+  // De langste kop is "Alberta's pc — Level 7 — Zoeken en de dubbele pijl:
+  // waar het jongste zit": 72 tekens. De kopbalk is 920 px breed op haar
+  // maximum en zet ± 78 tekens per regel, dus dat past; op smallere schermen
+  // kapt de CSS af met een beletselteken (zie .pc-header in css/style.css).
   function levelNaam() {
-    if (levelId === "0") return S().l0 ? S().l0.naam : "Level 0";
-    return "Level " + levelId;
+    var s = S()["l" + levelId];
+    return (s && s.naam) ? s.naam : "Level " + levelId;
   }
 
   // ---- Openen / sluiten ----------------------------------------------------

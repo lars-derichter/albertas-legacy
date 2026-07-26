@@ -28,14 +28,17 @@ for (const naam of readdirSync(spritesDir)) {
 }
 const sprites = globalThis.AL.sprites;
 
-// De maten uit art-stijlgids.md, §Sprite-specificaties.
+// De maten uit art-stijlgids.md, §Sprite-specificaties. In WP 35 zijn ze
+// aangehaald tot vlak boven de werkelijke maat: een bovengrens van 32 × 32 voor
+// een monitor van een halve meter bewaakte niets, en dat is precies hoe de
+// pc-sprite anderhalve meter breed kon worden.
 const SPEC = {
   speler: { b: 16, h: 32 },
-  notitieboek: { b: 24, h: 16 },
-  pc: { b: 32, h: 32 },
+  notitieboek: { b: 20, h: 12 },
+  pc: { b: 20, h: 18 },
   doos: { b: 24, h: 20 },
   "broncode-doos": { b: 28, h: 24 },
-  stoel: { b: 20, h: 28 }
+  stoel: { b: 14, h: 20 }
 };
 
 test("elke sprite uit de spec bestaat en heeft een sub-palet", () => {

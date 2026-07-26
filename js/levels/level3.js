@@ -1,8 +1,9 @@
-// level3.js — "Level 3 — De knikkerbaan" (scharnier 3: voorwaarden — validatie,
-// cascade, && / || / !). Herstelt Speler.setLevenspunten en raakt aan Gevecht.
-// Puzzelvormen uit de leveltabel (docs/levels-en-scharnieren.md): herstel de
-// klemmende validatie, vind de && / || -fout in een Gevecht-achtige poortcheck,
-// en voorspel de uitkomst van een validatie-cascade op een randwaarde.
+// level3.js — "Level 3 — Voorwaarden: de deur op slot" (scharnier 3:
+// voorwaarden — validatie, cascade, && / || / !). Herstelt
+// Speler.setLevenspunten en raakt aan Gevecht. Puzzelvormen uit de leveltabel
+// (docs/levels-en-scharnieren.md): herstel de klemmende validatie, vind de && /
+// || -fout in een Gevecht-achtige poortcheck, en voorspel de uitkomst van een
+// validatie-cascade op een randwaarde.
 //
 // Het editor-fragment is een byte-getrouw uittreksel van
 // seven-little-goats/src/Speler.java (setLevenspunten; tools/check-assets bewaakt
@@ -108,7 +109,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 2,
     naam: S.l3.naam,
     puzzels: [editorRepair, vindfout, trace]
   };

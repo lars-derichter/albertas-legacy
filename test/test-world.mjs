@@ -113,12 +113,14 @@ test("kijk beschrijft de huidige hoek; onderzoek notitieboek werkt", () => {
     [strings.datZieJeHierNiet]);
 });
 
-test("de zolder-hint hoort bij de hoek en telt NIET in hintsTotaal", () => {
+test("de zolder-hint zegt wat je nu te doen staat en telt NIET in hintsTotaal", () => {
   const t = world.nieuw();
   const r = world.hint(t);
-  assert.deepEqual(r.tekst, [strings.scenes["zolder-west"].hint]);
+  // Verse staat, in de westhoek: het eerste blad ligt hier, in het notitieboek.
+  assert.deepEqual(r.tekst, [strings.hints.fragmentHier["zolder-west"]]);
   assert.ok(r.effecten.includes("hint:1"));
   assert.equal(t.hintsTotaal, 0);
+  // De volledige beslisboom staat in test-world-hub.mjs.
 });
 
 test("herbegin vraagt bevestiging en geeft pas dan het effect", () => {

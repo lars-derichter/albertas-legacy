@@ -99,10 +99,18 @@ async function main() {
   }
 
   const browser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
   const context = await browser.newContext();
   const page = await context.newPage();
+
+  // Alles wat de pagina als waarschuwing logt. De laatste controle hieronder
+  // leest deze lijst; de rest van de test raakt hem niet aan.
+  const waarschuwingen = [];
+  page.on("console", (m) => {
+    if (m.type() === "warning") waarschuwingen.push(m.text());
+  });
 
   console.log("Rooksmaaktest — The Legacy of Alberta\n");
 
@@ -170,6 +178,19 @@ async function main() {
     (await state(page)).sceneId === "zolder-oost",
     "scene=" + (await state(page)).sceneId);
 
+  // 5b. De '?'-hint volgt de voortgang, niet de kamer. In de werkhoek, met nog
+  //     niets ontgrendeld, hoort hij naar het notitieboek in de westhoek te
+  //     wijzen — de oude vaste hint van deze hoek zei hier "ga aan de pc zitten".
+  await typCommando(page, "?");
+  const sHint = await state(page);
+  const hintTekst = sHint.vensterRegels.join(" ");
+  const verwachtGinder = await page.evaluate(
+    () => window.AL.strings.hints.fragmentGinder["zolder-west"].slice(0, 24));
+  check("'?' in de werkhoek wijst naar het nog niet gevonden notitieboek",
+    hintTekst.includes(verwachtGinder), hintTekst);
+  check("de zolder-hint telt niet in hintsTotaal", sHint.hintsTotaal === 0,
+    "hintsTotaal=" + sHint.hintsTotaal);
+
   // 6. Terug naar de westhoek en het notitieboek openen → fragment + spread.
   await typCommando(page, "ga west");
   await typCommando(page, "ga west");
@@ -233,6 +254,15 @@ async function main() {
   //     te maken. Dat laatste is zonder speaker alleen te controleren aan de
   //     meestergain — en die moet nul zijn, niet "bijna nul": er staan op dat
   //     moment noten in de toekomst gepland die niet meer in te trekken zijn.
+  //
+  //     De klik hieronder is niet decoratief. Sinds WP 37 start de geluidslaag
+  //     pas bij een gebruikersactie, en de reload van punt 9 heeft er nog geen
+  //     gehad — een herladen tabblad is voor de browser een verse pagina. Dat
+  //     dit een múisklik is en geen toets, is meteen de regressie: vóór WP 37
+  //     ontgrendelde alleen het toetsenbord. Op deze desktopcontext (geen
+  //     aanraakscherm) registreert js/touch.js geen click-handler, dus de klik
+  //     raakt het spel verder niet aan.
+  await page.click("#scherm");
   await page.waitForFunction(
     () => window.AL.sound.huidigBed() === "ambient-zolder",
     null, { timeout: 15000 });
@@ -313,6 +343,36 @@ async function main() {
     sAf.vensterOpen === false && sAf.openingActief === false &&
     sAf.seed === sVers.seed, "venster=" + sAf.vensterOpen +
     " seed=" + sAf.seed);
+
+  // ---- De terugvalkamer klaagt hoorbaar (WP 38) --------------------------
+  // Een scène-id die nergens bestaat — een typfout in een exit, een bestand dat
+  // niet in index.html staat — gaf vroeger een lege bruine kamer en verder
+  // niets: geen fout, geen spoor, alleen een speler die zich afvraagt waar hij
+  // is. De engine mag daar niet op crashen (dat blijft zo), maar ze hoort het
+  // wél te zeggen. Hier halen we een échte kamer weg en lopen we er naartoe.
+  await page.evaluate(() => {
+    window.__alScene = window.AL.scenes["zolder-midden"];
+    delete window.AL.scenes["zolder-midden"];
+  });
+  const warnVoor = waarschuwingen.length;
+  await typCommando(page, "ga oost");
+  await page.waitForTimeout(120);
+  const sVal = await state(page);
+  const warnNa = waarschuwingen.slice(warnVoor);
+  check("een ontbrekende scène laat het spel niet crashen",
+    sVal.modus === "zolder" && sVal.sceneId === "zolder-midden",
+    "modus=" + sVal.modus + " scene=" + sVal.sceneId);
+  check("de terugvalkamer tekent (canvas niet leeg)",
+    await canvasNietLeeg(page));
+  check("een ontbrekende scène meldt zich met haar id in de console",
+    warnNa.some((w) => w.includes("zolder-midden") && w.includes("scène")),
+    "waarschuwingen=" + JSON.stringify(warnNa));
+
+  // De kamer terugzetten, zodat een latere uitbreiding van deze test niet in
+  // een half gesloopte zolder begint.
+  await page.evaluate(() => {
+    window.AL.scenes["zolder-midden"] = window.__alScene;
+  });
 
   await browser.close();
 

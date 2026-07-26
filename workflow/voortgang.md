@@ -1,19 +1,20 @@
-# Voortgang — opwaardering van presentatie en verhaal
+# Voortgang
 
-Dit is de levende checklist van het tweede programma op deze repo (zie
-`workflow/15-opwaardering-kickoff.md` voor de opdracht, de beslissingen en het
-volledige plan). Anders dan de genummerde entries, die chronologisch zijn en
-blijven staan zoals ze geschreven zijn, verandert dít bestand mee met het werk.
+Dit is de levende checklist van deze repo. Het actieve programma staat
+bovenaan; afgeronde programma's blijven eronder staan als geschiedenis.
+Anders dan de genummerde entries, die chronologisch zijn en blijven staan
+zoals ze geschreven zijn, verandert dít bestand mee met het werk.
 
 **Werkt een sessie hier na een crash verder?** Lees dan in deze volgorde:
 
 1. Dit bestand — waar staat het programma, wat is het volgende pakket. 2.
-`workflow/15-opwaardering-kickoff.md`, §Beslissingen — waarom het zo is. 3.
-Dezelfde entry, Bijlage B — het volledige plan met de QC-poort per pakket. 4.
-`CLAUDE.md`, §Werkafspraken — hoe er gecommit en gelogd wordt.
+`workflow/28-kwaliteitsreview-kickoff.md`, §Beslissingen en Bijlage B — het
+volledige plan met de QC-poort per pakket. 3. `CLAUDE.md`, §Working
+agreements — hoe er gecommit en gelogd wordt.
 
 Daarna: `node --test test/test-*.mjs` en `git log --oneline -5` om te zien of de
-laatste commit compleet is.
+laatste commit compleet is. Branch van het actieve programma:
+`claude/game-quality-review-ynqfkq`; na elk commit volgt onmiddellijk een push.
 
 ## Conventies in dit bestand
 
@@ -22,6 +23,452 @@ laatste commit compleet is.
   het schrijven van dit bestand is de eigen hash nog niet bekend. Staat er
   "(nog in te vullen)" bij het laatst afgewerkte pakket, dan is dat normaal.
 - Een pakket is pas `[x]` als zijn QC-poort geslaagd is. Niet eerder.
+
+# Programma 3 — kwaliteitsreview (actief)
+
+Kickoff en volledige defectenlijst: `workflow/28-kwaliteitsreview-kickoff.md`.
+Manager reviewt en commit; Opus 5-workers voeren uit. Vertrekpunt: 328
+headless tests groen, zes rooksmaaktesten (255 controles), lint en
+check-assets schoon, op `main` commit `689634b`.
+
+Volgorde: 29 en 30 (taal) eerst, dan 31 (namen), dan het zichtbare werk
+32-36, dan 37 (geluid), 38-39 (docs en walkthrough), 40 (slot). Binnen
+die blokken is de volgorde bindend zoals genummerd.
+
+### - [x] WP 28 — Kickoff en programma
+
+Entry: `workflow/28-kwaliteitsreview-kickoff.md` · commit: `c2d0919`
+
+- [x] Kickoff-entry met prompt, verkenning, Q&A, beslissingen en het
+      goedgekeurde plan als Bijlage B
+- [x] Dit bestand herschikt: programma 3 bovenaan als levende checklist
+- [x] QC: markdown op 80 tekens (in tekens gemeten, geen enkele regel
+      erover), geen codewijzigingen, tests ongewijzigd groen (328/328)
+
+### - [x] WP 29 — Taal en verhaal (proza)
+
+Entry: `workflow/29-taal-en-verhaal.md` · commit: `e84b723`
+
+- [x] Wolf-zin herformuleerd op de drie gespiegelde plaatsen +
+      strings.js:47 ("De wolf slokte er zes op.")
+- [x] Verhaal-bug jongste geitje opgelost: het blijft in de klokkast,
+      het bericht bereikt jou (drie plaatsen gelijk)
+- [x] "weg gesleten", "de een/de ander", "dit keer", "wiret", "De
+      spanning stijgt.", hint-antecedent, mes-zin, eet/drink,
+      "(praat)", commentaar-typo, trailing comma
+- [x] Docs mee: spelontwerp-seven-little-goats.md; walkthrough citeert
+      geen enkele gewijzigde zin (gegrept)
+- [x] QC: 328/328 groen incl. sim-cross-check met live `java` én een
+      extra levende diff over alle gewijzigde regels (0 verschillen);
+      javac-poort schoon; verboden-grep leeg
+
+### - [x] WP 30 — Alberta's stem in de Java-broncode
+
+Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: `14987a8`
+
+- [x] Doceercommentaar in seven-little-goats/src/*.java (incl. de drie
+      Test*-klassen) herschreven naar Alberta's notitieboekstem;
+      klaslokaal-"we" en "scharnier 7" weg; diff bevat uitsluitend
+      commentaarregels
+- [x] js/levels/level5.js en level7.js notitie-register hersteld (level 7
+      verklapt hintfase 3 niet meer)
+- [x] Manager-extra: zelfde jargon uit js/sim/goats-world.js:138
+- [x] QC: javac exit 0 + verboden- en jargon-grep leeg, 328/328 groen,
+      check-assets driftvrij
+
+### - [x] WP 31 — Levelnamen en spreads
+
+Entry: `workflow/31-levelnamen-en-spreads.md` · commit: `54f61d3`
+
+- [x] Zeven nieuwe hoofdstuktitels (scharnierterm vooraan, dan het beeld
+      uit het verhaal) in strings.js (spread-titel + `lN.naam` +
+      bestandskoppen), js/levels/level*.js, docs/levels-en-scharnieren.md,
+      walkthrough deel1 én deel2
+- [x] Bladzijde 2 draagt de losse cursustermen, zonder de term van de
+      titel te herhalen
+- [x] pc.js toont de levelnaam echt (`S().lN.naam`, voor elk level);
+      .pc-header kapt af met een beletselteken in plaats van om te breken
+- [x] Week-clash opgelost: het notitieboek zegt week 1, zoals de voet van
+      het level-1-spread en de koppeltabel
+- [x] Spread-lengtetest: `test/test-spreads.mjs` rekent de bladspiegel na
+      (24 regels op bladzijde 1, 19 naast de schets) én bewaakt dat geen
+      regel breder wordt dan de kolom van 136 px
+- [x] Bijvangst: `artikel.getCategorie().getNaam()` (174 px) liep van het
+      blad in de brief van level 7 — in twee stukken gezet
+- [x] QC: 337/337 groen incl. de nieuwe test, lint-scene en check-assets
+      schoon
+
+### - [x] WP 32 — Lopen: uitgangen, muren en collisie
+
+Entry: `workflow/32-lopen-uitgangen-en-collisie.md` · commit: `399906a`
+
+- [x] Nieuwe DOM-vrije module `js/loopveld.js` (`AL.loopveld`): walkboxes min
+      blokken, uitgangszones, randdetectie. Niet in `js/logic/` — het is
+      scène-meetkunde en geen wereldlogica, en ze geeft geen
+      `{tekst, effecten}` terug; `js/parser.js` is het precedent
+- [x] `exits: [{richting, rect}]` per scène: `zolder-midden` noord boven aan de
+      trapcorridor, `overloop` zuid in het trapgat. De zone vuurt bij het
+      binnenkomen en roept dezelfde `AL.world.betreed` aan als een randkruising
+      — de logica is onveranderd
+- [x] `blokken: [[x,y,b,h]]` per scène: kist en dozenstapels (west), bureau +
+      stoel (oost), stapel en de twee doos-sprites (doorgang), de drie torens en
+      de doos-sprite (overloop). Geschilderd blokkeert tot achteraan (de
+      achtergrond kan de speler niet afdekken), een sprite alleen zijn onderkant
+- [x] Walkboxen versmald waar een muur geschilderd staat: `zolder-west` x6–319,
+      `zolder-oost` x0–311, `overloop` x6–313. Daarmee vuurt de randkruising
+      alleen nog waar écht een kamer ligt
+- [x] Lopen tegen een muur of een voorwerp is stil: de modale weigering "Die
+      kant kan je niet op" blijft alleen op het getypte `ga <richting>`. De
+      cooldown-machinerie eromheen (`KANT_COOLDOWN`) kon weg
+- [x] `entries.vanNoord` van de doorgang naar y132 (twee treden onder de zone),
+      anders stuitert wie van boven komt meteen terug
+- [x] De leuning op de overloop liep als één balk over het hele trapgat — een
+      hek voor de uitgang. Nu twee stukken met vier stijlen en een opening van
+      x148 tot x175, precies de uitgangszone
+- [x] `tools/lint-scene.mjs`: blokken/exits keuren (ariteit, grenzen), elke
+      verbinding op de zolderkaart moet een mechanisme hebben, geen strook tegen
+      een rand zonder kamer, geen entry in een blok of in een zone, elke zone
+      moet een beloopbare pixel hebben. "koffiemok" uit `GEKENDE_ITEMS`
+- [x] `docs/scene-schema.md` en `docs/sprite-schema.md` geschreven (allebei
+      sinds WP A geciteerd en nooit bestaand); `engine-architectuur.md` §De
+      vloer + laadvolgorde + bestandskaart + `betreed`-tag, en
+      `spelontwerp-legacy.md` §De zolder-hub bijgewerkt
+- [x] `test/test-loopveld.mjs` (16 keuringen, incl. een vloedvulling die van
+      elke entry naar elke uitgang loopt) en `test/smoke-walk.mjs` (25
+      controles: élke kamerovergang te voet met alleen pijltjes, botsen tegen
+      kist, dozen, bureau, torens en muur, en de getypte navigatie ongewijzigd)
+- [x] Hiermee is de open post uit WP H gesloten: de walkboxen zijn herzien en de
+      speler loopt niet meer door de in de achtergrond gebakken kist en dozen
+- [x] QC: **353/353 groen** (16 nieuw), `lint-scene` en `check-assets` schoon,
+      smoke-browser 36/36, smoke-walk 25/25, smoke-full-playthrough 94/94,
+      smoke-pc 32/32; verse screenshots van de vier kamers in `test-results/`
+      (`wp32-*.png`)
+
+### - [x] WP 33 — Flow en hints op de zolder
+
+Entry: `workflow/33-flow-en-hints.md` · commit: `01329de`
+
+- [x] `?`-hint progress-aware: `world.hint` vertakt op `levelActief` +
+      `volgendFragment` + `FRAGMENT_LOCATIE` — eerst het hoofdstuk dat open
+      ligt afwerken, dan het volgende blad (in deze kamer of ginder), dan
+      "alles af". Geen nieuw staat-veld; alle teksten als sleutels in
+      `AL.strings.hints`
+- [x] De vier vaste `scenes.*.hint`-sleutels en `geenPlaatsHint` verwijderd —
+      ze wáren het defect; een test bewaakt dat ze weg blijven
+- [x] Afgerond-level-melding bij `ga zitten`: `gebruikPc` houdt de pc dicht als
+      het actieve hoofdstuk al hersteld is en er nog een fragment op de zolder
+      ligt, en zegt in twee regels wat klaar is en waar dat blad ligt (zelfde
+      helper als de hint, dus geen tegenspraak). Alles ontgrendeld → de pc gaat
+      gewoon open: het endgame-pad blijft ongemoeid
+- [x] Woordenschat per kamer: in de westhoek antwoorden `open kist` en
+      `open doos`/`karton` zinnig; in doorgang en overloop is "kist" geen
+      open-woord meer (daar staat er geen). `open broncode-doos` kreeg een
+      eigen sleutel in plaats van de verdwenen kamerhint
+- [x] Spread-bladerhint klopt: "spatie: pc >" → "spatie: terug" (spatie doet
+      het boek dicht en zet je in de werkhoek; de pc opent pas op `ga zitten`),
+      en de twee regels staan nu in `AL.strings.spreadChroom` in plaats van
+      inline in `engine.js`. Grens van dertien tekens (naast het paginanummer)
+      bewaakt door `test-spreads.mjs`
+- [x] Epiloog saved: `naarTitelNaEpiloog` zet `modus: "titel"` en bewaart;
+      `hervat()` toont die stand als titelkaart. Een reload na de aftiteling
+      geeft de titel, niet opnieuw de eindkaart
+- [x] `AL.debugState.vensterRegels` toegevoegd, zodat een smoke kan nalezen wát
+      de verteller antwoordt
+- [x] Docs mee: `save-en-hints.md` (§Het hint-contract herschreven — `?` in
+      zolder en terminal, F1 in de editor — plus de nieuwe §De zolder-hint),
+      `spelontwerp-legacy.md` (§Commando's: `crt aan/uit`, F3, de volledige
+      `ga zitten`-lijst, `?`-gedrag, spread-modus zonder `?`; §De lus per level
+      stap 5), `engine-architectuur.md` (`modus: "titel"`),
+      `walkthrough/deel1-hints.md` (`?` vs F1, commandolijst, de zolder-alinea
+      over de nieuwe hint). Geen PDF's — die zijn voor WP 39
+- [x] QC: **368/368 groen** (15 nieuw), `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-full-playthrough 97/97, smoke-walk 25/25
+
+### - [x] WP 34 — Nieuwe spelersprite
+
+Entry: `workflow/34-nieuwe-spelersprite.md` · commit: `9c5d4a2`
+
+- [x] Neutrale erfgenaam-figuur 15 × 31 (doorzwaai 32), licht van rechts, alle
+      anims: sta/loop × noord-oost-zuid, `draai`, `zit-oost`. Trui uit de
+      gebladerte-ramp, jeans uit de nacht-ramp, kort haar 23/24, geen ogen en
+      geen mond — de norm uit `achtergrond.md` staat nu ook in de pixels
+- [x] De rode mantel (palet 4/12) is weg; Roodkapje leeft alleen nog in de sim
+- [x] `art-stijlgids.md` (paletrollen 4/12, de vaste toewijzing voor de speler,
+      armzwaai, spelermaat, een expliciete regel dat sprites van rechts belicht
+      zijn), `sprite-schema.md` (voorbeeldlegenda + de spiegel-afweging),
+      `js/palette.js` (twee commentaarregels over de mantel)
+- [x] QC: **368/368 groen**, `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-walk 25/25, smoke-full-playthrough 97/97,
+      screenshots van de vier kamers + spritesheet in `test-results/wp34-*.png`
+
+### - [x] WP 35 — Schaalpas over de scènes
+
+Entry: `workflow/35-schaalpas.md` · commit: `8b27572`
+
+- [x] Maatregel 1 px ≈ 5 cm in `art-stijlgids.md`, met referentietabel, de
+      regel dat buren belangrijker zijn dan waarheid, en elke
+      leesbaarheidsuitzondering (mok ~2×, notitieboek ~2×, pc ~1,4×) mét haar
+      factor
+- [x] Werkhoek: mok 14 × 16 → 4 × 5, bureau 148 px breed → 50 px met een blad
+      op 14 px boven zijn voetlijn, toetsenbord 46 × 10 → 13 × 3,
+      monitorgloed met het scherm mee gekrompen
+- [x] `sprite-pc.js` 28 × 26 → 18 × 16, `sprite-stoel.js` 18 × 26 → 12 × 19
+      (zitting op 9 px), `sprite-notitieboek.js` 22 × 13 → 16 × 10;
+      `doos` en `broncode-doos` blijven de maateenheid
+- [x] Geschilderd karton in alle vier de kamers uit losse dozen van 16 × 13
+      tot 18 × 15 px: westhoek 11, doorgang 3, overloop 19. Een stapel wordt
+      hoger door te stapelen. Kist 96 × 42 → 40 × 19
+- [x] Eén diepteregime: `AL.loopveld.diepteSchaal(scene, y)` voor de speler
+      én elke hotspot-sprite; `engine.actorSchaal` is nu een doorgeefluik
+- [x] Zit-reeks op de stoel: `startZitten` zet de speler op de hotspot met
+      `item: "stoel"` — de enige plek waar zijn handen op de voorrand van het
+      blad uitkomen. `hotspot.item` is daarmee geen dood veld meer
+- [x] Blokken, entries en de smoke-coördinaten volgen de nieuwe voetafdrukken
+- [x] `test/test-schaal.mjs`: veertien keuringen die de verhoudingen uit de
+      scènedata narekenen (mok, bureau, stoel, zithouding, pc, karton,
+      torens, kist, notitieboek, diepteschaal)
+- [x] Docs mee: `art-stijlgids.md` (§De maatregel, §Diepte en voorgrond,
+      sprite-maten), `scene-schema.md` (hotspots schalen mee, de stoel is de
+      zitplek, `item` niet meer dood), `engine-architectuur.md`
+      (`diepteSchaal` in §De vloer), `sprite-schema.md` (`opts.schaal` voor
+      props, verwijzing naar de maatkeuring); prose: "schuin van het bureau
+      weggeschoven" → "schuin voor het bureau"
+- [x] QC: **382/382 groen** (14 nieuw), `lint-scene` en `check-assets`
+      schoon, smoke-browser 38/38, smoke-walk 25/25, smoke-pc 32/32,
+      smoke-full-playthrough 97/97, screenshots van de vier kamers, de
+      zithouding en vier voor-na-stroken in `test-results/wp35-*.png`
+
+### - [x] WP 35b — De zolder aangekleed (ingelast)
+
+Ingelast door de manager na de QC van WP 35: de maatregel maakte de
+kamers correct maar leeg — een zolder hoort vol te staan. Afwijking van
+het goedgekeurde plan, gelogd hier en in de entry van WP 35.
+
+Entry: `workflow/35b-de-zolder-aangekleed.md` · commit: `3084045`
+
+- [x] Vier kamers aangekleed met rommel op de juiste schaal (stapels,
+      koffers, zolderspullen), zonder de composities en lichttaal te
+      breken. Straal en kist in de westhoek, trapopening en corridor in
+      de doorgang, de bureaugroep in de werkhoek en het trapgat op de
+      overloop zijn onaangeroerd
+- [x] Alles staat in de strook vloer tussen de wandlijn en de
+      loopstrook, waar de speler niet komt: **geen enkel nieuw blok**,
+      geen stap loopruimte minder, smoke-walk-coördinaten ongewijzigd
+- [x] Nieuw in de kamers: hogere dozenstapels met koffers erop,
+      wandplanken met weckpotten en blikken, een kapstok met twee
+      jassen, opgerolde tapijten, schilderijlijsten met de rug naar
+      voren, een schemerlamp, wasmanden, een ladder, een emmer, twee
+      staande spiegels onder een laken, twee tafelventilatoren, een
+      prikbord, een stilstaande wandklok, een archiefkastje, een
+      naaimachine op een tafeltje met garenklosjes erboven, een plank
+      met mappen boven het bureau, en dekens over drie stapels
+- [x] Veertien nieuwe `onderzoek`-teksten met hun woordkoppeling; geen
+      kamerbeschrijving gewijzigd, elk zelfstandig naamwoord blijft
+      aanwijsbaar. De wand boven het trapgat blijft leeg omdat
+      `onderzoek wand` zegt dat daar nooit iets is opgehangen
+- [x] `art-stijlgids.md` mee: de drapé-regel (bovenste rij één stap
+      lichter, in de ramp van de kamer), de kleurafspraak voor het
+      overige zoldergoed, en twaalf rijen bij de maattabel
+- [x] Op-tellingen picture + overlays: west 82 → 171, doorgang
+      59 → 135, werkhoek 49 → 142, overloop 80 → 137; alle scènes
+      455 → 770. De overlays — het enige dat élk frame getekend wordt —
+      zijn onveranderd
+- [x] QC: **382/382 groen**, `lint-scene` en `check-assets` schoon,
+      smoke-browser 38/38, smoke-walk 25/25, smoke-full-playthrough
+      97/97, vier kamerscreenshots en vier voor-na-stroken in
+      `test-results/wp35b-*.png`
+
+### - [x] WP 36 — Handschriftfont
+
+Commit: (nog in te vullen) — entry: `workflow/36-handschriftfont.md`
+
+- [x] `js/font-hand.js`: 114 glyphs van 8 × 10, x-hoogte 6, basislijn op
+      rij 7 en de liniatuur op rij 8, staarten op 8–9. De onregelmatige
+      ligging (±1 px) zit per glyph in de data: omhoog `a m r K V 7`,
+      omlaag `c i n u z D G S 3`. Dekking gelijk aan de drukfont
+- [x] `tekenHandschrift`/`handschriftBreedte` zetten en meten met
+      `AL.fontHand`; shear standaard 0 (de helling zit in de glyphs);
+      de index-driehoeksgolf `_jitter` verwijderd, niet vervangen; het
+      stale commentaar "groepje van drie" ermee weg
+- [x] Eén hand per blad: kop en tekst dezelfde font en maat, de kop
+      zonder spatievariatie plus de streep eronder. Het boek-chroom
+      (paginanummer, bladerhint) blijft bewust monospace, gemotiveerd in
+      `art-stijlgids.md` §Typografie
+- [x] Bladbudget nagerekend: geen enkele van de veertien bladzijden loopt
+      over, twaalf werden korter (l7 p1 18 → 15 van 24; l1 p1 16 → 12);
+      breedste regel 136 px in een kolom van 136. De weekregel gaat van
+      drie naar twee regels; geen prose aangeraakt
+- [x] De WP 22-beslissing "geen aparte glyphset" is formeel teruggedraaid
+      op keuze van de gebruiker; gemotiveerd in de entry
+- [x] Docs: `art-stijlgids.md` (nieuwe §Typografie met de drie zetwijzen
+      en de ontwerpregels; handschriftparagraaf van het spread vervangen),
+      `engine-architectuur.md` (drie zetwijzen, laadvolgorde)
+- [x] QC: **391/391 groen** (382 bij aanvang; negen nieuwe tests, twee
+      herschreven), `lint-scene` en `check-assets` schoon, smoke-browser
+      38/38, smoke-full-playthrough 97/97, screenshots
+      `test-results/wp36-alfabet.png`, `wp36-spread-l1.png`,
+      `wp36-spread-l4.png`
+
+### - [x] WP 37 — Geluid hoorbaar en volledig
+
+Commit: (nog in te vullen) — entry: `workflow/37-geluid-hoorbaar.md`
+
+- [x] Meestergain 0,16 → 0,30 met de stemgains herverdeeld (bedstemmen
+      omlaag, foley omhoog): voetstap +6,8 dB, karton +6,3 dB. Ergste
+      geval uitgerekend en als test vastgelegd — 2,75 × 0,30 = 0,825, dus
+      1,7 dB onder de klipgrens
+- [x] Foley en drones uit de sub-bas: stap 38/41 → 50/53, deur 45/40 →
+      57/52, doos 50/45/43 → 60/55/52, zolderdrone 33 → 45 (kwint 40 →
+      52), pc-pedaal 36 → 48. Bodem midi 48 voor cues, 45 voor bedden mét
+      voorwaarden (bas-stem én minstens twee seconden = drone, geen
+      melodie). Het register (zolder leger dan pc) onaangeroerd groen
+- [x] Bevinding uit de kickoff rechtgezet: de bas-stem-routing onder midi
+      55 geldt alleen voor bedden (`planVooruit`), niet voor cues — de
+      voetstap ging nooit door de trage bas-attack
+- [x] `doos`-cue afgevuurd bij het openen van een fragmentdoos, met de
+      bladzijde 0,35 s erná (`geluid:pagina@0.35`, nieuwe vertragingsvorm).
+      Daarbij een drievoudige `pagina` op dezelfde audioklok-tijd
+      opgeruimd: de renderlaag speelt niets meer uit zichzelf bij
+      `fragment-gevonden` of bij het openen van een spread
+- [x] De kist en de dozenstapels in de westhoek dragen nu ook
+      `geluid:doos` (beslissing gelogd in de entry)
+- [x] Unlock op vier oppervlakken: keydown (vóór de tekstveld-uitzondering),
+      vensterbrede `pointerdown`/`touchstart` in de capture-fase, D-pad en
+      commandobalk, en de tik/klik op het canvas. De vensterbrede
+      pointerdown was nodig omdat `js/touch.js` op een desktop helemaal
+      niet laadt
+- [x] Geen oscillator-opbouw meer vóór de ontgrendeling: `speel`/`muziek`
+      maken geen context en bouwen geen node; `AL.sound.opOntgrendeld`
+      start bij de eerste gebruikersactie het bed van de huidige stand
+      (`startBedVoorStand`). `unlock()` is idempotent; `debug()` meldt
+      `ontgrendeld` en `nodes`
+- [x] Voetstapcadans 3,75 → 4,0 Hz door de stap aan het animatieframe te
+      hangen in plaats van aan een modulo van tikken; gemeten in de
+      browser: acht stappen in twee seconden, nul op een doorzwaaiframe
+- [x] Docs: `engine-architectuur.md` §Geluid met drie nieuwe paragrafen
+      (niveau en register, wie vuurt wat af met de cue-tabel, de
+      ontgrendeling) en de effect-tag met de vertragingsvorm.
+      `save-en-hints.md` nagekeken: die noemt geluid alleen als
+      save-trigger en hoefde niet mee
+- [x] QC: **400/400** headless (was 391), `lint-scene` en `check-assets`
+      schoon, smoke-browser 38/38, smoke-full-playthrough 97/97,
+      smoke-walk 25/25, en de nieuwe `test/smoke-geluid.mjs` 17/17 (geen
+      context vóór de eerste actie, muisklik én touch-tik ontgrendelen,
+      geen nodegroei vóór de ontgrendeling, de stap op de steunfase)
+
+### - [x] WP 38 — Doc-drift en dood hout
+
+Commit: (nog in te vullen) — entry: `workflow/38-doc-drift-en-dood-hout.md`
+
+- [x] art-stijlgids: elf → **twaalf** ops (zeven overgenomen + vijf nieuwe,
+      nageteld in `voerOpsUit` en in `OP_LENGTE`); de lichtstraal (vijf
+      `light`-plakken, 0,80 → 0,30) en de pc-halo (vijf koepels 0,12 →
+      0,55, sprite-aan-staat 55/56/58) beschreven zoals ze getekend zijn
+- [x] spelontwerp-legacy.md: de intro-spread-passage vervangen door de
+      echte opening (vijf onderschriften over drie beelden) mét het
+      `Beslissing`-blok en de test die de terugkeer bewaakt; de drie
+      opening-scenes in de scène-tabel; `overloop` niet meer "optioneel";
+      `draai` en `zit-oost` in de sprite-tabel. Commandolijst nagekeken —
+      klopt sinds WP 33, niets te doen
+- [x] Dode velden beslist (elke beslissing met reden in de entry):
+      `scene.props` **weg** uit tien scènes, de terugvalscène, het schema
+      én de lint (die zakt er nu op); `hotspot.item` **leeft** sinds WP 35
+      (`startZitten` zoekt er de stoel mee) en is als gewoon veld
+      gedocumenteerd; `spreadGelezen` **weg**, `VERSIE` blijft 1 met de
+      migratieredenering in `save-en-hints.md`; `week` **weg** uit de
+      level-definities (de fixture stond al op week 3 voor level 1) en
+      behouden in `AL.strings.spreads.lN.week`, waar hij gelezen wordt;
+      `dev: true` **weg**; `naam` behouden (verwijzing, geen kopie)
+- [x] Sweep naar dode strings-sleutels met een scriptje over `AL.strings`
+      en `AL.sim.strings` (bladsleutels, dus dynamische toegang blijft
+      zichtbaar): één vondst, `pc.knopMenu`, verwijderd. Nul in de sim
+- [x] console.warn bij de terugvalkamer, mét de ontbrekende id en de twee
+      dingen die je dan nakijkt; één melding per id. End-to-end bewezen in
+      `smoke-browser` (kamer uit `AL.scenes` halen, ernaartoe lopen, geen
+      crash + terugvalkamer tekent + waarschuwing noemt de id)
+- [x] Brede waarheidscontrole van de overige docs: `checker-contract.md`
+      (verklaar-in-één-zin is een zelf-check, de twee tolerantieschakelaars
+      bestaan niet, javacsim kent vijf controles, plus acht kleinere),
+      `save-en-hints.md` (`voortgang:opgeslagen` is een verzoek, geen
+      verslag; F1 werkt in beide pc-panelen), `engine-architectuur.md`
+      (`spread:intro`/`outro` bestaan niet, laadvolgorde, `font-hand.js`,
+      `input.js`), `levels-en-scharnieren.md` (7 spreads geen 8; de
+      1+2-mix is niet bindend voor de levels 1 en 7; 23 commando's),
+      `achtergrond.md` (de sprite heeft wél een vooraanzicht; geen
+      "dusk-ramp"; geen einde héét "koud en onaf"), `README.md` (28+9
+      testbestanden, 400 tests; F1 in de editor; scènelijst),
+      `roberta-williams.md` schoon
+- [x] `tools/check-docpaden.mjs`: elk pad dat een document aanhaalt moet
+      bestaan. `docs/`, `walkthrough/` en de README's zijn de poort;
+      `workflow/` wordt gerapporteerd maar is historie
+- [x] QC: **400/400** headless, `lint-scene` en `check-assets` schoon,
+      smoke-browser **41/41** (was 38/38), smoke-full-playthrough **97/97**,
+      `check-docpaden` 757 paden — 0 dood in een contractdocument
+
+### - [x] WP 39 — Walkthrough herbouwd
+
+Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
+
+- [x] `tools/check-walkthrough.mjs`: vijf keuringen die de gids tegen het
+      spel houden — hoofdstuktitels + weken tegen `AL.strings.lN`, elk
+      Java-blok tegen de modeloplossingen, de vier eindescripts tegen
+      `seven-little-goats/test-scripts/`, elk citaat en commando tegen de
+      tekstcorpus (mét de trace-sjablonen over hun hele pool uitgerekend),
+      en een poort die bewijst dat deel 1 geen hintstadium 3 lekt. Elke
+      keuring is met een negatieve test nagemeten
+- [x] Deel 1: navigatie herschreven (alle vier de richtingen te voet sinds
+      WP 32, D-pad op een aanraakscherm, zwijgende muren), de WP 33-melding
+      bij stap 5, "twee of drie hints" → twee, en het onbestaande commando
+      `bekijk` vervangen door `inventaris` / `stats`
+- [x] Deel 1: negen hints gingen verder dan stadium 2 — bij `l3-vindfout`
+      en `l6-vindfout` stond het antwoord er zelfs bij. Bij alle negen is
+      die ene slotzin geschrapt, de rest van de hint blijft
+- [x] Deel 1: de sim-alinea vertelt weer wat `goats-strings.js` vertelt (de
+      neef van de oude wolf, zes opgeslokte geitjes, het jongste in de
+      klokkast, de keuze aan de rivier is van de speler); het mandje is
+      alleen voor de koeken nodig
+- [x] Deel 2: de vier oordeel-citaten woordelijk uit `AL.strings.oordeel`
+      (één had er zelfs een accent bij dat Alberta niet schrijft), het
+      opgave-citaat bij `&&`/`||` verbeterd, en de kaart heeft geen
+      zwevende "west"-regel meer. De negen Java-blokken, de vier
+      eindescripts, de vechtrekenkunde en de trace-tabellen bleken
+      ongeschonden — dat is nu ook mechanisch bewezen
+- [x] PDF's herbouwd: pandoc 3.10 + typst 0.15.0 van GitHub gehaald (de
+      machine had 3.1.3 en 0.10.0), script exit 0, 8 en 13 pagina's.
+      `bouw-walkthrough.sh` kiest zelf tussen `--syntax-highlighting=none`
+      en het oudere `--no-highlight`; `zine.typ` heeft een font-ketting
+      (Courier New vooraan, Liberation Mono erachter) omdat Courier New
+      hier niet meer geïnstalleerd staat
+- [x] `README.md`: hoe je de PDF's herbouwt en de citaten keurt — daarmee
+      staat het júíste pad (`walkthrough/tools/bouw-walkthrough.sh`) in een
+      contractdocument. De oude vermeldingen zonder `walkthrough/` staan
+      alleen in `workflow/` en blijven historie
+- [x] QC: `check-walkthrough` **276 gekeurd, 0 afwijkingen**; **400/400**
+      headless ongewijzigd; `check-docpaden` 817 paden — 0 dood in een
+      contractdocument; `lint-scene` en `check-assets` schoon;
+      `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
+      13 p., inhoud met `pdftotext` nagelezen)
+
+### - [x] WP 40 — Slotcontrole
+
+Entry: `workflow/40-slotcontrole.md` · commit: (nog in te vullen)
+
+- [x] Alle poorten in één run op één werkkopie: 400/400 headless,
+      305/305 over acht Chromium-smokes, javac + verboden-grep schoon,
+      lint-scene, check-assets, check-docpaden (842 paden) en
+      check-walkthrough (276 citaten) schoon
+- [x] Verse screenshots van titelkaart, vier kamers, spread, pc-editor,
+      sim, oordeel en epiloog aan Lars bezorgd
+- [x] Slotentry geschreven; PR-beschrijving bijgewerkt
+
+**Programma 3 is hiermee af.** Open blijven: de luistertest op speakers,
+smoke-touch (WebKit ontbreekt), en de PDF-fontterugval (Liberation Mono
+tot een machine met Courier New herbouwt).
+
+# Programma 2 — opwaardering van presentatie en verhaal (afgerond)
+
+Zie `workflow/15-opwaardering-kickoff.md` voor de opdracht, de beslissingen
+en het volledige plan van dit afgeronde programma.
 
 ## Vertrekpunt
 
@@ -473,23 +920,33 @@ de eerste de gemelde is.
       **36** controles, de overige vijf rooksmaaktesten onveranderd groen (255
       samen), lint en check-assets schoon
 
-## Nog open na het programma
+## Nog open na programma 2
 
-Elf pakketten zijn af (0, A t/m J). Dit blijft staan, met de reden:
+Elf pakketten zijn af (0, A t/m J). Wat toen open bleef, heeft nu een adres
+in programma 3:
 
-- **De walkthrough-PDF's zijn niet herbouwd.** `walkthrough/deel1-hints.md` mag
-  de nieuwe parser-tolerantie en F3 vermelden, en beide PDF's horen dan opnieuw
-  gebouwd te worden met `walkthrough/tools/bouw-walkthrough.sh`. Die build
-  vraagt `pandoc` en `typst`, en die staan niet in deze container. Geen enkel
-  citaat in de walkthrough is onwaar geworden; het gaat om een aanvulling, niet
-  om een correctie.
-- **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat ontbreekt
-  hier. `js/touch.js` is in dit hele programma niet aangeraakt.
-- **Hoe het geluid klínkt is niet beoordeeld.** Deze container heeft geen
-  geluidsuitgang; wat gecontroleerd is, is de audiograaf en de data.
-- **De sprite gebruikt zijn toegestane maat niet.** 13×25 binnen een budget van
-  16×32. De animatie had de hoogte nodig, niet de breedte; breder maken betekent
-  de figuur opnieuw tekenen.
+- ~~De walkthrough-PDF's zijn niet herbouwd.~~ **Opgelost in WP 39**: pandoc
+  3.10 en typst 0.15.0 opgehaald, beide PDF's herbouwd uit de bijgewerkte
+  Markdown (8 en 13 pagina's). Wat er wél voor in de plaats komt: Courier New
+  staat niet meer op deze machine, dus de vastgelegde PDF's zijn in Liberation
+  Mono gezet — metrisch identiek, en het sjabloon vraagt Courier New nog altijd
+  als eerste, dus een machine die hem heeft bouwt het origineel terug.
+- **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat
+  ontbreekt hier. `js/touch.js` is in WP 37 aangeraakt (unlock op D-pad,
+  commandobalk en canvas-tik); die kant is gedekt door `smoke-geluid`, dat
+  zijn tweede helft in een Chromium-context met `hasTouch` draait. De
+  WebKit-smoke zelf blijft afhankelijk van WebKit-beschikbaarheid.
+- **Hoe het geluid klínkt is nog altijd niet beoordeeld.** De mechanische
+  oorzaken zijn in WP 37 hersteld en nagemeten: meestergain 0,16 → 0,30 met
+  een uitgerekende klipmarge, foley en drones een octaaf omhoog uit de
+  sub-bas, de `doos`-cue afgevuurd, de unlock op elke gebruikersactie, de
+  voetstap op 4,0 Hz. Wat níét kon, is luisteren — deze container heeft geen
+  geluidsuitgang. Of 0,30 op een laptopspeaker het juiste niveau is en of de
+  zolder op 110 Hz nog koud klinkt, blijft een luistertest voor Lars.
+- ~~De sprite gebruikt zijn toegestane maat niet.~~ **Opgelost in WP 34**: de
+  speler is 15 × 31 (doorzwaai 32) binnen de 16 × 32 van de stijlgids, en is
+  meteen ook de neutrale erfgenaam-figuur geworden in plaats van de Roodkapje
+  uit de predecessor.
 
 ## Wat bewust niet gebeurt
 
@@ -499,7 +956,9 @@ Zodat een verse sessie deze discussies niet heropent:
   als uitleggen; de regel "nooit een oorzaak noemen" blijft.
 - **Geen faalstaat, geen deadline, geen verliesmechaniek.** De urgentie zit
   volledig in de toon. Staat, save-formaat en logica-laag blijven zoals ze zijn.
-- **De _Seven Little Goats_-prose blijft ongemoeid.** Ze dient als bron voor de
-  donkerte van het kader. Aanpassen zou de Java-broncode én de vier
-  transcript-fixtures meetrekken die `test-sim-cross-check` byte voor byte
-  vergelijkt.
+- ~~De _Seven Little Goats_-prose blijft ongemoeid.~~ **Teruggedraaid in
+  programma 3** (zie `workflow/28-kwaliteitsreview-kickoff.md`,
+  §Beslissingen): Lars vraagt expliciet de wolf-zin en het
+  commentaarregister te herstellen, en de technische vrees bleek
+  onterecht — `test-sim-cross-check` vergelijkt twee live runs, de
+  testscripts zijn invoer, geen golden transcripts.

@@ -150,6 +150,7 @@ async function main() {
   // slaat de opbouw feature-detected over, zodat er voor bureaubladspelers
   // niets verandert.
   const bureauBrowser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
   const bureauPage = await (await bureauBrowser.newContext()).newPage();

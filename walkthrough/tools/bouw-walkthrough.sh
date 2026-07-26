@@ -14,7 +14,19 @@
 # kunnen weglaten.
 #
 # Idempotent: elke run overschrijft de PDF's; geen tussenbestanden blijven staan.
-# Vereist pandoc (getest met 3.10) en typst (getest met 0.15.0) op PATH.
+# Vereist pandoc (getest met 3.10 en 3.1.3) en typst (0.15.0) op PATH.
+#
+# Twee compatibiliteitsnoten, allebei gemeten in WP 39:
+#
+#   - `--syntax-highlighting=none` bestaat pas vanaf pandoc 3.2. Oudere pandoc
+#     kent dezelfde schakelaar als `--no-highlight`; het script kiest zelf. De
+#     bedoeling blijft dezelfde: geen highlight-definities, want het sjabloon
+#     draagt ze niet en de gids is monochroom.
+#   - De typemachine-font is Courier New, en die staat niet op elke machine.
+#     `stijl/zine.typ` draagt daarom een fallback-ketting (Liberation Mono
+#     heeft dezelfde metrieken). Waarschuwt typst tóch over een ontbrekende
+#     font, dan is de bladspiegel niet meer die van het ontwerp: installeer een
+#     van de fonts uit die ketting voor je de PDF's vastlegt.
 
 set -euo pipefail
 
@@ -36,13 +48,20 @@ echo "pandoc: $(pandoc --version | head -1)"
 echo "typst:  $(typst --version)"
 echo
 
+# Welke schakelaar kent deze pandoc om highlighting uit te zetten?
+if pandoc --help 2>&1 | grep -q -- "--syntax-highlighting"; then
+  GEEN_KLEUR="--syntax-highlighting=none"
+else
+  GEEN_KLEUR="--no-highlight"
+fi
+
 bouw() {
   local bron="$1" doel="$2"
   echo "  $bron  ->  $doel"
   pandoc "$bron" \
     --pdf-engine=typst \
     --template="$SJABLOON" \
-    --syntax-highlighting=none \
+    "$GEEN_KLEUR" \
     -o "$doel"
 }
 

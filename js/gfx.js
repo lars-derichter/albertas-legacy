@@ -631,43 +631,51 @@ globalThis.AL = globalThis.AL || {};
       return tekst.length * (AL.font.breedte * schaal + spatie * schaal);
     },
 
-    // Handschrift: de notitieboek-stem. De stijlgids vraagt hier drie dingen —
-    // schuinstand, onregelmatige regelligging en spatievariatie — en tot nu toe
-    // was alleen het tweede er, als een y-sprong per teken op een monospace
-    // raster van acht. Dat las als getypte tekst die stond te wiebelen.
+    // Handschrift: de notitieboek-stem. Ze zet met een éígen glyphset —
+    // AL.fontHand uit js/font-hand.js — en niet meer met de gedrukte 8×8-font.
     //
-    // Nu alle drie:
+    // Wat hier weg is en waarom (WP 36): tot nu toe was het handschrift de
+    // drukfont met een shear van 0,25 en een verticale golf van ±1 px die de
+    // aanroeper meegaf. Die golf was index-gebaseerd met periode vier tekens,
+    // dus élke regel deinde identiek — op een blad van twaalf regels leest dat
+    // als verticale banding, niet als een hand. En een scheefgetrokken
+    // bitmapletter blijft een bitmapletter.
     //
-    //   schuinstand   elke rij schuift met de hoogte mee naar rechts, dus de
-    //                 hele letter helt. De schuinte is per glyph gelijk, zodat
-    //                 een woord één hand blijft en geen verzameling losse
-    //                 letters wordt.
-    //   ligging       versch(i) blijft: één pixel op en neer per teken.
-    //   spatiëring    proportioneel (de inktmaat uit font.js) plus een
-    //                 deterministische variatie van een halve pixel per teken,
-    //                 zodat de letters niet op een raster staan.
+    // Nu zit alles wat "hand" moet lezen in de glyphdata: onregelmatige
+    // basislijnen per teken (±1 px, gebakken), variabele inktbreedtes, een
+    // helling in de stokken en staarten. Wat de renderer nog doet is één ding:
     //
-    // versch(i) levert de verticale verschuiving voor teken i; de aanroeper
-    // houdt die deterministisch (seed-gestuurd), want een spread moet er bij
-    // elke run hetzelfde uitzien.
+    //   spatiëring   proportioneel (de inktmaat uit font-hand.js) plus een
+    //                deterministische variatie van één pixel per teken, zodat
+    //                de letters niet op een raster staan. De seed hangt aan de
+    //                save, dus een spread ziet er bij elke run hetzelfde uit.
     //
-    // opts: { schuin, ruimte, seed }
+    // versch(i) blijft in de handtekening staan als ontsnappingsluik (een
+    // aanroeper die een regel bewust wil laten hellen), maar het spel geeft
+    // hem nergens nog mee: de deining zit in de glyphs.
+    //
+    // opts: { schuin, ruimte, seed, variatie }
+    //   schuin    programmatische shear; 0 voor deze font, want de helling is
+    //             gebakken. Blijft bestaan omdat het meten hem moet kennen.
+    //   variatie  false zet de spatievariatie uit — de hand van de kop, die
+    //             trager en gelijkmatiger geschreven is.
     tekenHandschrift: function (tekst, x, y, kleur, versch, opts) {
       opts = opts || {};
-      var schuin = (opts.schuin === undefined) ? 0.25 : opts.schuin;
+      var schuin = (opts.schuin === undefined) ? 0 : opts.schuin;
       var ruimte = (opts.ruimte === undefined) ? 1 : opts.ruimte;
+      var variatie = (opts.variatie === undefined) ? true : !!opts.variatie;
       var seed = opts.seed || 1;
-      var font = AL.font;
+      var font = AL.fontHand || AL.font;
       var cx = x;
       for (var i = 0; i < tekst.length; i++) {
         var ch = tekst.charAt(i);
-        if (ch === "\n") { cx = x; y += font.hoogte + 2; continue; }
+        if (ch === "\n") { cx = x; y += font.hoogte + 1; continue; }
         var dy = versch ? (versch(i) | 0) : 0;
         var glyph = font.glyphs[ch] || font.glyphs["?"];
         var m = font.maat(ch);
         for (var row = 0; row < font.hoogte; row++) {
           // Bovenaan het meest naar rechts: dat is de kant die een pen opgaat.
-          var scheef = Math.round((font.hoogte - 1 - row) * schuin);
+          var scheef = schuin ? Math.round((font.hoogte - 1 - row) * schuin) : 0;
           var rij = glyph[row];
           for (var col = 0; col < m.breedte; col++) {
             if (rij.charAt(m.links + col) === "1") {
@@ -675,25 +683,29 @@ globalThis.AL = globalThis.AL || {};
             }
           }
         }
-        cx += m.breedte + ruimte + (ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
+        cx += m.breedte + ruimte +
+          (variatie && ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
       }
       return cx - x;
     },
 
     // Hoe breed wordt deze regel in handschrift? Zelfde rekensom als hierboven,
-    // inclusief de spatievariatie, want anders klopt het wrappen niet.
+    // inclusief de spatievariatie, want anders klopt het wrappen niet. Meet met
+    // dezelfde handfont als waarmee getekend wordt — meten en zetten mogen nooit
+    // uit elkaar lopen, anders schrijft een regel net over de kolomrand.
     handschriftBreedte: function (tekst, opts) {
       opts = opts || {};
       var ruimte = (opts.ruimte === undefined) ? 1 : opts.ruimte;
-      var schuin = (opts.schuin === undefined) ? 0.25 : opts.schuin;
+      var schuin = (opts.schuin === undefined) ? 0 : opts.schuin;
+      var variatie = (opts.variatie === undefined) ? true : !!opts.variatie;
       var seed = opts.seed || 1;
-      var font = AL.font;
+      var font = AL.fontHand || AL.font;
       var b = 0;
       for (var i = 0; i < tekst.length; i++) {
         b += font.maat(tekst.charAt(i)).breedte + ruimte +
-          (ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
+          (variatie && ruisWaarde(i, 7, seed) < 0.35 ? 1 : 0);
       }
-      // De schuinstand steekt rechtsboven uit; die overhang telt mee.
+      // Een schuinstand zou rechtsboven uitsteken; die overhang telt mee.
       return b > 0 ? b - ruimte + Math.round((font.hoogte - 1) * schuin) : 0;
     },
 

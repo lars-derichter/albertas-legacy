@@ -29,6 +29,17 @@ globalThis.AL = globalThis.AL || {};
 
   if (!AANRAAKSCHERM) return;
 
+  // Het geluid ontgrendelen bij élke knop van deze balk. input.js doet dat al
+  // via een pointerdown op het venster, en dus is dit strikt genomen dubbelop —
+  // maar niet overbodig: de handlers hieronder roepen `preventDefault` aan en
+  // een toestel dat geen `pointerdown` kent (oudere iOS-webviews) valt anders
+  // op niets terug. Een ontgrendeling die twee keer gebeurt kost niets:
+  // AL.sound.unlock doet de tweede keer niets meer.
+  function ontgrendelGeluid() {
+    var s = globalThis.AL.sound;
+    if (s && s.unlock) s.unlock();
+  }
+
   function start() {
     var canvas = document.getElementById("scherm");
     if (!canvas) return;
@@ -37,6 +48,7 @@ globalThis.AL = globalThis.AL || {};
     // In de vrije zoldermodus doet advance() niets (zie engine.js), dus dit
     // is ook voor muisgebruikers een onschadelijke extra.
     canvas.addEventListener("click", function () {
+      ontgrendelGeluid();
       if (globalThis.AL.engine && globalThis.AL.engine.advance) {
         globalThis.AL.engine.advance();
       }
@@ -92,6 +104,7 @@ globalThis.AL = globalThis.AL || {};
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      ontgrendelGeluid();
       verstuur(invoer);
     });
 
@@ -123,6 +136,7 @@ globalThis.AL = globalThis.AL || {};
 
     var aan = function (e) {
       e.preventDefault();
+      ontgrendelGeluid();
       if (globalThis.AL.input) globalThis.AL.input.pijlAan(richting);
     };
     var uit = function () {

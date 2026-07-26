@@ -1,8 +1,8 @@
-// level5.js — "Level 5 — De patroonkaart" (scharnier 5: de lus-romp +
-// patroonkeuze — tellen, totaliseren, opbouwen, filteren, uiterste). Herstelt de
-// lus-methoden van Speler. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): schrijf twee lussen uit de notities, orden een
-// string-builder (Parsons), en kies de juiste patroonkaart.
+// level5.js — "Level 5 — Luspatronen: geitje voor geitje" (scharnier 5: de
+// lus-romp + patroonkeuze — tellen, totaliseren, opbouwen, filteren, uiterste).
+// Herstelt de lus-methoden van Speler. Puzzelvormen uit de leveltabel
+// (docs/levels-en-scharnieren.md): schrijf twee lussen uit de notities, orden
+// een string-builder (Parsons), en kies de juiste patroonkaart.
 //
 // Beslissing (level-5-special-case, zie het werkpakket + checker-contract.md
 // §"lusRomp"): de kolom "herstelt" vraagt generieke lus-methoden die nog niet
@@ -58,14 +58,11 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var lusStub =
-"// Alberta's notitie — twee lus-methoden voor Speler:\n" +
-"//   telWapens(): tel hoeveel voorwerpen een kracht boven 0 hebben — de\n" +
-"//     tel-kaart. Begin een teller op 0 en hoog op bij elke treffer. Geeft\n" +
-"//     het aantal (int) terug.\n" +
-"//   sterksteVoorwerp(): geef het voorwerp met de grootste kracht terug, of\n" +
-"//     null bij een lege inventaris — de uiterste-kaart. Onthoud de sterkste\n" +
-"//     tot nog toe. Geeft een Voorwerp terug.\n" +
-"//   Beide lopen met een for-lus over inventaris, van 0 tot inventaris.size().\n" +
+"// Alberta's notitie — twee kaarten in de kantlijn:\n" +
+"//   telWapens() telt: hoeveel van wat ze draagt heeft kracht boven 0? Eén\n" +
+"//   int voor de statusregel. sterksteVoorwerp() zoekt het uiterste: het\n" +
+"//   Voorwerp waarmee ze het hardst uithaalt, of null als haar mand leeg is.\n" +
+"//   Zelfde inventaris, zelfde lus — een andere kaart erop.\n" +
 "\n" +
 "class Speler {\n" +
 "\n" +
@@ -146,7 +143,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 4,
     naam: S.l5.naam,
     puzzels: [editorWrite, parsons, patroonkaart]
   };

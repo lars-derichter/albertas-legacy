@@ -34,8 +34,8 @@ globalThis.AL.sim = globalThis.AL.sim || {};
     backstory: [
       "Je kent het vorige verhaal. Een rode mantel, een wolf,",
       "grootmoeders huisje. Hoe het afliep? Daar zijn de",
-      "verhalen het niet over eens: de een zweert bij de schaar",
-      "en de stenen, de ander bij een kille afrekening, een",
+      "verhalen het niet over eens: de ene zweert bij de schaar",
+      "en de stenen, de andere bij een kille afrekening, een",
       "derde bij genade. Laat het in het midden. De wolf van",
       "toen is weg; dat volstaat.",
       "",
@@ -46,12 +46,12 @@ globalThis.AL.sim = globalThis.AL.sim || {};
       "Gisteren wreef hij zijn poot wit met bloem uit de molen",
       "en at krijt bij de kruidenier, tot zijn stem zo zacht",
       "klonk als die van een moeder. De zeven geitjes deden",
-      "open. Zes gingen naar binnen — in de wolf.",
+      "open. De wolf slokte er zes op.",
       "",
-      "Het jongste kroop in de klokkast en overleefde. Het ging",
-      "niet naar de dorpelingen (die vonden alles \"te",
-      "gevaarlijk\", zoals altijd), maar naar de enige met",
-      "verstand van wolven: naar jou.",
+      "Het jongste kroop in de klokkast en bleef er zitten. Het",
+      "riep, dun en hoog, tot iemand het hoorde. De dorpelingen",
+      "vonden het \"te gevaarlijk\", zoals altijd. Het bericht",
+      "kwam bij de enige met verstand van wolven: bij jou.",
       "",
       "Je bent Roodkapje, intussen de dorpsexpert die je nooit",
       "wilde zijn. Je volgt het spoor van het geitenhuisje tot",
@@ -71,7 +71,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
           "Op een haak hangt een rode mantel; op tafel liggen een",
           "keukenmes en een mandje."
         ],
-        hint: "Kijk in de klokkast (praat) en neem iets scherps en iets warms mee."
+        hint: "Typ praat bij de klokkast, en neem iets scherps en iets warms mee."
       },
       dorpsplein: {
         naam: "Dorpsplein",
@@ -80,7 +80,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
           "naar het westen de kruidenier, naar het zuiden het bospad.",
           "Op een marktkraam koelen twee koeken af."
         ],
-        hint: "Neem iets mee om te ruilen. En neem iets om ze in te dragen."
+        hint: "Neem iets mee om te ruilen. En iets om de koeken in te dragen."
       },
       molen: {
         naam: "Molen",
@@ -127,7 +127,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
         naam: "Wolvenspoor",
         beschrijving: [
           "Witte pootafdrukken, één voor één, het pad af. Bloem en krijtstof.",
-          "Ergens vooruit klinkt water. De spanning stijgt."
+          "Ergens vooruit klinkt water."
         ],
         hint: "Bijna. Ga zuid naar de rivier."
       },
@@ -167,7 +167,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
       },
       "jonge wolf": {
         naam: "jonge wolf",
-        beschrijving: "Groot, grijs, en dit keer geen vermomming meer.",
+        beschrijving: "Groot, grijs, en deze keer geen vermomming meer.",
         hint: "Vijf rondes. Wie rekent, wint."
       }
     },
@@ -202,7 +202,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
     eetKoek: function (lp) { return "Je eet een koek. +4 LP (nu " + lp + ")."; },
     geenMelk: "Je hebt geen kruik melk.",
     eetMelk: function (lp) {
-      return "Je drinkt van de kruik melk. +6 LP (nu " + lp + ").";
+      return "Je zet de kruik melk aan je mond. +6 LP (nu " + lp + ").";
     },
 
     // praat (Spel.praat)
@@ -232,7 +232,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
     ],
 
     hintVoorvoegsel: function (hint) { return "Hint: " + hint; },
-    stop: "Je legt het mes neer. Tot de volgende keer.",
+    stop: "Je stopt voor vandaag. Tot de volgende keer.",
     datBegrijpJeNiet: "Dat begrijp je niet.",
 
     // help (Spel.toonHelp)
@@ -244,7 +244,7 @@ globalThis.AL.sim = globalThis.AL.sim || {};
       "  inventaris      toon wat je bij je hebt",
       "  stats           toon je levenspunten en aanvalskracht",
       "  eet koek        eet een koek (+4 LP)",
-      "  eet melk        drink van de kruik melk (+6 LP)",
+      "  eet melk        leeg de kruik melk (+6 LP)",
       "  praat           praat met wie hier is",
       "  geef koek       geef een koek weg",
       "  vecht           val de tegenstander hier aan",

@@ -1,6 +1,6 @@
-// Een cursusstijl-test voor Speler: probeert de klemmende setter en de
-// inventaris-methodes uit en drukt de resultaten af. Geen test-framework, gewoon
-// zelf nakijken.
+// Even nakijken of Speler klopt: blijven haar levenspunten binnen hun grenzen,
+// en doet de inventaris wat ik ervan verwacht. Geen framework, ik lees de
+// uitvoer zelf.
 class TestSpeler {
 
     public static void main(String[] args) {
@@ -10,7 +10,7 @@ class TestSpeler {
         System.out.println("start-LP    (20): " + speler.getLevenspunten());
         System.out.println("aanvalskr.  (2) : " + speler.getAanvalskracht());
 
-        // De setter mag niet boven het maximum van 20 gaan.
+        // Boven het plafond van 20 mag ze niet uitkomen.
         speler.setLevenspunten(25);
         System.out.println("na +25      (20): " + speler.getLevenspunten());
 

@@ -88,6 +88,7 @@ async function main() {
   }
 
   const browser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
   console.log("Rooksmaaktest — de endgame: level-af:7 → sim → oordeel → epiloog\n");

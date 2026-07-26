@@ -9,16 +9,15 @@ class Voorwerp {
     private String beschrijving;
     private int kracht;
 
-    // Constructor voor een gewoon voorwerp zonder kracht (kracht wordt 0).
-    // Dit is de enige plaats waar we overloaden: twee constructors op dezelfde
-    // klasse. De ene roept de andere niet aan, we houden het bewust eenvoudig.
+    // Voor gewone spullen: het mandje, een koek, het krijt. Kracht 0, want
+    // daarmee sla je niemand neer.
     Voorwerp(String naam, String beschrijving) {
         this.naam = naam;
         this.beschrijving = beschrijving;
         this.kracht = 0;
     }
 
-    // Constructor voor een voorwerp met kracht (bijvoorbeeld het keukenmes).
+    // En eentje met kracht, voorlopig alleen voor het keukenmes.
     Voorwerp(String naam, String beschrijving, int kracht) {
         this.naam = naam;
         this.beschrijving = beschrijving;
@@ -37,7 +36,7 @@ class Voorwerp {
         return kracht;
     }
 
-    // Toont het voorwerp netjes, met zijn beschrijving erbij.
+    // Zoals het in de inventarislijst hoort te staan, beschrijving erbij.
     public String toString() {
         return naam + " (" + beschrijving + ")";
     }

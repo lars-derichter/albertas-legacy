@@ -217,6 +217,7 @@ async function main() {
   }
 
   const browser = await playwright.chromium.launch({
+    executablePath: process.env.AL_CHROMIUM || undefined,
     args: ["--allow-file-access-from-files"]
   });
 
@@ -315,6 +316,28 @@ async function main() {
   check("einde: hintsTotaal over de HELE run is 0", sEpiloog.hintsTotaal === 0,
     "hintsTotaal=" + sEpiloog.hintsTotaal);
   await page.screenshot({ path: join(SCRATCH, "wp11-full-epiloog.png") });
+
+  // === Na de epiloog: Enter geeft de titelkaart, en die overleeft een reload =
+  // De epiloog sloeg zichzelf op, de titel niet: wie na de aftiteling herlaadde,
+  // kreeg de eindkaart opnieuw voor zijn neus (defect I.b).
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => window.AL.debugState.titelActief === true,
+    null, { timeout: 8000 }).catch(() => {});
+  const sTitel = await state(page);
+  check("epiloog → Enter: de titelkaart komt terug",
+    sTitel.titelActief === true && sTitel.modus === "titel",
+    "titel=" + sTitel.titelActief + " modus=" + sTitel.modus);
+
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => !!window.AL && !!window.AL.debugState, { timeout: 15000 });
+  const naEindeReload = await state(page);
+  check("reload na de epiloog: de titelkaart, niet opnieuw de eindkaart",
+    naEindeReload.titelActief === true && naEindeReload.modus === "titel",
+    "titel=" + naEindeReload.titelActief + " modus=" + naEindeReload.modus);
+  const nogAf = await ev(page, () => [1, 2, 3, 4, 5, 6, 7].map(
+    (n) => window.AL.debugToestand.levels[String(n)].afgerond));
+  check("reload na de epiloog: de voortgang staat er nog (zeven hoofdstukken af)",
+    nogAf.every(Boolean), nogAf.join(","));
 
   check("geen JavaScript-fouten tijdens de hele playthrough", paginaFouten.length === 0,
     paginaFouten.join(" | "));

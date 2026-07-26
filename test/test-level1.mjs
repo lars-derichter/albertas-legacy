@@ -43,7 +43,6 @@ test("level 1 registreert zich met drie puzzels in de juiste vormen", () => {
   assert.deepEqual(defs.map((d) => d.id),
     ["l1-editor-repair", "l1-editor-write", "l1-verklaar"]);
   assert.deepEqual(defs.map((d) => d.type), ["editor", "editor", "verklaar"]);
-  assert.equal(level1.week, 1);
 });
 
 // ===========================================================================

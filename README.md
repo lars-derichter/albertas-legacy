@@ -41,7 +41,9 @@ python3 -m http.server
 Je stapt door Alberta's zolder met de pijltjestoetsen en typt commando's,
 zoals in een klassiek adventure. Op haar oude pc open je een gesimuleerde
 editor en terminal waar je aan de Java-code werkt. Vast? Typ `?` voor een
-hint — die komt in stappen en verklapt nooit meteen het antwoord.
+hint — of druk **F1** als je in de code-editor staat, want daar zet `?` gewoon
+een vraagteken in je code. De hint komt in stappen en verklapt nooit meteen het
+antwoord.
 
 ## Voor wie
 
@@ -49,9 +51,9 @@ Voor studenten van **Programming Fundamentals** (graduaat Programmeren,
 Thomas More). Het spel telt zeven levels, elk gekoppeld aan één van de zeven
 scharnieren van de cursus. Samen goed voor ongeveer twee uur spelen.
 
-Elk level opent met de regel "Dit zou je moeten kunnen na week X van de
-cursus", zodat je weet of je er al aan toe bent. De koppeling level ↔
-scharnier ↔ week staat volledig in
+Onderaan elk notitieboek-fragment staat de regel "Dit zou je moeten kunnen na
+week X van de cursus", zodat je weet of je er al aan toe bent. De koppeling
+level ↔ scharnier ↔ week staat volledig in
 [`docs/levels-en-scharnieren.md`](docs/levels-en-scharnieren.md).
 
 Alle code in de puzzels blijft binnen de grenzen van de cursus: geen
@@ -72,15 +74,19 @@ albertas-legacy/
 │   ├── pc/                de gesimuleerde pc: editor, terminal, Parsons, sim
 │   ├── levels/            de zeven levels + proefdruk level0: puzzels, hints
 │   ├── sim/               Seven Little Goats als browsersimulatie
-│   ├── scenes/            zolderkamers, spread-template en eindkaart
+│   ├── scenes/            titel- en openingsbeelden, zolderkamers,
+│   │                      spread-template, spread-schetsen en eindkaart
 │   └── sprites/           de sprites als pixel-strings
 ├── seven-little-goats/    DE HOOFDPRIJS: het echte Java-spel, eigen README
 │   ├── src/               één klasse per bestand, om te lezen en te draaien
 │   └── test-scripts/      invoerscripts die de vier eindes aansturen
-├── docs/                  de ontwerpcontracten (Nederlands, op 80 tekens)
+├── docs/                  de ontwerpcontracten (Nederlands; proza op 80
+│                          tekens, tabellen zo breed als ze moeten zijn)
 ├── walkthrough/           hints en oplossingen (deel 2 verzegeld) als .md + .pdf
-├── test/                  Node --test-suites en Playwright-smoke (~25 bestanden)
-├── tools/                 asset-check, scene-lint en screenshotscript (Node)
+├── test/                  28 Node --test-suites (400 tests) + 9 Playwright-
+│                          smokes, plus de checker-corpus
+├── tools/                 asset-check, scene-lint, doc-padcheck, walkthrough-
+│                          check en het screenshotscript (Node)
 └── workflow/              verhalend logboek van het genAI-proces
 ```
 
@@ -91,7 +97,10 @@ staat een gids in twee delen: deel 1 met milde hints
 ([`deel1-hints.pdf`](walkthrough/deel1-hints.pdf)), deel 2 met de volledige
 oplossingen ([`deel2-oplossingen.pdf`](walkthrough/deel2-oplossingen.pdf)).
 Beide delen staan er ook als Markdown naast, mocht je liever in de browser
-lezen.
+lezen. De Markdown is de bron: `bash walkthrough/tools/bouw-walkthrough.sh`
+zet ze om naar de twee PDF's (pandoc + typst), en
+`node tools/check-walkthrough.mjs` bewijst dat elk citaat in de gids nog
+woordelijk in het spel staat.
 
 > **VERBREEK HET ZEGEL NIET** tenzij je écht niet verder kan. Deel 2 zit
 > achter een verzegelde pagina — 90's-stijl, ere-systeem. Eén repository,

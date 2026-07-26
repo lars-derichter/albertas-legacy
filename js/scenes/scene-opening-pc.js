@@ -77,7 +77,6 @@ AL.scenes["opening-pc"] = {
 AL.scenes["opening-pc"].walkboxes = [[0, 180, 320, 9]];
 AL.scenes["opening-pc"].entries = { start: [160, 185] };
 AL.scenes["opening-pc"].hotspots = [];
-AL.scenes["opening-pc"].props = [];
 AL.scenes["opening-pc"].overlays = [];
 
 // Node-export voor tooling/tests.

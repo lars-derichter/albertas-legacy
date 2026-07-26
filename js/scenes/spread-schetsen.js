@@ -5,7 +5,10 @@
 // "de meeste nieuwe beelden" dragen, en `docs/art-stijlgids.md` somt per level
 // een schets op die de scharnier-metafoor spiegelt — blauwdruk-en-doos,
 // trechters, knikkerbaan, twee pijlen, patroonkaart, plankenbrug, dubbele pijl.
-// Er stond er tot nu toe geen enkele in het spel. De acht spreads deelden ook
+// Dat is de metafoor-woordenschat van de cursus; sinds WP 31 dragen de
+// hoofdstukken zelf een titel met de scharnierterm vooraan. De schetsen tonen
+// nog altijd het beeld, want dat is wat Alberta in de kantlijn tekende.
+// Er stond er tot nu toe geen enkele in het spel. De zeven spreads deelden ook
 // één papierachtergrond, met dezelfde koffievlek op dezelfde plek, terwijl de
 // stijlgids beschadiging vraagt "precies waar de puzzel zit" — de vlek hoort de
 // ontbrekende code te verklaren, en verschilt dus per level.
@@ -30,7 +33,7 @@ globalThis.AL = globalThis.AL || {};
 
 AL.spreadSchetsen = {
 
-  // ---- Level 1 — de blauwdruk en de doos ---------------------------------
+  // ---- Level 1 — schets: de blauwdruk en de doos ------------------------
   // Links het plan (gestippeld, want het is een tekening van iets), rechts het
   // ding zelf (doorgetrokken, met een deksel en twee ingevulde velden). De pijl
   // ertussen is het hele scharnier: van klasse naar object.
@@ -90,7 +93,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 2 — trechters erin, goot eruit -------------------------------
+  // ---- Level 2 — schets: trechters erin, goot eruit ----------------------
   // Een machine met twee trechters bovenop (de parameters) en één goot opzij
   // (de return). Ernaast, kleiner, dezelfde machine zónder goot: void.
   l2: {
@@ -141,7 +144,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 3 — de knikkerbaan -------------------------------------------
+  // ---- Level 3 — schets: de knikkerbaan ----------------------------------
   // Een goot met twee klemmen erin (de validatie), en verderop een splitsing
   // (de cascade). De knikker ligt tegen de onderste klem.
   l3: {
@@ -184,7 +187,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 4 — twee pijlen, één doos ------------------------------------
+  // ---- Level 4 — schets: twee pijlen, één doos ---------------------------
   // Twee variabelen die naar hetzelfde object wijzen, en eronder een derde die
   // nergens heen wijst. Het rode kruis is de enige kleur op de bladzijde.
   l4: {
@@ -231,7 +234,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 5 — de patroonkaart ------------------------------------------
+  // ---- Level 5 — schets: de patroonkaart ---------------------------------
   // Een stapeltje kaarten met de bovenste opgeslagen: turfjes, want "tellen" is
   // de eerste kaart van de vijf.
   l5: {
@@ -274,7 +277,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 6 — de plankenbrug boven het ravijn --------------------------
+  // ---- Level 6 — schets: de plankenbrug boven het ravijn -----------------
   // Vijf planken tussen twee rotswanden, genummerd met stipjes vanaf nul. Er
   // ligt er één in het ravijn: die is er één te ver gegaan.
   l6: {
@@ -318,7 +321,7 @@ AL.spreadSchetsen = {
     ]
   },
 
-  // ---- Level 7 — de speurtocht en de dubbele pijl -------------------------
+  // ---- Level 7 — schets: de speurtocht en de dubbele pijl ----------------
   // Boven: een stippelspoor langs drie dozen, met de gevonden doos omcirkeld.
   // Onder: de keten, twee pijlen achter elkaar.
   l7: {

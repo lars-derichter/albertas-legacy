@@ -18,24 +18,26 @@
      index.html". Losse <script>-tags, geen ES-modules: alles hangt aan het
      globale AL-object zodat het spel ook vanaf file:// werkt (dubbelklik). -->
 
-<!-- 1–6: renderer, invoer, geluid, parser -->
+<!-- 1–7: renderer, invoer, geluid, parser, loopveld -->
 <script src="js/palette.js"></script>
 <script src="js/font.js"></script>
+<script src="js/font-hand.js"></script>
 <script src="js/gfx.js"></script>
 <script src="js/input.js"></script>
 <script src="js/sound.js"></script>
 <script src="js/parser.js"></script>
+<script src="js/loopveld.js"></script>
 
-<!-- 7–12: DOM-vrije logica -->
+<!-- 8–13: DOM-vrije logica -->
 <script src="js/logic/strings.js"></script>
 <script src="js/logic/world.js"></script>
-<!-- 9–11: de Java-checker -->
+<!-- 10–12: de Java-checker -->
 <script src="js/logic/checker/tokenizer.js"></script>
 <script src="js/logic/checker/asserts.js"></script>
 <script src="js/logic/checker/javacsim.js"></script>
 <script src="js/logic/levels.js"></script>
 
-<!-- 13: js/levels/level1.js … level7.js. level0.js is TESTINHOUD
+<!-- 14: js/levels/level1.js … level7.js. level0.js is TESTINHOUD
      ("de proefdruk") en wordt NIET in productie geladen: alleen bij ?dev=1
      schrijft de loader hieronder de <script>-tag in (document.write draait
      synchroon vóór de volgende tags, ook op file://). Zo blijft level 0
@@ -59,14 +61,14 @@
 <script src="js/levels/level6.js"></script>
 <script src="js/levels/level7.js"></script>
 
-<!-- 14: js/pc/*.js — de gesimuleerde pc (DOM-overlay). editor/terminal/parsons
+<!-- 15: js/pc/*.js — de gesimuleerde pc (DOM-overlay). editor/terminal/parsons
      eerst, dan de coördinator pc.js. -->
 <script src="js/pc/editor.js"></script>
 <script src="js/pc/terminal.js"></script>
 <script src="js/pc/parsons.js"></script>
 <script src="js/pc/pc.js"></script>
 
-<!-- 15–16: scènes + sprites -->
+<!-- 16–17: scènes + sprites -->
 <script src="js/scenes/scene-titelkaart.js"></script>
 <script src="js/scenes/scene-opening-huis.js"></script>
 <script src="js/scenes/scene-opening-trap.js"></script>
@@ -85,7 +87,7 @@
 <script src="js/sprites/sprite-broncode-doos.js"></script>
 <script src="js/sprites/sprite-stoel.js"></script>
 
-<!-- 17: js/sim/*.js — de Seven Little Goats-simulatie (DOM-vrij: strings, world,
+<!-- 18–19: js/sim/*.js — de Seven Little Goats-simulatie (DOM-vrij: strings, world,
      combat). Daarna de dunne DOM-controller die de sim in het terminalpaneel van
      de pc-overlay draait (raakt de DOM, dus bij de pc-renderlaag; laadt ná pc.js
      en ná de sim-logica). -->
@@ -94,10 +96,10 @@
 <script src="js/sim/goats-combat.js"></script>
 <script src="js/pc/sim-terminal.js"></script>
 
-<!-- 18: de engine -->
+<!-- 20: de engine -->
 <script src="js/engine.js"></script>
 
-<!-- 19: het aanraakscherm-D-pad en de mobiele commandobalk (enkel actief op
+<!-- 21: het aanraakscherm-D-pad en de mobiele commandobalk (enkel actief op
      een toestel zonder fysiek toetsenbord; zie js/touch.js). Allerlaatste,
      want het leunt op AL.input, AL.engine.advance en AL.debugState. -->
 <script src="js/touch.js"></script>

@@ -1,8 +1,8 @@
 // Een Geitje is één van de zeven geitjes uit het geitenhuisje.
 // Elk geitje heeft een naam, een referentie naar zijn Schuilplaats en een
 // gered-vlag. Zolang een geitje nog in de wolf zit, is zijn schuilplaats null:
-// dan is er geen doos om naar te wijzen. Het jongste geitje overleefde in de
-// klokkast en heeft dus wel een schuilplaats vanaf het begin.
+// er is dan nog geen plek om naar te wijzen. Het jongste overleefde in de
+// klokkast en heeft er dus vanaf het begin wel een.
 class Geitje {
 
     private String naam;
@@ -12,8 +12,8 @@ class Geitje {
     // verstopte); de zes broertjes worden pas aan de rivier gered.
     private boolean gered;
 
-    // Constructor. Geef null mee als het geitje nog geen schuilplaats heeft
-    // (nog opgeslokt); geef een Schuilplaats mee voor het jongste geitje.
+    // null voor de zes die nog in de wolf zitten; het jongste krijgt de klokkast
+    // meteen mee.
     Geitje(String naam, Schuilplaats schuilplaats) {
         this.naam = naam;
         this.schuilplaats = schuilplaats;
@@ -24,8 +24,8 @@ class Geitje {
         return naam;
     }
 
-    // Geeft de schuilplaats van dit geitje, of null als het er geen heeft. Dit
-    // is de eerste pijl in de keten van geitje via schuilplaats naar kamer.
+    // De schuilplaats, of null zolang het geitje nog opgeslokt is. Aan deze ene
+    // vraag hangt de hele slotlijst.
     Schuilplaats getSchuilplaats() {
         return schuilplaats;
     }

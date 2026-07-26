@@ -1,9 +1,7 @@
-// Een Schuilplaats is een verstopplek voor een geitje: een naam (bijvoorbeeld
-// "de klokkast") en een referentie naar de Kamer waar ze zich bevindt.
-// Zo kan je vanaf een geitje twee pijlen volgen naar de naam van zijn kamer:
+// Een verstopplek voor een geitje: een naam ("de klokkast", "tussen het riet")
+// en de kamer waar ze ligt. Zo weet een geitje zelf waar het zit en moet ik dat
+// nergens apart bijhouden:
 //     geitje.getSchuilplaats().getKamer().getNaam()
-// De eerste pijl gaat van het geitje naar zijn schuilplaats, de tweede van de
-// schuilplaats naar haar kamer.
 class Schuilplaats {
 
     private String naam;
@@ -18,8 +16,7 @@ class Schuilplaats {
         return naam;
     }
 
-    // Geeft de kamer waar deze schuilplaats zich bevindt. Dit is de tweede pijl
-    // in de keten van geitje via schuilplaats naar kamer.
+    // De kamer waar deze plek ligt. Het slot leest hier de kamernaam uit.
     Kamer getKamer() {
         return kamer;
     }

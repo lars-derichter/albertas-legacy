@@ -68,7 +68,6 @@ AL.scenes["opening-trap"] = {
 AL.scenes["opening-trap"].walkboxes = [[0, 180, 320, 9]];
 AL.scenes["opening-trap"].entries = { start: [160, 185] };
 AL.scenes["opening-trap"].hotspots = [];
-AL.scenes["opening-trap"].props = [];
 AL.scenes["opening-trap"].overlays = [];
 
 // Node-export voor tooling/tests.

@@ -45,11 +45,11 @@ De aanleiding:
   niet. Hij las het oude verhaal als een handleiding.
 - Met een klassieke truc bedroog hij de zeven geitjes: hij wreef zijn poot wit
   met **bloem** uit de molen en at **krijt** bij de kruidenier voor een
-  zachte stem. De geitjes deden open. Zes werden opgeslokt.
-- Het **jongste geitje** verstopte zich in de **klokkast** en overleefde. Het
-  ging niet naar de dorpelingen — die vonden alles "te gevaarlijk", zoals altijd
-  — maar naar de enige die met wolven ervaring had: **Roodkapje**, intussen de
-  weerzinnige dorpsexpert in wolvenzaken.
+  zachte stem. De geitjes deden open. De wolf slokte er zes op.
+- Het **jongste geitje** verstopte zich in de **klokkast** en bleef er zitten.
+  Het riep tot iemand het hoorde; de dorpelingen vonden het "te gevaarlijk",
+  zoals altijd. Het bericht kwam bij de enige die met wolven ervaring had:
+  **Roodkapje**, intussen de weerzinnige dorpsexpert in wolvenzaken.
 
 De speler is Roodkapje. Ze volgt het spoor van de jonge wolf van het geitenhuisje
 tot de rivieroever, en rekent daar met hem af — op een van vier manieren, die de
@@ -102,7 +102,7 @@ uit level 4 is de sequel-naam voor dat bedradingswerk (zie
 | Bospad | — | doorgang, weinig licht |
 | Oude eik | — (de raaf) | raaf-cameo: ruil een `koek` voor `gladde kiezels` |
 | Grootmoeders huisje | `zilveren schaar` | callback naar spel 1; ontgrendelt het beste einde |
-| Wolvenspoor | — | witte pootafdrukken (bloem), krijtstof; de spanning stijgt |
+| Wolvenspoor | — | witte pootafdrukken (bloem), krijtstof; water vooruit |
 | Rivieroever | `stenen` (los, ter plaatse) | de showdown; stenen voor het beste einde |
 
 De **gladde kiezels** (van de raaf) en de losse **stenen** (aan de oever) zijn
@@ -135,7 +135,7 @@ ze helpen WP 2 de omvang inschatten en houden de puzzelfragmenten leesbaar.
 | Klasse | Verantwoordelijkheid | ~Regels |
 |---|---|---|
 | `Main` | startpunt: titelbanner, backstory, spellus (`while (!spel.isGestopt())`) | ~60 (55) |
-| `Spel` | bouwt de wereld, wiret kamers (`verbindKamers`), verwerkt commando's, start gevechten, handelt de vier eindes af, `zoekGeitje` | ~520 (478) |
+| `Spel` | bouwt de wereld, verbindt kamers (`verbindKamers`), verwerkt commando's, start gevechten, handelt de vier eindes af, `zoekGeitje` | ~520 (478) |
 | `Speler` | Roodkapje: levenspunten (0..20, klemmende setter), aanvalskracht, inventaris (`ArrayList<Voorwerp>`), `zoek`/`heeft`/`verwijder`/`pak` | ~90 (83) |
 | `Kamer` | één plek: naam, beschrijving, hint, voorwerpen, vier buur-referenties (noord/oost/zuid/west, `null` = geen uitgang), tegenstander, `verwijderVoorwerp` | ~120 (117) |
 | `Voorwerp` | naam, beschrijving, kracht; twee overloaded constructors (met/zonder kracht); `toString` | ~45 (44) |
@@ -217,7 +217,7 @@ Verder geldt:
 
   Bv. `new Tegenstander("jachthond", "…", 8, new int[]{2,3,2,3,2}, 0, "…")`.
 
-- **De jonge wolf** (rivieroever, de boss): groot, grijs, en dit keer geen
+- **De jonge wolf** (rivieroever, de boss): groot, grijs, en deze keer geen
   vermomming meer. Hoge levenspunten, smeekt bij 5. Zijn resultaat kiest samen
   met wat de speler bij zich heeft welk van de vier eindes valt.
 

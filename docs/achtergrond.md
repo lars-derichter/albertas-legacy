@@ -68,12 +68,12 @@ stil, en net iets te goed bewaard.
 
 Vaste elementen die in de prose en de scènes terugkomen:
 
-- **Het dakraam** met schuin, warm namiddaglicht (zie de dusk-ramp in
-  `art-stijlgids.md`).
+- **Het dakraam** met schuin, warm avondlicht (zie de avondlicht-ramp 28–34 in
+  `art-stijlgids.md`). Laag al: de streep staat bijna van de vloer af.
 - **De dozen**, gelabeld in Alberta's handschrift. Sommige labels zijn grapjes.
 - **De pc**: een beige toren met een bolle monitor die nog aanslaat. Hierop
-  opent de speler de gesimuleerde editor en terminal (zie `spelontwerp-
-  legacy.md`).
+  opent de speler de gesimuleerde editor en terminal
+  (zie `spelontwerp-legacy.md`).
 - **Het notitieboek**: beschadigd, bladen los, vlekken. Elk level ontgrendelt
   één fragment ervan.
 - **De broncode-doos**: pas op het einde relevant. Hierin ligt, letterlijk, de
@@ -138,10 +138,12 @@ wereld.
 De speler is Alberta's kleinkind. Geslacht, naam en leeftijd blijven open zodat
 elke student zich de rol kan aanmeten.
 
-> Beslissing: de speler krijgt geen naam, geen geslacht en geen sprite-gezicht
-> in close-up. De zolder-sprite is een kleine, neutrale figuur van achteren en
-> opzij (zie `art-stijlgids.md`, sprite-specificaties). In-game prose spreekt
-> de speler aan met "je/jij", nooit met een eigennaam.
+> Beslissing: de speler krijgt geen naam, geen geslacht en geen gezicht. De
+> zolder-sprite is een kleine, neutrale figuur van achteren, opzij én van voren
+> (zie `art-stijlgids.md`, sprite-specificaties): een adventure van boven-opzij
+> heeft een naar de speler toe lopende houding nodig, en die is er dus ook —
+> maar zonder ogen en zonder mond, ook in `sta-zuid`. In-game prose spreekt de
+> speler aan met "je/jij", nooit met een eigennaam.
 
 De motivatie van de speler is eerbetoon, niet erfenis-in-geld of mysterie-
 oplossen. Hij maakt af wat Alberta niet afkreeg. Dat motief draagt elke
@@ -181,7 +183,8 @@ De frame-logica die elk stukje prose moet respecteren:
   telt dat dubbel: één droge zin doet meer dan drie sfeerzinnen.
 - **De duisternis komt uit _Seven Little Goats_ zelf.** Alberta schreef een
   verhaal waarin zes kinderen worden opgegeten, een wolf wordt opengelegd en één
-  van de vier eindes "koud en onaf" heet — en ze heeft het niet afgemaakt. Het
+  van de vier eindes ("de afrekening") eindigt op de regel "Koud en onaf." — en
+  ze heeft het niet afgemaakt. Het
   kader mag dat laten voelen: in wat er op de opengeslagen bladzijde staat, in
   wat de intro aankondigt, in wat de terminal belooft voor ze boot. Er hoeft
   geen greintje nieuwe fictie bij; de donkerte ligt er al, ze werd tot nu toe

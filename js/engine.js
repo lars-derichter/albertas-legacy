@@ -30,7 +30,6 @@ globalThis.AL = globalThis.AL || {};
   var VELD_BOT = 189;
   var TIK_MS = 1000 / 15;      // vaste logische tik: 15 Hz
   var SNELHEID = 1.5;          // looppixels per tik
-  var KANT_COOLDOWN = 1.0;     // rustpauze na "die kant kan je niet op" (s)
 
   // Van een looprichting naar de entry aan de overkant.
   var TEGENGESTELD = {
@@ -92,8 +91,12 @@ globalThis.AL = globalThis.AL || {};
   var animTijd = 0;
   var laatsteTijd = 0;
   var accumulator = 0;
-  var kantCooldownTot = 0;
-  var laatsteKantOp = null;
+
+  // Staat de speler nú in een uitgangszone? De zone vuurt alleen op het moment
+  // dat hij hem binnenkomt. Zonder die grendel zou een speler die van de
+  // overkant precies in een zone wordt neergezet meteen weer terugstappen, en
+  // dat is een lus die zichzelf voedt.
+  var inUitgang = false;
 
   // De lopende opkomst van een nieuwe kamer, of null. Vorm: { soort, t: 0..1 },
   // waarbij t van 0 (nog zwart) naar 1 (volledig zichtbaar) loopt.
@@ -116,17 +119,30 @@ globalThis.AL = globalThis.AL || {};
 
   // ---- Scènes --------------------------------------------------------------
 
+  // Welke ontbrekende scène-ids al gemeld zijn: één waarschuwing per id, niet
+  // één per frame (zorgVoorScene draait bij elke moduswissel).
+  var gemeldeScenes = {};
+
   function haalScene(id) {
     var s = AL.scenes && AL.scenes[id];
     if (s) return s;
     // Terugvalscène, zodat de engine nooit crasht als een scène nog ontbreekt.
+    // Ze crasht dus niet, maar ze zwijgt ook niet meer: een getypte scène-id
+    // ("zolder-oosr") gaf vroeger een lege kamer zonder één spoor van waaróm.
+    // De console is op file:// gewoon te openen, dus daar hoort het te staan.
+    if (!gemeldeScenes[id]) {
+      gemeldeScenes[id] = true;
+      if (typeof console !== "undefined" && console.warn) {
+        console.warn("engine: onbekende scène-id '" + id + "' — terugvalkamer " +
+          "getoond. Staat het bestand in index.html en klopt scene.id?");
+      }
+    }
     return {
       id: id,
       picture: [["fill", 29]],
       walkboxes: [[20, 150, 280, 38]],
       entries: { start: [160, 175] },
-      hotspots: [],
-      props: []
+      hotspots: []
     };
   }
 
@@ -144,6 +160,10 @@ globalThis.AL = globalThis.AL || {};
     }
     actorX = e[0];
     actorY = e[1];
+    // Grendel de uitgangszone op de plek waar de speler landt. De lint verbiedt
+    // een entry ín een zone, dus dit staat normaal op false; het is het vangnet
+    // voor het geval iemand een entry verschuift.
+    inUitgang = AL.loopveld.uitgangBij(scene, actorX, actorY) !== null;
   }
 
   function wisselNaarScene(id, entryNaam) {
@@ -154,16 +174,12 @@ globalThis.AL = globalThis.AL || {};
     loopt = false;
   }
 
-  function inWalkbox(scene, x, y) {
-    var boxen = scene.walkboxes;
-    for (var i = 0; i < boxen.length; i++) {
-      var b = boxen[i];
-      if (x >= b[0] && x <= b[0] + b[2] - 1 &&
-          y >= b[1] && y <= b[1] + b[3] - 1) {
-        return true;
-      }
-    }
-    return false;
+  // Mag de speler hier staan? De meetkunde zelf staat in js/loopveld.js: de
+  // walkboxes min de blokken (de voetafdrukken van de voorwerpen). Die splitsing
+  // is er omdat de engine niet te testen valt zonder browser en de meetkunde
+  // wél — en het is precies de meetkunde waar een fout onzichtbaar in wegzakt.
+  function beloopbaar(scene, x, y) {
+    return AL.loopveld.beloopbaar(scene, x, y);
   }
 
   // ---- Vensters en de resultaatvorm ---------------------------------------
@@ -257,7 +273,12 @@ globalThis.AL = globalThis.AL || {};
       } else if (tag === "titel") {
         startTitel();
       } else if (tag === "fragment-gevonden") {
-        AL.sound.speel("pagina");
+        // Geen cue hier. Deze tag markeert voortgang; het geluid van het
+        // moment staat als eigen `geluid:`-tag in dezelfde effectenlijst (WP
+        // 37). Vroeger speelde dit `pagina`, en de spread erna nog eens, en de
+        // logica had er zelf ook al één in de lijst gezet: drie identieke
+        // kartontikken op dezelfde audioklok-tijd, wat één harde klik geeft in
+        // plaats van een bladzijde.
         bewaar();
 
       // --- Gesimuleerde pc ---
@@ -312,6 +333,17 @@ globalThis.AL = globalThis.AL || {};
 
       // --- Systeem ---
       } else if (tag === "geluid") {
+        // Een cue mag een vertraging meedragen: `geluid:pagina@0.35` speelt de
+        // pagina-cue 0,35 s later. Dat is er precies één keer nodig — twee
+        // foley-cues op hetzelfde moment zijn geen twee geluiden maar één
+        // modderige — en het alternatief (de engine laten weten welke cues
+        // elkaar in de weg zitten) legt kennis op de verkeerde plaats.
+        var apenstaart = arg.indexOf("@");
+        var vertraging = 0;
+        if (apenstaart !== -1) {
+          vertraging = parseFloat(arg.substring(apenstaart + 1)) || 0;
+          arg = arg.substring(0, apenstaart);
+        }
         if (arg === "aan") {
           AL.sound.zetAan(true);
           startBedVoorStand();
@@ -320,7 +352,7 @@ globalThis.AL = globalThis.AL || {};
         }
         else if (arg === "uit") { AL.sound.zetAan(false); if (toestand) toestand.geluid = false; bewaar(); }
         else if (AL.sound.bedden.indexOf(arg) !== -1) { AL.sound.muziek(arg); }
-        else { AL.sound.speel(arg); }
+        else { AL.sound.speel(arg, vertraging); }
       } else if (tag === "vraag") {
         // Alleen een venstervorm: verwerkResultaat leest deze tag en houdt de
         // invoerbalk vrij. Hier valt niets te doen.
@@ -425,7 +457,10 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
-    AL.sound.speel("pagina");
+    // Geen cue: welk geluid bij het openslaan hoort, beslist de logica in haar
+    // effectenlijst (een blad uit het notitieboek klinkt anders dan een blad
+    // uit een doos die je net opengetrokken hebt). Doorbladeren speelt wél
+    // `pagina` — zie spreadBlader.
     bewaar();
   }
 
@@ -487,9 +522,25 @@ globalThis.AL = globalThis.AL || {};
   // Start de zit-reeks. Bestaat de anim niet (of is er geen spelerdefinitie),
   // dan wordt er niets uitgesteld: de klaar-functie loopt meteen. Zo kan het
   // spel nooit vasthangen op een ontbrekende sprite.
+  //
+  // De reeks speelt op de stoel en niet waar de speler toevallig stond. Dat is
+  // WP 35: met een bureau op ware maat is er precies één plek waar de handen op
+  // de voorrand van het blad uitkomen, en dat is de zitting. De prose zei het al
+  // ("Je schuift Alberta's stoel bíj"), de engine deed het niet. De stoel wordt
+  // opgezocht via `hotspot.item`; staat er geen stoel in de kamer, dan gaat de
+  // speler gewoon zitten waar hij staat, zoals vroeger.
+  //
+  // Dat de zitplek in een blok ligt, is geen probleem: de speler wordt er door
+  // de engine neergezet en niet naartoe gelopen, en na het sluiten van de
+  // pc-overlay zet `betreedZolder` hem terug op de entry van de kamer.
   function startZitten(klaar) {
     var def = AL.sprites && AL.sprites["speler"];
     if (!def || !def.anims["zit-oost"]) { klaar(); return; }
+    var scene = toestand ? haalScene(toestand.sceneId) : null;
+    var hs = (scene && scene.hotspots) || [];
+    for (var i = 0; i < hs.length; i++) {
+      if (hs[i].item === "stoel") { actorX = hs[i].x; actorY = hs[i].y; break; }
+    }
     zitStap = 0;
     zitTikTot = ZIT_TIKKEN;
     zitKlaar = klaar;
@@ -589,7 +640,19 @@ globalThis.AL = globalThis.AL || {};
       verwerkEffecten(AL.world.startEpiloog(toestand).effecten, null);
       return;
     }
-    if (toestand.modus === "epiloog") { startTitel(); return; }
+    if (toestand.modus === "epiloog") { naarTitelNaEpiloog(); return; }
+  }
+
+  // Van de epiloog terug naar de titelkaart. De epiloog sláát op (toonEpiloog),
+  // de titel niet — dus wie na de aftiteling herlaadde, kreeg de epiloog
+  // opnieuw voor zijn neus. De staat krijgt hier de modus "titel", zodat hervat
+  // na een reload de titelkaart toont en niet de eindkaart. Enter op de titel
+  // start daarna gewoon de openingsreeks (de save blijft intact: alle zeven
+  // hoofdstukken staan er nog op af).
+  function naarTitelNaEpiloog() {
+    toestand.modus = "titel";
+    bewaar();
+    startTitel();
   }
 
   // Escape: een vraag intrekken, de openingsreeks overslaan, of de pc-overlay
@@ -673,46 +736,87 @@ globalThis.AL = globalThis.AL || {};
 
     var scene = haalScene(toestand.sceneId);
     var nx = actorX, ny = actorY;
-    if (dx !== 0 && inWalkbox(scene, actorX + dx, actorY)) nx = actorX + dx;
-    if (dy !== 0 && inWalkbox(scene, nx, actorY + dy)) ny = actorY + dy;
+    if (dx !== 0 && beloopbaar(scene, actorX + dx, actorY)) nx = actorX + dx;
+    if (dy !== 0 && beloopbaar(scene, nx, actorY + dy)) ny = actorY + dy;
     loopt = (nx !== actorX || ny !== actorY);
-    // Voetstappen op de tel van de loopcyclus: die draait op 8 fps met vier
-    // frames, dus twee steunfases per halve seconde. Elke vierde tik is één stap,
-    // en de twee varianten wisselen af — twee identieke stappen achter elkaar
-    // klinken als een metronoom en niet als iemand die loopt.
-    if (loopt) {
-      if (stapTeller % 4 === 0) {
-        AL.sound.speel((stapTeller % 8 === 0) ? "stap" : "stap-2");
-      }
-      stapTeller++;
-    } else {
-      stapTeller = 0;
-    }
+    voetstap();
     actorX = nx;
     actorY = ny;
     toestand.speler.x = actorX;
     toestand.speler.y = actorY;
+
+    // De uitgangszones. Noord en zuid zijn niet met een schermrand te doen: geen
+    // enkele loopstrook raakt y8 of y189, en dat kán ook niet — een kamer die tot
+    // bovenaan het beeld beloopbaar is, heeft geen achterwand meer. De trap is
+    // daarom een zone in de vloer: wie erin stapt, gaat naar boven. Zonder
+    // venster, zonder tweede toets.
+    var uit = AL.loopveld.uitgangBij(scene, actorX, actorY);
+    if (!uit) { inUitgang = false; return; }
+    if (inUitgang) return;                  // al binnen: niet nog eens vuren
+    inUitgang = true;
+    probeerOversteek(uit);
+    loopt = false;
+  }
+
+  // Voetstappen op de tel van de loopcyclus. De loopanimatie draait op 8 fps met
+  // vier frames waarvan er twee steunfases zijn (frame 0 en 2, "beide voeten op
+  // de vloer"): vier steunfases per seconde.
+  //
+  // De oude regel telde logische tikken — elke vierde van de vijftien per
+  // seconde, dus 3,75 stappen per seconde tegen een beeld dat er 4,0 laat zien.
+  // Een kwart stap verschil per seconde: na vier seconden lopen valt het geluid
+  // op de doorzwaai in plaats van op de voet. Niemand rekent dat na, iedereen
+  // hoort het.
+  //
+  // Nu hangt de stap aan het animatieframe zelf — dezelfde teller waarmee
+  // tekenActor het frame kiest — en valt hij dus per definitie op de steunfase.
+  // De twee varianten wisselen af: twee identieke stappen achter elkaar klinken
+  // als een metronoom en niet als iemand die loopt.
+  var laatsteStapFrame = -1;
+
+  function loopCyclusFps() {
+    var def = AL.sprites && AL.sprites["speler"];
+    var anim = def && def.anims && def.anims["loop-oost"];
+    return (anim && anim.fps) ? anim.fps : 8;
+  }
+
+  function voetstap() {
+    if (!loopt) return;
+    var frame = Math.floor(animTijd * loopCyclusFps());
+    if (frame === laatsteStapFrame) return;     // nog binnen hetzelfde frame
+    laatsteStapFrame = frame;
+    if (frame % 2 !== 0) return;                // doorzwaai, geen steunfase
+    stapTeller++;
+    AL.sound.speel((stapTeller % 2 === 1) ? "stap" : "stap-2");
   }
 
   function as(r) {
     return (r === "noord" || r === "zuid") ? "nz" : "ow";
   }
 
+  // Een oversteek te voet: over een schermrand (oost/west) of door een
+  // uitgangszone (noord/zuid). Lukt hij niet, dan gebeurt er níéts.
+  //
+  // Dat is een beslissing en geen vergetelheid. Tot nu toe opende een mislukte
+  // oversteek "Die kant kan je niet op" in een modaal venster, en omdat élke
+  // loopstrook van x0 tot x319 liep, kreeg de speler dat venster ongeveer elke
+  // seconde te zien zodra hij tegen een geschilderde muur aan liep. Een muur
+  // hoort te stoppen, niet te praten. De weigering blijft bestaan waar ze wél
+  // een antwoord is: op het getypte "ga west" (AL.world.betreed via de parser),
+  // want daar heeft de speler een vraag gesteld.
+  //
+  // De randen die op niets uitkomen zijn bovendien uit de walkboxes gehaald
+  // (tools/lint-scene.mjs bewaakt dat), dus dit pad is de vangrail en niet de
+  // dagelijkse gang van zaken.
   function probeerOversteek(kruis) {
-    if (laatsteKantOp === kruis && animTijd < kantCooldownTot) return;
     var r = AL.world.betreed(toestand, kruis);
     var heeftScene = false;
     for (var i = 0; i < r.effecten.length; i++) {
       if (r.effecten[i].indexOf("scene:") === 0) { heeftScene = true; break; }
     }
-    if (heeftScene) {
-      verwerkResultaat(r, TEGENGESTELD[kruis]);
-      bewaar();
-    } else {
-      laatsteKantOp = kruis;
-      kantCooldownTot = animTijd + KANT_COOLDOWN;
-      verwerkResultaat(r, null);
-    }
+    if (!heeftScene) return;
+    verwerkResultaat(r, TEGENGESTELD[kruis]);
+    bewaar();
   }
 
   // ---- Tekenen -------------------------------------------------------------
@@ -814,7 +918,13 @@ globalThis.AL = globalThis.AL || {};
       if (e.speler) { tekenActor(); continue; }
       var fps = e.def.anims[e.anim].fps || 0;
       var frame = fps > 0 ? Math.floor(animTijd * fps) : 0;
-      AL.gfx.tekenSprite(e.def, e.anim, frame, e.x, e.y, { spiegel: e.spiegel });
+      // Dezelfde diepteschaal als de speler (WP 35). Het anker is
+      // voeten-midden, dus schalen laat de voeten staan waar ze staan: een prop
+      // krimpt naar zijn eigen vloerpunt toe en verschuift niet.
+      AL.gfx.tekenSprite(e.def, e.anim, frame, e.x, e.y, {
+        spiegel: e.spiegel,
+        schaal: AL.loopveld.diepteSchaal(scene, e.y)
+      });
     }
   }
 
@@ -894,28 +1004,14 @@ globalThis.AL = globalThis.AL || {};
     return voorvoegsel + richting;
   }
 
-  // Diepteschaal: wie verder naar achter staat, is kleiner. De stijlgids vraagt
-  // dit expliciet en zegt ook hoe hard — "houd het subtiel, rond 0,8 achteraan".
-  //
-  // De schaal loopt over de bewandelbare strook van de scène zelf, niet over een
-  // vast getal: elke kamer heeft haar eigen loopstrook, en een vaste bovengrens
-  // zou in de ene kamer te veel en in de andere niets doen. Achteraan 0,84,
-  // vooraan 1. Op een figuur van vijfentwintig pixels is dat vier pixels verschil
-  // over de diepte van de kamer — genoeg om te zien, te weinig om te betrappen.
+  // Diepteschaal van de speler. De berekening zelf staat sinds WP 35 in
+  // `js/loopveld.js`, want ze geldt voor álles wat op deze vloer staat: de
+  // speler én elke prop uit `hotspots`. Twee regimes naast elkaar — een speler
+  // die naar achter krimpt tussen props die dat niet doen — was precies wat de
+  // schaalmismatch nog vergrootte.
   function actorSchaal() {
     var scene = toestand ? haalScene(toestand.sceneId) : null;
-    var boxen = scene && scene.walkboxes;
-    if (!boxen || boxen.length === 0) return 1;
-    var boven = Infinity, onder = -Infinity;
-    for (var i = 0; i < boxen.length; i++) {
-      if (boxen[i][1] < boven) boven = boxen[i][1];
-      var bot = boxen[i][1] + boxen[i][3] - 1;
-      if (bot > onder) onder = bot;
-    }
-    if (onder <= boven) return 1;
-    var t = (onder - actorY) / (onder - boven);       // 0 vooraan, 1 achteraan
-    if (t < 0) t = 0; else if (t > 1) t = 1;
-    return 1 - 0.16 * t;
+    return AL.loopveld.diepteSchaal(scene, actorY);
   }
 
   // Rechtsboven tijdens de openingsreeks: dat Escape hem overslaat. Wie
@@ -1017,8 +1113,12 @@ globalThis.AL = globalThis.AL || {};
     // twee regels ging — wat sinds het handschrift proportioneel gezet wordt
     // altijd zo is. De onderrand van het rechterblad is nu van haar; het
     // linkerblad draagt de chroom (bladwijzer links, hint rechts ertegenaan).
+    // De laatste-pagina-versie zei "spatie: pc >", en dat klopte maar half: de
+    // spatie doet het boek dicht en zet je in de werkhoek — de pc gaat pas open
+    // als je daar 'ga zitten' typt. De teksten staan nu in AL.strings.spread.
     var laatste = spreadPagina >= spreadAantalPaginas() - 1;
-    var hint = laatste ? "spatie: pc >" : "spatie >";
+    var hint = laatste ? AL.strings.spreadChroom.bladerLaatste
+      : AL.strings.spreadChroom.bladerVerder;
     var rechterrand = AL.spreads ? (AL.spreads.BLAD.linksX + AL.spreads.BLAD.kolomB)
       : 152;
     AL.gfx.tekenTekst(hint, rechterrand - hint.length * 8, 178, 40, null);
@@ -1197,6 +1297,12 @@ globalThis.AL = globalThis.AL || {};
     window.addEventListener("resize", berekenSchaal);
 
     AL.input.init();
+    // Vóór de eerste gebruikersactie start de geluidslaag niets (browsers
+    // verbieden het, en een opgeschorte context laat alles wat je erin plant
+    // ophopen). De titelmuziek hieronder is dus een lege aanroep; deze haak
+    // start alsnog het bed dat bij de stand van dat moment hoort, zodra de
+    // speler zijn eerste toets, klik of tik geeft.
+    AL.sound.opOntgrendeld(startBedVoorStand);
     AL.input.onSubmit = opCommando;
     AL.input.onAdvance = opAdvance;
     AL.input.onEscape = opEscape;
@@ -1243,7 +1349,11 @@ globalThis.AL = globalThis.AL || {};
 
   function hervat() {
     var modus = toestand.modus;
-    if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
+    // Een save die op de titelkaart staat (na de epiloog) hervat op de
+    // titelkaart. startTitel zet titelActief weer aan; startBedVoorStand
+    // hieronder kiest daar het titelbed bij.
+    if (modus === "titel") { startTitel(); }
+    else if (modus === "pc") { wisselNaarScene(toestand.sceneId, "start"); toonOverlay(); }
     else if (modus === "spread") { /* de spread hertekent uit spreadLevelId */
       spreadLevelId = "l" + (toestand.levelActief || 1);
       spreadPagina = 0;
@@ -1280,10 +1390,21 @@ globalThis.AL = globalThis.AL || {};
         einde: toestand ? toestand.einde : null,
         actorX: Math.round(actorX),
         actorY: Math.round(actorY),
+        loopt: loopt,
+        // Het frame van de loopcyclus waaraan de voetstap hangt (zie voetstap):
+        // even is een steunfase, oneven een doorzwaai. De geluidsrooksmaaktest
+        // leest dit op het moment dat er een stap klinkt — anders is "de stap
+        // valt op de voet" alleen met een oor te controleren.
+        loopFrame: Math.floor(animTijd * loopCyclusFps()),
         vensterOpen: !!venster,
         // Wacht het venster op een getypt antwoord? Dan blijft de invoerbalk
         // vrij en klikt een toets het niet weg.
         vensterVraag: !!(venster && venster.vraag),
+        // De regels van de huidige bladzijde van het open venster. De
+        // rooksmaaktest leest hiermee wát de verteller antwoordt (bv. of de
+        // '?'-hint bij de spelstand past) in plaats van alleen dát hij iets zegt.
+        vensterRegels: (venster && venster.paginas)
+          ? venster.paginas[venster.huidige].slice() : [],
         overlayOpen: !!(pcOverlay && pcOverlay.style.display !== "none"),
         // Loopt de zit-animatie? De modus staat dan al op "pc" terwijl de overlay
         // nog dicht is — een test die op het paneel wacht, hoort op overlayOpen

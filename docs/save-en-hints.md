@@ -12,9 +12,14 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
 - **Waarde:** het staat-object uit `engine-architectuur.md`, door
   `JSON.stringify` geserialiseerd. De staat is plat en cyclusvrij, dus dit
   round-tript zonder verlies.
-- **Wanneer geschreven:** na elke echte voortgang — een puzzel opgelost,
-  een level af, een editor-concept gewijzigd, geluid getoggeld. Elke schrijf
-  zendt de effect-tag `voortgang:opgeslagen` (zie `engine-architectuur.md`).
+- **Wanneer geschreven:** na elke echte voortgang — een puzzel opgelost, een
+  level af, een editor-concept gewijzigd, geluid getoggeld, een kamer verlaten,
+  de pc geopend of gesloten. De engine schrijft dan gewoon; ze meldt het niet.
+  De effect-tag `voortgang:opgeslagen` is géén verslag van een schrijf maar een
+  **verzoek** om er een: de DOM-vrije logica kan zelf niet bij localStorage, dus
+  ze vraagt het via die tag aan de engine (zie `engine-architectuur.md`). Vier
+  plaatsen zenden hem: level af, oordeel, epiloog en een gewijzigd
+  editor-concept.
 - **Wanneer gelezen:** bij de start leest `js/engine.js` de sleutel. Bestaat
   ze en is de versie leesbaar, dan wordt ze teruggeladen; anders start een verse
   staat via `AL.world.nieuw(seed)`.
@@ -40,6 +45,16 @@ de opgeslagen `versie` met de huidige:
 `versie` verhoogt alleen bij een breking van het staat-schema; kleine
 contentwijzigingen (nieuwe prose, nieuwe puzzelvarianten) breken de save niet.
 
+> Beslissing (WP 38): het veld `levels[*].spreadGelezen` is uit de verse staat
+> gehaald en `versie` blijft daarbij `1`. Een veld wégnemen dat nooit
+> geschreven en nooit gelezen werd, is geen schemabreking: een save van vóór
+> WP 38 draagt het nog, `migreer` neemt `levels` in zijn geheel over, en niets
+> in de code kijkt ernaar. Zo'n oude save laadt dus ongewijzigd en speelt
+> ongewijzigd verder — hij sleept alleen één sleutel mee die bij de
+> eerstvolgende `herbegin` verdwijnt. De versie ophogen zou de save van elke
+> speler door `migreer` en terug naar localStorage sturen om er niets aan te
+> veranderen; dat is risico zonder winst.
+
 ## `herbegin`
 
 Het in-game commando `herbegin` (beschikbaar in de zolder-modus, zie
@@ -58,9 +73,10 @@ gedeeltelijke reset; het is alles of niets. Een enkel level opnieuw doen gebeurt
 niet via `herbegin` maar door de puzzel opnieuw te openen (de checker beoordeelt
 elke inzending vers).
 
-De bevestiging is een getypt antwoord (`herbegin ja`) en geen toets, zodat ze
-stateless blijft en dus in Node testbaar is. Het vraagvenster draagt daarom de
-effect-tag `vraag`: het laat de invoerbalk vrij zolang het openstaat. Blokkeerde
+De bevestiging is een getypt antwoord (`herbegin ja`, of `herbegin bevestig`)
+en geen toets, zodat ze stateless blijft en dus in Node testbaar is. Het
+vraagvenster draagt daarom de effect-tag `vraag`: het laat de invoerbalk vrij
+zolang het openstaat. Blokkeerde
 het de invoer zoals een gewoon venster, dan was het antwoord dat de vraag zelf
 noemt onmogelijk te typen. Escape trekt de vraag in en laat alles staan; elk
 ander commando vervangt de vraag door zijn eigen antwoord.
@@ -91,10 +107,19 @@ beschadiging of dezelfde getallen.
 
 ## Het hint-contract
 
-`?` werkt overal (de predecessor-conventie). Binnen een puzzel geeft `?`
-een hint in **drie stadia**, oplopend, en **nooit het letterlijke antwoord**. De
-tellerstand per puzzel staat in `puzzels[*].hints`; de som over alles in
-`hintsTotaal` (voedt Alberta's oordeel).
+Om een hint vragen doe je met `?` in de zolder en in de terminal van de
+gesimuleerde pc, en met **F1** in de editor. Die uitzondering is geen
+slordigheid maar een noodzaak: in een code-editor zet `?` een vraagteken in de
+code, dus daar neemt F1 het over, zoals in elke Turbo-editor uit die tijd. F1
+werkt trouwens in beide panelen van de pc — de statusbalk zet hem er ook in de
+terminal bij, zodat één toets overal in de pc hetzelfde doet. De spread-modus
+kent geen hint — daar is de invoerbalk geblokkeerd en bladert elke toets gewoon
+door.
+
+Binnen een puzzel geeft `?` (of F1) een hint in **drie stadia**, oplopend, en
+**nooit het letterlijke antwoord**. De tellerstand per puzzel staat in
+`puzzels[*].hints`; de som over alles in `hintsTotaal` (voedt Alberta's
+oordeel).
 
 De drie stadia per puzzel:
 
@@ -125,6 +150,34 @@ Regels:
 - Stap 1 hergebruikt bewust de exacte metafoor-taal van de cursus, zodat de hint
   het mentale model versterkt dat in de les is opgebouwd — de didactische kern
   van het hele spel.
+
+### De zolder-hint
+
+`?` in de zolder is een navigatie-nudge en geen puzzel-hint: hij is **gratis en
+ongeteld** (hij raakt `hintsTotaal` niet). Hij zegt niet wat er in deze hoek
+staat maar wat er **nu** te doen staat, en leidt dat af uit de bestaande staat
+(`levelActief`, `levels[*].ontgrendeld` / `afgerond` en de kaart
+`FRAGMENT_LOCATIE`) — er is geen apart hint-veld in de save. De beslisboom staat
+in `js/logic/world.js` (`world.hint`), de teksten in `AL.strings.hints`:
+
+1. Ligt het actieve hoofdstuk ontgrendeld maar nog niet afgerond, dan wijst de
+   hint naar de pc: "typ `ga zitten`" in de werkhoek, "de pc staat in de
+   werkhoek in het oosten" elders.
+2. Anders, is er nog een fragment te vinden, dan zegt de hint waar het ligt: in
+   déze kamer (met het commando erbij) of in welke kamer dan wel, met de weg
+   erheen.
+3. Is alles gevonden én hersteld, dan zegt de hint dat er op de zolder niets
+   meer ligt.
+
+`AL.world.gebruikPc` hangt aan dezelfde twee ankers en gebruikt dezelfde
+teksten, zodat de pc en `?` elkaar niet kunnen tegenspreken: gaat de speler
+zitten terwijl het actieve hoofdstuk al hersteld is en er nog een blad op de
+zolder ligt, dan blijft de pc dicht en zegt hij waar dat blad ligt.
+
+> Beslissing (WP 33): de vaste `hint` per scène is verdwenen. Eén tekst per hoek
+> kan de spelstand niet volgen, en ze loog ook echt: de hint van de doorgang
+> stuurde de speler naar de pc in het oosten terwijl de fragmenten 2, 3 en 4 in
+> de dozen van diezelfde doorgang zaten.
 
 ## Alberta's oordeel — verdict-tiers
 

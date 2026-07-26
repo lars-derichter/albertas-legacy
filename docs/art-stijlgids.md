@@ -23,7 +23,7 @@ blijft index-gebaseerd: één byte per pixel, alleen de opzoektabel is groter.
 | 1 | `#0000AA` | donkerblauw | avondlucht, diepe schaduw buiten |
 | 2 | `#00AA00` | donkergroen | gebladerte donker |
 | 3 | `#00AAAA` | cyaan | lucht (dither met 11) |
-| 4 | `#AA0000` | donkerrood | mantel-schaduw, baksteen |
+| 4 | `#AA0000` | donkerrood | baksteen, `rode mantel` in de sim |
 | 5 | `#AA00AA` | magenta | spaarzaam: accenten |
 | 6 | `#AA5500` | bruin | hout, paden, meubels |
 | 7 | `#AAAAAA` | lichtgrijs | steen, stof, rook |
@@ -31,7 +31,7 @@ blijft index-gebaseerd: één byte per pixel, alleen de opzoektabel is groter.
 | 9 | `#5555FF` | helderblauw | water, lucht-accent |
 | 10 | `#55FF55` | lichtgroen | gras met zon |
 | 11 | `#55FFFF` | lichtcyaan | lucht (dither met 3) |
-| 12 | `#FF5555` | helderrood | mantel-licht, vuur |
+| 12 | `#FF5555` | helderrood | vuur, `rode mantel` in de sim |
 | 13 | `#FF55FF` | lichtmagenta | accent, bloem |
 | 14 | `#FFFF55` | geel | licht, koek, kaars |
 | 15 | `#FFFFFF` | wit | hooglicht, ogen, papierwit |
@@ -131,18 +131,102 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
 
 ### Vaste toewijzingen (samenhang tussen scènes)
 
-- **Zolderlicht:** de avond-ramp (28–34); de lichtstraal uit het dakraam is
-  34 met een kern van 58, schuin over de vloer.
+- **Zolderlicht:** de avond-ramp (28–34); de lichtstraal uit het dakraam heeft
+  geen eigen kleur meer. Ze bestaat uit vijf `light`-plakken die schuin over de
+  vloer naar beneden toe breder én zwakker worden (3 stappen bij het raam, 1
+  onderaan; dichtheid 0,80 → 0,30), plus één zachte plak waar ze het hout
+  haalt. Ze staan achteráán in de picture, zodat alles waar de straal op valt —
+  de kist, de dozen, de planken — in zijn éigen ramp lichter wordt. Als
+  dekkende veelhoek in 34/58 lag hij vroeger als een oranje plaat ónder de
+  meubels door (`js/scenes/scene-zolder-west.js`, §"De lichtstraal").
 - **Zoldervloer en balken:** hout-ramp (22–27), planklijnen in 22.
 - **Dozen:** karton in 26/25 met schaduw 23; labels als 41-inkt op 36-papier.
-- **De pc:** beige kast in 51/52, scherm-gloed 56→58 (amber CRT), aan-staat met
-  een 34-halo.
-- **Roodkapje / de speler:** mantel 12 met schaduw 4 (callback naar de
-  predecessor), huid uit de huid-ramp, haar 41 of 23.
+- **De pc:** beige kast en monitorrand in 50–52, donker scherm in 49; de
+  aan-staat is amber CRT (55 gloedschaduw, 56 amber, 58 schermwit — het enige
+  plekje waar de gloed-ramp als échte kleur staat, want dáár zit de lichtbron).
+  De halo op de wand is geen kleur maar vijf `light`-koepels die op het
+  bureaublad staan en naar buiten toe uitdoven (dichtheid 0,12 → 0,55), met één
+  zachte plak van 0,28 over het blad, het toetsenbord en de mok. Zo wordt de
+  wand lichter in háár eigen ramp in plaats van er een bruine of paarse vlek op
+  te krijgen (`js/scenes/scene-zolder-oost.js`, §"De gloed van de monitor").
+- **De speler:** Alberta's kleinkind, alledaags gekleed. Trui uit de
+  gebladerte-ramp (42 naad, 43 schaduw, 44 mid, 45 licht), jeans uit de
+  nacht-ramp (59 binnenbeen, 60 schaduw, 61 licht), huid 18/19/20, kort haar
+  23/24, schoenen 49 met zool 0. Uitdrukkelijk **niet** 4/12: het rood is nu
+  alleen nog de `rode mantel` in de sim. De vier trappen per kledingstuk zijn
+  er omdat het licht van rechts komt (zie hieronder) — een paar van twee
+  volstond voor een mantel, niet voor een mouw naast een romp.
 - **Buiten (de sim-scènes, indien getekend):** lucht dither 61/63 avond of
   3/11 dag; gras 44/45 met vlekken 42; boomstammen 24 met schaduw 22, kruinen
   43 met zon 46.
 - **De wolf:** koelgrijs-ramp (49/50/51), buik 52, ogen 14.
+- **Drapé (een deken over een stapel, een laken over een spiegel):** de
+  bovenste rij één stap lichter dan de plooi eronder, in de ramp van de kámer:
+  avond (29/30/31) op de zolder beneden, steen (49/50/51) op de overloop, en
+  papier (35–38) voor een stoflaken. Zonder dat hoogteverschil leest de stof
+  als nog een doos in een andere kleur. Zie WP 35b
+  (`workflow/35b-de-zolder-aangekleed.md`).
+- **Het overige zoldergoed:** karton 25/26 en hout 23/24 blijven wat ze zijn
+  (zie de maatregel hieronder); blik, emmers, gieters en archiefkasten komen
+  uit de steen-ramp (48–52), lampenkappen en stoflakens uit de papier-ramp
+  (35–38). Een wandplank is 3 px dik en hangt op twee klossen van 2 × 5 px.
+
+## De maatregel: 1 px ≈ 5 cm
+
+Eén pixel is vijf centimeter. De speler is 31 px hoog en dus 1,55 m; alles wat
+naast hem in een kamer staat, wordt daaraan gemeten. Deze regel bestaat sinds
+WP 35 (`workflow/35-schaalpas.md`) en ze is er gekomen omdat het spel er zonder
+maat uitzag zoals het eruitzag: een koffiemok van 14 × 16 px (bijna zo breed als
+de speler), een bureau van 148 px (7,4 m) waar diezelfde speler met zijn kruin
+niet boven kwam, en geschilderde dozen van twee tot drie keer de doos-sprite die
+ernaast stond. Elk van die dingen was op zichzelf goed getekend. Samen klopte er
+niets van.
+
+**De verhouding tussen buren telt zwaarder dan de absolute waarheid.** Twee
+dozen naast elkaar moeten even groot zijn; of ze nu 0,7 of 0,8 m meten, ziet
+niemand.
+
+**Kleine voorwerpen mogen groter dan waar, tot ongeveer anderhalve keer.** Een
+mok op ware schaal is twee pixels en dat is geen mok meer. Elke uitzondering
+staat hieronder met haar factor erbij; wat er niet bij staat, houdt zich aan de
+maat.
+
+| Voorwerp | Maat | In het echt | Opmerking |
+|---|---|---|---|
+| speler | 31 px hoog | 1,55 m | het ijkpunt |
+| bureaublad | 15 px boven de voetlijn | 0,75 m | voorrand, niet achterrand |
+| bureau (breedte) | ≤ 52 px | 2,6 m | oude werktafel |
+| stoelzitting | 9 px | 0,45 m | gelijk aan de dij in `zit-oost` |
+| stoel (totaal) | 19 px | 0,95 m | rugleuning |
+| verhuisdoos | 16–22 px breed, 13–18 px hoog | 0,8–1,1 m | de doos-sprite is de eenheid |
+| kist | 40 × 19 px | 2,0 × 0,95 m | ~1,4× — het boek moet erop passen |
+| notitieboek (open) | 16 × 10 px | 0,8 × 0,5 m | ~2× — het draagt het hele spel |
+| CRT-monitor | 14 px breed, 10 px hoog | 0,7 × 0,5 m | ~1,3× — middelpunt van de kamer |
+| pc (monitor + kast) | 18 × 16 px, geblit 15 × 13 | 0,75 × 0,65 m | ~1,4× |
+| toetsenbord | 13 × 3 px | 0,65 × 0,15 m | |
+| koffiemok | 4 × 5 px | 0,2 × 0,25 m | ~2× — de kleinste leesbare mok |
+| papier op een blad | 6–8 px breed | 0,3–0,4 m | |
+| koffer | 15 × 9 px | 0,75 × 0,45 m | WP 35b |
+| opgerold tapijt | 6–8 px dik, 25–40 hoog | 0,3 × 1,3–2,0 m | staand |
+| schilderijlijst | 14–15 × 16–19 px | 0,7 × 0,9 m | leunend, rug naar voren |
+| schemerlamp | 14 × 30 px | 0,7 × 1,5 m | kap + voet |
+| wasmand | 14 × 9 px | 0,7 × 0,45 m | |
+| archiefkastje | 16 × 25 px | 0,8 × 1,25 m | drie laden |
+| staande spiegel | 14 × 27 px | 0,7 × 1,35 m | onder een laken |
+| ladder | 17 px breed, 64 hoog | 0,85 × 3,2 m | bomen 3 px, sporten 1 px |
+| naaimachine | 22 × 12 px | 1,1 × 0,6 m | op een tafeltje van 34 × 16 |
+| wandplank | 3 px dik | 0,15 m | 36–64 px lang |
+| weckpot | 4 × 6 px | 0,2 × 0,3 m | ~1,5× — kleinste leesbare pot |
+
+Een stapel wordt hoger door te stapelen, niet door de doos te vergroten. De
+torens op de overloop zijn "hoger dan jij" doordat er vier dozen op elkaar
+staan, niet doordat één doos twee meter is.
+
+**Karton is 25/26, hout op de vloer is 23/24.** De hout- en de karton-kleuren
+komen uit dezelfde ramp, dus alleen een afspraak houdt ze uit elkaar. Ze is er
+niet voor de sfeer maar voor de keuring: `test/test-schaal.mjs` telt élk vlak
+van minstens 12 × 10 px in 25 of 26 als een doos en meet het na tegen de
+doos-sprite. Een kist die in kartonkleur geschilderd staat, breekt die maat.
 
 ## Stijlregels (VGA / SCI1-look)
 
@@ -167,8 +251,8 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
 
 ## De draw-ops, en wanneer je ze gebruikt
 
-De renderer kent elf ops. De eerste zeven zijn de basis uit de
-predecessor-engine; de laatste vier zijn erbij gekomen omdat de stijlregels
+De renderer kent twaalf ops. De eerste zeven zijn de basis uit de
+predecessor-engine; de laatste vijf zijn erbij gekomen omdat de stijlregels
 hierboven zonder hen niet uitvoerbaar waren — met alleen platte vullingen en
 één 50 %-schaakbord kán een vlak niet graderen.
 
@@ -266,6 +350,14 @@ zonder lichtbron hoort er niets te bewegen.
   staan waar ze staan, dus een figuur die naar achter kleiner wordt, blijft op
   dezelfde vloer. De stijlgids vraagt dit expliciet ("de speler wordt kleiner
   naar achter"); houd het subtiel, rond 0,8 achteraan.
+- **Eén diepteregime voor iedereen.** De schaal komt uit
+  `AL.loopveld.diepteSchaal(scene, y)` en geldt voor de speler én voor elke
+  sprite uit `hotspots`. Tot WP 35 schaalde alleen de speler mee, en dat máákte
+  de schaalfout: hij kromp naar achter toe terwijl het bureau en de dozen even
+  groot bleven, dus juist waar de verhouding het meest opviel klopte ze het
+  minst. Geschilderde geometrie schaalt niet — die teken je op de maat die bij
+  haar diepte hoort, en dozen achteraan zijn dus een tikje kleiner getekend dan
+  dozen vooraan. Voorgrond-`overlays` zijn ook verf en blijven ongemoeid.
 
 ## Scène-inventaris met mood-notities
 
@@ -306,14 +398,21 @@ teken per pixel, `.` transparant), met één uitbreiding voor het grotere palet.
 
 Specs:
 
+De maten zijn bovengrenzen en volgen de maatregel hierboven. Ze zijn in WP 35
+aangehaald tot vlak boven de werkelijke maat van elke sprite: een bovengrens van
+32 × 32 voor een monitor van een halve meter bewaakt niets.
+
 | Sprite | Anims | Maat (richtlijn) | Anker |
 |---|---|---|---|
 | `speler` | sta-noord/oost/zuid, loop-noord/oost/zuid, draai, zit-oost | ≤ 16×32 | voeten-midden |
-| `notitieboek` | idle | ≤ 24×16 | voeten-midden |
-| `pc` | idle, aan | ≤ 32×32 | voeten-midden |
+| `notitieboek` | idle | ≤ 20×12 | voeten-midden |
+| `pc` | idle, aan | ≤ 20×18 | voeten-midden |
 | `doos` | idle | ≤ 24×20 | voeten-midden |
 | `broncode-doos` | idle, open | ≤ 28×24 | voeten-midden |
-| `stoel` | idle | ≤ 20×28 | voeten-midden |
+| `stoel` | idle | ≤ 14×20 | voeten-midden |
+
+`doos` en `broncode-doos` houden hun maat: zíj zijn de eenheid waar het
+geschilderde karton zich sinds WP 35 aan meet.
 
 Regels:
 
@@ -334,13 +433,22 @@ Regels:
   wordt de romp één rij korter. Een sprite die volledig stilstaat leest als een
   standbeeld, ook in een spel waarin niets beweegt.
 - **Armzwaai alleen in het zijaanzicht.** Van voren en van achteren zitten de
-  armen ín het silhouet; daar is een arm een rode vlek en niets meer. Opzij is
-  er breedte voor een mouw van twee pixels die vóór de mantel uitkomt.
+  armen ín het silhouet; daar leest een naad van één pixel in de diepste trap
+  van de ramp beter dan een uitstekende arm. Opzij is er breedte voor een mouw
+  van twee pixels die vóór de romp uitkomt.
 - **Een eenmalige anim staat op `fps: 0`.** De engine zet die frame voor frame,
   dus een tempo erop zou hem dubbel laten lopen.
 - De speler is klein op het scherm (Sierra-verhouding, ± 1/6 van de
   schermhoogte); geen close-upsprites, geen gezichtsdetail (zie de speler-
-  beslissing in `achtergrond.md`).
+  beslissing in `achtergrond.md`). Concreet: 15 × 31, met 32 rijen voor de
+  doorzwaaiframes. Het gezicht is een vlak stuk huid met een lichtkant — geen
+  ogen, geen mond.
+- **Sprites zijn van rechts belicht**, net als de props: het dakraam staat in
+  elke kamer rechts. De donkerste trap van een ramp hoort links, de lichtste
+  rechts. Eén uitzondering met open vizier: `spiegel` keert de belichting mee
+  om, dus een naar het westen lopende speler is een paar tellen van links
+  belicht. Dat is de prijs voor het halveren van het aantal frames; wie dat niet
+  wil, tekent aparte `-west`-anims, en dat mag hier niet.
 - 1 px donkere outline waar de sprite anders in de achtergrond verdwijnt.
 
 ## Het notitieboek-spread — visuele taal
@@ -361,7 +469,7 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   40) mogen als sfeer.
   - **Per level, niet gedeeld.** Ze staan in `js/scenes/spread-schetsen.js` en
     niet in het sjabloon: één vlek op een vaste plek is dezelfde vlek op alle
-    acht de spreads, en dan verklaart ze niets.
+    zeven de spreads, en dan verklaart ze niets.
   - **Ze vreet de schets aan, ze gumt hem niet uit.** Een dichtheid rond 0,20
     op 39 met een binnenlaag rond 0,10 op 40 leest als een wasplek; boven
     0,35 leest ze als zand en verdwijnt de tekening eronder. Een schets die je
@@ -369,21 +477,16 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
   - **Dezelfde vlek op beide bladzijden.** Een vlek trekt door het papier heen.
     De schets staat alleen op de tweede bladzijde, de vlek op allebei — dus wie
     doorbladert ziet dezelfde plek terugkomen.
-- **Handschrift:** Alberta's notities in inkt (41) op de papierkleur. De
-  handschriftbenadering is de 8×8-bitmapfont van de engine, maar **schuin en
-  onregelmatig gezet** zodat het als handschrift leest zonder een aparte
-  handschriftfont nodig te hebben. `gfx.tekenHandschrift` doet dat met drie
-  dingen tegelijk: schuinstand (elke rij schuift met de hoogte mee, dus de
-  letter helt in plaats van te wiebelen), proportionele spatiëring met een
-  deterministische variatie van een pixel, en een verticale deining.
-  - Die deining gaat **per groepje van vier tekens en als driehoeksgolf**, niet
-    per teken en niet als hash. Een hand dwaalt van de lijn af en komt er weer
-    op terug; ze springt niet om de letter. Met een sprong per teken viel elk
-    woord uit elkaar in losse letters op eigen hoogte — met de schuinstand erbij
-    las dat als losgeraakte type, niet als schrift.
-  - De **kop staat in dezelfde hand**, alleen rechter en zonder deining: een
-    titel schrijft een mens trager op. Wat een kop níét mag zijn is de gedrukte
-    prosefont, want dan staan er twee schrijvers op één blad.
+- **Handschrift:** Alberta's notities in inkt (41) op de papierkleur, gezet met
+  haar eigen glyphset — zie §"Typografie" hieronder voor de ontwerpregels van
+  die font. Op deze bladzijde telt vooral dat de **liniatuur en de font
+  dezelfde maat delen**: de lijnen staan op `BLAD.regelH` en de basislijn van de
+  font ligt er één pixel boven, dus Alberta schrijft óp de lijn.
+  - De **kop staat in dezelfde hand en dezelfde maat**, alleen zonder de
+    spatievariatie: een titel schrijft een mens trager en gelijkmatiger op.
+    Verder is hij herkenbaar aan de streep eronder — een tweede lettergrootte
+    hoeft er niet bij. Wat een kop níét mag zijn is de gedrukte prosefont, want
+    dan staan er twee schrijvers op één blad.
 - **Schetsen:** Alberta's diagrammen in inkt met spaarzame kleuraccenten (12
   voor een doorhaling, 44 voor een groen vinkje). Verder niets: het is een
   balpen op papier, geen illustratie. Inkt (41) voor de lijn die telt, 40 voor
@@ -410,3 +513,66 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
 Zo blijft één spread-sjabloon herkenbaar terwijl de schets, de notitie en de
 beschadiging per level verschillen — de goedkope, verhaal-trouwe scène-vorm die
 het plan vraagt.
+
+## Typografie
+
+Er staan drie letterbehandelingen in het spel, en méér mogen het er niet
+worden. Elke behandeling heeft één stem en één plaats.
+
+1. **De druk** — `js/font.js`, de 8×8-bitmapfont in de stijl van de
+   IBM-PC-BIOS-font, proportioneel gezet met de inktmaat per glyph
+   (`gfx.tekenProse`). Dit is de stem van de verteller: kamerbeschrijvingen,
+   berichtvensters, de opening, de eindkaart.
+2. **De hand** — `js/font-hand.js`, Alberta's handschrift. Alleen het
+   notitieboek-spread: de kop, de regels en de weekregel.
+3. **Het monospace chroom** — dezelfde drukfont, maar op het raster van acht
+   pixels (`gfx.tekenTekst`). De status- en invoerbalk, de gesimuleerde pc, en
+   op het spread: het paginanummer en de bladerhint.
+
+### De hand: ontwerpregels van de handschriftfont
+
+De hand is een **échte glyphset**, geen bewerking van de drukfont. Tot WP 36
+was ze dat wel: de drukfont met een shear van 0,25 en een verticale
+driehoeksgolf van ±1 px met periode vier tekens. Die golf was index-gebaseerd,
+dus elke regel deinde identiek, en op een blad met twaalf regels leest dat als
+verticale banding. Die benadering is teruggedraaid; wat een hand moet maken,
+zit nu in de glyphdata.
+
+- **De cel is 8×10.** Rij 0–1 is de stokzone en de accentzone, rij 2–7 de
+  x-hoogte (zes pixels), rij 7 de nominale basislijn, rij 8 de rij waar de
+  liniatuur loopt, rij 9 de staartzone. De cel moet binnen `BLAD.regelH` (11)
+  blijven, anders loopt de staart van een "g" door de kop van de regel eronder.
+- **Onregelmatige basislijn, gebakken per glyph.** Elk teken heeft zijn eigen
+  ligging: een pixel boven de lijn, op de lijn, of op de lijn zelf. Dat is de
+  hele deining — er zit geen formule meer in de renderer. Omdat de afwijking
+  aan het teken hangt en niet aan de positie in de regel, kan ze per definitie
+  geen patroon vormen dat over de regels heen als banding leest.
+  - **Nooit meer dan één pixel.** Twee is geen dwalende hand meer maar een
+    letter die eraf valt.
+  - **Alleen zakken bij letters waarvan de kleine en de grote vorm gelijk zijn**
+    (c o s u v w x z). Zo'n letter een pixel optillen laat haar als een kleine
+    hoofdletter lezen: "vult de velden" werd "Vult de Velden".
+- **Variabele inktbreedte**, van 2 px (de "i") tot 7 px (de "m" en de "w"). Het
+  woordwit is 3 px, één minder dan in de druk: de handletters zijn smaller, dus
+  een breder wit zou de woorden uit elkaar trekken.
+- **De schuinstand zit in de glyphs**, niet in een shear: de stokken van b d f
+  h k l t staan bovenaan één kolom rechts van hun voet, de staarten van g j p q
+  y buigen naar links. Een shear kantelt het hele raster en zet ook punten en
+  streepjes scheef; een pen doet dat niet. `gfx.tekenHandschrift` kent nog een
+  `schuin`-optie, maar ze staat op 0.
+- **Één hand per blad.** De renderer varieert nog precies één ding: de
+  spatiëring, met één pixel per teken, deterministisch uit de save-seed. De kop
+  zet diezelfde hand met die variatie uit.
+- **Dekking is een testeis, geen inschatting.** De handfont dekt alles wat de
+  drukfont dekt; `test/test-typografie.mjs` houdt elk teken dat in handschrift
+  op een bladzijde komt tegen de glyphset. Eén ontbrekend teken is een "?" op
+  een bladzijde die je pas ziet als je toevallig dié bladzijde opslaat.
+
+### Waarom het boek-chroom monospace blijft
+
+Het paginanummer en de bladerhint onderaan het spread staan bewust in de
+monospace drukfont, niet in Alberta's hand. Ze zijn geen deel van wat zij
+opschreef: ze horen bij het bláderen, zoals de statusbalk bij het lopen hoort.
+In haar hand zouden ze meeliegen dat zij "1/2" en "spatie >" op het papier
+heeft gezet. Het formaatverschil is precies het punt — de speler leest ze als
+apparatuur en niet als tekst, en kijkt eroverheen zodra hij verder wil.

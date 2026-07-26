@@ -1,6 +1,7 @@
-// Een cursusstijl-test voor Geitje en Schuilplaats: probeert de dubbele pijl
-// geitje.getSchuilplaats().getKamer().getNaam() uit, én het null-geval van een
-// nog opgeslokt geitje. Geen test-framework, gewoon zelf nakijken.
+// Even nakijken of Geitje en Schuilplaats kloppen: komt
+// geitje.getSchuilplaats().getKamer().getNaam() uit waar ik ze wil hebben, en
+// wat doet ze bij een geitje dat nog in de wolf zit. Geen framework, ik lees de
+// uitvoer zelf.
 class TestGeitje {
 
     public static void main(String[] args) {
@@ -11,7 +12,7 @@ class TestGeitje {
         Schuilplaats klokkast = new Schuilplaats("de klokkast", geitenhuisje);
         Geitje jongste = new Geitje("jongste geitje", klokkast);
 
-        // De dubbele pijl: van geitje via schuilplaats naar de naam van de kamer.
+        // Dit is wat het slot straks per geitje moet afdrukken.
         System.out.println("naam         (jongste geitje): " + jongste.getNaam());
         System.out.println("schuilplaats (de klokkast)   : "
                 + jongste.getSchuilplaats().getNaam());
@@ -23,12 +24,12 @@ class TestGeitje {
         // Een nog opgeslokt geitje heeft (nog) geen schuilplaats: null.
         Geitje opgeslokt = new Geitje("eerste geitje", null);
         System.out.println("schuilplaats (null): " + opgeslokt.getSchuilplaats());
-        // Null-veilig: eerst controleren voor we de pijlen volgen.
+        // Eerst controleren, anders klapt het slot hier eruit.
         if (opgeslokt.getSchuilplaats() == null) {
             System.out.println("null-veilig (nog niet gevonden): geen kamer om te tonen");
         }
 
-        // Na de bevrijding krijgt het een schuilplaats en volgt de keten wél.
+        // Na de bevrijding krijgt het een plek en klopt de keten wél.
         opgeslokt.setSchuilplaats(new Schuilplaats("onder de tafel", geitenhuisje));
         opgeslokt.setGered(true);
         System.out.println("na bevrijding (onder de tafel): "

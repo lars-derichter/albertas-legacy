@@ -30,10 +30,11 @@ met behoud van hun contract:
 |---|---|---|
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
-| `js/input.js` | toetsenbord/parser-invoer, arrow keys | ongewijzigd; parser-verben uitgebreid met zolder-commando's |
+| `js/font-hand.js` | — | nieuw in WP 36: een eigen 8×10-handschriftglyphset (`AL.fontHand`), niet overgenomen |
+| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, en de `pijlAan`/`pijlUit`-haken voor `js/touch.js`. De parser-verben zijn uitgebreid met de zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
-| engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc) |
+| engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc); de vloermeetkunde staat apart in `js/loopveld.js` (zie §De vloer) |
 | scène- en sprite-schema | de draw-op- en frame-formaten uit `docs/scene-schema.md` en `docs/sprite-schema.md` | overgenomen; scène-ids zijn nu zolderkamers en spreads |
 | `docs/`-schema's, Node `--test`, Playwright | test- en toolopzet | overgenomen |
 
@@ -70,16 +71,22 @@ Adapteren en crediteren; niet heruitvinden.
   palet. Kleuren buiten elke ramp (6 bruin, 14 geel) blijven ongemoeid.
 - **Sprite-schaling.** `tekenSprite` neemt `opts.schaal`; het ankerpunt blijft
   onderaan-midden, zodat een geschaalde figuur op dezelfde vloer blijft staan.
+  De factor komt sinds WP 35 voor speler én props uit
+  `AL.loopveld.diepteSchaal` (zie §De vloer).
 - **Overgangen.** `gfx.overgang(soort, t, kleur)` legt `fade`, `dissolve` of
   `iris` over de backing store. Op een palet-geïndexeerde buffer kan er niet
   gemengd worden, dus een fade is een geordende oplossing, niet een vervaging —
   zoals de hardware van toen het ook deed.
-- **Twee zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
-  gebruik waar een raster hóórt: de statusbalk, de invoerbalk en de terminal van
-  de gesimuleerde pc. Daarnaast staat `tekenProse`/`proseBreedte`, dat de
-  inktmaat per glyph uit `font.js` gebruikt. De glyphdata is niet veranderd; wat
-  erbij kwam is één keer uitrekenen waar de inkt van elke glyph begint en hoe
-  breed ze is.
+- **Drie zetwijzen naast elkaar.** `tekenTekst` blijft monospace en blijft in
+  gebruik waar een raster hóórt: de statusbalk, de invoerbalk, de terminal van
+  de gesimuleerde pc en het chroom onder een notitieboek-spread. Daarnaast staat
+  `tekenProse`/`proseBreedte`, dat de inktmaat per glyph uit `font.js` gebruikt.
+  De glyphdata van de drukfont is niet veranderd; wat erbij kwam is één keer
+  uitrekenen waar de inkt van elke glyph begint en hoe breed ze is. En sinds
+  WP 36 is er een derde: `tekenHandschrift`/`handschriftBreedte` zetten met een
+  éígen glyphset, `js/font-hand.js` (8 × 10, onregelmatige basislijnen per
+  glyph), alleen voor het notitieboek. Die drie en niet meer — de regels staan
+  in `art-stijlgids.md`, §Typografie.
 
   Dat "waar ze begint" is niet overbodig. Verschillende glyphs starten op een
   andere kolom — een `i` op kolom 2, een `K` op kolom 0 — dus zonder de
@@ -119,6 +126,79 @@ Elke noot is dus twee oscillatoren: een modulator die via een gain op de
 modulator verbuigt) en een eigen envelope op die index. Meer dan twee operatoren
 is er niet, en dat is opzet: zes-operator-FM klinkt als een DX7 en dus als 1983
 of 1995, niet als de periode ertussen.
+
+### Niveau en register
+
+De meesterversterking staat op **0,30**. Ze stond op 0,16, en daarmee piekte een
+voetstap van honderd milliseconde rond -20 dBFS: op een laptopspeaker geen zacht
+geluid maar geen geluid. De stemgains zijn tegelijk herverdeeld — de bedstemmen
+omlaag (er klinken er tot drie tegelijk), de foleystemmen omhoog (die klinken
+één voor één). Het ergste geval telt op tot 2,75 × 0,30 = 0,825, dus onder de
+klipgrens, en dat is dan nog de coherente som van drie bedstemmen plus twee
+foley-cues. `test/test-geluid.mjs` rekent dat na en bewaakt het venster
+0,25–0,40 voor de meestergain.
+
+Het register heeft een bodem, en om dezelfde reden: een tik op 73 Hz komt uit de
+speaker van een laptop niet terug.
+
+- **Cues liggen niet onder midi 48** (131 Hz). Het karakter van de foley zit in
+  de niet-harmonische ratio van hun stem, niet in de grondtoon: een kartontik op
+  165 Hz klinkt nog altijd als karton.
+- **Bedden mogen tot midi 45** (110 Hz), op twee voorwaarden — de noot valt in
+  de bas-stem (onder midi 55) en duurt minstens twee seconden. Dat is een drone:
+  hij houdt aan en wordt daardoor ook op een kleine speaker gevoeld. Een
+  melodienoot mag daar niet komen, want die zou wegvallen en een gat in het bed
+  achterlaten.
+
+### Wie vuurt wat af
+
+De cue-tabel als geheugensteun; de grondtonen staan als midi in `js/sound.js`.
+
+| Cue | Stem | Midi | Afgevuurd door |
+|---|---|---|---|
+| `pagina` | karton | 72, 67 | een spread-bladzijde omslaan (`spreadBlader`), het notitieboek openen, en 0,35 s ná een doos |
+| `deur` | hout | 57, 52 | elke kamerwissel (`AL.world.betreed`) |
+| `doos` | karton | 60, 55, 52 | een doos of kist die opengaat — met of zonder fragment erin |
+| `stap` \| `stap-2` | hout | 50 \| 53 | de steunfases van de loopcyclus, afwisselend |
+| `toets` | blip | 93 | de editor/terminal/Parsons laadt, en een hint |
+| `compileer` | blip | 69, 69, 76 | "compileer & test" |
+| `ok` \| `fout` | blip | 72, 79 \| 69, 64 | een assertie slaagt of faalt, een puzzel of level af |
+| `boot` | warm | 48…72 | de pc boot *Seven Little Goats* |
+
+Twee dingen die deze tabel afdwingt. **Eén cue per moment**: het openen van een
+fragment speelde vroeger drie keer `pagina` op dezelfde audioklok-tijd (de
+effect-tag, de `fragment-gevonden`-tag én het openslaan van de spread), en drie
+identieke tikken tegelijk zijn één harde klik. De renderlaag speelt daarom geen
+cue meer uit zichzelf bij `fragment-gevonden` of bij het openen van een spread;
+de logica zegt in haar effectenlijst wat er te horen is. **Twee foley-cues
+vallen niet samen**: een doos die opengaat is karton en dán papier, en dat is
+precies waar de vertraging `geluid:pagina@0.35` voor bestaat.
+
+### De ontgrendeling
+
+Een browser start geen audio zonder gebruikersactie. `AL.sound.unlock()` is wat
+die actie vertaalt, en hij hangt aan álle vier de oppervlakken waar een speler
+kan beginnen:
+
+- **toets** — `keydown` in `js/input.js`, vóór de tekstveld-uitzondering (het
+  eerste teken dat een telefoonspeler in de commandobalk typt, telt mee);
+- **muis, aanraking, pen** — `pointerdown` (plus `touchstart` voor oudere
+  webviews) op het venster in `js/input.js`, in de capture-fase;
+- **het D-pad en de commandobalk** van `js/touch.js` — pointerdown op een
+  richtingsknop en submit van het formulier;
+- **een tik op het canvas** in `js/touch.js` (tik-om-door-te-bladeren).
+
+Tot dat moment doet de geluidslaag **niets**: `speel()` en `muziek()` keren
+meteen terug, er wordt geen `AudioContext` gemaakt en er wordt geen oscillator
+gebouwd. Dat is geen zuinigheid maar een lek dat gedicht is — een opgeschorte
+context laat zijn klok stilstaan, dus alles wat je ertegen plant blijft in de
+graaf hangen tot de eerste `resume`, en barst dan in één keer los.
+
+Omdat de geluidslaag niet weet wélk bed bij de stand hoort, hangt de engine er
+een haak aan: `AL.sound.opOntgrendeld(startBedVoorStand)`. De titelmuziek die
+bij het opstarten gevraagd wordt, is dus een lege aanroep; het bed begint bij de
+eerste toets, klik of tik. `unlock()` is idempotent — hij wordt in een sessie
+honderden keren geroepen.
 
 ### De scheduler
 
@@ -178,7 +258,55 @@ Modules hangen aan `globalThis.AL` (browser, `file://`) en exporteren via
 tegenover `RRH` in de predecessor.
 
 Laadvolgorde binnen de logica (elke leest wat de vorige nodig heeft):
-`strings.js` → `world.js` → `levels.js` → checker-modules → `sim/*`.
+`strings.js` → `world.js` → checker-modules → `levels.js` → `sim/*`. De volle
+laadvolgorde van álle bestanden staat onderaan dit document.
+
+## De vloer: walkboxes, blokken en uitgangszones
+
+De meetkunde van een kamer zit niet in de engine maar in `js/loopveld.js`. Dat
+is een DOM-vrije module op hetzelfde niveau als `js/parser.js`: geen
+wereldlogica (ze geeft geen `{tekst, effecten}` terug, alleen booleans en een
+richting), maar wél iets wat zonder browser te testen hoort te zijn. De engine
+stelt haar per loopstap twee vragen, en `tools/lint-scene.mjs` stelt dezelfde
+twee aan elke scène.
+
+```js
+AL.loopveld.beloopbaar(scene, x, y)  // in een walkbox én in geen blok
+AL.loopveld.uitgangBij(scene, x, y)  // "noord"|"oost"|"zuid"|"west", of null
+AL.loopveld.diepteSchaal(scene, y)   // 1 vooraan tot 0,84 achteraan
+```
+
+`diepteSchaal` staat hier en niet in de engine omdat ze over dezelfde meetkunde
+gaat als de rest van deze module: de loopstrook van de kamer. Sinds WP 35 is ze
+bovendien het énige diepteregime. `tekenActor` gebruikt haar voor de speler en
+`tekenPropsEnActor` voor élke sprite uit `hotspots`, met dezelfde `y`-waarde
+waarop ook de painter's order sorteert. Daarvóór schaalde alleen de speler mee
+en bleven de props even groot, wat de schaalmismatch tussen figuur en meubilair
+juist vergrootte naarmate hij verder naar achter liep. Geschilderde geometrie
+(`picture`, `overlays`) schaalt niet: die staat al op de maat die bij haar
+diepte hoort.
+
+Het volledige veldformaat staat in `scene-schema.md`; wat de engine ermee doet:
+
+- **Blokken houden de speler tegen zonder iets te zeggen.** De walkbox min de
+  blokken is de vloer; loopt de speler ergens tegenaan, dan klemt de beweging en
+  gebeurt er verder niets. Er is geen botsingsvenster, geen tekst, geen cue.
+- **Uitgangszones vervangen de randkruising voor noord en zuid.** Een
+  randkruising vuurt als de doelpositie voorbij `VELD_TOP` (8) of `VELD_BOT`
+  (189) gaat, en geen enkele loopstrook komt daar — een kamer die tot bovenaan
+  het beeld beloopbaar is, heeft geen achterwand meer. De trap is daarom een
+  rechthoek in de vloer. De zone vuurt op het moment dat de speler hem
+  binnenkomt (een grendel in de engine houdt bij of hij er al in stond) en roept
+  precies hetzelfde aan als de rand: `AL.world.betreed`.
+- **Een mislukte oversteek te voet zwijgt.** `AL.world.betreed` geeft bij een
+  richting zonder buur `dieKantKanJeNietOp` terug; loopt de speler, dan laat de
+  engine dat vallen. Op het getypte `ga <richting>` blijft het venster staan,
+  want daar is het een antwoord op een vraag. De lint bewaakt bovendien dat een
+  loopstrook geen rand raakt waar geen kamer achter ligt, zodat dit pad de
+  vangrail is en niet de dagelijkse gang van zaken.
+
+`AL.world.betreed` is bij dit alles niet veranderd: de logica kent alleen de
+zolderkaart en de richting, niet de rechthoeken.
 
 ## Effect-tag-woordenlijst
 
@@ -192,9 +320,9 @@ reageert; de logica produceert ze alleen.
 | Tag | Wanneer |
 |---|---|
 | `scene:<id>` | wissel naar een zolder-/huisscène (scène-id uit `art-stijlgids.md`) |
-| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7`, plus `intro` en `outro` (dus `spread:l1`, `spread:intro`) |
+| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md` |
 | `titel` | toon de titelkaart |
-| `betreed:<richting>` | de speler stak een schermrand over (`noord`/`oost`/`zuid`/`west`); engine-hint voor de camera |
+| `betreed:<richting>` | de speler ging te voet naar de buurkamer (`noord`/`oost`/`zuid`/`west`): over de oost-/westrand of door een uitgangszone; engine-hint voor de camera |
 | `fragment-gevonden:<levelId>` | het notitieboek-fragment voor dit level is ontgrendeld in de adventure |
 
 ### Gesimuleerde pc
@@ -240,7 +368,7 @@ reageert; de logica produceert ze alleen.
 
 | Tag | Wanneer |
 |---|---|
-| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue |
+| `geluid:<cue>` | speel een eenmalige cue: `pagina`, `deur`, `toets`, `stap`, `stap-2`, `doos`, `compileer`, `ok`, `fout`, `boot`. Is de naam een muziekbed (`titel`, `ambient-zolder`, `pc`, `einde`), dan start de engine dat bed via `AL.sound.muziek` in plaats van een eenmalige cue. Een cue mag een vertraging meedragen — `geluid:pagina@0.35` speelt haar 0,35 s later; zie §Geluid, "Wie vuurt wat af" |
 | `geluid:aan` \| `geluid:uit` | geluid globaal aan/uit |
 | `crt:aan` \| `crt:uit` | de beeldbuislijnen en het vignet over het canvas aan/uit |
 | `vraag` | de begeleidende tekst is een vraag: het venster laat de invoerbalk vrij, zodat de speler het antwoord kan typen. Escape trekt de vraag in |
@@ -269,7 +397,6 @@ Velden (bindend voor de save in `save-en-hints.md`):
   levels: {                // per level de voortgang
     "1": {
       ontgrendeld: true,   // fragment gevonden, spread leesbaar
-      spreadGelezen: false,
       puzzels: {           // per puzzel-id de staat
         "l1-editor": { status: "open", hints: 0, draft: "" },
         "l1-trace":  { status: "open", hints: 0 },
@@ -290,6 +417,10 @@ Velden (bindend voor de save in `save-en-hints.md`):
 
 - `modus` stuurt de dispatch, zoals `modus` in de predecessor het gevecht
   stuurde. Elke modus heeft een eigen commandoset (zie `spelontwerp-legacy.md`).
+- `modus: "titel"` staat in de save vanaf het moment dat de speler de epiloog
+  wegklikt: de epiloog slaat zichzelf op, dus zonder die stand kreeg wie na de
+  aftiteling herlaadde de eindkaart opnieuw voor zijn neus. Bij het hervatten
+  toont die stand de titelkaart; de voortgang eronder blijft ongemoeid.
 - `puzzels[*].draft` bewaart de editor-inhoud tussen sessies (concept-behoud).
 - `puzzels[*].status`: `"open"` | `"bezig"` | `"af"`.
 - Geen object-referenties in de staat: puzzels, levels en scènes worden op
@@ -306,30 +437,36 @@ Losse `<script>`-tags, in deze volgorde (elke module verwacht de vorige):
 
 ```
 1.  js/palette.js          // AL.palet: de kleurtabel
-2.  js/font.js             // AL.font
-3.  js/gfx.js              // AL.gfx (init na palet + font)
-4.  js/input.js            // AL.input
-5.  js/sound.js            // AL.sound
-6.  js/parser.js           // AL.parser
-7.  js/logic/strings.js    // AL.strings  (alle prose)
-8.  js/logic/world.js      // AL.world    (zolder, staat, navigatie)
-9.  js/logic/checker/tokenizer.js
-10. js/logic/checker/asserts.js
-11. js/logic/checker/javacsim.js
-12. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
-13. js/levels/level1.js … level7.js       // puzzeldefinities (plus level0: proefdruk)
-14. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
-15. js/scenes/*.js         // zolderscènes + spreads
-16. js/sprites/*.js        // sprites
-17. js/sim/goats-strings.js  goats-world.js  goats-combat.js
-18. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
-19. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
-20. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
+2.  js/font.js             // AL.font     (de druk)
+3.  js/font-hand.js        // AL.fontHand (Alberta's hand, het notitieboek)
+4.  js/gfx.js              // AL.gfx (init na palet + beide fonts)
+5.  js/input.js            // AL.input
+6.  js/sound.js            // AL.sound
+7.  js/parser.js           // AL.parser
+8.  js/loopveld.js         // AL.loopveld (walkboxes, blokken, uitgangszones)
+9.  js/logic/strings.js    // AL.strings  (alle prose)
+10. js/logic/world.js      // AL.world    (zolder, staat, navigatie)
+11. js/logic/checker/tokenizer.js
+12. js/logic/checker/asserts.js
+13. js/logic/checker/javacsim.js
+14. js/logic/levels.js     // AL.levels   (level/puzzel-machine)
+15. js/levels/level1.js … level7.js       // puzzeldefinities
+    (js/levels/level0.js — de proefdruk — wordt er alleen bij ?dev=1 vóór
+     geschreven; een gewone playthrough laadt hem nooit)
+16. js/pc/editor.js  terminal.js  parsons.js  pc.js   // de drie panelen + coördinator
+17. js/scenes/*.js         // zolderscènes + spreads
+18. js/sprites/*.js        // sprites
+19. js/sim/goats-strings.js  goats-world.js  goats-combat.js
+20. js/pc/sim-terminal.js  // de sim-controller (leent het terminalpaneel bij sim:boot)
+21. js/engine.js           // AL.engine: init, frame-lus, effect-dispatch
+22. js/touch.js            // het aanraakscherm-D-pad + mobiele commandobalk
 ```
 
-`js/engine.js` laadt als laatste en is het enige dat het canvas, `document` en
-de pc-overlays aanraakt. Het roept `AL.gfx.init(canvas)`, leest de save (of
-maakt een verse staat), en start de frame-lus.
+`js/engine.js` laadt als voorlaatste (alleen `js/touch.js` komt erna, want dat
+hangt zijn D-pad aan een engine die er al is) en is samen met `js/touch.js` het
+enige dat het canvas, `document` en de pc-overlays aanraakt. Het roept
+`AL.gfx.init(canvas)`, leest de save (of maakt een verse staat), en start de
+frame-lus.
 
 ## De gesimuleerde pc: DOM-overlay, geen canvas-tekst
 
@@ -424,8 +561,10 @@ pc heeft zijn eigen, altijd al werkende invoer.
 js/
 ├── palette.js                 // AL.palet: ~64-kleuren VGA-ish tabel
 ├── font.js  gfx.js            // renderer (overgenomen, palet-aangepast)
+├── font-hand.js               // Alberta's hand (8×10), enkel het notitieboek
 ├── input.js  sound.js         // invoer + geluid (overgenomen, uitgebreid)
 ├── parser.js                  // parse + dispatchpatroon (overgenomen)
+├── loopveld.js                // DOM-vrij: walkboxes, blokken, uitgangszones
 ├── engine.js                  // frame-lus + effect-dispatch (raakt de DOM)
 ├── touch.js                   // aanraakscherm-D-pad + mobiele commandobalk
 │                              //   (raakt de DOM; enkel actief bij hasTouch)

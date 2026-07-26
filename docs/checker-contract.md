@@ -37,8 +37,8 @@ Scope:
 - **Strings**: `"..."` met escapes (`\"`, `\\`, `\n`). De inhoud is één
   string-token; trefwoorden erin tellen niet.
 - **Char-literals**: `'x'`, `'\n'`.
-- **Commentaar**: `// tot regeleinde` en `/* ... */`. Wordt overgeslagen (of als
-  triviatoken bewaard), nooit als code getokeniseerd.
+- **Commentaar**: `// tot regeleinde` en `/* ... */`. Wordt overgeslagen,
+  nooit als code getokeniseerd en nooit als triviatoken bewaard.
 - **Identifiers en trefwoorden**: `[A-Za-z_][A-Za-z0-9_]*`.
 - **Getallen**: gehele en decimale literals.
 - **Operatoren en interpunctie**: `= == != <= >= && || ! + - * / % ( ) { } [ ]
@@ -61,7 +61,11 @@ verschillen wegvallen:
 - **Optionele haakjes** worden niet automatisch weggewerkt: `(a && b)` en
   `a && b` verschillen alleen als een assertie expliciet toleranter is (zie de
   tolerantieregels).
-- **Overtollige puntkomma's** en lege statements worden genegeerd.
+- **Overtollige puntkomma's** en lege statements: `tokenizer.splitStatements`
+  kan een tokenstroom in statements knippen en lege statements weglaten, maar de
+  asserties gebruiken die splitsing niet — ze zoeken hun patroon in de rauwe
+  stroom, waar de `;`-tokens gewoon staan. In de praktijk maakt dat geen
+  verschil, want geen enkele assertie eist een leeg statement.
 
 Normalisatie raakt nooit de betekenis: `<` wordt nooit `<=`, `&&` nooit `||`.
 Alleen opmaak verdwijnt.
@@ -70,8 +74,9 @@ Alleen opmaak verdwijnt.
 
 `asserts.js` levert een bibliotheek van structurele asserties. Een puzzel is een
 geordende lijst asserties tegen de genormaliseerde tokenstroom van
-de speler. Elke assertie geeft `{ ok, diagnose }`; `diagnose` verwijst naar
-een feedbacksleutel (zie §"Falen → feedback"). De kern-asserties:
+de speler. Elke assertie geeft `{ ok, meldingKey, regel }`; `meldingKey`
+verwijst naar een feedbacksleutel en `regel` naar het regelnummer waar het
+misging (zie §"Falen → feedback"). De kern-asserties:
 
 De namen hieronder zijn de **echte functienamen** uit `asserts.js` (het
 `asserts`-register onderaan het bestand); de level-definities in
@@ -82,14 +87,14 @@ De namen hieronder zijn de **echte functienamen** uit `asserts.js` (het
 | `veldDeclaratie({type, naam, privaat?})` | een veld `<type> <naam>;` is gedeclareerd; bij `privaat` moet `private` erbij staan (overige modifiers tolerant) |
 | `constructorSignatuur({naam, params[]})` | de constructor heeft exact deze parametertypes en -volgorde |
 | `constructorToewijzing({veld, param?, klasse?})` | in de constructor staat `this.<veld> = <param>;`; herkent de omgekeerde fout `<param> = this.<veld>` |
-| `methodeSignatuur({retour, naam, params[]})` | een methode met exact dit returntype, deze naam en deze parametertypes/-volgorde |
+| `methodeSignatuur({retour, naam, params[], zichtbaarheid?})` | een methode met exact dit returntype, deze naam en deze parametertypes/-volgorde; met `zichtbaarheid` ook `public`/`private` |
 | `heeftReturn({methode, retourVorm?})` | de methode bevat minstens één `return`; optioneel in een bepaalde vorm (bv. `return <veld>;` of `return null;`) |
 | `conditieGebruikt({methode, operator, structuur?})` | een `if`-conditie gebruikt de gevraagde operator (`&&`, `\|\|`, `!`); `structuur: "cascade"` eist bovendien een `else if` |
-| `validatieKlem({methode, onder, boven})` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (de drie validatievarianten van scharnier 3) |
+| `validatieKlem({methode, onder, boven})` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (scharnier 3; level 3 zet er twee beschadigde varianten tegenover) |
 | `lusVorm({methode, soort})` | de lus is van de juiste soort: `for` / `foreach` / `while` (scharnier 5–6) |
 | `lusGrenzen({methode, vergelijk?, grensBevat?})` | de `for`-grens klopt; `<` vs `<=` telt (off-by-one van scharnier 6), en `grensBevat` eist een term in de conditie (bv. `size`) |
 | `aanroepKeten({methode?, stappen[], nullVeilig?, contigue?})` | een ketting `a.getX().getY()...` met de juiste opeenvolgende getters, eventueel null-veilig gesplitst (scharnier 7) |
-| `methodeAanroep({methode, naam})` | de methode `<naam>` wordt aangeroepen (bv. `verbindKamers`, `setNoord`, `remove`; scharnier 4/6) |
+| `methodeAanroep({methode, naam})` | binnen `<methode>` wordt `<naam>` aangeroepen (bv. `setNoord` binnen `verbindKamers`, of `remove`; scharnier 4/6) |
 | `geenVerbodenConstructies({methode?})` | geen buiten-cursus-constructie: `switch`, `enum`, `var`, lambda (`->`), ternary (`?`) of `.stream(` |
 
 Elke assertie is opzettelijk lokaal: ze zoekt één patroon, niet een hele
@@ -100,9 +105,10 @@ géén losse asserties: ze worden **samengesteld** uit `lusVorm` + `lusGrenzen`
 + `heeftReturn` (+ `methodeSignatuur`), zoals de noot hieronder toelicht.
 
 > Noot bij de implementatie (WP 4): de gezaghebbende namenlijst van de
-> asserties staat bovenaan `js/logic/checker/asserts.js` (o.a.
-> `veldDeclaratie`, `methodeSignatuur`, `constructorToewijzing`,
-> `validatieKlem`-varianten). Een losstaande patroonkaart-classifier
+> asserties staat onderaan `js/logic/checker/asserts.js`, in het
+> `asserts`-register (o.a. `veldDeclaratie`, `methodeSignatuur`,
+> `constructorToewijzing`, `validatieKlem`). Bovenaan hetzelfde bestand staat
+> een andere lijst: de meldingsleutels. Een losstaande patroonkaart-classifier
 > (`lusRomp`) is bewust niet gebouwd: een fuzzy classifier draagt een hoog
 > risico op vals-negatieven, de ergste faalmodus. Het level-5-werkpakket
 > stelt de lus-controle samen uit de bestaande lus-asserties en breidt de
@@ -122,13 +128,15 @@ Toleranties:
   `for (int teller …)` slagen beide, tenzij de puzzel de naam expliciet vraagt.
 - **Haakjes rond condities**: `(a && b)` ≡ `a && b` waar dat de betekenis niet
   raakt.
-- **Volgorde van commutatieve operanden**: waar didactisch onschadelijk, geldt
-  `a && b` ≡ `b && a` (per assertie in te schakelen; standaard **uit** voor
-  vergelijkingen waar de leesrichting ertoe doet).
-- **Getter-namen vs. veldtoegang**: waar de cursus beide toestaat, mag een
-  assertie zowel `this.x` als `getX()` accepteren (per puzzel te kiezen).
 - **Commentaar**: altijd genegeerd; de speler mag Alberta's notities laten staan
   of wissen.
+
+Twee tolerantieschakelaars die dit document ooit beloofde, bestaan **niet**:
+de volgorde van commutatieve operanden (`a && b` ≡ `b && a`) en de keuze tussen
+`this.x` en `getX()`. Er is geen enkele assertie met zo'n vlag, en geen enkele
+level-definitie die er een zet: een `config` draagt alleen de velden die in de
+tabel hierboven staan. Wie zo'n tolerantie nodig heeft, bouwt ze in de assertie
+zelf en zet ze hier in de tabel — een puzzel kan ze niet aanzetten.
 
 Wat **nooit** getolereerd wordt, want het is precies de leerstof:
 
@@ -139,9 +147,10 @@ Wat **nooit** getolereerd wordt, want het is precies de leerstof:
 - Een gemiste `null`-controle in een getter-keten (scharnier 7).
 
 De grens is eenvoudig: opmaak en irrelevante naamgeving zijn vrij; de scharnier-
-inhoud is strikt. Elke tolerantie-keuze staat per puzzel expliciet in
-`js/levels/levelN.js`, zodat een level-worker ze bewust zet en de test-corpus ze
-dekt.
+inhoud is strikt. De tolerantie zit in de asserties zelf, niet in een instelling
+per puzzel; wat een level kiest, is wélke asserties het stapelt en met welke
+`config`. De checker-corpus (`test/checker-corpus/`) legt per scharnier vast wat
+er moet slagen en wat moet zakken.
 
 ## Falen → feedback (twee lagen)
 
@@ -151,9 +160,13 @@ gestage en vriendelijk.
 
 ### Laag 1 — gesimuleerde javac-diagnostiek (`javacsim.js`)
 
-Voor fouten die een échte compiler zou vangen vóór er getest wordt: een
-ontbrekende puntkomma, een niet-gesloten accolade, een onbekende naam, een
-verkeerd type op een voor de hand liggende plek. `javacsim.js` produceert een
+Voor fouten die een échte compiler zou vangen vóór er getest wordt. De
+simulatie is bewust eng en kent er precies vijf: een niet-afgesloten string,
+char of blokcommentaar; haakjes of accolades die niet in balans zijn; een
+methodekop zonder returntype; een ontbrekende puntkomma; en een tikfout uit een
+vaste lijst (`TYPOS` in `javacsim.js`). Er is géén naamresolutie en géén
+typecontrole — een onbekende naam of een verkeerd type komt dus pas als
+CHECK_FAIL uit laag 2. `javacsim.js` produceert een
 diagnose in `javac`-stijl, met bestandsnaam, regelnummer en een pijltje naar de
 kolom, maar in het Nederlands en zonder JVM-jargon:
 
@@ -161,6 +174,7 @@ kolom, maar in het Nederlands en zonder JVM-jargon:
 Geitje.java:12: fout: ';' verwacht
         this.naam = naam
                         ^
+  → Elke opdracht in Java eindigt op een puntkomma.
 1 fout
 ```
 
@@ -172,9 +186,11 @@ mild geformuleerd. Effect-tag: `javac:fout:<puzzleId>` (zie
 ### Laag 2 — CHECK_FAIL-feedback (de asserties)
 
 Compileert de code (in de fictie), dan draaien de puzzel-asserties als een reeks
-"tests". Elke assertie levert een `CHECK_OK`- of `CHECK_FAIL`-regel. Een
-`CHECK_FAIL` verwijst naar een feedbacksleutel met een gestage, opbouwende
-boodschap die zegt wát er mis is zonder het antwoord te geven:
+"tests". Elke geslaagde assertie levert een `CHECK_OK`-regel; bij de eerste die
+faalt stopt de reeks met één `CHECK_FAIL` en komt er niets meer achter (zie de
+regel "één `CHECK_FAIL` per keer" hieronder). Die `CHECK_FAIL` verwijst naar een
+feedbacksleutel met een gestage, opbouwende boodschap die zegt wát er mis is
+zonder het antwoord te geven:
 
 ```
 CHECK_OK   veld 'naam' gedeclareerd
@@ -201,20 +217,32 @@ Feedback-toon:
 
 ## Niet-editor-puzzels
 
-De twee terminal-puzzels per level (trace, vind-de-fout, verklaar-in-één-zin,
-Parsons, welke-patroonkaart) lopen niet altijd via de tokenizer:
+De terminal-puzzels (trace, vind-de-fout, verklaar-in-één-zin, Parsons,
+welke-patroonkaart) lopen niet altijd via de tokenizer. Het zijn er twee per
+level, behalve in de levels 1 en 7: die dragen twee editor-puzzels en dus maar
+één terminal-puzzel (zie `levels-en-scharnieren.md`, §Tijdsbudget per level).
 
 - **Trace / voorspel-de-output**: de speler geeft een waarde of een reeks
   waarden; de checker vergelijkt met de verwachte uitkomst (exacte string- of
   getalmatch, met dezelfde tolerantie voor whitespace).
 - **Vind-de-fout**: de speler duidt de foute regel of kiest de juiste reparatie
   uit opties; de checker vergelijkt de keuze.
-- **Verklaar-in-één-zin**: keuze uit gegeven formuleringen (geen vrije-
-  tekstbeoordeling — dat valt buiten een deterministische checker), of een
-  sleutelwoord-match tegen een korte lijst aanvaarde termen.
-- **Parsons**: de speler ordent stroken; de checker vergelijkt de volgorde
-  (met, waar zinvol, meerdere aanvaarde volgordes).
-- **Welke-patroonkaart**: keuze uit de vijf luspatronen; exacte keuze-match.
+- **Verklaar-in-één-zin**: een **zelf-check**, geen beoordeling. De speler
+  typt zijn zin, de terminal legt Alberta's modelzin ernaast en vraagt of ze
+  hetzelfde zeggen; elk antwoord zet de puzzel op af, alleen de slotregel
+  verschilt (`juist` of `anders`). Dat is een bewuste keuze: vrije tekst
+  beoordelen kan een deterministische checker niet, en een keuzelijst maakt van
+  "verklaar het in je eigen woorden" een meerkeuzevraag. De velden staan per
+  level in `js/levels/levelN.js` (`toon`, `model`, `bevestig`, `juist`,
+  `anders`), de afhandeling in `js/pc/terminal.js`.
+- **Parsons**: de speler ordent stroken; de checker vergelijkt de volgorde met
+  de ene juiste volgorde, strook voor strook. Alternatieve volgordes bestaan
+  niet: waar er meer dan één goede volgorde zou zijn, hoort de puzzel
+  herschreven te worden, niet de checker verruimd.
+- **Welke-patroonkaart**: keuze uit **vier** genummerde opties, exacte
+  keuze-match. In level 5 zijn dat de vier patroonkaarten zelf (tellen,
+  totaliseren, opbouwen, het uiterste); de proefdruk (level 0) gebruikt
+  dezelfde vorm met vier andere lussoorten.
 
 Deze puzzels hebben geen `javac`-laag; ze geven direct `check:ok`/`check:fout`
 met dezelfde vriendelijke, gestage feedback.

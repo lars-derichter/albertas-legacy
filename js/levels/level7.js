@@ -1,6 +1,6 @@
-// level7.js — "Level 7 — De speurtocht en de dubbele pijl" (scharnier 7: zoeken +
-// de dubbele pijl). Herstelt Spel.zoekGeitje en de endgame-keten
-// (Spel.toonSchuilplaatsen). Puzzelvormen uit de leveltabel
+// level7.js — "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit"
+// (scharnier 7: zoeken + de dubbele pijl). Herstelt Spel.zoekGeitje en de
+// endgame-keten (Spel.toonSchuilplaatsen). Puzzelvormen uit de leveltabel
 // (docs/levels-en-scharnieren.md): schrijf de zoeklus die een Geitje of null
 // teruggeeft, herstel de null-veilige getter-keten, en voorspel de uitkomst van
 // een geketende getter (inclusief het null-geval).
@@ -38,10 +38,9 @@ globalThis.AL = globalThis.AL || {};
 
   var zoekStub =
 "// Alberta's notitie — zoekGeitje (de speurtocht):\n" +
-"//   Loop met een for-lus over geitjes, van index 0 tot geitjes.size().\n" +
-"//   Pak elk geitje, vergelijk zijn naam met gezochteNaam, en geef het\n" +
-"//   gevonden Geitje meteen terug. Kom je aan het einde zonder treffer, geef\n" +
-"//   dan null terug — de speurtocht liep dood.\n" +
+"//   Ze roept een naam in het huisje en luistert de rij af tot er één\n" +
+"//   antwoordt. Dat geitje geef je terug. Antwoordt er niemand, dan liep de\n" +
+"//   speurtocht dood: null.\n" +
 "\n" +
 "Geitje zoekGeitje(String gezochteNaam) {\n" +
 "    // schrijf hier je zoeklus\n" +
@@ -151,7 +150,6 @@ globalThis.AL = globalThis.AL || {};
   };
 
   var definitie = {
-    week: 6,
     naam: S.l7.naam,
     puzzels: [editorWrite, editorRepair, trace]
   };

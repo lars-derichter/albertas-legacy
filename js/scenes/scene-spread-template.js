@@ -10,8 +10,9 @@
 //     data-object (AL.strings.spreads[levelId]), niet per level hardgecodeerd.
 //
 // Visuele taal uit art-stijlgids.md, §"Het notitieboek-spread": papier met een
-// rugschaduw in het midden, beschadiging als grillige vlekken, handschrift als
-// de 8×8-font met kleine y-jitter, en de weekregel onderaan de rechterbladzijde.
+// rugschaduw in het midden, beschadiging als grillige vlekken, handschrift in
+// Alberta's eigen glyphset (js/font-hand.js — tien rijen hoog, basislijn op rij
+// 7, staarten eronder), en de weekregel onderaan de rechterbladzijde.
 
 globalThis.AL = globalThis.AL || {};
 AL.scenes = AL.scenes || {};
@@ -64,7 +65,7 @@ AL.scenes["spread-template"] = {
     ["line", 40, [290, 178, 296, 188]]
 
     // Beschadiging staat hier bewust níét meer. Ze zat als één koffievlek en één
-    // waterplek op vaste plekken in dit sjabloon, en dus op alle acht de spreads
+    // waterplek op vaste plekken in dit sjabloon, en dus op alle zeven de spreads
     // op dezelfde plek — terwijl de stijlgids beschadiging vraagt "precies waar
     // de puzzel zit". Ze staat nu per level in js/scenes/spread-schetsen.js en
     // wordt door AL.spreads.tekenInhoud gelegd, ná de schets en vóór de tekst.
@@ -80,7 +81,6 @@ AL.scenes["spread-template"] = {
   },
 
   hotspots: [],
-  props: [],
   overlays: []
 };
 
@@ -95,25 +95,14 @@ AL.spreads = {
     return (data && data.paginas && data.paginas.length) ? data.paginas.length : 1;
   },
 
-  // Deterministische handschrift-jitter (kleine verticale verschuiving),
-  // seed-gestuurd zodat een spread er per playthrough consistent uitziet.
-  //
-  // Per gróépje van drie tekens, niet per teken. Een hand die schrijft dwaalt
-  // van de lijn af en komt er weer op terug; ze springt niet om de letter. Met
-  // een sprong per teken viel elk woord uit elkaar in losse letters op eigen
-  // hoogte — met de schuinstand erbij las dat als losgeraakte type, niet als
-  // schrift.
-  // En als een driehoeksgolf, niet als een hash: 0, +1, 0, −1 en weer van voor
-  // af aan. Twee opeenvolgende groepjes schelen dus hoogstens één pixel. Met een
-  // modulo-hash kon een woord van +1 naar −1 springen, en dat is geen deining
-  // meer maar een letter die eraf valt.
-  _jitter: function (seed) {
-    var golf = [0, 1, 0, -1];
-    var s = Math.abs(seed | 0);
-    return function (i) {
-      return golf[(s + Math.floor(i / 4)) % 4];
-    };
-  },
+  // Hier stond tot WP 36 een `_jitter`: een driehoeksgolf van ±1 px per groepje
+  // van vier tekens die als `versch` aan gfx.tekenHandschrift werd meegegeven.
+  // Ze is weg, en niet vervangen. De golf was index-gebaseerd — teken 0 kreeg
+  // altijd dezelfde sprong — dus alle twaalf de regels van een bladzijde deinden
+  // exact gelijk, en dat leest van een afstand als verticale banding. De deining
+  // zit nu in de glyphs van js/font-hand.js: elke letter heeft haar eigen
+  // ligging (±1 px), dus "een" deint anders dan "nee" en geen twee regels deinen
+  // hetzelfde. Wat de renderer nog varieert is de spatiëring, seed-gestuurd.
 
   // De bladspiegel. Het sjabloon tekent een rugschaduw op x 157–162, dus tekst
   // die als één brede kolom over de volle breedte loopt, snijdt daar dwars
@@ -149,7 +138,6 @@ AL.spreads = {
     var B = this.BLAD;
     var idx = Math.max(0, Math.min(p | 0, data.paginas.length - 1));
     var pag = data.paginas[idx];
-    var jitter = this._jitter(seed);
     var i, j, stukken;
 
     // De schets en de beschadiging staan eerst, want de tekst hoort erover te
@@ -177,11 +165,13 @@ AL.spreads = {
     // De hand waarin dit blad geschreven staat. Eén object, want de maat waarmee
     // gewrapt wordt en de maat waarmee getekend wordt moeten dezelfde zijn —
     // anders loopt de tekst net over de kolomrand.
-    var hand = { schuin: 0.25, ruimte: 1, seed: (seed | 0) || 1 };
-    // De kop is dezelfde hand, maar rechter geschreven en zonder deining: een
-    // titel schrijft een mens trager op dan de tekst eronder. Wat het níét mag
-    // zijn is de gedrukte prosefont — dan staan er twee schrijvers op één blad.
-    var kopHand = { schuin: 0.10, ruimte: 1, seed: (seed | 0) || 1 };
+    var hand = { schuin: 0, ruimte: 1, seed: (seed | 0) || 1 };
+    // De kop is dezelfde hand in dezelfde maat, maar zonder spatievariatie: een
+    // titel schrijft een mens trager en gelijkmatiger op dan de tekst eronder.
+    // Wat het níét mag zijn is de gedrukte prosefont — dan staan er twee
+    // schrijvers op één blad. Verder is de kop herkenbaar aan de streep eronder;
+    // een tweede lettergrootte hoeft er niet bij te komen.
+    var kopHand = { schuin: 0, ruimte: 1, seed: (seed | 0) || 1, variatie: false };
     var meetHand = function (t) { return gfx.handschriftBreedte(t, hand); };
     var meetKop = function (t) { return gfx.handschriftBreedte(t, kopHand); };
 
@@ -227,20 +217,21 @@ AL.spreads = {
       } else if (r.kop) {
         gfx.tekenHandschrift(r.tekst, x, y, 41, null, kopHand);
       } else {
-        gfx.tekenHandschrift(r.tekst, x, y, 41, jitter, hand);
+        gfx.tekenHandschrift(r.tekst, x, y, 41, null, hand);
       }
     }
 
     // De weekregel onderaan de rechterbladzijde (Alberta's markering). Drie
-    // regels ruimte op acht pixels in plaats van twee op negen: proportioneel
-    // handschrift is bréder dan het monospace raster waarop deze regel ooit
-    // paste, en met twee regels viel "van de cursus" er gewoon af. Dichter op
-    // elkaar mag: het is een aantekening in de marge, geen lopende tekst.
+    // regels ruimte, want ze past er niet altijd in twee. De regelafstand is
+    // negen pixels in plaats van acht: de handfont is tien rijen hoog (staarten
+    // inbegrepen), dus op acht zou de staart van een "g" door de kop van de
+    // regel eronder lopen. Dichter dan de bladspiegel mag wel — het is een
+    // aantekening in de marge, geen lopende tekst.
     if (pag.voet) {
       var voet = gfx._wrap(pag.voet, B.kolomB, meetHand);
       for (i = 0; i < voet.length && i < 3; i++) {
-        gfx.tekenHandschrift(voet[i], B.rechtsX, B.onderY + 5 + i * 8, 40,
-          jitter, hand);
+        gfx.tekenHandschrift(voet[i], B.rechtsX, B.onderY + 3 + i * 9, 40,
+          null, hand);
       }
     }
 

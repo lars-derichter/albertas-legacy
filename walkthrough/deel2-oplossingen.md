@@ -21,7 +21,7 @@ Een enkele puzzel toont je een willekeurige variant (het spel kiest er een op
 basis van je seed). Waar dat speelt, staan beide varianten hieronder, met de
 fout en de fix.
 
-# Level 1 — De blauwdruk en de doos
+# Level 1 — Klasse en instantie: zeven uit één vorm
 
 ## Puzzel 1 — herstel de constructor van `Voorwerp`
 
@@ -95,7 +95,7 @@ Alberta's model: "Een klasse is de blauwdruk — het plan dat je één keer teke
 een instantie is één doos die je naar dat plan bouwt, met eigen waarden in de
 velden." Komt jouw zin in de kern overeen? Typ `juist`.
 
-# Level 2 — Trechters erin, goot eruit
+# Level 2 — Signaturen: wat erin gaat, wat eruit komt
 
 ## Puzzel 1 — herstel de signaturen van `Speler`
 
@@ -175,7 +175,7 @@ De eerste regel drukt de **parameter** af, de tweede `this.levenspunten` (het
 - `toon(5)` → `5 20`
 - `toon(7)` → `7 20`
 
-# Level 3 — De knikkerbaan
+# Level 3 — Voorwaarden: de deur op slot
 
 ## Puzzel 1 — herstel de klem in `setLevenspunten`
 
@@ -200,9 +200,9 @@ void setLevenspunten(int nieuweWaarde) {
 ## Puzzel 2 — vind de fout: `&&` versus `||`
 
 De fout zit op **regel 1**. De code gebruikt `||` (of) waar `&&` (en) hoort:
-"de wolf verslagen ÉN de sleutel" vraagt dat béide waar zijn. Met `||` gaat de
-poort al open bij alleen de sleutel. Typ `regel 1`, of `&&`, of "beide moeten
-waar zijn".
+"de wolf verslagen is EN je de sleutel hebt" vraagt dat béide waar zijn. Met
+`||` gaat de poort al open bij alleen de sleutel. Typ `regel 1`, of `&&`, of
+"beide moeten waar zijn".
 
 ## Puzzel 3 — trace: de validatie-cascade
 
@@ -213,7 +213,7 @@ laat 10 net vallen naar de laatste tak.
 - `lp = 5` → `gewond`
 - `lp = 10` → `gezond`
 
-# Level 4 — Twee pijlen, één doos
+# Level 4 — Referenties: twee pijlen, één doos
 
 ## Puzzel 1 — herstel de buur-bedrading (`verbindKamers`)
 
@@ -261,7 +261,7 @@ Alberta's model: "null is een pijl die naar geen enkele doos wijst: er is in die
 richting geen buurkamer, dus geen uitgang." Komt jouw zin in de kern overeen?
 Typ `juist`.
 
-# Level 5 — De patroonkaart
+# Level 5 — Luspatronen: geitje voor geitje
 
 ## Puzzel 1 — schrijf de twee lus-methoden
 
@@ -313,7 +313,7 @@ System.out.println(regel);
 waarde zelf, niet met één per element. Tellen zou `aantal++` zijn; dit is de
 totaliseer-kaart.
 
-# Level 6 — De plankenbrug boven het ravijn
+# Level 6 — Index en off-by-one: de laatste plank
 
 ## Puzzel 1 — herstel de off-by-one in `verwijderVoorwerp`
 
@@ -350,7 +350,7 @@ De fout zit op **regel 1**. `ronde <= 5` speelt zes rondes (0 t/m 5) waar er
 vijf horen. Met `ronde < 5` blijf je netjes bij vijf. Typ `regel 1`, of `<=`,
 of "één te ver".
 
-# Level 7 — De speurtocht en de dubbele pijl
+# Level 7 — Zoeken en de dubbele pijl: waar het jongste zit
 
 ## Puzzel 1 — schrijf de zoeklus (`zoekGeitje`)
 
@@ -416,9 +416,9 @@ Alles ligt op één zuid-lijn, met het dorpsplein als spil:
 ```
 [Geitenhuisje]   (klokkast: het jongste geitje)
      | zuid
-[Dorpsplein]--oost--[Molen]  (bloem, kruik melk; jachthond bewaakt ze)
-     |         west
-     +--west--[Kruidenier]   (krijt)
+[Dorpsplein]     (twee koeken op de marktkraam)
+     |--oost--[Molen]        (bloem, kruik melk; jachthond)
+     |--west--[Kruidenier]   (krijt)
      | zuid
 [Bospad]
      | zuid
@@ -555,10 +555,10 @@ tiers is positief; het verschil is de knipoog.
 
 | Tier | Hints totaal | Alberta zegt (kort) |
 |---|---|---|
-| De meesterhand | 0–3 | "Bijna geen spieken. Ik had het niet beter gekund." |
-| De vakvrouw | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer dóór." |
-| De doorzetter | 11–20 | "Vaak om hulp gevraagd, telkens weer verder gewerkt." |
-| Samen geraakt | 21+ | "We hebben dit samen gedaan. En het spel draait." |
+| De meesterhand | 0–3 | "Ik had het niet beter gekund, en dat zeg ik niet snel." |
+| De vakvrouw | 4–10 | "Nu en dan een blik in de kantlijn, en dan weer door." |
+| De doorzetter | 11–20 | "Je hebt vaak om hulp gevraagd en telkens opnieuw doorgezet." |
+| Samen geraakt | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints." |
 
 Het zegel verbroken en deel 2 gebruikt? Dat telt niet mee in Alberta's som —
 alleen de `?`-hints in het spel doen dat. Maar je weet het zelf. Eén repository,

@@ -9,9 +9,13 @@
 // rustig en King's-Quest-zuinig.
 //
 // Let op bij het herschrijven van de spreads: de bladspiegel telt twee kolommen
-// van 17 tekens en 12 regels (zie AL.spreads.BLAD in
-// js/scenes/scene-spread-template.js). Een pagina die boven de 24 gewrapte
-// regels uitkomt, wordt afgekapt.
+// van 136 px (± 17 tekens) en 12 regels (zie AL.spreads.BLAD in
+// js/scenes/scene-spread-template.js). Bladzijde 1 heeft er dus 24; op
+// bladzijde 2 staat Alberta's schets, en die kapt de rechterkolom af op 7 —
+// samen 19. Wat daarboven uitkomt, tekent de renderer niet. En een woord dat op
+// zichzelf breder is dan 136 px wordt niet gebroken maar over de bladrand
+// geschreven. test/test-spreads.mjs rekent beide grenzen na met de echte
+// handschrift-maten; draai die test na elke herschrijving.
 //
 // Aangepast uit remake-90s (js/logic/strings.js): dezelfde vorm (data +
 // kleine sjabloonfuncties, Node-export), nieuwe inhoud.
@@ -44,7 +48,7 @@ AL.strings = {
     "Tussen de dozen ligt haar notitieboek. Losse bladen, doorgelopen inkt, " +
     "vlekken waar het vocht bij kon.",
 
-    "Erin staat Seven Little Goats: zes geitjes die de wolf binnengaan, een " +
+    "Erin staat Seven Little Goats: zes geitjes die de wolf opslokt, een " +
     "zevende die zich in de klokkast verstopt, en een afrekening aan de " +
     "rivier. Ze heeft het niet afgemaakt.",
 
@@ -56,9 +60,16 @@ AL.strings = {
     "vastzit. Lopen doe je met de pijltjestoetsen."
   ],
 
-  // De zolderscènes: naam, beschrijving (voor 'kijk' en het eerste bezoek) en
-  // een plaats-hint (voor '?': waar zit het volgende fragment). De sleutels
-  // zijn de scène-ids uit art-stijlgids.md.
+  // De zolderscènes: naam en beschrijving (voor 'kijk' en het eerste bezoek).
+  // De sleutels zijn de scène-ids uit art-stijlgids.md.
+  //
+  // Hier stond vroeger ook een `hint` per kamer, en dat was een vaste tekst per
+  // plek terwijl '?' belooft te zeggen waar je NU vastzit. De hint van de
+  // doorgang stuurde de speler naar de pc in het oosten terwijl de fragmenten
+  // 2, 3 en 4 in de dozen van diezelfde doorgang zaten, en de hint van de
+  // westhoek bleef "open het notitieboek" zeggen tot het einde van het spel.
+  // De hint volgt nu de voortgang; de teksten staan onder `hints`, de
+  // beslisboom in js/logic/world.js (world.hint).
   scenes: {
     "zolder-west": {
       naam: "Zolder — westhoek",
@@ -66,9 +77,7 @@ AL.strings = {
         "elkaar. Door het dakraam valt een schuine streep licht, laag al, " +
         "bijna van de vloer af. Op een kist ligt Alberta's notitieboek, " +
         "opengeslagen, met de pen er nog in. Naar het oosten loopt de zolder " +
-        "verder.",
-      hint: "Het notitieboek ligt open in het licht. Onderzoek het, of open " +
-        "het — daar begint alles."
+        "verder."
     },
     "zolder-midden": {
       naam: "Zolder — doorgang",
@@ -76,29 +85,62 @@ AL.strings = {
         "wordt. Hier haalt het licht al minder. Midden op de vloer staat een " +
         "doos die zwaarder oogt dan de andere, dichtgeplakt met tape die geel " +
         "geworden is. Op het label, in haar hand: BRONCODE. Achterin gaat een " +
-        "trap naar boven.",
-      hint: "De broncode-doos in het midden telt pas op het einde. Ga eerst " +
-        "verder waar het licht heen trekt: naar het oosten, naar de pc."
+        "trap naar boven."
     },
     "zolder-oost": {
       naam: "Zolder — werkhoek",
-      beschrijving: "Alberta's werkhoek. De stoel staat schuin van het " +
-        "bureau weggeschoven, alsof ze even is opgestaan. Op het stof na, " +
+      beschrijving: "Alberta's werkhoek. De stoel staat schuin voor het " +
+        "bureau, alsof ze even is opgestaan. Op het stof na, " +
         "dat overal even dik ligt. De pc doet het nog: een beige toren, een " +
         "bolle monitor die warm oranje nagloeit. Naast het toetsenbord staat " +
-        "een halfvolle mok.",
-      hint: "Ga aan de pc zitten. Daar werk je aan Alberta's code — typ 'ga " +
-        "zitten'."
+        "een halfvolle mok."
     },
     "overloop": {
       naam: "Zolder — overloop",
       beschrijving: "De overloop, boven aan de trap. Kouder hier, en het " +
         "dakraam is ver: het licht haalt de hoeken niet. Tegen de wand staan " +
         "de dozen van later opgestapeld, hoger dan jij. De trap loopt terug " +
-        "naar beneden.",
-      hint: "De dozen hierboven dragen de latere hoofdstukken. Open er een als " +
-        "je aan het volgende fragment toe bent."
+        "naar beneden."
     }
+  },
+
+  // De zolder-hint: wat het commando '?' antwoordt. Anders dan de vaste
+  // kamerteksten hierboven volgt hij de voortgang — hij zegt wat je NU te doen
+  // staat. De beslisboom staat in js/logic/world.js (world.hint) en houdt
+  // dezelfde volgorde aan als de lus per level (spelontwerp-legacy.md): eerst
+  // het hoofdstuk dat open ligt afwerken, dan het volgende blad zoeken.
+  hints: {
+    // Het actieve hoofdstuk is ontgrendeld maar nog niet hersteld.
+    werkPcHier: "Het hoofdstuk dat je opensloeg, is nog niet hersteld. De pc " +
+      "staat voor je — typ 'ga zitten'.",
+    werkPcElders: "Het hoofdstuk dat je opensloeg, is nog niet hersteld. Dat " +
+      "werk ligt op de pc, in de werkhoek aan de oostkant van de zolder.",
+
+    // Het eerstvolgende blad ligt in déze kamer.
+    fragmentHier: {
+      "zolder-west": "Het notitieboek ligt hier, open in het licht. Sla het " +
+        "open — daar begint alles.",
+      "zolder-midden": "Het volgende blad zit hier, in een van de gemerkte " +
+        "dozen: typ 'open doos'. De doos met BRONCODE laat je staan, die telt " +
+        "pas op het einde.",
+      "overloop": "Het volgende blad zit hier, in de stapels tegen de wand. " +
+        "Typ 'open doos'."
+    },
+
+    // Het eerstvolgende blad ligt elders: zeg waar, en hoe je er raakt.
+    fragmentGinder: {
+      "zolder-west": "Het volgende blad zit in het notitieboek zelf, in de " +
+        "westhoek. Dat is aan het andere eind van de zolder: ga naar het " +
+        "westen tot het niet verder kan.",
+      "zolder-midden": "Het volgende blad zit in een gemerkte doos in de " +
+        "doorgang, midden op de zolder.",
+      "overloop": "Het volgende blad ligt dieper in het archief: boven aan de " +
+        "trap, op de overloop. De trap staat achterin de doorgang."
+    },
+
+    // Alles gevonden en alles hersteld.
+    allesAf: "Elk blad is gevonden en elk hoofdstuk hersteld. Op de zolder " +
+      "ligt niets meer voor je; wat rest, staat op de pc."
   },
 
   // Onderzoeks-teksten per scène. Elk zelfstandig naamwoord dat in een
@@ -118,7 +160,20 @@ AL.strings = {
         "lichtstreep die erdoor valt is de enige die er nog is; hij schuift " +
         "traag naar de muur toe.",
       balken: "Ruw hout, ongeschilderd. Er hangt een haak in, waar niets aan " +
-        "hangt."
+        "hangt.",
+      // De aankleding van WP 35b. Ze staan allemaal in de donkere helft van de
+      // kamer, links van de lichtbundel.
+      plank: "Weckpotten op een plank, leeg en zonder deksel. Ernaast een " +
+        "blikken trommel met een deuk in de zijkant.",
+      jassen: "Twee winterjassen aan de kapstok. Ze hangen er lang genoeg om " +
+        "de vorm van de schouders te zijn kwijtgeraakt.",
+      tapijten: "Drie tapijten, opgerold en met touw dichtgebonden. Ze staan " +
+        "rechtop omdat ze liggend de halve zolder zouden innemen.",
+      kaders: "Schilderijlijsten, met de achterkant naar voren. Wat erin " +
+        "zit, heeft niemand omgedraaid — jij ook niet.",
+      lamp: "Een schemerlamp met een kap van perkament, aan één kant " +
+        "verkleurd. Het snoer ligt opgerold naast de voet. Er is hier geen " +
+        "stopcontact."
     },
     "zolder-midden": {
       broncode: "De tape is geel en bros, maar hij zit er nog helemaal op. " +
@@ -129,7 +184,15 @@ AL.strings = {
       balken: "Hier komen de balken samen en zakt het dak tot net boven je " +
         "hoofd. Je hoort de wind erlangs gaan.",
       label: "Haar handschrift, in inkt, met de rustige hand van iemand die " +
-        "de tijd nam."
+        "de tijd nam.",
+      ladder: "Een houten ladder, zes sporten. De bovenste twee zijn lichter " +
+        "dan de rest: daar heeft nooit iemand op gestaan.",
+      spiegel: "Een staande spiegel onder een laken. Je tilt een hoek op. De " +
+        "spiegel is er nog, en jij ook.",
+      ventilator: "Een tafelventilator met een korf van draad. Je draait aan " +
+        "de bladen; ze draaien nog, en dat is het enige geluid hier.",
+      koffers: "Twee koffers op elkaar, sluitingen naar voren. Ze zijn " +
+        "lichter dan ze eruitzien: er zit niets meer in."
     },
     "zolder-oost": {
       pc: "Een beige toren met een bolle monitor erop. Hij staat aan. Wie " +
@@ -140,10 +203,21 @@ AL.strings = {
         "uit opgestaan om iets te halen.",
       bureau: "Vol, maar niet rommelig. Alles ligt waar iemand het bij de " +
         "hand wilde hebben.",
-      toetsenbord: "De letters op de meest gebruikte toetsen zijn weg " +
-        "gesleten. E, A, R, en de spatiebalk.",
+      toetsenbord: "De letters op de meest gebruikte toetsen zijn " +
+        "afgesleten. E, A, R, en de spatiebalk.",
       mok: "Halfvol. Er staat geen ring in, geen schimmel, niets dat " +
-        "vertelt hoe lang hij er staat. Je laat hem staan."
+        "vertelt hoe lang hij er staat. Je laat hem staan.",
+      prikbord: "Een prikbord vol papiertjes, allemaal in haar hand. " +
+        "Lijstjes, telefoonnummers, en één briefje waar enkel een datum op " +
+        "staat.",
+      archiefkast: "Een metalen archiefkastje met drie laden. De bovenste " +
+        "twee zitten vol mappen; de onderste klemt en gaat niet open.",
+      klok: "Een wandklok die stilstaat. Wie hier de stekker uit heeft " +
+        "getrokken, heeft de pc laten staan.",
+      naaimachine: "Een naaimachine op een tafeltje, met het garen er nog " +
+        "in. Ze deed hier meer dan programmeren.",
+      mappen: "Mappen op een plank boven het bureau, op kleur gezet. Wat " +
+        "erin zit, is papier van vóór de pc."
     },
     "overloop": {
       dozen: "Hoger opgestapeld dan de rest, en dieper in het archief. Wat " +
@@ -151,7 +225,11 @@ AL.strings = {
       trap: "Naar beneden loopt hij terug naar de doorgang. Naar boven loopt " +
         "hij niet verder; hier houdt het huis op.",
       wand: "Kaal pleisterwerk, koud aan je hand. Aan deze kant van de " +
-        "zolder is nooit iets opgehangen."
+        "zolder is nooit iets opgehangen.",
+      tapijten: "Opgerolde tapijten tegen de wand, koud en stug. Ze staan " +
+        "hier om ooit nog gelegd te worden.",
+      wasmand: "Een wasmand met linnen erin, netjes gevouwen. Hier boven is " +
+        "het droog genoeg om te blijven wat het was."
     }
   },
 
@@ -174,16 +252,39 @@ AL.strings = {
         "in het midden. Zoek daar verder.",
       "overloop": "Het eerstvolgende blad zit dieper in het archief: boven, op " +
         "de overloop. Ga eerst de trap op."
-    }
+    },
+
+    // De dozen in de westhoek zijn geschilderd tot tegen de balken, maar ze
+    // dragen geen fragment: het blad van hoofdstuk 1 ligt in het notitieboek.
+    // "Dat zie je hier niet" was het verkeerde antwoord op 'open doos' in een
+    // kamer die vól dozen staat.
+    westhoek: "Je krijgt een klep los. Er zit huisraad in: gordijnringen, een " +
+      "rol behangpapier, schroeven in een jampot. Niets van Alberta's papier — " +
+      "wat zij achterliet, ligt in het notitieboek en dieper in de zolder.",
+
+    // De prijs-doos op zolder-midden. Ze gaat pas op het einde open; dit is
+    // wat 'open broncode-doos' antwoordt.
+    broncodeDicht: "De tape zit er nog helemaal op, en dat laat je zo. Deze " +
+      "doos is voor het einde, als haar spel weer draait."
   },
 
-  // Het notitieboek op zolder-west (level 1 se fragment).
+  // De kist in de westhoek, waar het notitieboek op ligt. Ze is te openen, en
+  // dan hoort er iets in te zitten — 'kist' was hier vroeger geen open-woord
+  // terwijl de doorgang en de overloop het wél aanvaardden, waar geen kist
+  // getekend staat.
+  kist: {
+    open: "Het deksel ligt er los op. In de kist zit opgevouwen stof — " +
+      "gordijnen, of een tafelkleed dat te goed was om weg te doen. Het " +
+      "notitieboek lag erbovenop, niet erin."
+  },
+
+  // Het notitieboek op zolder-west (het fragment van level 1).
   notitieboek: {
     onderzoek: "Het boek ligt open op een dubbele bladzijde. Een schets van " +
       "een kamer met zeven kruisjes erin, waarvan er zes zijn doorgehaald. " +
       "Daarnaast een halve methode, waar het vocht de andere helft van heeft " +
       "weggevreten. Onderaan, in haar hand: 'Dit zou je moeten kunnen na " +
-      "week 3.'",
+      "week 1.'",
     open: "Je slaat het notitieboek open bij de eerste bladzijde die nog " +
       "heel is. Het eerste hoofdstuk van Alberta's spel ligt voor je — " +
       "beschadigd, maar leesbaar genoeg om te herstellen.",
@@ -197,6 +298,11 @@ AL.strings = {
       "toetsenbord. De monitor knippert wakker. Je zit in haar terminal.",
     geenFragment: "Je hebt nog geen fragment om aan te werken. Zoek eerst " +
       "verder op de zolder.",
+    // Het actieve hoofdstuk is al hersteld en er ligt nog een blad op de
+    // zolder: gaan zitten heeft dan geen zin. Deze melding staat nooit alleen —
+    // world.gebruikPc zet er meteen achter waar dat blad ligt.
+    levelAf: "Dit hoofdstuk is hersteld; de pc heeft niets meer voor je tot je " +
+      "het volgende blad van Alberta's notitieboek gevonden hebt.",
 
     // Chrome-labels van de gesimuleerde pc (DOM-overlay). Period-look: een
     // beige editor met regelnummers, een amber terminal. Alle knop- en
@@ -207,7 +313,6 @@ AL.strings = {
     menuOnder: "Kies een taak: cijfertoets of klik. Esc — terug naar de zolder.",
     knopCompileer: "compileer & test  [F9]",
     knopTerug: "terug  [menu]",
-    knopMenu: "menu",
     statusOpen: "open",
     statusBezig: "bezig",
     statusAf: "af",
@@ -339,7 +444,9 @@ AL.strings = {
       "Een lus die één passend element opzoekt en teruggeeft, is de zoeklus."
     ],
 
-    // Level 1 — De blauwdruk en de doos (scharnier 1).
+    // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1).
+    // De hints hieronder houden Alberta's beeldspraak (blauwdruk en doos);
+    // alleen de hoofdstuktitel is naar de cursusterm verhuisd.
     "l1-editor-repair": [
       "Denk aan de blauwdruk en de doos: de constructor vult de velden van een " +
         "verse doos. Wat gaat waarheen?",
@@ -365,7 +472,7 @@ AL.strings = {
         "bouwt (het object). Zeg dat verschil in je eigen zin."
     ],
 
-    // Level 2 — Trechters erin, goot eruit (scharnier 2).
+    // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2).
     "l2-editor-repair": [
       "Denk aan de machine: trechters erin (parameters), een goot eruit (return) " +
         "of niets eruit (void).",
@@ -391,7 +498,7 @@ AL.strings = {
         "attribuut (20) af. Geef beide getallen."
     ],
 
-    // Level 3 — De knikkerbaan (scharnier 3).
+    // Level 3 — Voorwaarden: de deur op slot (scharnier 3).
     "l3-editor-repair": [
       "Denk aan de knikkerbaan: de waarde moet tussen twee randen blijven, nooit " +
         "onder de ene, nooit boven de andere.",
@@ -417,7 +524,7 @@ AL.strings = {
         "Typ de tekst die die tak afdrukt."
     ],
 
-    // Level 4 — Twee pijlen, één doos (scharnier 4).
+    // Level 4 — Referenties: twee pijlen, één doos (scharnier 4).
     "l4-editor-repair": [
       "Twee pijlen, één doos: elke verbinding tussen kamers loopt twee kanten " +
         "op. Wat de ene kant legt, moet de andere kant terugleggen.",
@@ -440,7 +547,7 @@ AL.strings = {
         "geen buurkamer, dus geen uitgang. Zeg dat in je eigen zin."
     ],
 
-    // Level 5 — De patroonkaart (scharnier 5).
+    // Level 5 — Luspatronen: geitje voor geitje (scharnier 5).
     "l5-editor-write": [
       "Welke patroonkaart? telWapens telt (een teller die ophoogt); " +
         "sterksteVoorwerp zoekt het uiterste (onthoud de beste tot nog toe).",
@@ -466,7 +573,7 @@ AL.strings = {
         "totaliseer-kaart."
     ],
 
-    // Level 6 — De plankenbrug boven het ravijn (scharnier 6).
+    // Level 6 — Index en off-by-one: de laatste plank (scharnier 6).
     "l6-editor-repair": [
       "De plankenbrug boven het ravijn: de eerste plank is 0, de laatste is " +
         "size() min één. Eén plank te ver en je ligt in het water.",
@@ -489,7 +596,7 @@ AL.strings = {
         "speelt er zes."
     ],
 
-    // Level 7 — De speurtocht en de dubbele pijl (scharnier 7).
+    // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7).
     "l7-editor-write": [
       "De speurtocht: een zoeklus loopt de lijst af, geeft het gevonden object " +
         "terug, of null als de tocht doodloopt.",
@@ -778,10 +885,11 @@ AL.strings = {
     }
   },
 
-  // Level 1 — De blauwdruk en de doos (scharnier 1: klasse/instantie, velden,
-  // constructor, this). De Java-fragmenten leven in js/levels/level1.js.
+  // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1:
+  // klasse/instantie, velden, constructor, this). De Java-fragmenten leven in
+  // js/levels/level1.js.
   l1: {
-    naam: "Level 1 — De blauwdruk en de doos",
+    naam: "Level 1 — Klasse en instantie: zeven uit één vorm",
     repairTitel: "Voorwerp.java — herstel de constructor",
     writeTitel: "Geitje.java — schrijf de klasse",
 
@@ -803,10 +911,11 @@ AL.strings = {
     }
   },
 
-  // Level 2 — Trechters erin, goot eruit (scharnier 2: signaturen, attribuut /
-  // parameter / lokaal). De Java-fragmenten leven in js/levels/level2.js.
+  // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2:
+  // signaturen, attribuut / parameter / lokaal). De Java-fragmenten leven in
+  // js/levels/level2.js.
   l2: {
-    naam: "Level 2 — Trechters erin, goot eruit",
+    naam: "Level 2 — Signaturen: wat erin gaat, wat eruit komt",
     repairTitel: "Speler.java — herstel de signaturen",
 
     parsons: {
@@ -849,10 +958,11 @@ AL.strings = {
     }
   },
 
-  // Level 3 — De knikkerbaan (scharnier 3: voorwaarden, validatie, cascade,
-  // && / || / !). De Java-fragmenten leven in js/levels/level3.js.
+  // Level 3 — Voorwaarden: de deur op slot (scharnier 3: voorwaarden,
+  // validatie, cascade, && / || / !). De Java-fragmenten leven in
+  // js/levels/level3.js.
   l3: {
-    naam: "Level 3 — De knikkerbaan",
+    naam: "Level 3 — Voorwaarden: de deur op slot",
     repairTitel: "Speler.java — herstel de klem",
 
     vindfout: {
@@ -898,10 +1008,10 @@ AL.strings = {
     }
   },
 
-  // Level 4 — Twee pijlen, één doos (scharnier 4: referenties, aliasing, null).
-  // De Java-fragmenten leven in js/levels/level4.js.
+  // Level 4 — Referenties: twee pijlen, één doos (scharnier 4: referenties,
+  // aliasing, null). De Java-fragmenten leven in js/levels/level4.js.
   l4: {
-    naam: "Level 4 — Twee pijlen, één doos",
+    naam: "Level 4 — Referenties: twee pijlen, één doos",
     repairTitel: "Spel.java — herstel de buur-bedrading",
 
     trace: {
@@ -944,11 +1054,12 @@ AL.strings = {
     }
   },
 
-  // Level 5 — De patroonkaart (scharnier 5: lus-romp + patroonkeuze). De Java-
-  // fragmenten leven in js/levels/level5.js; de twee lus-methoden zijn echt aan
-  // seven-little-goats/src/Speler.java toegevoegd (zie de Beslissing daar).
+  // Level 5 — Luspatronen: geitje voor geitje (scharnier 5: lus-romp +
+  // patroonkeuze). De Java-fragmenten leven in js/levels/level5.js; de twee
+  // lus-methoden zijn echt aan seven-little-goats/src/Speler.java toegevoegd
+  // (zie de Beslissing daar).
   l5: {
-    naam: "Level 5 — De patroonkaart",
+    naam: "Level 5 — Luspatronen: geitje voor geitje",
     writeTitel: "Speler.java — schrijf de twee lus-methoden",
 
     parsons: {
@@ -992,10 +1103,10 @@ AL.strings = {
     }
   },
 
-  // Level 6 — De plankenbrug boven het ravijn (scharnier 6: index, off-by-one,
-  // welke lus). De Java-fragmenten leven in js/levels/level6.js.
+  // Level 6 — Index en off-by-one: de laatste plank (scharnier 6: index,
+  // off-by-one, welke lus). De Java-fragmenten leven in js/levels/level6.js.
   l6: {
-    naam: "Level 6 — De plankenbrug boven het ravijn",
+    naam: "Level 6 — Index en off-by-one: de laatste plank",
     repairTitel: "Kamer.java — herstel de off-by-one",
 
     trace: {
@@ -1034,10 +1145,10 @@ AL.strings = {
     }
   },
 
-  // Level 7 — De speurtocht en de dubbele pijl (scharnier 7: zoeken + de dubbele
-  // pijl). De Java-fragmenten leven in js/levels/level7.js.
+  // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7:
+  // zoeken + de dubbele pijl). De Java-fragmenten leven in js/levels/level7.js.
   l7: {
-    naam: "Level 7 — De speurtocht en de dubbele pijl",
+    naam: "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit",
     writeTitel: "Spel.java — schrijf de zoeklus",
     repairTitel: "Spel.java — herstel de null-veilige keten",
 
@@ -1074,9 +1185,18 @@ AL.strings = {
   hintGeenMeer: "Meer hints heb ik niet voor je. Lees nog eens rustig wat er " +
     "staat — je bent dichterbij dan je denkt. (De volledige walkthrough ligt " +
     "in walkthrough/deel1-hints.md, als het echt moet.)",
-  // Hint in de zolder als er geen plaats-hint is (alles is gevonden).
-  geenPlaatsHint: "Je hebt hier alles gevonden wat je nodig hebt. Ga aan de " +
-    "pc werken.",
+
+  // Het chroom onderaan het linkerblad van een spread (art-stijlgids.md,
+  // §"Chroom hoort op het linkerblad"). Het stond als letterlijke tekst in
+  // engine.js, en de laatste-pagina-versie loog: ze zei "spatie: pc >" terwijl
+  // spatie het boek dichtdoet en je in de werkhoek zet — de pc gaat pas open
+  // als je 'ga zitten' typt. De regel deelt de onderrand met het
+  // paginanummer (16..40 px), dus ze mag hoogstens dertien tekens tellen;
+  // test-spreads.mjs rekent dat na.
+  spreadChroom: {
+    bladerVerder: "spatie >",
+    bladerLaatste: "spatie: terug"
+  },
 
   // Alberta's oordeel — de vier verdict-tiers (save-en-hints.md, §"Alberta's
   // oordeel"). Allemaal positief; het verschil is de knipoog. De drempels
@@ -1085,7 +1205,7 @@ AL.strings = {
     meesterhand: {
       titel: "Alberta's oordeel: de meesterhand",
       tekst: "Je hebt mijn spel afgemaakt met bijna geen spieken. Ik had het " +
-        "niet beter gekund, en dat zeg ik niet snel.",
+        "niet beter gekund, en dat zeg ik niet snel."
     },
     vakvrouw: {
       titel: "Alberta's oordeel: de vakvrouw",
@@ -1148,19 +1268,31 @@ AL.strings = {
     // Bouw één spread-teaser als een generiek pagina-object dat de renderer
     // dom kan aflopen: elke pagina heeft een kop (inkt-titel), regels
     // (handschrift) en optioneel een voet (de weekregel, rechtsonder).
-    function maakSpread(nr, scharnier, titel, week, briefA, briefB) {
+    //
+    // `titel` is de hoofdstuktitel: eerst de scharnierterm zoals de cursus die
+    // noemt, dan een dubbelpunt, dan het beeld uit Alberta's eigen verhaal
+    // ("Voorwaarden: de deur op slot"). Vroeger stond hier een metafoornaam die
+    // uit de andere minigames van de cursus geleend was ("De knikkerbaan"), en
+    // die zei een speler niets over de leerstof waar het hoofdstuk over gaat.
+    // Dezelfde titel staat in `lN.naam` (de kop van de gesimuleerde pc); de
+    // spread-test bewaakt dat de twee gelijk blijven.
+    //
+    // `termen` is de opsomming van cursustermen die op bladzijde 2 als kop
+    // staat. Ze herhaalt de scharnierterm van de titel niet: bladzijde 1 zegt
+    // "Voorwaarden", bladzijde 2 vult aan met "Validatie ×3, cascade, …".
+    function maakSpread(nr, titel, termen, week, briefA, briefB) {
       return {
         nr: nr,
-        scharnier: scharnier,
         titel: titel,
+        termen: termen,
         week: week,
         paginas: [
           {
-            kop: "Hoofdstuk " + nr + " — " + scharnier,
+            kop: "Hoofdstuk " + nr + " — " + titel,
             regels: ["Voor jou die dit later leest:", ""].concat(briefA)
           },
           {
-            kop: titel,
+            kop: termen,
             regels: briefB,
             voet: "Dit zou je moeten kunnen na week " + week + " van de cursus."
           }
@@ -1176,8 +1308,8 @@ AL.strings = {
     // openingstekst staat nu in AL.strings.intro, in de stem van de verteller,
     // vóór de zolder. Zie workflow/15-opwaardering-kickoff.md.
     return {
-      l1: maakSpread(1, "De blauwdruk en de doos",
-        "Klasse, instantie, velden, constructor, this",
+      l1: maakSpread(1, "Klasse en instantie: zeven uit één vorm",
+        "Velden, constructor, this",
         1,
         ["Een klasse is een blauwdruk; een object is de doos die je",
           "ernaar bouwt. De constructor vult de velden van zo'n verse doos.",
@@ -1186,8 +1318,8 @@ AL.strings = {
           "is nog maar half ingevuld. Herstel wat de doos hoort te krijgen,",
           "en schrijf Geitje helemaal uit volgens de schets hieronder."]),
 
-      l2: maakSpread(2, "Trechters erin, goot eruit",
-        "Signaturen: return vs. void, attribuut / parameter / lokaal",
+      l2: maakSpread(2, "Signaturen: wat erin gaat, wat eruit komt",
+        "Return vs. void; attribuut / parameter / lokaal",
         2,
         ["Een methode is een machine: trechters erin (de parameters),",
           "een goot eruit (return), of niets eruit (void). En drie soorten",
@@ -1197,8 +1329,8 @@ AL.strings = {
           "En let op welke doos je gebruikt — een lokale schaduwt zo een",
           "attribuut."]),
 
-      l3: maakSpread(3, "De knikkerbaan",
-        "Voorwaarden: validatie ×3, cascade, && / || / !",
+      l3: maakSpread(3, "Voorwaarden: de deur op slot",
+        "Validatie ×3, cascade, && / || / !",
         2,
         ["Denk aan een knikkerbaan. De validatie klemt de knikker tussen",
           "twee randen; de cascade splitst de baan; && / || / ! sturen",
@@ -1207,8 +1339,8 @@ AL.strings = {
           "&& waar een || hoort. Klem de waarde netjes tussen onder- en",
           "bovengrens, en kies de juiste operator."]),
 
-      l4: maakSpread(4, "Twee pijlen, één doos",
-        "Referenties: twee pijlen, één doos; null",
+      l4: maakSpread(4, "Referenties: twee pijlen, één doos",
+        "Twee variabelen, één object; null",
         3,
         ["Twee variabelen kunnen naar dezelfde doos wijzen: twee pijlen,",
           "één doos. Verander je de doos via de ene pijl, dan ziet de andere",
@@ -1217,8 +1349,8 @@ AL.strings = {
           "zodat de pijlen kloppen, en let op waar een kamer nog naar null",
           "wijst voor je erdoorheen loopt."]),
 
-      l5: maakSpread(5, "De patroonkaart",
-        "De lus-romp + patroonkeuze (tellen, opbouwen, filteren, uiterste)",
+      l5: maakSpread(5, "Luspatronen: geitje voor geitje",
+        "Tellen, totaliseren, opbouwen, filteren, uiterste",
         4,
         ["Elke lus volgt een patroonkaart: tellen, totaliseren, opbouwen,",
           "filteren, of het uiterste zoeken. Kies eerst de kaart, dan schrijf",
@@ -1227,8 +1359,8 @@ AL.strings = {
           "getekend — schrijf de rompen eronder, en zet de string-builder",
           "in de juiste volgorde."]),
 
-      l6: maakSpread(6, "De plankenbrug boven het ravijn",
-        "Index en off-by-one; welke lus kies ik",
+      l6: maakSpread(6, "Index en off-by-one: de laatste plank",
+        "Eerste index 0, laatste size() min 1; welke lus kies ik",
         5,
         ["Een lijst is een plankenbrug boven een ravijn. De eerste plank is",
           "nummer 0; de laatste is size() min één. Eén plank te ver en je",
@@ -1239,13 +1371,15 @@ AL.strings = {
       // De kop van dit spread droeg de volledige keten mee —
       // "(getCategorie().getNaam())" — en dat is één woord van zesentwintig
       // tekens. Een kolom van 136 px kan dat niet breken, dus liep het over de
-      // bladrand. De keten staat in de brief hieronder toch al voluit.
-      l7: maakSpread(7, "De speurtocht en de dubbele pijl",
-        "Zoeken, en dan de dubbele pijl",
+      // bladrand. Om dezelfde reden staat de keten in de brief hieronder in twee
+      // stukken: "artikel.getCategorie().getNaam()" meet 174 px en past dus
+      // evenmin op één regel.
+      l7: maakSpread(7, "Zoeken en de dubbele pijl: waar het jongste zit",
+        "Zoeklus geeft object of null; ketting van getters",
         6,
         ["Een zoeklus is een speurtocht: hij geeft het gevonden object terug,",
           "of null als er niets is. En soms volg je twee pijlen na elkaar:",
-          "artikel.getCategorie().getNaam() — een ketting van getters."],
+          "eerst artikel.getCategorie(), dan .getNaam() op wat je terugkrijgt."],
         ["zoekGeitje en de endgame-keten zijn het laatste stuk. Schrijf de",
           "zoeklus die een Geitje of null teruggeeft, en maak de getter-",
           "keten null-veilig voor je de tweede pijl volgt."])
