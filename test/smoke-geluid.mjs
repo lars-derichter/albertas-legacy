@@ -7,7 +7,7 @@
 // "klinkt het goed" blijft een luistertest voor Lars. De vraag "klinkt het
 // überhaupt" is wél machinaal te beantwoorden, en dat is wat hier gebeurt.
 //
-// Vier dingen:
+// Vijf dingen:
 //   1. Vóór de eerste gebruikersactie is er geen AudioContext en groeit er
 //      niets. Dat wás een lek: de titelmuziek werd tegen een opgeschorte
 //      context gepland, en die noten bleven in de graaf hangen.
@@ -17,6 +17,10 @@
 //   3. Hetzelfde met een tik op een aanraakscherm (een context met hasTouch,
 //      dus mét de D-pad-balk van js/touch.js).
 //   4. De voetstap valt op de steunfase van de loopcyclus, niet ernaast.
+//   5. De iOS-ketting van WP 43: touchend ontgrendelt, het stille element
+//      tegen de belschakelaar bestaat pas ná een gebaar en speelt dan echt,
+//      "geluid uit" pauzeert het en "geluid aan" hervat het, en een tabblad
+//      dat weggaat en terugkomt pauzeert en hervat mee.
 //
 // Zonder testframework: platte asserties met PASS/FAIL en een exitcode, zoals
 // de andere rooksmaaktesten. Chromium is vereist.
@@ -173,6 +177,103 @@ async function main() {
     "bed=" + naTik.bed);
 
   await tik.context.close();
+
+  // ---- 5. De iOS-ketting (WP 43) ------------------------------------------
+  //
+  // Wat hier bewezen kan worden, is de wíring. De vraag of een iPhone er ook
+  // geluid van maakt — en met het belschakelaartje in beide standen — is een
+  // luistertest op echt toestel en blijft bij Lars.
+
+  // 5a. touchend als enige gebeurtenis. Een synthetisch event is niet
+  // vertrouwd, dus Chromium geeft er geen gebruikersactivatie voor en de
+  // context mag opgeschort blijven staan; wat het wél bewijst is dat er een
+  // luisteraar op touchend hangt die bij unlock() uitkomt. Dat was precies wat
+  // ontbrak: iOS rekent voor audio op het einde van de aanraking.
+  const tend = await versePagina(browser, { hasTouch: true });
+  check("vóór elk gebaar staat er geen stil audio-element in de DOM",
+    await tend.page.evaluate(() => !document.getElementById("al-stil-audio")));
+  await tend.page.evaluate(() => window.dispatchEvent(new Event("touchend")));
+  await tend.page.waitForTimeout(200);
+  const naTouchend = await geluid(tend.page);
+  check("een touchend alléén ontgrendelt het geluid",
+    naTouchend.ontgrendeld === true && naTouchend.context === true,
+    "ontgrendeld=" + naTouchend.ontgrendeld + " context=" + naTouchend.context);
+  check("de stille primer-buffer is in dat gebaar gespeeld",
+    naTouchend.primers >= 1, "primers=" + naTouchend.primers);
+  await tend.context.close();
+
+  // 5b. Het stille element: een echte tik, en dan moet het er zijn én spelen.
+  const bel = await versePagina(browser, { hasTouch: true });
+  check("het stille element bestaat niet vóór het eerste gebaar",
+    (await geluid(bel.page)).stil === null);
+
+  await bel.page.tap("#scherm");
+  await bel.page.waitForTimeout(400);
+  const elInfo = await bel.page.evaluate(() => {
+    const el = document.getElementById("al-stil-audio");
+    if (!el) return null;
+    return {
+      paused: el.paused, loop: el.loop, muted: el.muted, volume: el.volume,
+      playsinline: el.hasAttribute("playsinline"),
+      wav: /^data:audio\/wav;base64,/.test(el.getAttribute("src") || ""),
+      tijd: el.currentTime, fout: el.error ? el.error.code : null
+    };
+  });
+  check("na het gebaar staat het stille element in de DOM", !!elInfo);
+  check("het speelt (niet gepauzeerd, en zonder mediafout)",
+    elInfo && elInfo.paused === false && elInfo.fout === null,
+    elInfo ? "paused=" + elInfo.paused + " fout=" + elInfo.fout : "geen element");
+  check("het loopt rond en blijft in de pagina (loop + playsinline)",
+    elInfo && elInfo.loop === true && elInfo.playsinline === true);
+  check("het is niet gedempt en staat op volle sterkte (anders geen mediakanaal)",
+    elInfo && elInfo.muted === false && elInfo.volume === 1,
+    elInfo ? "muted=" + elInfo.muted + " volume=" + elInfo.volume : "geen element");
+  check("de bron is een WAV-data-URI, en die WAV speelt écht af",
+    elInfo && elInfo.wav === true && elInfo.tijd > 0,
+    elInfo ? "currentTime=" + (elInfo.tijd || 0).toFixed(3) : "geen element");
+
+  // 5c. "geluid uit" geeft het mediakanaal terug, "geluid aan" claimt het weer.
+  await naarZolder(bel.page);
+  await bel.page.keyboard.type("geluid uit", { delay: 6 });
+  await bel.page.keyboard.press("Enter");
+  await bel.page.waitForTimeout(250);
+  check("'geluid uit' pauzeert het stille element",
+    (await geluid(bel.page)).stil === "gepauzeerd",
+    "stil=" + (await geluid(bel.page)).stil);
+
+  await naarZolder(bel.page);
+  await bel.page.keyboard.type("geluid aan", { delay: 6 });
+  await bel.page.keyboard.press("Enter");
+  await bel.page.waitForTimeout(250);
+  check("'geluid aan' laat het weer spelen",
+    (await geluid(bel.page)).stil === "speelt",
+    "stil=" + (await geluid(bel.page)).stil);
+
+  // 5d. Het tabblad gaat weg en komt terug. `document.hidden` is niet te
+  // zetten met een echte tabwissel in Playwright, dus de vlag wordt overschreven
+  // en het event zelf afgevuurd — de handler leest precies die vlag.
+  await bel.page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true,
+      get: () => true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await bel.page.waitForTimeout(200);
+  check("een tabblad dat weggaat, pauzeert het stille element",
+    (await geluid(bel.page)).stil === "gepauzeerd",
+    "stil=" + (await geluid(bel.page)).stil);
+
+  await bel.page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true,
+      get: () => false });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await bel.page.waitForTimeout(250);
+  const naTerugkeer = await geluid(bel.page);
+  check("terugkomen hervat het element en houdt de context lopend",
+    naTerugkeer.stil === "speelt" && naTerugkeer.staat === "running",
+    "stil=" + naTerugkeer.stil + " staat=" + naTerugkeer.staat);
+
+  await bel.context.close();
   await browser.close();
 
   const gefaald = rijen.filter((r) => !r.ok).length;

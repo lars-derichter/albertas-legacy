@@ -96,8 +96,19 @@ globalThis.AL = globalThis.AL || {};
       // gebeurtenis, in de capture-fase zodat het ook telt als iets anders het
       // event daarna tegenhoudt. touch.js ontgrendelt daarnaast expliciet bij
       // zijn eigen knoppen — zie daar waarom dat geen dubbelop is.
+      //
+      // De helft van die set was nog niet genoeg voor iOS (WP 43). Safari
+      // rekent voor audio niet op het begín van de aanraking maar op het einde:
+      // touchend, pointerup en click. Een iPhone-speler tikte dus wel, maar op
+      // een event dat voor de audio niet meetelde, en hoorde het hele spel
+      // niets. Alle zes staan erin, allemaal in de capture-fase; unlock() is
+      // idempotent, dus zes keer luisteren kost niets en één keer te weinig
+      // luisteren kost al het geluid.
       window.addEventListener("pointerdown", ontgrendelGeluid, true);
+      window.addEventListener("pointerup", ontgrendelGeluid, true);
       window.addEventListener("touchstart", ontgrendelGeluid, true);
+      window.addEventListener("touchend", ontgrendelGeluid, true);
+      window.addEventListener("click", ontgrendelGeluid, true);
       return this;
     },
 

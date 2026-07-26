@@ -463,7 +463,7 @@ Entry: `workflow/41-fixronde-kickoff.md` · commit: `cd6513e`
 
 ### - [x] WP 42 — Besturing: geen spookrichtingen
 
-Entry: `workflow/42-besturing.md` · commit: (nog in te vullen)
+Entry: `workflow/42-besturing.md` · commit: `2f9b075`
 
 - [x] `AL.input.reset()` leegt de pijl-stack; gekoppeld aan `blur` en aan
       `visibilitychange` zodra `document.hidden` waar is — de enige twee
@@ -492,14 +492,43 @@ Entry: `workflow/42-besturing.md` · commit: (nog in te vullen)
       de schuif door naar het westen. `smoke-touch` (WebKit) kon opnieuw
       niet draaien; de échte iPhone-test blijft bij Lars
 
-### - [ ] WP 43 — iOS-audio
+### - [x] WP 43 — iOS-audio
 
-- [ ] Unlock ook op touchend/pointerup/click (capture)
-- [ ] Stille primer-buffer in het gebaar; re-resume op visibilitychange
-- [ ] Playsinline-element (data-URI) tegen de belschakelaar, gekoppeld
-      aan "geluid uit"
-- [ ] QC: `node --test` + smoke-geluid/browser/walk groen; luistertest
-      blijft bij Lars
+Entry: `workflow/43-ios-audio.md` · commit: (nog in te vullen)
+
+- [x] Unlock op zes oppervlakken: `pointerdown`, `pointerup`,
+      `touchstart`, `touchend` en `click` op het venster (capture) plus de
+      `keydown` in de handler. De oude helft (alleen de begin-events) is
+      precies wat Safari voor audio niet meerekent
+- [x] De ketting in `unlock()` op orde en opgeschreven: context → resume
+      → stille primer (`createBuffer(1, 1, 22050)` naar `destination`) →
+      stil element → vlag en haak. De resume blijft vóór de
+      `ontgrendeld`-uitstap, zodat een later gebaar een opnieuw
+      opgeschorte context wekt; de primer speelt bij het eerste gebaar en
+      bij elk gebaar dat een opgeschorte context aantreft
+- [x] Stil `<audio playsinline loop>` (`#al-stil-audio`) tegen de
+      belschakelaar: WAV-data-URI van 0,1 s stilte, in de code gezet uit
+      een RIFF-kop en 800 samples van 128 — niet gedempt en op volume 1,
+      want anders claimt het het mediakanaal niet. Aangemaakt in het
+      eerste gebaar, gepauzeerd door "geluid uit" en hervat door "geluid
+      aan"
+- [x] `visibilitychange` + `focus`: verborgen pauzeert het element,
+      zichtbaar hervat het en `resume()`t een opgeschorte context — alleen
+      als er al ontgrendeld is, want buiten een gebaar wordt hier nooit
+      een context gemaakt
+- [x] `debug()` meldt `primers` en `stil`; DOM in `js/sound.js`
+      verantwoord (renderlaag, niet `js/logic/`) met dezelfde
+      headless-zekering als de AudioContext-guards
+- [x] Docs: `engine-architectuur.md` §De ontgrendeling (zes oppervlakken)
+      en de nieuwe §De iOS-ketting (vijf stappen, de
+      belschakelaar-redenering, de drie niet-cosmetische
+      elementeigenschappen, de DOM-afweging)
+- [x] QC: **423/423** headless (was 414), `smoke-geluid` **30/30** (was
+      17/17), smoke-browser 41/41, smoke-walk 38/38,
+      smoke-full-playthrough 97/97, lint-scene en check-docpaden schoon.
+      Negatieve controle gemeten: zonder de fixes zakken tien van de
+      dertien nieuwe controles. De luistertest op een échte iPhone blijft
+      bij Lars, met de belschakelaar in **beide** standen
 
 ### - [ ] WP 44 — Spread sluit waar je staat
 

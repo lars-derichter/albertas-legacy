@@ -177,16 +177,21 @@ precies waar de vertraging `geluid:pagina@0.35` voor bestaat.
 ### De ontgrendeling
 
 Een browser start geen audio zonder gebruikersactie. `AL.sound.unlock()` is wat
-die actie vertaalt, en hij hangt aan álle vier de oppervlakken waar een speler
-kan beginnen:
+die actie vertaalt, en hij hangt aan élk oppervlak waar een speler kan beginnen:
 
 - **toets** — `keydown` in `js/input.js`, vóór de tekstveld-uitzondering (het
   eerste teken dat een telefoonspeler in de commandobalk typt, telt mee);
-- **muis, aanraking, pen** — `pointerdown` (plus `touchstart` voor oudere
-  webviews) op het venster in `js/input.js`, in de capture-fase;
+- **muis, aanraking, pen** — `pointerdown`, `pointerup`, `touchstart`,
+  `touchend` en `click` op het venster in `js/input.js`, alle vijf in de
+  capture-fase;
 - **het D-pad en de commandobalk** van `js/touch.js` — pointerdown op een
   richtingsknop en submit van het formulier;
 - **een tik op het canvas** in `js/touch.js` (tik-om-door-te-bladeren).
+
+Die tweede regel stond tot WP 43 op alleen `pointerdown` en `touchstart`, en
+dat is precies de helft die Safari voor audio **niet** meerekent: iOS kijkt naar
+het einde van de aanraking. Een iPhone-speler tikte dus wel, maar op een
+gebeurtenis die niet meetelde, en hoorde het hele spel niets.
 
 Tot dat moment doet de geluidslaag **niets**: `speel()` en `muziek()` keren
 meteen terug, er wordt geen `AudioContext` gemaakt en er wordt geen oscillator
@@ -199,6 +204,55 @@ een haak aan: `AL.sound.opOntgrendeld(startBedVoorStand)`. De titelmuziek die
 bij het opstarten gevraagd wordt, is dus een lege aanroep; het bed begint bij de
 eerste toets, klik of tik. `unlock()` is idempotent — hij wordt in een sessie
 honderden keren geroepen.
+
+### De iOS-ketting
+
+Op een iPhone is een gebaar en een `resume()` niet genoeg. `unlock()` doet
+daarom vijf dingen, en de vólgorde is de fix:
+
+1. **context** — `zorgCtx()` maakt de `AudioContext`, lui, en dus altijd binnen
+   een gebaar;
+2. **resume** — staat de context op `suspended`, dan `resume()`. Deze stap
+   staat bewust vóór de `ontgrendeld`-uitstap: een later gebaar moet een
+   opnieuw opgeschorte context nog kunnen wekken;
+3. **primer** — één `createBuffer(1, 1, 22050)` door een `BufferSource` naar de
+   uitgang. Onhoorbaar, en op sommige iOS-versies het enige dat de context
+   werkelijk op `running` zet. Hij speelt bij het eerste gebaar en bij elk
+   gebaar dat een opgeschorte context aantreft — niet bij elke toetsaanslag;
+4. **het stille element** — zie hieronder;
+5. **de vlag en de haak** — `ontgrendeld = true`, dan `naUnlock()`, die het bed
+   van de huidige stand start.
+
+**De belschakelaar.** Staat het schuifje op de zijkant van een iPhone op stil,
+dan is WebAudio onhoorbaar, hoe hard je ook versterkt: WebAudio hoort bij het
+belkanaal. Een `<audio playsinline>` dat speelt, verhuist de pagina naar het
+mediakanaal, en dát kanaal luistert niet naar het schuifje. `js/sound.js` maakt
+in het eerste gebaar daarom één element (`#al-stil-audio`) met een lus van een
+tiende seconde stilte als WAV-data-URI — zelf gezet uit een RIFF-kop en 800
+samples van 128, dus geen bestand, geen net en ook vanaf `file://` speelbaar.
+
+Drie eigenschappen zijn niet cosmetisch: `loop` (het moet blijven spelen),
+`playsinline` (anders neemt Safari het volledige scherm over), en **niet
+gedempt, op volume 1**. Een gedempt element of een element op volume 0 claimt
+het kanaal niet; de stilte moet in de samples zitten, niet in het volume.
+
+`geluid uit` pauzeert het element — het mediakanaal hoort terug te gaan zodra de
+speler om stilte vraagt — en `geluid aan` laat het weer spelen. Dat mag ook op
+iOS, want de speler heeft dat commando zelf net getypt of getikt. Hetzelfde
+gebeurt bij `visibilitychange`: verborgen pauzeert, terug zichtbaar hervat het
+element en `resume()`t een opgeschorte context. Dat laatste alleen als er al
+ontgrendeld is — buiten een gebaar wordt hier nooit een context aangemaakt.
+
+Dit is het enige stukje DOM in `js/sound.js`. Dat mag: de regel "DOM-vrij" geldt
+voor `js/logic/`, en de geluidslaag hoort bij de renderlaag (ze raakt `window`
+en `AudioContext` al). Met dezelfde zekering als de rest — is er geen
+`document`, dan gebeurt er niets, en de headless tests draaien gewoon door.
+
+`AL.sound.debug()` meldt `primers` en `stil` (`null`, `"speelt"` of
+`"gepauzeerd"`), want aan een element dat stilte speelt is niets te horen.
+`test/smoke-geluid.mjs` §5 keurt de hele ketting in Chromium; of het op een
+échte iPhone hoorbaar is, en met het schuifje in beide standen, blijft een
+luistertest op toestel.
 
 ### De scheduler
 

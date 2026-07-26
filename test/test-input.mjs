@@ -154,6 +154,35 @@ test("init koppelt keydown, keyup, blur en visibilitychange", () => {
   }
 });
 
+test("init koppelt de audio-ontgrendeling aan zes oppervlakken", () => {
+  // WP 43: de set stond op pointerdown/touchstart/keydown, en dat is precies
+  // de helft die iOS voor audio níét meerekent — Safari kijkt naar het einde
+  // van de aanraking (touchend, pointerup, click). Een iPhone-speler tikte dus
+  // wel en hoorde niets. Elk van de zes moet bij AL.sound.unlock uitkomen.
+  const dom = stubDom();
+  const vorigeSound = globalThis.AL.sound;
+  let geteld = 0;
+  globalThis.AL.sound = { unlock: () => { geteld++; } };
+  try {
+    const oppervlakken = ["pointerdown", "pointerup", "touchstart", "touchend",
+      "click"];
+    for (const naam of oppervlakken) {
+      assert.equal(typeof dom.luisteraars.window[naam], "function",
+        "geen unlock-luisteraar op " + naam);
+    }
+    for (const naam of oppervlakken) dom.luisteraars.window[naam]({});
+    assert.equal(geteld, oppervlakken.length);
+    // En de toets, het zesde oppervlak: die zit in de keydown-handler zelf,
+    // vóór de tekstveld-uitzondering.
+    dom.luisteraars.window.keydown(toets("a", { target: { tagName: "INPUT" } }));
+    assert.equal(geteld, oppervlakken.length + 1,
+      "het eerste teken in de commandobalk hoort ook te ontgrendelen");
+  } finally {
+    globalThis.AL.sound = vorigeSound;
+    dom.herstel();
+  }
+});
+
 test("keydown en keyup sturen dezelfde stack als het D-pad", () => {
   const dom = stubDom();
   try {

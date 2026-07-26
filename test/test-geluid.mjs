@@ -43,6 +43,15 @@ test("zonder AudioContext ontgrendelt niets, hoe vaak je het ook probeert", () =
   assert.doesNotThrow(() => sound.speel("doos", 0.35));
 });
 
+test("zonder document komt er geen stil element en geen primer", () => {
+  // De iOS-ketting van WP 43 raakt de DOM (één <audio>-element) en de
+  // AudioContext. In Node is er geen van beide, en dat mag geen crash geven —
+  // dezelfde zekering als hierboven, nu voor het nieuwe stuk.
+  for (let i = 0; i < 5; i++) sound.unlock();
+  assert.equal(sound.debug().stil, null);
+  assert.equal(sound.debug().primers, 0);
+});
+
 test("een bed dat niet gestart kon worden, wordt niet als lopend gemeld", () => {
   // Zonder context kan er geen bed lopen. Zou huidigBed() hier een naam geven,
   // dan zou de engine denken dat de muziek al draait en hem nooit meer starten
@@ -252,6 +261,157 @@ test("elke stem heeft een volledige FM-definitie", () => {
     assert.ok(s.verval > 0, naam + ": verval moet positief zijn");
     assert.ok(s.gain > 0 && s.gain <= 1, naam + ": gain buiten 0–1");
   }
+});
+
+// ---- De iOS-ketting, met een DOM-stub --------------------------------------
+//
+// Deze sectie staat bewust als laatste in dit bestand: ze zet een window- en
+// document-stub in de globale ruimte, en `sound` is een singleton dat zijn
+// AudioContext daarna vasthoudt. Alles wat "er is geen context" veronderstelt,
+// moet dus hierboven staan.
+//
+// Wat hier gekeurd wordt is de vórm van de ketting — de volgorde en het aantal
+// keer dat elke stap gebeurt. Of iOS er ook geluid van maakt, kan alleen een
+// iPhone zeggen; dat is de luistertest bij Lars.
+
+function stubAudioDom() {
+  const log = { resumes: 0, gestart: 0, elementen: 0 };
+  const ctx = {
+    state: "running",
+    currentTime: 0,
+    destination: {},
+    createGain() {
+      return {
+        gain: {
+          value: 0,
+          setValueAtTime() {},
+          cancelScheduledValues() {},
+          exponentialRampToValueAtTime() {}
+        },
+        connect() {}
+      };
+    },
+    createBufferSource() {
+      log.gestart++;
+      return { buffer: null, connect() {}, start() {} };
+    },
+    createBuffer(kanalen, lengte, hz) { return { kanalen, lengte, hz }; },
+    resume() { log.resumes++; ctx.state = "running"; }
+  };
+  globalThis.window = {
+    btoa: (s) => Buffer.from(s, "binary").toString("base64"),
+    addEventListener() {},
+    AudioContext: function () { return ctx; }
+  };
+  return { log, ctx };
+}
+
+// Eén element voor de hele sectie: `sound` houdt het zijne vast zodra het
+// bestaat, dus een tweede stub-element zou een object zijn dat de module nooit
+// gebruikt — en dan keurt de test niets.
+let stilEl = null;
+
+function stubDocument() {
+  if (!stilEl) {
+    stilEl = {
+      paused: true,
+      attrs: {},
+      setAttribute(k, v) { this.attrs[k] = v; },
+      play() { this.paused = false; return Promise.resolve(); },
+      pause() { this.paused = true; }
+    };
+  }
+  globalThis.document = {
+    hidden: false,
+    addEventListener() {},
+    body: { appendChild() {} },
+    createElement() { return stilEl; }
+  };
+  return stilEl;
+}
+
+// De stub wordt ín de eerste test gezet en niet hier: alles wat op de globale
+// ruimte staat, draait vóór de eerste test, en de keuringen hierboven gaan er
+// juist over dat er géén context is.
+let dom = null;
+
+test("het eerste gebaar maakt de context en speelt precies één primer", () => {
+  // Er is nog geen document: het element kan dus niet bestaan, en dat mag de
+  // rest van de ketting niet tegenhouden.
+  dom = stubAudioDom();
+  sound.unlock();
+  assert.equal(sound.isOntgrendeld(), true);
+  assert.equal(sound.debug().context, true);
+  assert.equal(sound.debug().primers, 1, "de primer hoort één keer te spelen");
+  assert.equal(dom.log.gestart, 1, "één bufferbron, niet meer");
+  assert.equal(sound.debug().stil, null, "zonder document geen <audio>");
+});
+
+test("een volgend gebaar op een lopende context speelt geen tweede primer", () => {
+  // unlock() hangt aan élk gebaar; een buffer per toetsaanslag zou honderden
+  // bronnen per sessie kosten voor niets.
+  for (let i = 0; i < 5; i++) sound.unlock();
+  assert.equal(sound.debug().primers, 1);
+});
+
+test("een gebaar op een opgeschorte context hervat en primeert opnieuw", () => {
+  // Dit is het geval waarvoor de resume vóór de `ontgrendeld`-uitstap staat:
+  // iOS schort de context op zodra de app naar de achtergrond gaat, en het
+  // eerste gebaar daarna is niet meer het eerste gebaar van de sessie.
+  const voor = dom.log.resumes;
+  dom.ctx.state = "suspended";
+  sound.unlock();
+  assert.equal(dom.log.resumes, voor + 1, "de context is niet hervat");
+  assert.equal(dom.log.gestart, 2, "de primer hoort ook hier te spelen");
+  assert.equal(sound.debug().staat, "running");
+});
+
+test("het stille element verschijnt in het gebaar, speelt en loopt rond", () => {
+  // Het element tegen de belschakelaar: een lus van stilte op volle sterkte en
+  // niet gedempt, want een gedempt element claimt het mediakanaal niet.
+  const el = stubDocument();
+  sound.unlock();
+  assert.equal(sound.debug().stil, "speelt");
+  assert.equal(el.loop, true);
+  assert.equal(el.muted, false);
+  assert.equal(el.volume, 1);
+  assert.equal(el.attrs.playsinline, "");
+  assert.ok(/^data:audio\/wav;base64,/.test(el.src), "geen WAV-data-URI");
+});
+
+test("de stille WAV is een geldige RIFF-kop met alleen stilte erin", () => {
+  // De data-URI wordt in de code zelf gezet (geen base64-brok in de bron), dus
+  // een fout in de kop is een fout in een rekensom. Een onspeelbaar element
+  // haalt de hele ringer-truc onderuit en is aan niets te horen.
+  const el = stubDocument();
+  sound.unlock();
+  const buf = Buffer.from(el.src.split(",")[1], "base64");
+  assert.equal(buf.toString("ascii", 0, 4), "RIFF");
+  assert.equal(buf.readUInt32LE(4), buf.length - 8);
+  assert.equal(buf.toString("ascii", 8, 12), "WAVE");
+  assert.equal(buf.readUInt16LE(20), 1, "geen PCM");
+  assert.equal(buf.readUInt16LE(22), 1, "geen mono");
+  assert.equal(buf.readUInt16LE(34), 8, "geen 8 bits per sample");
+  assert.equal(buf.toString("ascii", 36, 40), "data");
+  assert.equal(buf.readUInt32LE(40), buf.length - 44);
+  const waarden = new Set(buf.subarray(44));
+  assert.deepEqual([...waarden], [128], "8-bits stilte is overal 128");
+});
+
+test("geluid uit pauzeert het stille element, geluid aan hervat het", () => {
+  // "Geluid uit" hoort het mediakanaal terug te geven; "geluid aan" claimt het
+  // opnieuw, en dat mag omdat de speler dat commando zelf net gegeven heeft.
+  sound.zetAan(false);
+  assert.equal(sound.debug().stil, "gepauzeerd");
+  sound.zetAan(true);
+  assert.equal(sound.debug().stil, "speelt");
+});
+
+test("met het geluid uit blijft een gebaar het element stil laten", () => {
+  sound.zetAan(false);
+  sound.unlock();
+  assert.equal(sound.debug().stil, "gepauzeerd");
+  sound.zetAan(true);
 });
 
 // ---- Doc en code in de pas -------------------------------------------------
