@@ -449,9 +449,56 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
+## Fixronde na de speeltest (actief)
+
+Kickoff: `workflow/41-fixronde-kickoff.md`. Lars speelde op iOS; vier
+problemen, twee beslissingen (Alberta wist het; notitiekop weg, "— A.").
+
+### - [x] WP 41 — Kickoff fixronde
+
+Entry: `workflow/41-fixronde-kickoff.md` · commit: (nog in te vullen)
+
+- [x] Feedback verbatim, Q&A, wortels en plan vastgelegd
+- [x] QC: docs only, wrap 80, tests ongewijzigd 400/400
+
+### - [ ] WP 42 — Besturing: geen spookrichtingen
+
+- [ ] reset() op blur/visibilitychange en bij moduswissels
+- [ ] drukPijl herplaatst bestaande richting naar de top
+- [ ] D-pad: releasePointerCapture + loslaat-zekering bij verbergen
+- [ ] Tests: twee-pijlen-arbitrage, spook-na-blur, D-pad-schuif
+- [ ] QC: `node --test` + lint + alle smokes groen
+
+### - [ ] WP 43 — iOS-audio
+
+- [ ] Unlock ook op touchend/pointerup/click (capture)
+- [ ] Stille primer-buffer in het gebaar; re-resume op visibilitychange
+- [ ] Playsinline-element (data-URI) tegen de belschakelaar, gekoppeld
+      aan "geluid uit"
+- [ ] QC: `node --test` + smoke-geluid/browser/walk groen; luistertest
+      blijft bij Lars
+
+### - [ ] WP 44 — Spread sluit waar je staat
+
+- [ ] spreadVerder() zonder teleport; positie blijft bewaard
+- [ ] Docs en walkthrough mee; vier smokes lopen echt naar de werkhoek
+- [ ] QC: `node --test` + alle smokes + check-walkthrough groen
+
+### - [ ] WP 45 — De stem: overdracht van een programmeur
+
+- [ ] achtergrond.md: voorgevoel-beslissing; "nooit een oorzaak" blijft
+- [ ] Opening draagt het voorgevoel in het koude register
+- [ ] maakSpread zonder sjabloonzinnen; briefA/B als
+      programmeursoverdracht; voetregel = haar eigen schema
+- [ ] Elf stub-notities: kop weg, "— A.", geen schoolimperatief
+- [ ] Alle verwijzingen naar de oude kop bijgewerkt; walkthrough +
+      PDF's mee
+- [ ] QC: alle poorten + screenshots beoordeeld door manager (tweede
+      checker-agent vooraf)
+
 ### - [x] WP 40 — Slotcontrole
 
-Entry: `workflow/40-slotcontrole.md` · commit: (nog in te vullen)
+Entry: `workflow/40-slotcontrole.md` · commit: `b3bf55d`
 
 - [x] Alle poorten in één run op één werkkopie: 400/400 headless,
       305/305 over acht Chromium-smokes, javac + verboden-grep schoon,
