@@ -157,6 +157,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l0-parsons",
     type: "parsons",
+    titel: S.l0.parsonsTitel,
     shuffleLabel: "l0-parsons",
     regels: [
       "int verdubbel(int getal) {",
@@ -179,6 +180,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l0-trace",
     type: "trace",
+    titel: S.l0.traceTitel,
     pool: [3, 4, 5],
     label: "l0-trace",
     verwacht: function (n) { return String((n * (n + 1)) / 2); },
@@ -193,6 +195,7 @@ globalThis.AL = globalThis.AL || {};
   var vindfout = {
     id: "l0-vindfout",
     type: "vindfout",
+    titel: S.l0.vindfoutTitel,
     regelnummer: 1,
     aanvaard: ["<=", "kleiner of gelijk", "kleiner dan of gelijk", "lusgrens",
       "grens", "off-by-one", "off by one", "een te ver", "te ver"],
@@ -207,6 +210,7 @@ globalThis.AL = globalThis.AL || {};
   var verklaar = {
     id: "l0-verklaar",
     type: "verklaar",
+    titel: S.l0.verklaarTitel,
     vraag: S.l0.verklaar.vraag,
     toon: S.l0.verklaar.toon,
     model: S.l0.verklaar.model,
@@ -221,6 +225,7 @@ globalThis.AL = globalThis.AL || {};
   var patroonkaart = {
     id: "l0-patroonkaart",
     type: "patroonkaart",
+    titel: S.l0.patroonkaartTitel,
     antwoord: 1,
     vraag: S.l0.patroonkaart.vraag,
     opties: S.l0.patroonkaart.opties,

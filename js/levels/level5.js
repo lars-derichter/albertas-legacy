@@ -116,6 +116,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l5-parsons",
     type: "parsons",
+    titel: S.l5.parsonsTitel,
     shuffleLabel: "l5-parsons",
     regels: [
       "String regel = \"Je kan hier meenemen: \";",
@@ -143,6 +144,7 @@ globalThis.AL = globalThis.AL || {};
   var patroonkaart = {
     id: "l5-patroonkaart",
     type: "patroonkaart",
+    titel: S.l5.patroonkaartTitel,
     antwoord: 2,
     vraag: S.l5.patroonkaart.vraag,
     opties: S.l5.patroonkaart.opties,

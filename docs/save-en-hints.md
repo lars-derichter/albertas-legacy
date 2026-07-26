@@ -218,7 +218,9 @@ zou hebben. Effect-tag: `oordeel:<tier>`.
 | `samen-geraakt` | 21+ | "We hebben dit samen gedaan, jij en ik en een hoop hints. Het spel draait. Dat is wat telt." |
 
 Alle vier de tiers zijn positief; het verschil is de knipoog, niet de waarde.
-Het oordeel sluit af richting de epiloog (`epiloog`), die naar de echte broncode
-in `seven-little-goats/` wijst. De volledige oordeel-teksten leven in
-`js/logic/strings.js`, in Alberta's stem (zie `achtergrond.md`, §"Toon en
-register").
+Het oordeel sluit af richting de diskette (`diskette`) en van daaruit naar de
+epiloog (`epiloog`), die naar de echte broncode in `seven-little-goats/` wijst.
+De beat-teller van die diskette-kaart staat niet in de save: hij duurt twee
+toetsaanslagen, en wie er middenin herlaadt ziet de beat gewoon opnieuw. De
+volledige oordeel-teksten leven in `js/logic/strings.js`, in Alberta's stem (zie
+`achtergrond.md`, §"Toon en register").

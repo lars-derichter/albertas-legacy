@@ -160,6 +160,18 @@ Voor de CRT-gloed van Alberta's pc en warm kunstlicht.
   3/11 dag; gras 44/45 met vlekken 42; boomstammen 24 met schaduw 22, kruinen
   43 met zon 46.
 - **De wolf:** koelgrijs-ramp (49/50/51), buik 52, ogen 14.
+- **De diskette** (`diskette`, WP 48c): het plastic komt uit de nacht-ramp — 59
+  voor de romp en de randen die zakken, 60 → 61 als verloop over het vlak (licht
+  van rechts), 62 voor de rand die het licht vangt. De metalen sluiter komt uit
+  de steen-ramp (48 gleuf en duimnok, 49 bed, 51 → 52 als blad, 53 hooglicht
+  rechts); het etiket uit de papier-ramp (35 rand, 38 blad, 37/36 als
+  schaduwkant links) met de titelregel in inkt 41 en haar nummering eronder een
+  stap flauwer in 40. De achtergrond is koel en neutraal (49 → 48) zodat niets
+  met het blauw concurreert. Het **etiket wordt niet in de picture gezet**: de
+  twee regels zijn handschrift en komen uit de renderlaag
+  (`tekenDisketteEtiket` in `js/engine.js`), net zoals de spread-inhoud. Ze
+  lopen mee met het verval van het blad — een horizontale regel op een schuin
+  etiket leest als een sticker, niet als een hand.
 - **Drapé (een deken over een stapel, een laken over een spiegel):** de
   bovenste rij één stap lichter dan de plooi eronder, in de ramp van de kámer:
   avond (29/30/31) op de zolder beneden, steen (49/50/51) op de overloop, en
@@ -376,6 +388,7 @@ De scène-ids zijn bindend en identiek aan `spelontwerp-legacy.md`.
 | `spread-template` | full-screen notitieboek-spread (zie hieronder); herkleed per level |
 | `pc-chrome` | de VGA-styling rond editor/terminal — DOM-overlay, geen canvas (zie `engine-architectuur.md`). Turbo Vision als referentie: menubalk boven in inverse video, dubbellijns kaders, F-toetsenstatusbalk onder, scanlines aan dezelfde `crt`-schakelaar als het canvas. Geen afgeronde hoeken en geen gloed — dat is een filter uit 2015, geen monitor uit 1990. `CHECK_OK` in de gebladerte-ramp (44), `CHECK_FAIL` in helderrood (12) |
 | `eindkaart` | drager voor Alberta's oordeel en de epiloog; de lichtstraal wint terrein, warmer dan de titelkaart |
+| `diskette` | close-up-inzet: één 3,5"-HD-diskette groot in beeld op een koele, donkere achtergrond, licht van rechts, haar etiket in handschrift. Geen kamer en geen kaart — een voorwerp in de hand, tussen het oordeel en de epiloog |
 
 De sim-kamers van _Seven Little Goats_ (geitenhuisje, molen, rivieroever …)
 worden in de terminal-simulatie als **tekst** gespeeld, niet als getekende

@@ -97,6 +97,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l4-trace",
     type: "trace",
+    titel: S.l4.traceTitel,
     pool: ["Dorpsplein", "Bospad", "Rivieroever"],
     label: "l4-trace",
     verwacht: function (naam) { return naam; },
@@ -112,6 +113,7 @@ globalThis.AL = globalThis.AL || {};
   var verklaar = {
     id: "l4-verklaar",
     type: "verklaar",
+    titel: S.l4.verklaarTitel,
     vraag: S.l4.verklaar.vraag,
     toon: S.l4.verklaar.toon,
     model: S.l4.verklaar.model,

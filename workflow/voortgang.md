@@ -518,7 +518,7 @@ Entry: `workflow/48-notities-als-spec.md` · commit: `3585163`
 
 ### - [x] WP 48b — Puzzelvolgorde binnen een level
 
-Entry: `workflow/48b-puzzelvolgorde.md` · commit: (nog in te vullen)
+Entry: `workflow/48b-puzzelvolgorde.md` · commit: `27bdd21`
 
 Ingelast door de manager ná de adversariële pas van WP 48: die pas vond
 dat `l6-trace` en `l7-trace` de modeloplossing van hun eigen hoofdstuk
@@ -565,6 +565,58 @@ docent als WP 47, één niveau lager.
 - [x] QC: **441/441** headless, lint-scene/check-assets/check-walkthrough
       (276)/check-docpaden schoon, smokes 42/46/40/58/104 groen,
       screenshots `wp48b-menu-vergrendeld(-l0).png` in test-results/
+
+### - [x] WP 48c — De diskette
+
+Entry: `workflow/48c-de-diskette.md` · commit: (nog in te vullen)
+
+Ingelast door de manager op vraag van de docent, tussen WP 48b en WP 49.
+Lars: de afgewerkte broncode kon er niet "de hele tijd al" geweest zijn;
+ze hoort op een diskette van 1,44 MB die je uit de pc meeneemt, met een
+etiket in Alberta's handschrift.
+
+- [x] Nieuwe kaart `js/scenes/scene-diskette.js`: een 3,5"-HD-diskette
+      groot in beeld (130 × 112 px — breder dan hoog, want mode 13h heeft
+      pixels die 20 % hoger zijn dan breed), sluiter, twee gaten, scheef
+      etiket; plastic uit de nacht-ramp, sluiter uit de steen-ramp,
+      etiket uit de papier-ramp, licht van rechts. In `index.html`
+      geregistreerd; `lint-scene` keurt haar mee
+- [x] Het etiket is handschrift uit de renderlaag
+      (`tekenDisketteEtiket`), niet uit de picture: "7 little goats" in
+      inkt 41 en "hfst. 1 — 7" eronder in 40, allebei met dezelfde
+      helling als het blad
+- [x] Flow: `world.startDiskette` tussen oordeel en epiloog, effect
+      `diskette`, modus `"diskette"` met twee beats — de amberband waarin
+      de drive wegschrijft (kaal DOS, `C:\GOATS> copy *.java a:`), dan
+      het onderschrift onder de kaart. Enter/spatie/schermtik per beat.
+      De beat-teller staat níét in de save: een reload begint de beat
+      opnieuw en strandt niet
+- [x] Proza: de epiloog hangt aan de diskette in plaats van aan "de
+      broncode ligt op zolder"; `dozen.broncodeDicht` en de
+      onderzoek-tekst van de doos beloven niets meer wat erin zou liggen
+      (haar materiaal van toen; de doos gaat nooit open, en dat blijft
+      zo); `dozen.allesGevonden` verwijst niet meer naar het einde in de
+      doos
+- [x] Bijvangst uit WP 48b: alle vijftien terminalpuzzels (+ de proefdruk)
+      krijgen een menutitel in de vorm `<onderwerp> — <wat je doet>`, met
+      een vaste opdracht per soort; geen enkele verklapt zijn antwoord
+- [x] Docs mee: achtergrond (mandaat vervangen, beslissingsblok met Lars'
+      redenering), spelontwerp-legacy (modustabel, scènetabel, endgame
+      stap 5–6 + beslissing), art-stijlgids (paletregel + scène-rij),
+      engine-architectuur (effect-tag, modus-enum), save-en-hints
+      (de beat staat niet in de save), scene-schema, spelontwerp-seven-
+      little-goats. Walkthrough deel 1 (de doos-belofte) en deel 2 (nieuwe
+      sectie "En dan de diskette"); beide PDF's herbouwd
+- [x] Tests: vijf nieuwe in `test-world-hub` (keten, drive-regels,
+      etiket, epiloog, doos), nieuw `test-puzzeltitels.mjs` (elke puzzel
+      een titel, uniek per level, vaste vorm, breedte); smoke-sim dekt de
+      beat inclusief pixelcontrole en een reload middenin;
+      full-playthrough en smoke-pc mee
+- [x] QC: **450/450** headless, lint-scene/check-assets/check-walkthrough
+      (277)/check-docpaden schoon, smokes groen — sim 19/19, pc 44/44,
+      browser 46/46, full-playthrough 105/105 (smoke-touch draait hier
+      niet: geen WebKit-build) — screenshots `wp48c-diskette.png`,
+      `wp48c-epiloog.png`, `wp48c-menu-titels.png`
 
 ### - [ ] WP 49 — Slot en PR
 

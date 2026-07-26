@@ -580,7 +580,25 @@ globalThis.AL = globalThis.AL || {};
       };
     },
 
-    // Van het oordeel naar de epiloog (wijst naar de echte broncode; sluit af).
+    // Van het oordeel naar de diskette (WP 48c, op vraag van de docent). De pc
+    // schrijft de herstelde broncode weg naar de diskette in de drive; de
+    // engine toont daar een eigen kaart bij. Deze stap zit tússen oordeel en
+    // epiloog: zonder haar zou de afgewerkte broncode er de hele tijd al
+    // geweest zijn, en dat klopte niet met de rest van de fictie.
+    //
+    // De beat-teller zelf leeft in de engine, niet in de staat: hij duurt twee
+    // toetsaanslagen en hoeft een reload niet te overleven — die begint de beat
+    // gewoon opnieuw (zie docs/save-en-hints.md, §"localStorage-save").
+    startDiskette: function (toestand) {
+      toestand.modus = "diskette";
+      var d = AL.strings.endgame.diskette;
+      return {
+        tekst: d.terminal.concat([d.onderschrift]),
+        effecten: ["diskette", "voortgang:opgeslagen"]
+      };
+    },
+
+    // Van de diskette naar de epiloog (wijst naar de echte broncode; sluit af).
     startEpiloog: function (toestand) {
       toestand.modus = "epiloog";
       return {

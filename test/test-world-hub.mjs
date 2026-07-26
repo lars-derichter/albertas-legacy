@@ -621,6 +621,56 @@ test("bootSim kondigt de endgame aan", () => {
   assert.ok(r.effecten.includes("geluid:boot"));
 });
 
+// ---- De diskette-beat (WP 48c) -------------------------------------------
+
+test("na het oordeel komt de diskette, en pas daarna de epiloog", () => {
+  const t = world.nieuw();
+  world.startOordeel(t);
+  const r = world.startDiskette(t);
+  assert.equal(t.modus, "diskette");
+  assert.ok(r.effecten.includes("diskette"));
+  assert.ok(r.effecten.includes("voortgang:opgeslagen"));
+  // De tekst van de beat: wat de drive afdrukt, plus het onderschrift.
+  const d = strings.endgame.diskette;
+  assert.deepEqual(r.tekst, d.terminal.concat([d.onderschrift]));
+  // En van daaruit gewoon verder naar de epiloog.
+  const e = world.startEpiloog(t);
+  assert.equal(t.modus, "epiloog");
+  assert.ok(e.effecten.includes("epiloog"));
+});
+
+test("de drive-regels passen op het scherm en zijn kaal DOS", () => {
+  // De amberband zet met de gedrukte 8×8-font: veertig tekens op 320 px, en de
+  // band houdt links en rechts marge. Meer dan achtendertig tekens loopt eruit.
+  // Buiten ASCII heeft die font geen glyph die een DOS-scherm zou tonen.
+  for (const regel of strings.endgame.diskette.terminal) {
+    assert.ok(regel.length <= 38, "te breed voor de band: " + regel);
+    assert.ok(/^[\x20-\x7E]*$/.test(regel), "geen kale ASCII: " + regel);
+  }
+});
+
+test("het etiket draagt haar titel en haar nummering", () => {
+  const d = strings.endgame.diskette;
+  assert.equal(d.etiketA, "7 little goats");
+  assert.ok(d.etiketB.length > 0, "de tweede etiketregel ontbreekt");
+  assert.ok(d.onderschrift.length > 0);
+});
+
+test("de epiloog hangt aan de diskette, niet aan een doos op zolder", () => {
+  // WP 48c: de afgewerkte broncode lág niet op zolder, ze is er net op
+  // geschreven. Zodra deze zin terugkeert, is de fictie weer stuk.
+  const tekst = strings.epiloog.alineas.join(" ");
+  assert.ok(tekst.includes("diskette"), "de epiloog noemt de diskette niet");
+  assert.ok(!/ligt op zolder/.test(tekst), "de oude doos-belofte is terug");
+});
+
+test("de broncode-doos belooft niets meer wat erin zou liggen", () => {
+  const t = world.nieuw(); t.sceneId = "zolder-midden";
+  const tekst = world.open(t, "broncode-doos").tekst.join(" ") + " " +
+    world.onderzoek(t, "broncode-doos").tekst.join(" ");
+  assert.ok(!/broncode ligt|neem ze mee/i.test(tekst));
+});
+
 test("de epiloog is bereikbaar en wijst naar de broncode + Roberta", () => {
   const t = world.nieuw();
   world.startOordeel(t);

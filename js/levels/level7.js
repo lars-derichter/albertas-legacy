@@ -153,6 +153,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l7-trace",
     type: "trace",
+    titel: S.l7.traceTitel,
     pool: ["jongste", "broer"],
     label: "l7-trace",
     verwacht: function (wie) {

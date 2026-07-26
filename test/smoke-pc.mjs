@@ -76,6 +76,22 @@ async function main() {
     "n=" + menuAantal);
   check("menu bevat de editor-herstelpuzzel", ids.includes("l0-editor-repair"));
 
+  // 2a. Het menu toont titels, geen puzzel-ids (WP 48c). Tot dan stonden de
+  //     terminalpuzzels er met hun rauwe sleutel in ("l0-trace").
+  const namen = await ev(page, () => [...document.querySelectorAll(".pc-menu-item")]
+    .map((el) => ({
+      id: el.getAttribute("data-puzzel-id"),
+      naam: el.querySelector(".pc-menu-naam").textContent
+    })));
+  check("geen enkele menuregel toont een puzzel-id",
+    namen.every((r) => r.naam !== r.id && !/^l\d-/.test(r.naam)),
+    namen.map((r) => r.naam).join(" | "));
+  check("elke menuregel draagt een titel met een gedachtestreepje",
+    namen.every((r) => r.naam.indexOf(" — ") > 0),
+    namen.length + " regels");
+  await page.waitForTimeout(120);
+  await page.screenshot({ path: join(SCRATCH, "wp48c-menu-titels.png") });
+
   // 2b. De volgorde-poort (WP 48b): op een vers level is alleen de eerste taak
   //     open; de zes eronder dragen het "wacht"-plaatje en reageren niet.
   const poort = await ev(page, () => {

@@ -26,8 +26,9 @@ De engine kent één modus per scherm (het `modus`-veld uit
 | `spread` | full-screen notitieboek-spread | doorbladeren, dan valt het boek dicht waar je staat |
 | `pc` | gesimuleerde editor/terminal (DOM-overlay) | typen, "compileer & test", `?` |
 | `sim` | _Seven Little Goats_ als speelbare simulatie | getypte commando's |
-| `oordeel` | Alberta's oordeel-eindscherm | lezen, dan epiloog |
-| `epiloog` | slottekst die naar de broncode wijst | een toets om af te sluiten |
+| `oordeel` | Alberta's oordeel-eindscherm | lezen, dan de diskette |
+| `diskette` | de diskette groot in beeld: de drive schrijft weg, dan ligt ze in je hand | een toets per beat (twee), dan de epiloog |
+| `epiloog` | slottekst die naar de diskette en de broncode wijst | een toets om af te sluiten |
 
 ## Titelscherm en intro
 
@@ -96,6 +97,7 @@ case en bindend; `art-stijlgids.md` levert de mood-notities en de tekening.
 | `overloop` | kamer | het archief boven de trap: de bladen van de hoofdstukken 5–7 |
 | `spread-template` | spread | herbruikbaar notitieboek-spread, per level herkleed |
 | `eindkaart` | kaart | drager voor Alberta's oordeel + epiloog |
+| `diskette` | beeld | de 3,5"-diskette van dichtbij, tussen oordeel en epiloog |
 
 > Beslissing: drie zolderscènes waren verplicht (`zolder-west`, `zolder-oost`,
 > `zolder-midden`) en `overloop` was een optionele vierde. WP 6 heeft haar
@@ -284,10 +286,21 @@ Level 7 afronden "voltooit" Alberta's spel:
    `spelontwerp-seven-little-goats.md`; de sim spiegelt de Java één-op-één.
 3. `sim:einde:<naam>` → een van de vier eindes is bereikt.
 4. `oordeel:<tier>` → Alberta's oordeel.
-5. `epiloog` → de slottekst wijst naar de echte Java-broncode: "De broncode
-   ligt op zolder — neem ze mee." De speler wordt naar `seven-little-goats/`
-   verwezen om de code in IntelliJ te openen en zelf te draaien. Hier valt ook
-   de eenmalige vermelding van Roberta Williams (zie `roberta-williams.md`).
+5. `diskette` → de pc schrijft de herstelde broncode weg naar de diskette die in
+   de drive zat, en de speler klikt ze eruit. Twee beats op één beeld
+   (`scene-diskette.js`): eerst de amberband met wat de drive afdrukt, dan het
+   onderschrift onder de kaart. Het etiket draagt Alberta's handschrift.
+6. `epiloog` → de slottekst wijst naar de diskette en naar de echte
+   Java-broncode: wat erop staat, staat ook in `seven-little-goats/`. De speler
+   wordt verwezen om de code in IntelliJ te openen en zelf te draaien. Hier valt
+   ook de eenmalige vermelding van Roberta Williams (zie
+   `roberta-williams.md`).
+
+> Beslissing (WP 48c, op vraag van de docent): de afgewerkte broncode ligt niet
+> meer "de hele tijd al" op zolder te wachten. Ze wordt op het einde geschreven,
+> op het enige medium dat in deze fictie klopt: een HD-diskette van 1,44 MB die
+> je uit de pc meeneemt. De broncode-doos blijft daardoor wat ze was — een
+> dichtgeplakte doos met haar materiaal van toen — en gaat nooit open.
 
 ## Speelduur
 

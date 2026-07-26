@@ -96,6 +96,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l6-trace",
     type: "trace",
+    titel: S.l6.traceTitel,
     pool: [3, 5, 7],
     label: "l6-trace",
     verwacht: function (n) { return String(n - 1); },
@@ -111,6 +112,7 @@ globalThis.AL = globalThis.AL || {};
   var vindfout = {
     id: "l6-vindfout",
     type: "vindfout",
+    titel: S.l6.vindfoutTitel,
     regelnummer: 1,
     aanvaard: ["<=", "<", "off-by-one", "off by one", "een te ver", "één te ver",
       "te ver", "grens", "lusgrens", "zes rondes", "6 rondes", "vijf"],

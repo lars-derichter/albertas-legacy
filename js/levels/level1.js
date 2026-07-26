@@ -170,6 +170,7 @@ globalThis.AL = globalThis.AL || {};
   var verklaar = {
     id: "l1-verklaar",
     type: "verklaar",
+    titel: S.l1.verklaarTitel,
     vraag: S.l1.verklaar.vraag,
     toon: S.l1.verklaar.toon,
     model: S.l1.verklaar.model,

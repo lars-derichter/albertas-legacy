@@ -44,7 +44,8 @@ globalThis.AL = globalThis.AL || {};
     var canvas = document.getElementById("scherm");
     if (!canvas) return;
 
-    // Tik-om-door-te-bladeren: berichtvenster, titelkaart, spread, oordeel.
+    // Tik-om-door-te-bladeren: berichtvenster, titelkaart, spread, oordeel,
+    // de diskette-kaart en de epiloog.
     // In de vrije zoldermodus doet advance() niets (zie engine.js), dus dit
     // is ook voor muisgebruikers een onschadelijke extra.
     canvas.addEventListener("click", function () {

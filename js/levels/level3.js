@@ -85,6 +85,7 @@ globalThis.AL = globalThis.AL || {};
   var vindfout = {
     id: "l3-vindfout",
     type: "vindfout",
+    titel: S.l3.vindfoutTitel,
     regelnummer: 1,
     aanvaard: ["&&", "||", "en", "of", "allebei", "beide", "twee voorwaarden",
       "logische operator", "operator"],
@@ -101,6 +102,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l3-trace",
     type: "trace",
+    titel: S.l3.traceTitel,
     pool: [0, 10, 5],
     label: "l3-trace",
     verwacht: function (n) {

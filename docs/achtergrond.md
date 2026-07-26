@@ -34,7 +34,9 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
   klopte, tekende ze eroverheen. Die gewoonte is het scharnier van de hele
   fictie (zie _Prototype-fase_ hieronder).
 - **Nalatenschap:** de zolder. Dozen, stof, een pc die nog aanslaat, en het
-  notitieboek. En, verborgen tussen alles, de echte broncode — de hoofdprijs.
+  notitieboek. De echte broncode is de hoofdprijs, maar ze ligt er niet: ze
+  bestaat pas als de speler haar afmaakt (zie de beslissing bij _De
+  broncode-doos_ hieronder).
 
 ## De verdwijning
 
@@ -95,9 +97,28 @@ Vaste elementen die in de prose en de scènes terugkomen:
   (zie `spelontwerp-legacy.md`).
 - **Het notitieboek**: beschadigd, bladen los, vlekken. Elk level ontgrendelt
   één fragment ervan.
-- **De broncode-doos**: pas op het einde relevant. Hierin ligt, letterlijk, de
-  echte Java van `seven-little-goats/`. "De broncode ligt op zolder — neem ze
-  mee."
+- **De broncode-doos**: dichtgeplakt, gemerkt BRONCODE, en daaronder kleiner
+  "pas op het einde". Wat erin zit is háár materiaal van toen — uitdraaien,
+  schetsen, haar eigen diskettes van de versie die stukging. De doos gaat
+  nooit open; ze is er om te tonen dat ze wist wat ze achterliet, niet om iets
+  uit te delen.
+- **De diskette**: in de drive van de pc zit een HD-diskette van 1,44 MB met
+  een etiket in haar hand: "7 little goats", en daaronder haar nummering. Ze
+  heeft dat etiket geschreven voor een spel dat toen nog niet af was. Op het
+  einde schrijft de pc de herstelde broncode ernaartoe en neemt de speler de
+  diskette mee van zolder. Dát is de prijs, en ze bestaat pas als hij hem
+  verdiend heeft.
+
+> Beslissing (WP 48c, op vraag van de docent): tot dit pakket lag de afgewerkte
+> broncode "de hele tijd al" in een doos op zolder, en dat klopte niet — het
+> spel is nét niet af, dat is de hele premisse. Lars stelde de diskette voor:
+> _"Ik vind het niet logisch dat de afgewerkte broncode er de hele tijd al was.
+> In de plaats daarvan zou de bewaarde, gerepareerde broncode op een floppy disk
+> kunnen bewaard worden die je kan meenemen uit de pc."_ De prijs verhuist
+> daarmee van een doos naar een medium dat pas op het einde beschreven wordt.
+> De oude regel "De broncode ligt op zolder — neem ze mee", die dit document
+> voorschreef, vervalt; wat blijft is dat de speler met echte, draaibare Java
+> naar huis gaat.
 
 ## Het notitieboek
 
@@ -200,9 +221,10 @@ De frame-logica die elk stukje prose moet respecteren:
 - **Elk hersteld hoofdstuk is dubbel winst.** Het herstelt een stuk van _Seven
   Little Goats_ én markeert dat de speler een scharnier van de cursus beheerst.
 - **Het einde geeft de prijs.** Level 7 af = Alberta's spel draait. De pc boot
-  _Seven Little Goats_ als speelbare simulatie. De epiloog wijst naar de echte
-  Java-broncode in `seven-little-goats/`: neem ze mee van zolder, open ze in
-  IntelliJ, draai ze zelf.
+  _Seven Little Goats_ als speelbare simulatie. Daarna schrijft hij de herstelde
+  broncode weg naar de diskette in de drive; de speler klikt ze eruit en neemt
+  ze mee. De epiloog hangt aan dat beeld: wat op de diskette staat, staat ook in
+  `seven-little-goats/` — open het in IntelliJ, draai het zelf.
 
 ## Toon en register (voor alle in-game tekst)
 

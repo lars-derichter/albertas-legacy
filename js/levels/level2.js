@@ -116,6 +116,7 @@ globalThis.AL = globalThis.AL || {};
   var parsons = {
     id: "l2-parsons",
     type: "parsons",
+    titel: S.l2.parsonsTitel,
     shuffleLabel: "l2-parsons",
     regels: [
       "Voorwerp zoek(String gezochteNaam) {",
@@ -146,6 +147,7 @@ globalThis.AL = globalThis.AL || {};
   var trace = {
     id: "l2-trace",
     type: "trace",
+    titel: S.l2.traceTitel,
     pool: [3, 5, 7],
     label: "l2-trace",
     verwacht: function (n) { return String(n) + " 20"; },

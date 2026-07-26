@@ -91,8 +91,9 @@ kamer in een doos zit. Weigert een doos gewoon open te gaan terwijl je `open
 doos` typt? Dan is het dat derde geval: er is nog een hoofdstuk te herstellen,
 en de doos zegt zelf welk. Ga eerst dát afwerken aan de pc; daarna geeft ze het
 blad zonder morren. Die hints zijn gratis en tellen niet mee in Alberta's
-terugblik. De grote doos in het midden met "BRONCODE" erop telt trouwens pas op
-het einde; laat die nog even dicht.
+terugblik. De grote doos in het midden met "BRONCODE" erop blijft dicht, en dat
+hoort zo: daar zit háár materiaal van toen in, niets wat jij nodig hebt. Het
+spel laat je hem niet open krijgen, hoe vaak je het ook probeert.
 
 Meer dan dit zeggen we niet over de zolder. Het is een kleine, warme ruimte —
 je hebt ze zo in de vingers.

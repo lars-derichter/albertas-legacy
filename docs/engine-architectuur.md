@@ -479,7 +479,8 @@ reageert; de logica produceert ze alleen.
 |---|---|
 | `sim:boot` | de pc boot _Seven Little Goats_ als speelbare simulatie |
 | `sim:einde:<naam>` | de sim bereikte een van de vier eindes (zie `spelontwerp-seven-little-goats.md`) |
-| `epiloog` | toon de epiloog die naar `seven-little-goats/` wijst |
+| `diskette` | toon de diskette-kaart: de pc schrijft de herstelde broncode weg naar A: en de speler klikt de diskette eruit (WP 48c) |
+| `epiloog` | toon de epiloog die naar de diskette en `seven-little-goats/` wijst |
 
 ### Systeem
 
@@ -505,7 +506,7 @@ Velden (bindend voor de save in `save-en-hints.md`):
   versie: 1,               // save-schemaversie (migraties)
   seed: 20260716,          // RNG-seed voor variatie (?seed=N of gegenereerd)
   modus: "zolder",         // "titel" | "zolder" | "spread" | "pc" | "sim"
-                           //   | "oordeel" | "epiloog"
+                           //   | "oordeel" | "diskette" | "epiloog"
   sceneId: "zolder-west",  // huidige zolder-/huisscène
   speler: { x: 160, y: 150, richting: "zuid" }, // positie op de scène
   bezocht: { "zolder-west": true },             // welke scènes beschreven zijn

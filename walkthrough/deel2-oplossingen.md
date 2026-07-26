@@ -564,4 +564,14 @@ Het zegel verbroken en deel 2 gebruikt? Dat telt niet mee in Alberta's som —
 alleen de `?`-hints in het spel doen dat. Maar je weet het zelf. Eén repository,
 één zolder. Volgende keer geraak je er zonder.
 
-*Nu de broncode nog. Ze ligt op zolder — neem ze mee.*
+# En dan de diskette
+
+Na het oordeel doet de pc nog één ding: hij schrijft alles wat je hersteld hebt
+weg naar de diskette die al die tijd in de drive zat. Je ziet ze groot in beeld,
+met een etiket in Alberta's handschrift — ze had het al geschreven voor een spel
+dat toen nog niet af was. Enter, en je klikt ze eruit.
+
+Dat is de echte prijs, en hij is geen beeld: wat op die diskette staat, staat
+ook in `seven-little-goats/`. Open het in IntelliJ, lees het, draai het zelf.
+
+*Nu de diskette nog. Ze gaat mee.*

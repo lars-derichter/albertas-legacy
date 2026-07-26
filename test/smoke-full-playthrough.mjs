@@ -10,7 +10,7 @@
 //   de pc zitten → los de drie puzzels op met de modeloplossingen
 //   → level-af → keer terug → volgend fragment → ... → level-af:7 boot de sim
 //   ECHT (geen debugSimVoltooid) → speel een winnend script → sim:einde →
-//   oordeel → epiloog.
+//   oordeel → diskette → epiloog.
 //
 // Dit bewijst dat de cumulatieve staat (save, hint-tellers, level-registry,
 // seed-variatie) een volledige run overleeft zonder dat één stap op een reset
@@ -319,7 +319,7 @@ async function main() {
   check("sim: het einde 'de les' is bereikt (sim:einde)",
     termNaEinde.includes("Einde: de les."));
 
-  // === sim:einde → oordeel → epiloog (de echte keten) =======================
+  // === sim:einde → oordeel → diskette → epiloog (de echte keten) ===========
   await page.waitForFunction(() => window.AL.debugState.modus === "oordeel",
     null, { timeout: 8000 }).catch(() => {});
   const sOordeel = await state(page);
@@ -333,11 +333,25 @@ async function main() {
 
   await page.screenshot({ path: join(SCRATCH, "wp11-full-oordeel.png") });
 
+  // oordeel → diskette → epiloog (WP 48c: de kaart tussenin telt twee beats,
+  // dus drie keer Enter in plaats van één).
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => window.AL.debugState.modus === "diskette",
+    null, { timeout: 8000 }).catch(() => {});
+  const sDiskette = await state(page);
+  check("oordeel → diskette: de pc schrijft de broncode weg naar A:",
+    sDiskette.modus === "diskette" && sDiskette.disketteStap === 0,
+    "modus=" + sDiskette.modus + " stap=" + sDiskette.disketteStap);
+  await page.screenshot({ path: join(SCRATCH, "wp48c-full-diskette.png") });
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => window.AL.debugState.disketteStap === 1,
+    null, { timeout: 8000 }).catch(() => {});
+
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => window.AL.debugState.modus === "epiloog",
     null, { timeout: 8000 }).catch(() => {});
   const sEpiloog = await state(page);
-  check("oordeel → epiloog: de slottekst (naar de broncode) verschijnt",
+  check("diskette → epiloog: de slottekst (naar de broncode) verschijnt",
     sEpiloog.modus === "epiloog", "modus=" + sEpiloog.modus);
   check("einde: hintsTotaal over de HELE run is 0", sEpiloog.hintsTotaal === 0,
     "hintsTotaal=" + sEpiloog.hintsTotaal);
