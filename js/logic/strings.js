@@ -341,7 +341,7 @@ AL.strings = {
     editTitel: "ALBERTA'S EDIT  v2.3",
     terminalTitel: "ALBERTA'S TERMINAL  —  seven little goats",
     menuTitel: "Alberta's pc",
-    menuOnder: "Kies een taak: cijfertoets of klik. Esc — terug naar de zolder.",
+    menuOnder: "Kies een taak: cijfertoets of klik. Esc — afsluiten.",
     // De statusregel na een greep naar een taak die nog wacht (WP 48b: de
     // taken van een hoofdstuk gaan op volgorde). Alberta's stem, geen
     // foutmelding: haar schema loopt van boven naar onder.
@@ -362,20 +362,20 @@ AL.strings = {
     checkOk: "CHECK_OK   ",
     checkFail: "CHECK_FAIL ",
     terugNaarMenu: "— terug naar het menu —",
-    typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc voor de zolder.",
+    typHint: "Typ '?' voor een hint, 'menu' om terug te gaan, Esc sluit af.",
     hintKop: "hint",
     // F1, niet '?'. In de editor was '?' nooit een hint: het zette gewoon een
     // vraagteken in de code. Alleen de terminal en de zolder kennen '?'; de
     // editor heeft nu F1, zoals elke Turbo-editor.
     editorGeladen: "geladen. Herstel de code en druk F9 (of 'compileer & test'). " +
-      "F1 geeft een hint, Esc keert terug naar de zolder.",
+      "F1 geeft een hint, Esc sluit af.",
 
     // De labels op de menubalk en de F-toetsenbalk. Kort, want ze staan op één
     // regel naast elkaar en die regel is 320 logische pixels breed.
     balkCompileer: "Compileer",
     balkHint: "Hint",
     balkMenu: "Menu",
-    balkZolder: "Zolder",
+    balkAfsluiten: "Afsluiten",
     balkKies: "Kies een taak",
     balkNaamplaat: "ALBERTA'S PC"
   },

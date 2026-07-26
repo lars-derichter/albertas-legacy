@@ -277,8 +277,8 @@ globalThis.AL.pc = globalThis.AL.pc || {};
     var t = S().pc;
     if (view === "menu") {
       return {
-        menu: [{ label: t.balkZolder, toets: "Esc", doe: sluitNaarZolder }],
-        f: [["Esc", t.balkZolder], ["1-9", t.balkKies]]
+        menu: [{ label: t.balkAfsluiten, toets: "Esc", doe: sluitAf }],
+        f: [["Esc", t.balkAfsluiten], ["1-9", t.balkKies]]
       };
     }
     if (view === "editor") {
@@ -290,7 +290,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
           { label: t.balkHint, toets: "F1", doe: vraagHint },
           { label: t.balkMenu, toets: "Esc", doe: toonMenu }
         ],
-        f: [["F1", t.balkHint], ["F9", t.balkCompileer], ["Esc", t.balkZolder]]
+        f: [["F1", t.balkHint], ["F9", t.balkCompileer], ["Esc", t.balkAfsluiten]]
       };
     }
     return {
@@ -298,11 +298,11 @@ globalThis.AL.pc = globalThis.AL.pc || {};
         { label: t.balkHint, toets: "F1", doe: vraagHint },
         { label: t.balkMenu, toets: "Esc", doe: toonMenu }
       ],
-      f: [["F1", t.balkHint], ["Esc", t.balkZolder]]
+      f: [["F1", t.balkHint], ["Esc", t.balkAfsluiten]]
     };
   }
 
-  function sluitNaarZolder() { if (ctx) ctx.emit(["pc:sluit"]); }
+  function sluitAf() { if (ctx) ctx.emit(["pc:sluit"]); }
 
   function renderBalken() {
     if (!elMenubalk || !elFbalk) return;

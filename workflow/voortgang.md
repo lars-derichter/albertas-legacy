@@ -620,7 +620,7 @@ etiket in Alberta's handschrift.
 
 ### - [x] WP 49 — Slot en PR
 
-Entry: `workflow/49-slot-programma-4.md` · commit: (nog in te vullen)
+Entry: `workflow/49-slot-programma-4.md` · commit: `31a1451`
 
 - [x] Alle poorten in één run: 450/450 headless, 380/380 over acht
       smokes, javac + grep schoon, vier linten op nul
@@ -628,6 +628,15 @@ Entry: `workflow/49-slot-programma-4.md` · commit: (nog in te vullen)
 
 **Programma 4 is hiermee af.** Open blijven: de iPhone-luistertest,
 smoke-touch (geen WebKit) en de PDF-fontterugval.
+
+### - [x] Na het programma: de ide kent geen zolder
+
+Entry: `workflow/50-esc-zonder-zolder.md` · commit: (nog in te vullen)
+
+- [x] Vier chrome-teksten van de pc spreken programmataal ("Esc —
+      afsluiten", balk "Afsluiten") — het programma weet niet dat het
+      op een zolder staat
+- [x] QC: 450/450 groen, check-walkthrough 0, smoke-pc 44/44
 
 ## Fixronde na de speeltest (afgerond)
 
