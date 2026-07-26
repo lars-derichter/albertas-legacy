@@ -13,6 +13,12 @@
 // kreeg. Een getypte playthrough zag daar niets van — vandaar een aparte smoke
 // die alléén loopt.
 //
+// Sinds WP 42 keurt ze ook de bestúring zelf (§8 en §9): twee pijlen tegelijk,
+// een spookrichting na focusverlies, en een vinger die op het D-pad van de ene
+// knop naar de andere schuift. Die drie gaan niet over de meetkunde van de
+// vloer maar over wie de richting bepaalt, en ze staan hier omdat dit de test
+// is die als enige écht loopt.
+//
 // Zonder testframework: platte asserties met PASS/FAIL en een exitcode.
 // Chromium is vereist (npx playwright install chromium); AL_CHROMIUM wijst een
 // eigen binary aan.
@@ -116,6 +122,45 @@ async function botsTegen(page, richting, ms) {
     venster: b.vensterOpen,
     x: b.actorX, y: b.actorY
   };
+}
+
+// De besturingstoestand in één blik: welke kant de speler op kijkt, waar hij
+// staat, en of hij loopt. `speler.richting` staat in de wereldstaat en niet in
+// debugState — vandaar de tweede haak.
+async function besturing(page) {
+  return page.evaluate(() => ({
+    richting: window.AL.debugToestand.speler.richting,
+    x: window.AL.debugState.actorX,
+    y: window.AL.debugState.actorY,
+    loopt: window.AL.debugState.loopt
+  }));
+}
+
+// Staat de speler écht stil? Twee metingen met een tik of tien ertussen: één
+// meting kan een pauze in een animatie zijn.
+async function staatStil(page) {
+  const a = await besturing(page);
+  await page.waitForTimeout(700);
+  const b = await besturing(page);
+  return { stil: a.x === b.x && a.y === b.y && !b.loopt, x: b.x, y: b.y };
+}
+
+// Een verse pagina in een eigen context: de besturingsproeven hieronder mogen
+// de lange looproute hierboven niet verstoren (en de aanraakproef heeft een
+// context met `hasTouch` nodig).
+async function versePagina(browser, opties) {
+  const context = await browser.newContext(opties || {});
+  const page = await context.newPage();
+  await page.goto(indexUrl, { waitUntil: "load" });
+  await page.waitForFunction(() => !!window.AL && !!window.AL.debugState,
+    { timeout: 15000 });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(120);
+  await page.keyboard.press("Escape");          // de openingsreeks overslaan
+  await page.waitForTimeout(150);
+  await naarZolder(page);
+  await sluitVensters(page);
+  return { context, page };
 }
 
 async function main() {
@@ -271,6 +316,135 @@ async function main() {
   check("'ga oost' op de overloop weigert nog wél met een venster",
     weiger.vensterOpen === true && weiger.sceneId === "overloop",
     "venster=" + weiger.vensterOpen + " scene=" + weiger.sceneId);
+
+  // ---- 8. De besturing: geen spookrichtingen (WP 42) ---------------------
+  //
+  // Lars' klacht van de iOS-speeltest: "als je de pijltjes ingedrukt houdt,
+  // blijft het personage die kant op lopen, ook nadat je een andere pijl
+  // indrukt". Twee mechanismen, twee proeven — beide in een verse pagina, want
+  // de speler moet hier op een vrij stuk vloer staan (de westhoek is bij y175
+  // beloopbaar van x6 tot de kist op x176).
+  const bes = await versePagina(browser);
+  {
+    const p = bes.page;
+
+    // (a) Twee pijlen tegelijk: de laatst ingedrukte wint, en het loslaten
+    // daarvan valt terug op de pijl die nog steeds ingedrukt is.
+    await p.keyboard.down("ArrowRight");
+    await p.waitForTimeout(600);
+    const oost1 = await besturing(p);
+    check("één pijl: de speler loopt naar het oosten",
+      oost1.richting === "oost" && oost1.loopt && oost1.x > 80,
+      "richting=" + oost1.richting + " x=" + oost1.x);
+
+    await p.keyboard.down("ArrowLeft");           // rechts blijft ingedrukt
+    await p.waitForTimeout(600);
+    const west1 = await besturing(p);
+    check("de tweede pijl wint terwijl de eerste ingedrukt blijft",
+      west1.richting === "west" && west1.x < oost1.x,
+      "richting=" + west1.richting + " x=" + west1.x + " (was " + oost1.x + ")");
+
+    await p.keyboard.up("ArrowLeft");             // rechts nóg steeds ingedrukt
+    await p.waitForTimeout(600);
+    const oost2 = await besturing(p);
+    check("de eerste pijl geldt weer zodra de tweede losgelaten wordt",
+      oost2.richting === "oost" && oost2.x > west1.x,
+      "richting=" + oost2.richting + " x=" + oost2.x + " (was " + west1.x + ")");
+
+    await p.keyboard.up("ArrowRight");
+    await p.waitForTimeout(200);
+    const naLos = await staatStil(p);
+    check("met beide pijlen los staat de speler stil", naLos.stil,
+      "x=" + naLos.x + " y=" + naLos.y);
+
+    // (b) Het spook: een keydown zonder keyup. `blur` is precies wat er op een
+    // telefoon gebeurt als de app naar de achtergrond gaat — de pijl blijft in
+    // de stack staan en de speler loopt door. De toets wordt hier bewust níét
+    // losgelaten vóór de meting.
+    await p.keyboard.down("ArrowLeft");
+    await p.waitForTimeout(600);
+    const loopt = await besturing(p);
+    check("de speler loopt naar het westen met de pijl ingedrukt",
+      loopt.loopt && loopt.richting === "west", "richting=" + loopt.richting);
+
+    await p.evaluate(() => window.dispatchEvent(new Event("blur")));
+    await p.waitForTimeout(300);
+    const naBlur = await staatStil(p);
+    check("focusverlies stopt de speler, ook zonder keyup", naBlur.stil,
+      "x=" + naBlur.x + " y=" + naBlur.y);
+
+    // En het spook is écht weg: een andere pijl indrukken en loslaten valt
+    // niet terug op de richting die nooit een keyup kreeg.
+    await p.keyboard.down("ArrowRight");
+    await p.waitForTimeout(500);
+    const naSpook = await besturing(p);
+    check("na het focusverlies stuurt de volgende pijl gewoon weer",
+      naSpook.loopt && naSpook.richting === "oost",
+      "richting=" + naSpook.richting);
+    await p.keyboard.up("ArrowRight");
+    await p.waitForTimeout(200);
+    const stilNaSpook = await staatStil(p);
+    check("en loslaten valt niet terug op het spook", stilNaSpook.stil,
+      "x=" + stilNaSpook.x + " y=" + stilNaSpook.y);
+    await p.keyboard.up("ArrowLeft");             // de spooktoets alsnog los
+    await p.waitForTimeout(200);
+    const naLate = await staatStil(p);
+    check("een late keyup van de spooktoets zet niets meer in beweging",
+      naLate.stil, "x=" + naLate.x + " y=" + naLate.y);
+  }
+  await bes.context.close();
+
+  // ---- 9. Het D-pad: een vinger die van de ene knop naar de andere schuift -
+  //
+  // Dit is de aanraakkant van dezelfde klacht, en het is het geval dat Lars op
+  // iOS raakte. Een aanraking krijgt impliciete pointer capture: alle events
+  // van die vinger gaan naar de knop van de pointerdown, ook als de vinger
+  // allang boven een andere knop hangt. Zonder de capture los te laten krijgt
+  // ▶ nooit een pointerdown en ◀ nooit een pointerleave.
+  //
+  // Playwright's aanraak-API kent alleen `tap()`, dus het schuiven gaat via
+  // CDP (`Input.dispatchTouchEvent`). Dat levert échte aanraakevents met échte
+  // capture — synthetische PointerEvents uit `page.evaluate` zouden juist het
+  // gedrag missen dat hier bewezen moet worden.
+  const tik = await versePagina(browser, { hasTouch: true });
+  {
+    const p = tik.page;
+    const zichtbaar = await p.evaluate(() => {
+      const el = document.querySelector(".touch-ui");
+      return !!el && getComputedStyle(el).display !== "none";
+    });
+    check("op een aanraakscherm staat de D-pad-balk in beeld", zichtbaar);
+
+    const kaderW = await p.locator(".touch-dpad-w").boundingBox();
+    const kaderO = await p.locator(".touch-dpad-o").boundingBox();
+    const midden = (b) => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 });
+    const cdp = await tik.context.newCDPSession(p);
+
+    await cdp.send("Input.dispatchTouchEvent",
+      { type: "touchStart", touchPoints: [midden(kaderW)] });
+    await p.waitForTimeout(600);
+    const opWest = await besturing(p);
+    check("een vinger op ◀ laat de speler naar het westen lopen",
+      opWest.loopt && opWest.richting === "west" && opWest.x < 80,
+      "richting=" + opWest.richting + " x=" + opWest.x);
+
+    await cdp.send("Input.dispatchTouchEvent",
+      { type: "touchMove", touchPoints: [midden(kaderO)] });
+    await p.waitForTimeout(600);
+    const opOost = await besturing(p);
+    check("de vinger naar ▶ schuiven draait de richting mee",
+      opOost.richting === "oost" && opOost.x > opWest.x,
+      "richting=" + opOost.richting + " x=" + opOost.x +
+      " (was " + opWest.x + ")");
+
+    await cdp.send("Input.dispatchTouchEvent",
+      { type: "touchEnd", touchPoints: [] });
+    await p.waitForTimeout(300);
+    const opgetild = await staatStil(p);
+    check("de vinger optillen stopt de speler", opgetild.stil,
+      "x=" + opgetild.x + " y=" + opgetild.y);
+  }
+  await tik.context.close();
 
   await browser.close();
 

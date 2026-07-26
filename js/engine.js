@@ -201,6 +201,21 @@ globalThis.AL = globalThis.AL || {};
     AL.input.blokkeer = !vrij;
   }
 
+  // Elke moduswissel wég van de vrije zolder legt de besturing stil: de
+  // richtingen die op dat moment ingedrukt zijn, worden vergeten (WP 42).
+  //
+  // De tik loopt onder een andere modus toch al niet, dus dit gaat niet over
+  // doorlopen ónder het notitieboek — het gaat over wat er dáárna gebeurt. Een
+  // pijl die ingedrukt was toen het boek openging, wordt losgelaten boven een
+  // pc-overlay die zijn eigen tekstvelden heeft; die keyup kan onderweg
+  // verdwijnen, en dan staat de speler bij het sluiten meteen weer te lopen
+  // zonder dat iemand iets aanraakt. Vergeten is hier het juiste antwoord:
+  // wie wil lopen, drukt opnieuw. Zie js/input.js, reset().
+  function stopBesturing() {
+    if (AL.input && AL.input.reset) AL.input.reset();
+    loopt = false;
+  }
+
   // ---- Scène-overgangen ----------------------------------------------------
 
   // De overgang is bewust alléén een opkomst: de scène wisselt meteen, en het
@@ -376,6 +391,7 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
+    stopBesturing();
     AL.sound.muziek("titel");
   }
 
@@ -457,6 +473,7 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     naVenster = null;
     AL.input.blokkeer = true;
+    stopBesturing();
     // Geen cue: welk geluid bij het openslaan hoort, beslist de logica in haar
     // effectenlijst (een blad uit het notitieboek klinkt anders dan een blad
     // uit een doos die je net opengetrokken hebt). Doorbladeren speelt wél
@@ -504,8 +521,8 @@ globalThis.AL = globalThis.AL || {};
       // speler net heeft gedaan.
       toestand.modus = "pc";
       bewaar();
+      stopBesturing();
       richting = "oost";
-      loopt = false;
       // Het warme bed start pas als de overlay opengaat, niet bij het zitten:
       // de wissel hoort samen te vallen met het moment dat het scherm het beeld
       // overneemt, want dát is waar de kamer van kou naar warmte gaat.
@@ -568,6 +585,7 @@ globalThis.AL = globalThis.AL || {};
   function startSim() {
     if (!(AL.sim && AL.sim.terminal && AL.pc && AL.pc.simView)) return;
     toestand.modus = "sim";
+    stopBesturing();
     if (pcOverlay) { pcOverlay.style.display = "flex"; }
     // Alberta's aankondiging staat als voorwoord boven de bootende sim.
     var voorwoord = [AL.strings.endgame.compleet, AL.strings.endgame.bootSim, ""];
@@ -581,6 +599,7 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     verbergOverlay();          // de sim/pc-overlay wijkt voor de oordeelkaart
     AL.input.blokkeer = true;
+    stopBesturing();
     // Het eindbed is eenmalig: het lost op en houdt dan op. Daarna is het stil,
     // en dat is het punt — de epiloog hoort geen muziek onder zich te hebben.
     AL.sound.muziek("einde");
@@ -592,6 +611,7 @@ globalThis.AL = globalThis.AL || {};
     venster = null;
     verbergOverlay();
     AL.input.blokkeer = true;
+    stopBesturing();
     bewaar();
   }
 

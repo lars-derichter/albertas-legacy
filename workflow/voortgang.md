@@ -456,18 +456,41 @@ problemen, twee beslissingen (Alberta wist het; notitiekop weg, "— A.").
 
 ### - [x] WP 41 — Kickoff fixronde
 
-Entry: `workflow/41-fixronde-kickoff.md` · commit: (nog in te vullen)
+Entry: `workflow/41-fixronde-kickoff.md` · commit: `cd6513e`
 
 - [x] Feedback verbatim, Q&A, wortels en plan vastgelegd
 - [x] QC: docs only, wrap 80, tests ongewijzigd 400/400
 
-### - [ ] WP 42 — Besturing: geen spookrichtingen
+### - [x] WP 42 — Besturing: geen spookrichtingen
 
-- [ ] reset() op blur/visibilitychange en bij moduswissels
-- [ ] drukPijl herplaatst bestaande richting naar de top
-- [ ] D-pad: releasePointerCapture + loslaat-zekering bij verbergen
-- [ ] Tests: twee-pijlen-arbitrage, spook-na-blur, D-pad-schuif
-- [ ] QC: `node --test` + lint + alle smokes groen
+Entry: `workflow/42-besturing.md` · commit: (nog in te vullen)
+
+- [x] `AL.input.reset()` leegt de pijl-stack; gekoppeld aan `blur` en aan
+      `visibilitychange` zodra `document.hidden` waar is — de enige twee
+      momenten waarop een verloren keyup nog op te ruimen valt
+- [x] `stopBesturing()` in `js/engine.js` roept die reset aan bij elke
+      moduswissel weg van de vrije zolder (`startTitel`, `opADeSpread`,
+      `opADePc`, `startSim`, `toonOordeel`, `toonEpiloog`). Bewust níét
+      aan `input.blokkeer` gehangen: een kamerbeschrijving is óók een
+      venster, en dan zou binnenwandelen met de pijl ingedrukt stilvallen
+- [x] `drukPijl` verplaatst een al aanwezige richting naar de top, zodat
+      de speler ook van een spook wint dat er nog wél staat
+- [x] D-pad: `releasePointerCapture` in een `try` plus `pointerenter` met
+      `buttons > 0` — schuiven van ◀ naar ▶ draait de richting mee; de
+      zichtbaarheidspoll laat alles los op de flank waarop de balk weggaat
+- [x] `test/test-input.mjs` (nieuw, 14 keuringen, met window-stub voor de
+      zekering) en `test/smoke-walk.mjs` §8–§9 (13 keuringen erbij:
+      twee-pijlen-arbitrage, spook-na-blur, D-pad-schuif via CDP-aanraking)
+- [x] `docs/engine-architectuur.md`: §"De besturing: de pijl-stack en de
+      spookrichting", met verwijzingen uit de overname-tabel en de
+      aanraakschermparagraaf
+- [x] QC: **414/414** headless (was 400), `lint-scene` schoon, smoke-walk
+      **38/38** (was 25/25), smoke-browser 41/41, smoke-geluid 17/17,
+      smoke-full-playthrough 97/97, smoke-pc 32/32, smoke-sim 13/13.
+      Negatieve controle gemeten: zonder de fixes zakken exact de vier
+      bewakende keuringen, en met het oude `touch.js` loopt de speler na
+      de schuif door naar het westen. `smoke-touch` (WebKit) kon opnieuw
+      niet draaien; de échte iPhone-test blijft bij Lars
 
 ### - [ ] WP 43 — iOS-audio
 

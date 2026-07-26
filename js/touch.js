@@ -57,9 +57,20 @@ globalThis.AL = globalThis.AL || {};
     var wrapper = bouwUi();
     document.body.appendChild(wrapper);
 
+    var vorigZichtbaar = false;
     setInterval(function () {
       var d = globalThis.AL.debugState;
       var zichtbaar = !!(d && !d.titelActief && d.modus === "zolder");
+      // De balk kan onder de vinger vandaan verdwijnen (de speler gaat aan de
+      // pc zitten terwijl hij nog op ◀ drukt). Een knop die er niet meer is
+      // krijgt geen pointerup, dus zou die richting blijven staan. Alles
+      // loslaten op het moment dat de balk weggaat — de engine doet dit bij een
+      // moduswissel ook al, en twee keer loslaten kost niets.
+      if (vorigZichtbaar && !zichtbaar && globalThis.AL.input &&
+          globalThis.AL.input.reset) {
+        globalThis.AL.input.reset();
+      }
+      vorigZichtbaar = zichtbaar;
       wrapper.style.display = zichtbaar ? "flex" : "none";
     }, 200);
   }
@@ -136,14 +147,32 @@ globalThis.AL = globalThis.AL || {};
 
     var aan = function (e) {
       e.preventDefault();
+      // Een aanraking krijgt impliciete pointer capture: vanaf de pointerdown
+      // gaat élk verder event van die vinger naar déze knop, ook als de vinger
+      // allang boven ▶ hangt. Er komt dan geen pointerleave hier en geen
+      // pointerenter daar, en de oude richting blijft lopen — precies wat Lars
+      // op iOS zag toen hij van de ene richting naar de andere schoof. De
+      // capture loslaten geeft de knoppen hun gewone enter/leave terug. Niet
+      // elke motor staat dat toe (en bij een synthetisch event bestaat de
+      // pointer niet), vandaar de try.
+      if (e.pointerId !== undefined && b.releasePointerCapture) {
+        try { b.releasePointerCapture(e.pointerId); } catch (_e) {}
+      }
       ontgrendelGeluid();
       if (globalThis.AL.input) globalThis.AL.input.pijlAan(richting);
     };
     var uit = function () {
       if (globalThis.AL.input) globalThis.AL.input.pijlUit(richting);
     };
+    // De andere helft van het schuiven: de vinger komt binnen zónder dat er een
+    // nieuwe pointerdown volgt, want de druk is nooit opgehouden. `buttons > 0`
+    // scheidt dat van een muis die alleen maar over de knop zweeft.
+    var binnen = function (e) {
+      if (e.buttons > 0) aan(e);
+    };
 
     b.addEventListener("pointerdown", aan);
+    b.addEventListener("pointerenter", binnen);
     b.addEventListener("pointerup", uit);
     b.addEventListener("pointercancel", uit);
     b.addEventListener("pointerleave", uit);

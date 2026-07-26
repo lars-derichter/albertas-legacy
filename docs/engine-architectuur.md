@@ -31,7 +31,7 @@ met behoud van hun contract:
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/font-hand.js` | — | nieuw in WP 36: een eigen 8×10-handschriftglyphset (`AL.fontHand`), niet overgenomen |
-| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, en de `pijlAan`/`pijlUit`-haken voor `js/touch.js`. De parser-verben zijn uitgebreid met de zolder-commando's |
+| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, de `pijlAan`/`pijlUit`-haken voor `js/touch.js`, en `reset()` tegen spookrichtingen (zie §De besturing). De parser-verben zijn uitgebreid met de zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
 | engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc); de vloermeetkunde staat apart in `js/loopveld.js` (zie §De vloer) |
@@ -260,6 +260,48 @@ tegenover `RRH` in de predecessor.
 Laadvolgorde binnen de logica (elke leest wat de vorige nodig heeft):
 `strings.js` → `world.js` → checker-modules → `levels.js` → `sim/*`. De volle
 laadvolgorde van álle bestanden staat onderaan dit document.
+
+## De besturing: de pijl-stack en de spookrichting
+
+`js/input.js` houdt de ingedrukte richtingen bij als een stack, niet als een
+vlag per pijl. De bovenste wint (*most-recent-pressed*), zodat een tweede pijl
+de eerste overneemt zonder hem te vergeten: laat je de tweede weer los, dan
+loopt de speler verder in de eerste. Het D-pad van `js/touch.js` voedt via
+`pijlAan`/`pijlUit` dezelfde stack, dus vinger en toets gedragen zich gelijk.
+
+Een stack is echter net zo betrouwbaar als de keyups die hem leegmaken, en die
+gaan verloren. Wat overblijft heet hier een **spookrichting**: een ingang die
+niemand meer ingedrukt houdt, die elke andere pijl overleeft en waarop de
+speler terugvalt zodra hij iets loslaat. Drie regels houden hem weg:
+
+- **`reset()` bij focusverlies.** `blur` op het venster en `visibilitychange`
+  met `document.hidden` legen de stack. Dat is de enige plek waar een verloren
+  keyup nog opgeruimd kan worden — een pagina die naar de achtergrond gaat,
+  krijgt er geen meer.
+- **`reset()` bij elke moduswissel.** `engine.js` roept `stopBesturing()` aan
+  in `startTitel`, `opADeSpread`, `opADePc`, `startSim`, `toonOordeel` en
+  `toonEpiloog`. De tik loopt onder die modi toch al niet; het gaat erom dat de
+  speler ná het notitieboek of de pc niet uit zichzelf staat te lopen, want de
+  pijl die openging is boven de tekstvelden van de pc-overlay losgelaten.
+- **Een indruk verplaatst naar de top.** Stond de richting al in de stack, dan
+  wordt hij verwijderd en opnieuw bovenop gelegd in plaats van genegeerd. Zo
+  wint de speler ook van een spook dat er nog wél staat.
+
+De `keyup`-handler kent bewust níét de tekstveld-uitzondering van `keydown`:
+een keyup mag nooit geslikt worden. Op het D-pad hoort daar één DOM-detail bij.
+Een aanraking krijgt **impliciete pointer capture** — vanaf de `pointerdown`
+gaan alle events van die vinger naar díe knop, ook als de vinger boven een
+andere hangt. Zonder ingrijpen krijgt de nieuwe knop dus geen `pointerdown` en
+de oude geen `pointerleave`, en blijft de oude richting lopen. `touch.js` laat
+de capture daarom meteen los (`releasePointerCapture`, in een `try` — niet elke
+motor staat het toe) en luistert daarnaast op `pointerenter` met `buttons > 0`,
+zodat een vinger die van ◀ naar ▶ schuift de richting meeneemt. Verdwijnt de
+balk onder de vinger (de speler gaat aan de pc zitten), dan komt er geen
+`pointerup` meer: de zichtbaarheidspoll roept dan zelf `AL.input.reset()` aan.
+
+Gedekt door `test/test-input.mjs` (headless, met een window-stub voor de
+zekering) en door `test/smoke-walk.mjs` §8–§9, dat twee pijlen tegelijk, een
+spook na `blur` en een echte vingerschuif over het D-pad naloopt.
 
 ## De vloer: walkboxes, blokken en uitgangszones
 
@@ -546,7 +588,9 @@ onspeelbaar, net als lopen zonder pijltjestoetsen.
   bij Enter/"ga" doorstuurt naar dezelfde `AL.input.onSubmit`/`onAdvance` die
   het fysieke toetsenbord ook gebruikt.
 - Vier D-pad-knoppen die via `AL.input.pijlAan`/`pijlUit` dezelfde pijl-stack
-  sturen als de fysieke pijltjestoetsen (`input.js`).
+  sturen als de fysieke pijltjestoetsen (`input.js`). Wat er nodig was om een
+  vinger van de ene knop naar de andere te laten schuiven — de impliciete
+  pointer capture loslaten — staat in §De besturing.
 - Een tik op het canvas die `AL.engine.advance()` aanroept, zodat berichten,
   de titelkaart, spreads en het oordeel ook zonder toetsenbord doorbladeren.
 
