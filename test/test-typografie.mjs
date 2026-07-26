@@ -389,6 +389,19 @@ test("de herbegin-vraag past op één pagina", () => {
     "een vraagvenster kan niet gebladerd worden, dus het mag niet pagineren");
 });
 
+// De vijf openingsbeats staan als onderschrift onder het beeld, met de maten
+// uit js/engine.js (toonOpeningStap: maxTekens 38, maxRegels 6). Pagineert er
+// één, dan bladert Enter door de tekst in plaats van door de reeks en voelt de
+// opening als vastgelopen (workflow/19-de-opening.md). Tot WP 45 werd dat met
+// de hand nagerekend; nu meet de test het, want de intro is herschreven.
+test("geen enkel onderschrift van de opening pagineert", () => {
+  strings.intro.forEach((alinea, i) => {
+    const v = venster([alinea], { plaatsing: "onder", maxTekens: 38, maxRegels: 6 });
+    assert.equal(v.paginas.length, 1,
+      "beat " + (i + 1) + " pagineert: " + v.paginas.length + " pagina's");
+  });
+});
+
 test("plaatsing onder zet het venster onderaan het speelveld", () => {
   const midden = gfx.vensterKader(venster(["Een regel."]));
   const onder = gfx.vensterKader(venster(["Een regel."], { plaatsing: "onder" }));

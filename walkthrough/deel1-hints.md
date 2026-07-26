@@ -55,11 +55,13 @@ De grote lijn is simpel en gaat altijd in dezelfde vijf stappen:
    latere bladen zitten in dichtgeplakte, gemerkte dozen, dieper in de zolder
    (de doorgang in het midden en de overloop boven aan de trap).
 2. **Lees de spread.** Het notitieboek klapt open: Alberta's schets, haar
-   puzzelbrief, en de regel "Dit zou je moeten kunnen na week X van de cursus".
-   Die weekregel zegt je of je er al aan toe bent. Met de spatiebalk blader je
-   door; onderaan het linkerblad staat waar die je brengt, en op de laatste
-   bladzijde staat er "spatie: terug". Het boek gaat dan gewoon dicht en je
-   staat nog precies waar je het blad vond.
+   puzzelbrief, en rechtsonder de regel "Week X in mijn schema" — haar eigen
+   planning voor dat hoofdstuk, en tegelijk een prima maat voor of je er al aan
+   toe bent. Ze schreef die bladen voor wie ze niet kende: hoofdstuk 1 opent
+   met een aanhef, en daarna zegt ze per hoofdstuk gewoon wat er nog ontbreekt.
+   Met de spatiebalk blader je door; onderaan het linkerblad staat waar die je
+   brengt, en op de laatste bladzijde staat er "spatie: terug". Het boek gaat
+   dan gewoon dicht en je staat nog precies waar je het blad vond.
 3. **Ga aan de pc zitten.** Loop zelf naar de werkhoek in het oosten en typ
    `ga zitten`. Daar werk je aan haar Java-code. Kwijt? Typ `?` — zolang er een
    hoofdstuk open staat, wijst de hint je naar de pc.

@@ -7,9 +7,11 @@
 //
 // De Java-fragmenten hieronder zijn byte-getrouwe uittreksels uit
 // seven-little-goats/src/Voorwerp.java en Geitje.java (tools/check-assets bewaakt
-// de drift). De speler-gerichte prose (prompts, Alberta's notities, hints,
-// feedback) leeft in js/logic/strings.js (AL.strings.l1 en AL.strings.puzzelHints);
-// hier staan alleen de code-fragmenten en de structurele checks.
+// de drift). De speler-gerichte prose (prompts, hints, feedback) leeft in
+// js/logic/strings.js (AL.strings.l1 en AL.strings.puzzelHints); hier staan de
+// code-fragmenten en de structurele checks. Alberta's kantlijnnotitie boven een
+// fragment is de uitzondering: die is een Java-commentaar en hoort dus bij de
+// code die de editor laadt, niet bij de strings.
 //
 // Draait in de browser (registreert bij AL.levels) en in Node (module.exports).
 
@@ -54,12 +56,18 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // De notitie boven de code is Alberta's kantlijn, niet een opgavebrief: geen
+  // kop, geen imperatief uit een klaslokaal, en ze eindigt op "— A." (WP 45;
+  // achtergrond.md, §"Toon en register"). Wat ze zegt is wat er ontbreekt; de
+  // vorm this.<veld> = <parameter>; staat twee regels lager in de code zelf, en
+  // hintfase 3 draagt hem voor wie hem niet ziet. Ze blijft neutraal over wát er
+  // mis is, want de twee varianten verschillen: in A ontbreekt de this-
+  // verwijzing, in B staat de toewijzing omgekeerd (this staat er dan wél, aan de
+  // verkeerde kant).
   var voorwerpNotitie =
-"// Alberta's notitie — Voorwerp:\n" +
-"//   Een voorwerp heeft een naam, een beschrijving en een kracht.\n" +
-"//   De constructor vult de velden van een verse doos: this.<veld> = <parameter>;\n" +
-"//   Deze is nog niet af — ergens ontbreekt een verwijzing naar de doos\n" +
-"//   zelf. Maak hem af.\n" +
+"// Een voorwerp heeft naam, beschrijving en kracht. De constructor vult de\n" +
+"// velden van een verse doos, maar bij één veld krijgt het veld nooit wat de\n" +
+"// parameter ervoor klaarzet. Nog niet af. — A.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +
@@ -118,16 +126,14 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var geitjeStub =
-"// Alberta's notitie — Geitje:\n" +
-"//   Een geitje heeft een naam (String), een schuilplaats (Schuilplaats)\n" +
-"//   en of het gered is (boolean, begint op false).\n" +
-"//   Schrijf de private velden, de constructor die naam en schuilplaats\n" +
-"//   invult (de gered-vlag begint op false), en de getters getNaam() en\n" +
-"//   getSchuilplaats().\n" +
+"// Een geitje heeft een naam (String), een schuilplaats (Schuilplaats) en of\n" +
+"// het gered is (boolean, begint op false). De private velden, de constructor\n" +
+"// die naam en schuilplaats invult en de getters getNaam() en\n" +
+"// getSchuilplaats() staan er nog niet. — A.\n" +
 "\n" +
 "class Geitje {\n" +
 "\n" +
-"    // schrijf hier je code\n" +
+"    // hier verder\n" +
 "\n" +
 "}\n";
 

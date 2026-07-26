@@ -44,7 +44,7 @@ Java. The repo doubles as a genAI-workflow showcase.
 
 ## Tests
 
-- `node --test test/` — DOM-free logic, checker corpus, level model
+- `node --test test/test-*.mjs` — DOM-free logic, checker corpus, level model
   solutions. This is the primary gate; keep it green.
 - Playwright smoke and scripted playthroughs come later (browser side). Not
   required to run the game.

@@ -104,13 +104,15 @@ fragment.
 | 6 | 6 | 5 | les 12–13 | vóór toets 2 |
 | 7 | 7 | 6 | les 17–18 | vóór de eindtoets |
 
-De **voet van bladzijde 2** van elk notitieboek-spread toont letterlijk: "Dit
-zou je moeten kunnen na week X van de cursus", met X uit de kolom "Na
-cursusweek". Er is geen aparte level-intro die die regel draagt; het spread is
-de plek. Elke andere plek die
-Alberta's weekregel citeert, citeert diezelfde X: de onderzoektekst van het
-notitieboek op zolder-west leest het spread van level 1 en zegt dus week 1
-(ze zei week 3 tot WP 31), en de walkthrough herhaalt de week per level.
+De **voet van bladzijde 2** van elk notitieboek-spread toont letterlijk: "Week X
+in mijn schema.", met X uit de kolom "Na cursusweek". De week is dus onze
+cursusweek, maar op papier van 1993 staat ze als Alberta's eigen planning — het
+woord "cursus" hoort niet in haar handschrift (WP 45; `achtergrond.md`, §"Het
+notitieboek"). Er is geen aparte level-intro die die regel draagt; het spread is
+de plek. Elke andere plek die Alberta's weekregel citeert, citeert diezelfde X:
+de onderzoektekst van het notitieboek op zolder-west leest het spread van level 1
+en zegt dus week 1 (ze zei week 3 tot WP 31), en de walkthrough herhaalt de week
+per level.
 
 ## Toetsritme
 

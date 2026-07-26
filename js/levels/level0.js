@@ -56,15 +56,15 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
-  // Beschadigde varianten: Alberta's notities als commentaar boven de code, met
+  // Beschadigde varianten: Alberta's notitie als commentaar boven de code, met
   // één weggevallen this-verwijzing (waterschade op het notitieboek). Beide
   // compileren (javac-schoon) maar zakken op een constructorToewijzing-check.
+  // De notitie draagt geen kop en geen schoolimperatief meer, en ze eindigt op
+  // "— A." (WP 45; achtergrond.md, §"Toon en register").
   var voorwerpNotitie =
-"// Alberta's notitie — Voorwerp:\n" +
-"//   Een voorwerp heeft een naam, een beschrijving en een kracht.\n" +
-"//   De constructor vult de velden van een vers object.\n" +
-"//   Deze is nog niet af — ergens ontbreekt een verwijzing naar het\n" +
-"//   object zelf. Herstel de vorm:  this.<veld> = <parameter>;\n" +
+"// Een voorwerp heeft naam, beschrijving en kracht. De constructor vult de\n" +
+"// velden van een vers object; bij één veld ontbreekt de verwijzing naar het\n" +
+"// object zelf. Nog niet af. — A.\n" +
 "\n";
 
   var voorwerpBeschadigdA = voorwerpNotitie +
@@ -119,15 +119,14 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var geitjeStub =
-"// Alberta's notitie — Geitje:\n" +
-"//   Een geitje heeft een naam (String), een schuilplaats (Schuilplaats)\n" +
-"//   en of het gered is (boolean, begint op false).\n" +
-"//   Schrijf de private velden, de constructor die naam en schuilplaats\n" +
-"//   invult, en de getters getNaam() en getSchuilplaats().\n" +
+"// Een geitje heeft een naam (String), een schuilplaats (Schuilplaats) en of\n" +
+"// het gered is (boolean, begint op false). De private velden, de constructor\n" +
+"// die naam en schuilplaats invult en de getters getNaam() en\n" +
+"// getSchuilplaats() staan er nog niet. — A.\n" +
 "\n" +
 "class Geitje {\n" +
 "\n" +
-"    // schrijf hier je code\n" +
+"    // hier verder\n" +
 "\n" +
 "}\n";
 

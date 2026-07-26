@@ -25,9 +25,10 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
 - **Rol:** een ontwerpster uit de eerste generatie grafische adventures, model
   gestaan naar Roberta Williams (zie `roberta-williams.md`). Ze schreef,
   tekende en programmeerde haar spellen grotendeels zelf.
-- **Toon:** warm maar droog. Ze schrijft in de kantlijn zoals ze sprak: korte,
-  trefzekere zinnen, af en toe een plagerij tegen haar toekomstige lezer. Haar
-  notities richten zich soms rechtstreeks tot "jij die dit later leest".
+- **Toon:** warm maar droog, en op papier overheerst het droge. Ze schrijft in
+  de kantlijn zoals een vakvrouw haar eigen werk annoteert: korte, trefzekere
+  zinnen, en eerst wat er ontbreekt. Haar onbekende opvolger spreekt ze één keer
+  aan — in hoofdstuk 1 — en daarna werkt ze door.
 - **Vakmanschap:** ze bouwde elk spel eerst als tekstversie in de terminal.
   "Zo begon ik altijd," staat ergens in de kantlijn. Pas als het tekstspel
   klopte, tekende ze eroverheen. Die gewoonte is het scharnier van de hele
@@ -40,6 +41,12 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
 Alberta verdween. Het spel legt niet uit hoe of waarheen, en dat is opzet. Ze
 is er niet meer; haar werk wel. De speler vult de leegte niet met een
 verklaring maar met arbeid: door haar spel af te maken, houdt hij haar dichtbij.
+
+Wat ze wél wist: dat ze dit niet zou afmaken. Het notitieboek is daar het bewijs
+van. Zeven hoofdstukken, genummerd, in de volgorde waarin ze gebouwd wilden
+worden, elk met een week uit haar eigen schema, en bij elk staat wat er nog aan
+ontbreekt. Wie enkel voor zichzelf schrijft, nummert niet en adresseert niet.
+Hóe ze het wist staat nergens, en dat blijft zo.
 
 De leegte is wél ongemakkelijk. Ze was eerder omschreven als "zacht en
 sprookjesachtig"; dat maakte de zolder een warm archief dat geduldig wachtte, en
@@ -59,6 +66,18 @@ Richtlijnen voor prose over de verdwijning:
 > spread of eindtekst mag een oorzaak suggereren. Dit houdt de toon licht
 > genoeg voor een cursuscontext en vermijdt dat het spel een detectiveplot
 > belooft dat het niet waarmaakt.
+
+> Beslissing (WP 45): **Alberta wist dat ze het niet zou afmaken**, en het
+> notitieboek is daarom een bewuste overdracht aan een opvolger die ze niet
+> kende. Dat gegeven verklaart niets, en de twee horen strikt uit elkaar te
+> blijven: een voorgevoel is een feit zónder uitleg. Het staat in wat ze déed —
+> nummeren, ordenen, opschrijven wat ontbreekt, de broncode-doos dichtplakken
+> met "pas op het einde" — nooit in wat ze zegt. Dus geen afscheidsbrief, geen
+> "als je dit leest, ben ik er niet meer", geen aanleiding, geen dreiging, geen
+> datum waar iets op uitloopt. De drie richtlijnen hierboven blijven onverkort
+> gelden: het voorgevoel is er één bij, geen uitzondering erop. Zodra prose het
+> voorgevoel gaat motiveren, belooft het spel een detectiveplot en is deze
+> beslissing gebroken.
 
 ## De zolder
 
@@ -83,19 +102,30 @@ Vaste elementen die in de prose en de scènes terugkomen:
 ## Het notitieboek
 
 Het notitieboek is het scharnier tussen de zolder-adventure en het codewerk.
-Het is Alberta's werkboek voor _Seven Little Goats_: schetsen, klasseontwerpen,
-lijstjes, halve methoden, en in de kantlijn haar losse gedachten. Het is
-beschadigd — waterschade, losse bladen, doorgelopen inkt — en dat is de in-
+Het was Alberta's werkboek voor _Seven Little Goats_: schetsen, klasseontwerpen,
+lijstjes, halve methoden, en in de kantlijn haar losse gedachten. Ze heeft het
+tot een overdracht omgebouwd — zeven genummerde hoofdstukken in bouwvolgorde,
+elk met een week uit haar schema, en bij elk staat wat er nog aan ontbreekt. Het
+is beschadigd — waterschade, losse bladen, doorgelopen inkt — en dat is de in-
 fictie-verklaring waarom de code "hersteld" moet worden: stukken zijn
 onleesbaar of ontbreken.
+
+De hand is die van een programmeur, niet die van een lesgeefster. Ze schrijft op
+wat haar spel nodig heeft en waarom het zo in elkaar zit, niet wat een klasse
+is; haar beelden (blauwdruk en doos, de plankenbrug, de speurtocht) zijn haar
+eigen steno, geen didactisch materiaal. De aanhef aan de onbekende lezer staat
+één keer in het boek — hoofdstuk 1 — en daarna doet ze wat een programmeur in
+een overdracht doet: zeggen wat er nog niet af is.
 
 Elk level draait rond één **spread** (dubbele bladzijde) uit dat boek. Een
 spread bevat:
 
 - Alberta's schets of diagram voor dat stuk van het spel.
 - Haar notitie over wat de code moet doen (dit wordt de puzzelbrief).
-- De regel "Dit zou je moeten kunnen na week X van de cursus" — Alberta's eigen
-  markering van hoe ver een lezer moet staan.
+- De regel "Week X in mijn schema" — haar eigen planning voor dat hoofdstuk.
+  Buiten de fictie is het de cursusweek uit `levels-en-scharnieren.md`; in haar
+  hand is het niets van onze cursus, alleen de week waarin zij dat stuk wilde
+  bouwen. Het spel zegt nergens "van de cursus" op papier van 1993.
 - De beschadiging zelf: precies dáár waar de puzzel zit.
 
 De spreads zijn ook een goedkope scène-vorm: getekende pagina's in plaats van
@@ -171,9 +201,13 @@ De frame-logica die elk stukje prose moet respecteren:
   termen blijven Engels (parser, editor, compiler) en krijgen Nederlandse
   lidwoorden.
 - **Alberta's stem** (kantlijnnotities, puzzelbriefjes, het oordeel): droog,
-  warm, kort, af en toe een knipoog naar de lezer-in-de-toekomst. Zij is het
-  enige warme in dit spel, en dat blijft zo — de kou zit in de kamer, niet in
-  haar. Dat contrast is het punt.
+  competent, kort. Ze draagt werk over in plaats van les te geven: eerste
+  persoon over haar eigen spel, concreet over haar eigen klassen, en wat er
+  ontbreekt vóór wat het betekent. Nooit een imperatief die naar een klaslokaal
+  ruikt ("Schrijf de private velden…"); wel de stand van zaken ("de bedrading
+  tussen de kamers ligt los"). Warm is ze in het oordeel en in de enkele
+  knipoog, niet in elke regel — zij is het enige warme in dit spel, en dat
+  blijft zo: de kou zit in de kamer, niet in haar. Dat contrast is het punt.
 - **De verteller** (zolderbeschrijvingen, systeemtekst): rustig, observerend,
   King's Quest-achtig zuinig, en koel. Hij oordeelt niet en hij troost niet; hij
   noemt wat er staat. Lopen herbeschrijft niet; `kijk` wel (zie

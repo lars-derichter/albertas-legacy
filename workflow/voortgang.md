@@ -532,7 +532,7 @@ Entry: `workflow/43-ios-audio.md` · commit: `c75efa8`
 
 ### - [x] WP 44 — Spread sluit waar je staat
 
-Entry: `workflow/44-spread-flow.md` · commit: (nog in te vullen)
+Entry: `workflow/44-spread-flow.md` · commit: `464bf28`
 
 - [x] `spreadVerder()` zonder teleport: één regel, `betreedZolder(false,
       true)`. De scène-toewijzing naar `zolder-oost` is weg
@@ -572,17 +572,63 @@ Entry: `workflow/44-spread-flow.md` · commit: (nog in te vullen)
       teruggedraaid zakt smoke-levels-1-3 naar 32/36, met de `hervat`-tak
       erbij smoke-browser naar 41/44 — exact de bewakende keuringen
 
-### - [ ] WP 45 — De stem: overdracht van een programmeur
+### - [x] WP 45 — De stem: overdracht van een programmeur
 
-- [ ] achtergrond.md: voorgevoel-beslissing; "nooit een oorzaak" blijft
-- [ ] Opening draagt het voorgevoel in het koude register
-- [ ] maakSpread zonder sjabloonzinnen; briefA/B als
-      programmeursoverdracht; voetregel = haar eigen schema
-- [ ] Elf stub-notities: kop weg, "— A.", geen schoolimperatief
-- [ ] Alle verwijzingen naar de oude kop bijgewerkt; walkthrough +
-      PDF's mee
-- [ ] QC: alle poorten + screenshots beoordeeld door manager (tweede
-      checker-agent vooraf)
+Entry: `workflow/45-de-stem.md` · commit: (nog in te vullen)
+
+- [x] `achtergrond.md`: nieuw beslissingsblok — Alberta wist dat ze het
+      niet zou afmaken, het notitieboek is een bewuste overdracht, en een
+      voorgevoel is een feit *zonder* uitleg (het staat in wat ze déed).
+      De drie richtlijnen met "nooit een oorzaak noemen" staan er
+      woordelijk ongewijzigd en gelden onverkort. §De verdwijning, §Het
+      notitieboek (twee alinea's + de weekregel-bullet) en §Toon en
+      register mee
+- [x] Opening: beat 2 neemt boek én inhoud samen, beat 3 draagt het
+      voorgevoel ("Ze heeft het niet afgemaakt; dat wist ze toen ze het
+      schreef."), beat 4 houdt de prototype-zin verbatim. Vijf beats van
+      5, 5, 5, 4 en 2 regels — geen onderschrift pagineert, en dat is nu
+      een test in plaats van handwerk
+- [x] `maakSpread` zonder sjabloonzinnen: "Voor jou die dit later leest:"
+      is weg (staat één keer, in haar woorden, in hoofdstuk 1) en de voet
+      is "Week N in mijn schema." Zeven briefA's van definitie naar
+      ontwerpnotitie over haar eigen klassen; zeven briefB's als
+      stand-van-zaken; "— A." in hoofdstuk 1 en 7. Titels, `termen` en
+      weeknummers onaangeraakt
+- [x] Elf stub-notities: kop `// Alberta's notitie — X:` overal weg, elk
+      blok eindigt op "— A.", geen schoolimperatieven meer; de
+      plaatshouder `// schrijf hier je code` is `// hier verder`. Per
+      level nagelezen tegen `checks[]` dat de notitie nog draagt wat de
+      checker eist (level 3 noemt `MAX_LEVENSPUNTEN` nu bij naam, want in
+      variant B staat die constante nergens anders)
+- [x] Verwijzingen: verse grep laat buiten `workflow/` alleen "Alberta's
+      notities als commentaar" over (vier plekken, nog waar). Twee
+      hintteksten die wél logen zijn bijgewerkt ("de notitie *vraagt*" →
+      "somt op"; "Lees de notitie" bij een puzzel zonder editor → "Lees de
+      vraag"). `deel1-hints.md` stap 2 + `deel1-hints.pdf` herbouwd;
+      `deel2-oplossingen.pdf` herbouwd en teruggezet (108
+      tijdstempel-bytes)
+- [x] Tegencontrole (tweede agent, vóór de commit): 15 punten, alle
+      overgenomen behalve één afgewezen door de manager (de cursustermen
+      in de kop van bladzijde 2 blijven — dat is de brug van WP 31). Recht
+      gezet: de klem van hoofdstuk 3 gaat over háár levenspunten en de
+      kruik melk (+6), niet over een geitje; vijf verouderde
+      voet-citaten in `levels-en-scharnieren.md`,
+      `spelontwerp-legacy.md`, `art-stijlgids.md` (twee) en `README.md`;
+      drie klaslokaal-imperatieven in de brieven van 4, 6 en 7; vier
+      restanten definitie-register (1, 2, 4 + `level2.js`); twee
+      variant-onwaarheden (1, 6) en twee verkeerde afzenders (`toonStats`
+      in plaats van "het gevecht", poortcheck in plaats van `Gevecht`); de
+      keten van 7 draagt nu ook `getNaam()`; beat 3 van de opening verliest
+      de vertelde slotzin en het woord "aanhef". **Open, niet door een
+      worker aan te passen:** `CLAUDE.md` documenteert `node --test test/`,
+      wat op Node 22 faalt (module-not-found) — het moet
+      `node --test test/test-*.mjs` zijn
+- [x] QC: **425/425** headless (was 423), `lint-scene` schoon,
+      `check-assets` geen drift, `check-walkthrough` **278 gekeurd, 0
+      afwijkingen** (mét de drift onderweg gemeten), `check-docpaden` 0
+      dood, javac exit 0 + verboden-grep leeg, smoke-browser **44/44**,
+      smoke-levels-1-3 **36/36**, smoke-full-playthrough **104/104**.
+      Elf screenshots in `test-results/wp45-*.png`
 
 ### - [x] WP 40 — Slotcontrole
 

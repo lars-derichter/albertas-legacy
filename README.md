@@ -51,9 +51,9 @@ Voor studenten van **Programming Fundamentals** (graduaat Programmeren,
 Thomas More). Het spel telt zeven levels, elk gekoppeld aan één van de zeven
 scharnieren van de cursus. Samen goed voor ongeveer twee uur spelen.
 
-Onderaan elk notitieboek-fragment staat de regel "Dit zou je moeten kunnen na
-week X van de cursus", zodat je weet of je er al aan toe bent. De koppeling
-level ↔ scharnier ↔ week staat volledig in
+Onderaan elk notitieboek-fragment staat de regel "Week X in mijn schema." —
+Alberta's eigen planning, en tegelijk de cursusweek waarna je eraan toe bent.
+De koppeling level ↔ scharnier ↔ week staat volledig in
 [`docs/levels-en-scharnieren.md`](docs/levels-en-scharnieren.md).
 
 Alle code in de puzzels blijft binnen de grenzen van de cursus: geen

@@ -146,6 +146,21 @@ test("elke kop past in ten hoogste drie regels en blijft binnen de kolom", () =>
   }
 });
 
+test("de weekregel is haar eigen schema, niet die van onze cursus", () => {
+  // WP 45: "Dit zou je moeten kunnen na week N van de cursus" stond in haar
+  // handschrift van 1993 — onze cursus bestaat daar niet (achtergrond.md,
+  // §"Het notitieboek"). De voet noemt nu enkel haar planning.
+  for (const n of NIVEAUS) {
+    for (const pag of strings.spreads["l" + n].paginas) {
+      if (!pag.voet) continue;
+      assert.ok(!/cursus/i.test(pag.voet),
+        `l${n}: de weekregel ("${pag.voet}") noemt de cursus`);
+      assert.ok(/\bmijn\b/.test(pag.voet),
+        `l${n}: de weekregel ("${pag.voet}") is niet in de eerste persoon`);
+    }
+  }
+});
+
 test("de weekregel past in de drie regels die de renderer ervoor tekent", () => {
   for (const n of NIVEAUS) {
     const data = strings.spreads["l" + n];
@@ -240,8 +255,13 @@ test("het notitieboek op zolder noemt dezelfde week als het spread eronder", () 
   // Het boek ligt open op het spread van level 1. De onderzoektekst citeerde
   // Alberta's weekregel met week 3, terwijl de voet van dat spread week 1 zegt
   // (docs/levels-en-scharnieren.md, §"Volledige koppeltabel").
+  // Het citaat in de onderzoektekst is de voet van dat spread, woord voor
+  // woord: de speler leest twee keer hetzelfde blad.
   const week = strings.spreads.l1.week;
   assert.equal(week, 1);
-  assert.ok(strings.notitieboek.onderzoek.includes("week " + week + "."),
-    "de onderzoektekst van het notitieboek noemt week " + week);
+  const voet = strings.spreads.l1.paginas[1].voet;
+  assert.ok(voet.includes("Week " + week),
+    "de voet van l1 noemt week " + week + ": " + voet);
+  assert.ok(strings.notitieboek.onderzoek.includes(voet),
+    "de onderzoektekst van het notitieboek citeert de voet «" + voet + "»");
 });

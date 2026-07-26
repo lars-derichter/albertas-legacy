@@ -128,11 +128,12 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    Effect: `fragment-gevonden:<levelId>`. Voor level 1 is dat simpelweg het
    notitieboek zelf op `zolder-west`; latere fragmenten zitten verder in de
    zolder (dozen op `zolder-midden`/`overloop`), zodat er lichte progressie is.
-2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets,
-   haar puzzelbrief, en de regel "Dit zou je moeten kunnen na week X van de
-   cursus". Effect: `spread:<levelId>`, `geluid:pagina`. Na de laatste bladzijde
-   gaat het boek dicht en staat de speler **waar hij het blad vond** — bij het
-   notitieboek in de westhoek, bij de doos in de doorgang of op de overloop.
+2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
+   puzzelbrief, en de regel "Week X in mijn schema." (haar eigen planning; zie
+   `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
+   `geluid:pagina`. Na de laatste bladzijde gaat het boek dicht en staat de
+   speler **waar hij het blad vond** — bij het notitieboek in de westhoek, bij
+   de doos in de doorgang of op de overloop.
 3. **Ga aan de pc zitten.** De speler loopt zelf naar de pc op `zolder-oost` en
    gaat zitten. Effect: `pc:open`, `level-start:<n>`. Weet hij de weg niet, dan
    wijst `?` hem die: de eerste tak van de zolder-hint zegt "Het hoofdstuk dat
