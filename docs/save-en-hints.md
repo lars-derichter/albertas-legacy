@@ -25,8 +25,11 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
   staat via `AL.world.nieuw(seed)`.
 - **Draagt tussen sessies:** de seed, de level- en puzzelvoortgang, de
   hint-tellers en de **concepten** (`puzzels[*].draft`), zodat halfaf werk
-  bewaard blijft. De sim-substaat (`modus === "sim"`) wordt niet bewaard: de
-  simulatie is een eindstuk, geen doorlopende voortgang.
+  bewaard blijft. Ook de stand in de wereld gaat mee — `modus`, `sceneId` en
+  `speler` (x, y, richting) — en dat is sinds WP 44 niet louter cosmetisch: wie
+  herlaadt met het notitieboek open en het dan dichtdoet, staat weer op de plek
+  waar hij het blad vond. De sim-substaat (`modus === "sim"`) wordt niet
+  bewaard: de simulatie is een eindstuk, geen doorlopende voortgang.
 
 ### Versionering en migratie
 

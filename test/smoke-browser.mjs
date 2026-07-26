@@ -203,8 +203,10 @@ async function main() {
   check("open notitieboek ontgrendelt fragment 1 en opent de spread",
     ontgrendeld === true && (await state(page)).modus === "spread");
 
-  // 7. De spread doorbladeren; de laatste pagina leidt naar de pc (werkhoek).
+  // 7. De spread doorbladeren; de laatste pagina legt het boek weg — en laat de
+  //    speler staan waar hij het blad vond (WP 44).
   await sluitVensters(page);      // sluit het fragment-venster boven de spread
+  const sBoek = await state(page);
   const paginas = await page.evaluate(() =>
     window.AL.spreads.aantalPaginas(window.AL.strings.spreads["l1"]));
   check("de l1-spread telt meerdere pagina's", paginas >= 2, "n=" + paginas);
@@ -214,6 +216,23 @@ async function main() {
   const p1 = (await state(page)).spreadPagina;
   check("spatie/Enter bladert de spread een pagina verder", p1 === p0 + 1,
     p0 + " -> " + p1);
+
+  // Een reload middenin het boek hervat het boek, en ook dan onthoudt de save
+  // waar de speler staat (hervat, tak "spread"). Daarna wordt hieronder gewoon
+  // doorgebladerd, dus dit dekt de sluiting ná een reload mee.
+  await page.reload({ waitUntil: "load" });
+  await page.waitForFunction(() => !!window.AL && !!window.AL.debugState,
+    { timeout: 15000 });
+  await page.waitForTimeout(150);
+  const sNaBoekReload = await state(page);
+  check("reload middenin het notitieboek hervat het boek op zijn plek",
+    sNaBoekReload.modus === "spread" &&
+    sNaBoekReload.sceneId === sBoek.sceneId &&
+    Math.abs(sNaBoekReload.actorX - sBoek.actorX) <= 2 &&
+    Math.abs(sNaBoekReload.actorY - sBoek.actorY) <= 2,
+    "modus=" + sNaBoekReload.modus + " scene=" + sNaBoekReload.sceneId +
+    " (" + sNaBoekReload.actorX + "," + sNaBoekReload.actorY + ")");
+
   for (let i = 0; i < paginas + 2; i++) {
     if ((await state(page)).modus !== "spread") break;
     await page.keyboard.press("Enter");
@@ -221,9 +240,28 @@ async function main() {
   }
   await sluitVensters(page);
   const naSpread = await state(page);
-  check("na de laatste spread-pagina sta je bij de pc (werkhoek)",
-    naSpread.modus === "zolder" && naSpread.sceneId === "zolder-oost",
-    "scene=" + naSpread.sceneId);
+  check("na de laatste spread-pagina sta je waar je het blad vond",
+    naSpread.modus === "zolder" && naSpread.sceneId === sBoek.sceneId &&
+    Math.abs(naSpread.actorX - sBoek.actorX) <= 2 &&
+    Math.abs(naSpread.actorY - sBoek.actorY) <= 2,
+    "scene=" + naSpread.sceneId + " (" + naSpread.actorX + "," + naSpread.actorY +
+    ") vs " + sBoek.sceneId + " (" + sBoek.actorX + "," + sBoek.actorY + ")");
+
+  // 7b. En je kan meteen weer lopen: de weg naar de pc leg je zelf af. De eerste
+  //     stap gaat te voet over de kamergrens — dat bewijst tegelijk dat de
+  //     invoerblokkering van de spread-modus echt weg is.
+  await page.keyboard.down("ArrowRight");
+  await page.waitForFunction(
+    () => window.AL.debugState.sceneId === "zolder-midden", null,
+    { timeout: 8000 }).catch(() => {});
+  await page.keyboard.up("ArrowRight");
+  check("na de spread loop je te voet de doorgang in (invoer weer vrij)",
+    (await state(page)).sceneId === "zolder-midden",
+    "scene=" + (await state(page)).sceneId);
+  await typCommando(page, "ga oost");
+  check("en verder naar de werkhoek, waar de pc staat",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
 
   // 8. Aan de pc gaan zitten → pc:open; Escape keert terug naar de zolder.
   await typCommando(page, "ga zitten");

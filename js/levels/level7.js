@@ -37,13 +37,12 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var zoekStub =
-"// Alberta's notitie — zoekGeitje (de speurtocht):\n" +
-"//   Ze roept een naam in het huisje en luistert de rij af tot er één\n" +
-"//   antwoordt. Dat geitje geef je terug. Antwoordt er niemand, dan liep de\n" +
-"//   speurtocht dood: null.\n" +
+"// Ze roept een naam in het huisje en luistert de rij af tot er één antwoordt.\n" +
+"// Dat geitje geef je terug; antwoordt er niemand, dan liep de speurtocht\n" +
+"// dood: null. De lus zelf staat er nog niet. — A.\n" +
 "\n" +
 "Geitje zoekGeitje(String gezochteNaam) {\n" +
-"    // schrijf hier je zoeklus\n" +
+"    // hier verder\n" +
 "}\n";
 
   var editorWrite = {
@@ -88,11 +87,10 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var ketenNotitie =
-"// Alberta's notitie — toonSchuilplaatsen (de dubbele pijl):\n" +
-"//   Voor elk geitje volg je twee pijlen naar de kamernaam:\n" +
-"//   schuilplaats.getKamer().getNaam(). Maar een geitje zonder schuilplaats\n" +
-"//   heeft geen kamer om naar te wijzen: controleer eerst op null voor je de\n" +
-"//   tweede pijl volgt.\n" +
+"// Voor elk geitje twee pijlen naar de kamernaam:\n" +
+"// schuilplaats.getKamer().getNaam(). Maar een geitje zonder schuilplaats heeft\n" +
+"// geen kamer om naar te wijzen — eerst op null controleren, dan de tweede\n" +
+"// pijl volgen. Aan de keten die er nu staat, mankeert iets. — A.\n" +
 "\n";
 
   var ketenBeschadigdA = ketenNotitie +

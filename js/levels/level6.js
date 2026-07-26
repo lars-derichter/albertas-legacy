@@ -35,12 +35,13 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // Neutraal over wat er mis is: variant A loopt één plank te ver, variant B is
+  // de verkeerde soort lus. Een notitie die "hier loopt ze te ver" zegt, liegt
+  // dus bij de helft van de spelers.
   var verwijderNotitie =
-"// Alberta's notitie — verwijderVoorwerp:\n" +
-"//   De plankenbrug boven het ravijn: de eerste plank is 0, de laatste is\n" +
-"//   size() min één. Loop met een for-lus van 0 tot size() (strikt kleiner),\n" +
-"//   verwijder op de index en stop meteen. Eén plank te ver en je ligt in\n" +
-"//   het water.\n" +
+"// De eerste plank is 0, de laatste size() min één. Een for-lus van 0 tot\n" +
+"// size(), strikt kleiner; verwijder op de index en stop meteen. Eén plank te\n" +
+"// ver en je ligt in het water. Wat er nu staat, klopt niet. — A.\n" +
 "\n";
 
   var verwijderBeschadigdA = verwijderNotitie +

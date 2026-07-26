@@ -31,7 +31,7 @@ met behoud van hun contract:
 | `js/gfx.js` | palet-geïndexeerde software-renderer (320×200 `Uint8Array`), primitieven, `tekenPicture`/`cacheScene`/`blitScene`, `tekenSprite`, `tekenTekst`, berichtvenster | uitgebreid palet; `debugEga`-guard versoepeld (zie hieronder) |
 | `js/font.js` | 8×8-bitmapfont | glyphdata ongewijzigd; er is een inktmaat per glyph bij gekomen (`AL.font.maat`) voor proportioneel zetten |
 | `js/font-hand.js` | — | nieuw in WP 36: een eigen 8×10-handschriftglyphset (`AL.fontHand`), niet overgenomen |
-| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, en de `pijlAan`/`pijlUit`-haken voor `js/touch.js`. De parser-verben zijn uitgebreid met de zolder-commando's |
+| `js/input.js` | toetsenbord/parser-invoer, arrow keys | de invoerlus is ongewijzigd; erbij: de `onEscape`-haak, F3 (het vorige commando terughalen), de audio-ontgrendeling op de eerste aanraking of klik, de `pijlAan`/`pijlUit`-haken voor `js/touch.js`, en `reset()` tegen spookrichtingen (zie §De besturing). De parser-verben zijn uitgebreid met de zolder-commando's |
 | `js/sound.js` | de vorm: een cue-tabel als data, een aan/uit-toggle, lui aanmaken van de AudioContext | de synthese is FM in plaats van blokgolven, en er zijn muziekbedden bij gekomen (zie §Geluid) |
 | `js/parser.js` | `parse(ruweInvoer)` → `{commando, werkwoord, rest}`; dispatch op modus | overgenomen als patroon; nieuwe modi en verben |
 | engine-lus (`js/engine.js`) | frame-lus, scène-cache-en-blit-patroon, venster-paginering, actor-beweging over walkboxes | referentie; herschreven rond de nieuwe modi (zolder / spread / pc); de vloermeetkunde staat apart in `js/loopveld.js` (zie §De vloer) |
@@ -177,16 +177,21 @@ precies waar de vertraging `geluid:pagina@0.35` voor bestaat.
 ### De ontgrendeling
 
 Een browser start geen audio zonder gebruikersactie. `AL.sound.unlock()` is wat
-die actie vertaalt, en hij hangt aan álle vier de oppervlakken waar een speler
-kan beginnen:
+die actie vertaalt, en hij hangt aan élk oppervlak waar een speler kan beginnen:
 
 - **toets** — `keydown` in `js/input.js`, vóór de tekstveld-uitzondering (het
   eerste teken dat een telefoonspeler in de commandobalk typt, telt mee);
-- **muis, aanraking, pen** — `pointerdown` (plus `touchstart` voor oudere
-  webviews) op het venster in `js/input.js`, in de capture-fase;
+- **muis, aanraking, pen** — `pointerdown`, `pointerup`, `touchstart`,
+  `touchend` en `click` op het venster in `js/input.js`, alle vijf in de
+  capture-fase;
 - **het D-pad en de commandobalk** van `js/touch.js` — pointerdown op een
   richtingsknop en submit van het formulier;
 - **een tik op het canvas** in `js/touch.js` (tik-om-door-te-bladeren).
+
+Die tweede regel stond tot WP 43 op alleen `pointerdown` en `touchstart`, en
+dat is precies de helft die Safari voor audio **niet** meerekent: iOS kijkt naar
+het einde van de aanraking. Een iPhone-speler tikte dus wel, maar op een
+gebeurtenis die niet meetelde, en hoorde het hele spel niets.
 
 Tot dat moment doet de geluidslaag **niets**: `speel()` en `muziek()` keren
 meteen terug, er wordt geen `AudioContext` gemaakt en er wordt geen oscillator
@@ -199,6 +204,55 @@ een haak aan: `AL.sound.opOntgrendeld(startBedVoorStand)`. De titelmuziek die
 bij het opstarten gevraagd wordt, is dus een lege aanroep; het bed begint bij de
 eerste toets, klik of tik. `unlock()` is idempotent — hij wordt in een sessie
 honderden keren geroepen.
+
+### De iOS-ketting
+
+Op een iPhone is een gebaar en een `resume()` niet genoeg. `unlock()` doet
+daarom vijf dingen, en de vólgorde is de fix:
+
+1. **context** — `zorgCtx()` maakt de `AudioContext`, lui, en dus altijd binnen
+   een gebaar;
+2. **resume** — staat de context op `suspended`, dan `resume()`. Deze stap
+   staat bewust vóór de `ontgrendeld`-uitstap: een later gebaar moet een
+   opnieuw opgeschorte context nog kunnen wekken;
+3. **primer** — één `createBuffer(1, 1, 22050)` door een `BufferSource` naar de
+   uitgang. Onhoorbaar, en op sommige iOS-versies het enige dat de context
+   werkelijk op `running` zet. Hij speelt bij het eerste gebaar en bij elk
+   gebaar dat een opgeschorte context aantreft — niet bij elke toetsaanslag;
+4. **het stille element** — zie hieronder;
+5. **de vlag en de haak** — `ontgrendeld = true`, dan `naUnlock()`, die het bed
+   van de huidige stand start.
+
+**De belschakelaar.** Staat het schuifje op de zijkant van een iPhone op stil,
+dan is WebAudio onhoorbaar, hoe hard je ook versterkt: WebAudio hoort bij het
+belkanaal. Een `<audio playsinline>` dat speelt, verhuist de pagina naar het
+mediakanaal, en dát kanaal luistert niet naar het schuifje. `js/sound.js` maakt
+in het eerste gebaar daarom één element (`#al-stil-audio`) met een lus van een
+tiende seconde stilte als WAV-data-URI — zelf gezet uit een RIFF-kop en 800
+samples van 128, dus geen bestand, geen net en ook vanaf `file://` speelbaar.
+
+Drie eigenschappen zijn niet cosmetisch: `loop` (het moet blijven spelen),
+`playsinline` (anders neemt Safari het volledige scherm over), en **niet
+gedempt, op volume 1**. Een gedempt element of een element op volume 0 claimt
+het kanaal niet; de stilte moet in de samples zitten, niet in het volume.
+
+`geluid uit` pauzeert het element — het mediakanaal hoort terug te gaan zodra de
+speler om stilte vraagt — en `geluid aan` laat het weer spelen. Dat mag ook op
+iOS, want de speler heeft dat commando zelf net getypt of getikt. Hetzelfde
+gebeurt bij `visibilitychange`: verborgen pauzeert, terug zichtbaar hervat het
+element en `resume()`t een opgeschorte context. Dat laatste alleen als er al
+ontgrendeld is — buiten een gebaar wordt hier nooit een context aangemaakt.
+
+Dit is het enige stukje DOM in `js/sound.js`. Dat mag: de regel "DOM-vrij" geldt
+voor `js/logic/`, en de geluidslaag hoort bij de renderlaag (ze raakt `window`
+en `AudioContext` al). Met dezelfde zekering als de rest — is er geen
+`document`, dan gebeurt er niets, en de headless tests draaien gewoon door.
+
+`AL.sound.debug()` meldt `primers` en `stil` (`null`, `"speelt"` of
+`"gepauzeerd"`), want aan een element dat stilte speelt is niets te horen.
+`test/smoke-geluid.mjs` §5 keurt de hele ketting in Chromium; of het op een
+échte iPhone hoorbaar is, en met het schuifje in beide standen, blijft een
+luistertest op toestel.
 
 ### De scheduler
 
@@ -261,6 +315,48 @@ Laadvolgorde binnen de logica (elke leest wat de vorige nodig heeft):
 `strings.js` → `world.js` → checker-modules → `levels.js` → `sim/*`. De volle
 laadvolgorde van álle bestanden staat onderaan dit document.
 
+## De besturing: de pijl-stack en de spookrichting
+
+`js/input.js` houdt de ingedrukte richtingen bij als een stack, niet als een
+vlag per pijl. De bovenste wint (*most-recent-pressed*), zodat een tweede pijl
+de eerste overneemt zonder hem te vergeten: laat je de tweede weer los, dan
+loopt de speler verder in de eerste. Het D-pad van `js/touch.js` voedt via
+`pijlAan`/`pijlUit` dezelfde stack, dus vinger en toets gedragen zich gelijk.
+
+Een stack is echter net zo betrouwbaar als de keyups die hem leegmaken, en die
+gaan verloren. Wat overblijft heet hier een **spookrichting**: een ingang die
+niemand meer ingedrukt houdt, die elke andere pijl overleeft en waarop de
+speler terugvalt zodra hij iets loslaat. Drie regels houden hem weg:
+
+- **`reset()` bij focusverlies.** `blur` op het venster en `visibilitychange`
+  met `document.hidden` legen de stack. Dat is de enige plek waar een verloren
+  keyup nog opgeruimd kan worden — een pagina die naar de achtergrond gaat,
+  krijgt er geen meer.
+- **`reset()` bij elke moduswissel.** `engine.js` roept `stopBesturing()` aan
+  in `startTitel`, `opADeSpread`, `opADePc`, `startSim`, `toonOordeel` en
+  `toonEpiloog`. De tik loopt onder die modi toch al niet; het gaat erom dat de
+  speler ná het notitieboek of de pc niet uit zichzelf staat te lopen, want de
+  pijl die openging is boven de tekstvelden van de pc-overlay losgelaten.
+- **Een indruk verplaatst naar de top.** Stond de richting al in de stack, dan
+  wordt hij verwijderd en opnieuw bovenop gelegd in plaats van genegeerd. Zo
+  wint de speler ook van een spook dat er nog wél staat.
+
+De `keyup`-handler kent bewust níét de tekstveld-uitzondering van `keydown`:
+een keyup mag nooit geslikt worden. Op het D-pad hoort daar één DOM-detail bij.
+Een aanraking krijgt **impliciete pointer capture** — vanaf de `pointerdown`
+gaan alle events van die vinger naar díe knop, ook als de vinger boven een
+andere hangt. Zonder ingrijpen krijgt de nieuwe knop dus geen `pointerdown` en
+de oude geen `pointerleave`, en blijft de oude richting lopen. `touch.js` laat
+de capture daarom meteen los (`releasePointerCapture`, in een `try` — niet elke
+motor staat het toe) en luistert daarnaast op `pointerenter` met `buttons > 0`,
+zodat een vinger die van ◀ naar ▶ schuift de richting meeneemt. Verdwijnt de
+balk onder de vinger (de speler gaat aan de pc zitten), dan komt er geen
+`pointerup` meer: de zichtbaarheidspoll roept dan zelf `AL.input.reset()` aan.
+
+Gedekt door `test/test-input.mjs` (headless, met een window-stub voor de
+zekering) en door `test/smoke-walk.mjs` §8–§9, dat twee pijlen tegelijk, een
+spook na `blur` en een echte vingerschuif over het D-pad naloopt.
+
 ## De vloer: walkboxes, blokken en uitgangszones
 
 De meetkunde van een kamer zit niet in de engine maar in `js/loopveld.js`. Dat
@@ -308,6 +404,27 @@ Het volledige veldformaat staat in `scene-schema.md`; wat de engine ermee doet:
 `AL.world.betreed` is bij dit alles niet veranderd: de logica kent alleen de
 zolderkaart en de richting, niet de rechthoeken.
 
+### De stand bewaren
+
+De speler heeft twee manieren om in een kamer te belanden, en de engine houdt ze
+apart:
+
+- `wisselNaarScene(id, entry)` zet hem op een **entry** van die kamer. Dat is de
+  juiste zet bij een kamerwissel: wie van het westen binnenkomt, hoort aan de
+  westkant te staan.
+- `herstelStand()` zet de kamer klaar **rond de speler**: ze leest
+  `toestand.speler.x/y` uit de staat en verplaatst niets. Dat is de juiste zet
+  als er geen kamerwissel is maar alleen een modus die dichtvalt — het
+  notitieboek. Is die stand niet (meer) beloopbaar (een save van een oudere
+  versie, een hertekende kamer), dan valt ze terug op de entry: liever op de
+  drempel dan in een muur.
+
+`betreedZolder(beschrijf, houdStand)` kiest tussen de twee. `houdStand` is waar
+op precies twee plaatsen: `spreadVerder` (het boek gaat dicht, WP 44) en de
+`spread`-tak van `hervat` (herladen mét het boek open, en dan dichtdoen). Het
+sluiten van de pc-overlay gebruikt bewust de entry: de speler zat op de stoel,
+en die staat in een blok.
+
 ## Effect-tag-woordenlijst
 
 Dit is de volledige, gezaghebbende lijst. `spelontwerp-legacy.md` mag geen
@@ -320,7 +437,7 @@ reageert; de logica produceert ze alleen.
 | Tag | Wanneer |
 |---|---|
 | `scene:<id>` | wissel naar een zolder-/huisscène (scène-id uit `art-stijlgids.md`) |
-| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md` |
+| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md`. Er is ook geen tag voor het sluiten: na de laatste bladzijde valt het boek dicht in de kamer waar de speler staat, op de plek waar hij staat (`spreadVerder` → `betreedZolder(false, true)`; zie §De vloer, "de stand bewaren") |
 | `titel` | toon de titelkaart |
 | `betreed:<richting>` | de speler ging te voet naar de buurkamer (`noord`/`oost`/`zuid`/`west`): over de oost-/westrand of door een uitgangszone; engine-hint voor de camera |
 | `fragment-gevonden:<levelId>` | het notitieboek-fragment voor dit level is ontgrendeld in de adventure |
@@ -546,7 +663,9 @@ onspeelbaar, net als lopen zonder pijltjestoetsen.
   bij Enter/"ga" doorstuurt naar dezelfde `AL.input.onSubmit`/`onAdvance` die
   het fysieke toetsenbord ook gebruikt.
 - Vier D-pad-knoppen die via `AL.input.pijlAan`/`pijlUit` dezelfde pijl-stack
-  sturen als de fysieke pijltjestoetsen (`input.js`).
+  sturen als de fysieke pijltjestoetsen (`input.js`). Wat er nodig was om een
+  vinger van de ene knop naar de andere te laten schuiven — de impliciete
+  pointer capture loslaten — staat in §De besturing.
 - Een tik op het canvas die `AL.engine.advance()` aanroept, zodat berichten,
   de titelkaart, spreads en het oordeel ook zonder toetsenbord doorbladeren.
 

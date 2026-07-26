@@ -495,17 +495,19 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
     `AL.spreads.BLAD.schets`: de onderste helft van de rechterbladzijde. De
     tekst van díé kolom stopt daarboven; het linkerblad loopt door tot onderaan.
   - Ze staan op de **tweede** bladzijde van een spread. Dat is de bladzijde waar
-    Alberta de opdracht geeft, en haar tekst verwijst er ook naar ("schrijf
-    Geitje helemaal uit volgens de schets hieronder"). De eerste bladzijde is de
-    brief.
+    Alberta zegt wat er nog niet af is, en de schets hoort bij díe stand van
+    zaken: wie leest dat twee lus-methoden ontbreken (level 5), ziet eronder de
+    kaarten waar ze het over heeft. De eerste bladzijde is de brief.
   - De schetsstijl spiegelt de scharnier-metaforen (zie de
     metafoor-woordenschat in `levels-en-scharnieren.md`): blauwdruk-en-doos (1),
     trechters-en-goot (2), knikkerbaan met klem en splitsing (3),
     twee-pijlen-één-doos (4), de patroonkaart met turfjes (5), de plankenbrug
     met genummerde planken (6), het zoekspoor en de dubbele pijl (7).
-- **De weekregel:** onderaan de rechterbladzijde, in Alberta's hand: "Dit zou je
-  moeten kunnen na week X van de cursus." Drie regels ruimte, niet twee:
-  proportioneel handschrift is breder dan het raster waarop die zin ooit paste.
+- **De weekregel:** onderaan de rechterbladzijde, in Alberta's hand: "Week X in
+  mijn schema." Sinds WP 45 is dat één regel (de oude, langere zin nam er twee).
+  De renderer houdt er nog altijd ruimte voor drie: proportioneel handschrift is
+  breder dan het raster waarop zulke zinnen ooit pasten, en die marge is wat een
+  langere voet behoedt voor stil afkappen.
 - **Chroom hoort op het linkerblad.** Bladwijzer links, bladerhint ertegenaan.
   De onderrand van het rechterblad is van de weekregel; stond de hint daar ook,
   dan schreven ze door elkaar heen.

@@ -23,7 +23,7 @@ De engine kent één modus per scherm (het `modus`-veld uit
 |---|---|---|
 | `titel` | titelkaart | een toets / klik om te starten |
 | `zolder` | beloopbare zolder-/huisscène | pijltjestoetsen + getypte parser |
-| `spread` | full-screen notitieboek-spread | doorbladeren, dan naar de pc |
+| `spread` | full-screen notitieboek-spread | doorbladeren, dan valt het boek dicht waar je staat |
 | `pc` | gesimuleerde editor/terminal (DOM-overlay) | typen, "compileer & test", `?` |
 | `sim` | _Seven Little Goats_ als speelbare simulatie | getypte commando's |
 | `oordeel` | Alberta's oordeel-eindscherm | lezen, dan epiloog |
@@ -128,12 +128,17 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    Effect: `fragment-gevonden:<levelId>`. Voor level 1 is dat simpelweg het
    notitieboek zelf op `zolder-west`; latere fragmenten zitten verder in de
    zolder (dozen op `zolder-midden`/`overloop`), zodat er lichte progressie is.
-2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets,
-   haar puzzelbrief, en de regel "Dit zou je moeten kunnen na week X van de
-   cursus". Effect: `spread:<levelId>`, `geluid:pagina`.
-3. **Ga aan de pc zitten.** De speler loopt naar de pc op `zolder-oost` (of de
-   spread leidt er rechtstreeks heen) en gaat zitten. Effect: `pc:open`,
-   `level-start:<n>`.
+2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
+   puzzelbrief, en de regel "Week X in mijn schema." (haar eigen planning; zie
+   `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
+   `geluid:pagina`. Na de laatste bladzijde gaat het boek dicht en staat de
+   speler **waar hij het blad vond** — bij het notitieboek in de westhoek, bij
+   de doos in de doorgang of op de overloop.
+3. **Ga aan de pc zitten.** De speler loopt zelf naar de pc op `zolder-oost` en
+   gaat zitten. Effect: `pc:open`, `level-start:<n>`. Weet hij de weg niet, dan
+   wijst `?` hem die: de eerste tak van de zolder-hint zegt "Het hoofdstuk dat
+   je opensloeg, is nog niet hersteld. Dat werk ligt op de pc, in de werkhoek
+   aan de oostkant van de zolder." (`save-en-hints.md`, §"De zolder-hint").
 4. **Los de puzzels op.** Eén editor-puzzel + twee terminal-puzzels (zie het
    tijdsbudget in `levels-en-scharnieren.md`). Elke opgeloste puzzel:
    `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` — "dit hoofdstuk van
@@ -144,6 +149,14 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    al hersteld is, dan blijft de pc dicht: hij zegt dat het klaar is en waar het
    volgende blad ligt. Alleen als er géén fragment meer te vinden is, gaat de pc
    gewoon open — dat is het endgame-pad.
+
+> Beslissing (WP 44): stap 2 brengt de speler **niet** naar de werkhoek. Dat
+> deed hij wel — `spreadVerder` zette de scène op `zolder-oost` — en het las als
+> een bug: het boek dichtdoen teleporteerde je naar de pc. Het sprak ook het
+> chroom van de laatste bladzijde tegen, dat "spatie: terug" belooft. Het boek
+> dichtdoen is nu een handeling zonder bijwerking; de wandeling naar de pc is de
+> zaak van de speler, en de progressie-hint uit WP 33 draagt de begeleiding die
+> de teleport moest goedmaken.
 
 Na level 7 volgt de endgame in plaats van "keer terug" (zie onder).
 
@@ -195,8 +208,9 @@ tag daar.
 ### Spread (`modus: "spread"`)
 
 - **Spatie / Enter / klik** — doorbladeren; na de laatste pagina gaat het boek
-  dicht en staat de speler in de werkhoek, bij de pc. De pc zelf opent pas op
-  `ga zitten`; de bladerhint onderaan het linkerblad zegt dat ook zo.
+  dicht en staat de speler weer in de kamer waar hij het blad vond, op dezelfde
+  plek. De bladerhint onderaan het linkerblad belooft niets anders ("spatie:
+  terug"). De pc opent pas als hij naar de werkhoek loopt en `ga zitten` typt.
 - Er is hier geen `?`: de invoerbalk is in deze modus geblokkeerd en elke toets
   bladert. De puzzel-hints zitten in de pc.
 

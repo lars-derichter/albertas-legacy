@@ -57,16 +57,19 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // De typewoorden `int` en `Voorwerp` blijven in de notitie staan (beslissing
+  // van WP 30): de stub geeft geen signaturen en de checker eist ze exact, dus
+  // zonder die twee woorden is de puzzel vanuit de notitie niet oplosbaar.
   var lusStub =
-"// Alberta's notitie — twee kaarten in de kantlijn:\n" +
-"//   telWapens() telt: hoeveel van wat ze draagt heeft kracht boven 0? Eén\n" +
-"//   int voor de statusregel. sterksteVoorwerp() zoekt het uiterste: het\n" +
-"//   Voorwerp waarmee ze het hardst uithaalt, of null als haar mand leeg is.\n" +
-"//   Zelfde inventaris, zelfde lus — een andere kaart erop.\n" +
+"// Twee kaarten in de kantlijn, geen rompen. telWapens() telt: hoeveel van wat\n" +
+"// ze draagt heeft kracht boven 0? Eén int voor de statusregel.\n" +
+"// sterksteVoorwerp() zoekt het uiterste: het Voorwerp waarmee ze het hardst\n" +
+"// uithaalt, of null als haar mand leeg is. Zelfde inventaris, zelfde lus,\n" +
+"// andere kaart erop. — A.\n" +
 "\n" +
 "class Speler {\n" +
 "\n" +
-"    // schrijf hier je twee lus-methoden\n" +
+"    // hier verder\n" +
 "\n" +
 "}\n";
 

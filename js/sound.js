@@ -52,6 +52,33 @@
 // geluid, het is géén geluid. Alles ligt nu minstens een octaaf hoger. De
 // FM-vorm blijft: dezelfde twee operatoren, dezelfde niet-harmonische ratio's,
 // alleen een andere grondtoon.
+//
+// ---- iOS (WP 43) -----------------------------------------------------------
+//
+// Op een iPhone bleef het na WP 37 stil, en daar zijn drie onafhankelijke
+// redenen voor. Ze worden alle drie hier afgehandeld; de volledige ketting
+// staat in docs/engine-architectuur.md, §Geluid.
+//
+//   1. Het gebaar. Safari rekent voor audio niet op pointerdown maar op het
+//      einde van de aanraking: touchend en click. Vandaar de bredere set
+//      luisteraars in js/input.js.
+//   2. De primer. Een resume() alleen is op sommige iOS-versies niet genoeg;
+//      wat de context echt op "running" zet, is er ín het gebaar één buffer
+//      tegenaan spelen. De kanonieke vorm is een buffer van één sample —
+//      onhoorbaar, en het enige dat betrouwbaar werkt.
+//   3. De belschakelaar. Staat het schuifje op de zijkant op stil, dan is
+//      WebAudio op een iPhone onhoorbaar, hoe hard je ook versterkt: WebAudio
+//      hoort bij het belkanaal. Een <audio playsinline> dat speelt, verhuist
+//      de hele pagina naar het mediakanaal — en dát kanaal luistert niet naar
+//      het schuifje. Het element speelt daarom een lus van een tiende seconde
+//      stilte, op volle sterkte en niet gedempt: een gedempt element (of een
+//      element op volume 0) claimt het kanaal niet. Het is stil omdat de
+//      samples stil zijn, niet omdat het zacht staat.
+//
+// Dat laatste is het enige stukje DOM in dit bestand. Dat mag: de
+// architectuurregel "DOM-vrij" geldt voor js/logic/, en deze module hoort bij
+// de renderlaag (ze raakt window en AudioContext al). Wél met dezelfde
+// zekering als de rest — is er geen document, dan gebeurt er niets.
 
 globalThis.AL = globalThis.AL || {};
 
@@ -63,6 +90,8 @@ globalThis.AL = globalThis.AL || {};
   var ontgrendeld = false; // is er al een gebruikersactie geweest?
   var naUnlock = null;    // haak die de engine invult (zie opOntgrendeld)
   var gebouwd = 0;        // hoeveel oscillatoren er ooit gebouwd zijn (debug)
+  var stilElement = null; // het <audio> tegen de belschakelaar (zie boven)
+  var primers = 0;        // hoe vaak de stille primer-buffer gespeeld is (debug)
 
   // De meesterversterking; per stem staat er nog een gain. Het ergste geval:
   //
@@ -237,6 +266,118 @@ globalThis.AL = globalThis.AL || {};
     return ctx;
   }
 
+  // ---- De iOS-ketting ------------------------------------------------------
+  //
+  // De stille primer. Eén buffer van één sample, in het gebaar afgespeeld: dat
+  // is wat een AudioContext op iOS daadwerkelijk aan de praat krijgt, terwijl
+  // een kale resume() er soms doorheen glipt. Hij gaat rechtstreeks naar de
+  // uitgang en niet door de meestergain — hij hoort bij het ontgrendelen, niet
+  // bij de muziek, en met "geluid uit" moet hij nog steeds werken.
+  function primer(c) {
+    try {
+      var bron = c.createBufferSource();
+      bron.buffer = c.createBuffer(1, 1, 22050);
+      bron.connect(c.destination);
+      if (bron.start) bron.start(0);
+      else if (bron.noteOn) bron.noteOn(0);
+      primers++;
+    } catch (e) { /* niets */ }
+  }
+
+  // Een tiende seconde stilte als WAV-data-URI. Zelf gezet in plaats van als
+  // base64-brok in de bron geplakt: het is een RIFF-kop van 44 bytes en 800
+  // samples van 128 (het nulpunt van 8-bits PCM), en zo is te zien wat het is.
+  // Geen bestand, geen net, dus ook vanaf file:// gewoon speelbaar.
+  var STIL_HZ = 8000;
+  var STIL_SAMPLES = 800;   // 0,1 s
+
+  function stilleWav() {
+    var bytes = [];
+    function tekst(s) {
+      for (var i = 0; i < s.length; i++) bytes.push(s.charCodeAt(i) & 255);
+    }
+    function u32(v) {
+      bytes.push(v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >> 24) & 255);
+    }
+    function u16(v) { bytes.push(v & 255, (v >> 8) & 255); }
+    tekst("RIFF"); u32(36 + STIL_SAMPLES); tekst("WAVE");
+    tekst("fmt "); u32(16);
+    u16(1);            // PCM
+    u16(1);            // mono
+    u32(STIL_HZ);      // samplefrequentie
+    u32(STIL_HZ);      // bytes per seconde (mono, 8 bits)
+    u16(1);            // blokuitlijning
+    u16(8);            // bits per sample
+    tekst("data"); u32(STIL_SAMPLES);
+    for (var i = 0; i < STIL_SAMPLES; i++) bytes.push(128);
+    var ruw = "";
+    for (var j = 0; j < bytes.length; j++) ruw += String.fromCharCode(bytes[j]);
+    return "data:audio/wav;base64," + window.btoa(ruw);
+  }
+
+  // Het element dat het mediakanaal claimt. Wordt pas in het eerste gebaar
+  // aangemaakt — daarvóór zou het toch niet mogen spelen, en een element dat er
+  // niet is, kan ook niet per ongeluk klinken.
+  function zorgStilElement() {
+    if (stilElement) return stilElement;
+    if (typeof document === "undefined" || !document.createElement) return null;
+    try {
+      var el = document.createElement("audio");
+      el.id = "al-stil-audio";
+      // playsinline: zonder dit neemt Safari op een iPhone het volledige scherm
+      // over zodra er iets speelt. De webkit-vorm staat erbij voor de oudere
+      // webviews, die de gewone naam niet kennen.
+      el.setAttribute("playsinline", "");
+      el.setAttribute("webkit-playsinline", "");
+      el.setAttribute("aria-hidden", "true");
+      el.loop = true;
+      el.muted = false;   // expliciet: gedempt claimt het kanaal niet
+      el.volume = 1.0;    // en op volume 0 evenmin — de stilte zit in de samples
+      el.src = stilleWav();
+      if (document.body) document.body.appendChild(el);
+      stilElement = el;
+    } catch (e) { stilElement = null; }
+    return stilElement;
+  }
+
+  function startStil() {
+    var el = zorgStilElement();
+    if (!el) return;
+    try {
+      var belofte = el.play();
+      // Buiten een gebaar weigert de browser, en dat hoort geen fout te zijn:
+      // de volgende gebruikersactie probeert het gewoon opnieuw.
+      if (belofte && belofte.catch) belofte.catch(function () { /* niets */ });
+    } catch (e) { /* niets */ }
+  }
+
+  function pauzeerStil() {
+    if (!stilElement) return;
+    try { stilElement.pause(); } catch (e) { /* niets */ }
+  }
+
+  // Terug uit de achtergrond. iOS schort een context op zodra de app weggaat en
+  // laat hem opgeschort staan bij terugkeer; zonder dit blijft het daarna stil.
+  // Nooit een context aanmaken hier — dat mag alleen in een gebaar, en vóór de
+  // ontgrendeling is er niets om te hervatten.
+  function opZichtbaar() {
+    if (!ontgrendeld) return;
+    if (ctx && ctx.state === "suspended") {
+      try { ctx.resume(); } catch (e) { /* niets */ }
+    }
+    if (aan) startStil();
+  }
+
+  if (typeof document !== "undefined" && document.addEventListener) {
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) pauzeerStil();
+      else opZichtbaar();
+    });
+  }
+  if (typeof window !== "undefined" && window.addEventListener) {
+    window.addEventListener("focus", opZichtbaar);
+  }
+
   // Eén FM-noot: een modulator die de frequentie van een carrier verbuigt.
   // Precies de twee operatoren van een OPL2-stem.
   function noot(stemNaam, midi, start, duur) {
@@ -357,12 +498,26 @@ globalThis.AL = globalThis.AL || {};
     // Idempotent: de tweede en volgende aanroep doen niets meer (behalve een
     // resume proberen als het systeem de context intussen weer opgeschort
     // heeft, wat gebeurt als het tabblad naar de achtergrond gaat).
+    //
+    // De ketting staat in deze volgorde, en die volgorde is de fix (WP 43):
+    // context maken → resume → stille primer → het stille element → pas dan de
+    // vlag en de haak. De resume staat bewust vóór de `ontgrendeld`-uitstap:
+    // een later gebaar moet een opnieuw opgeschorte context nog kunnen wekken.
     unlock: function () {
       var c = zorgCtx();
       if (!c) return;
-      if (c.state === "suspended") {
+      var wasOpgeschort = (c.state === "suspended");
+      if (wasOpgeschort) {
         try { c.resume(); } catch (e) { /* niets */ }
       }
+      // De primer alleen waar hij nodig is: bij het eerste gebaar, en bij elk
+      // gebaar dat een opgeschorte context aantreft. Bij elke toetsaanslag een
+      // buffer bouwen zou honderden bronnen per sessie kosten voor niets.
+      if (wasOpgeschort || !ontgrendeld) primer(c);
+      // Het element claimt het mediakanaal en houdt daarmee de belschakelaar
+      // buiten spel. Alleen met het geluid aan — anders speelt er iets waar de
+      // speler net om stilte gevraagd heeft, ook al is dat stilte.
+      if (aan) startStil();
       if (ontgrendeld) return;
       ontgrendeld = true;
       // De engine weet welk bed bij de huidige stand hoort; de geluidslaag
@@ -381,6 +536,11 @@ globalThis.AL = globalThis.AL || {};
     // Uit betekent écht uit: de meestergain gaat naar nul, en dat dempt ook de
     // noten die al vooruit gepland staan. Het actieve bed wordt vergeten, zodat
     // er niets blijft doorlopen waar niemand naar luistert.
+    //
+    // Het stille element gaat mee. "Geluid uit" hoort de pagina het mediakanaal
+    // te laten teruggeven; "geluid aan" claimt het opnieuw, en dat lukt ook op
+    // iOS omdat de speler dat commando zelf net getypt of getikt heeft — een
+    // gebruikersactie, dus mag het element weer spelen.
     zetAan: function (waarde) {
       aan = !!waarde;
       if (meester && ctx) {
@@ -390,6 +550,10 @@ globalThis.AL = globalThis.AL || {};
         } catch (e) { /* niets */ }
       }
       if (!aan) { bed = null; bedNaam = null; volgende = 0; }
+      // Vóór de ontgrendeling niets aanmaken: bij het opstarten zet de engine
+      // de bewaarde voorkeur terug, en dat is geen gebruikersactie.
+      if (aan) { if (ontgrendeld) startStil(); }
+      else pauzeerStil();
     },
 
     isAan: function () { return aan; },
@@ -414,7 +578,13 @@ globalThis.AL = globalThis.AL || {};
         // hoort dit nul te blijven, hoeveel cues de engine ook afvuurt: dat is
         // precies de opbouw waar het lek uit bestond, en het is het enige
         // getal waaraan een test dat kan zien.
-        nodes: gebouwd
+        nodes: gebouwd,
+        // De iOS-ketting, zichtbaar voor de rooksmaaktest: hoe vaak de stille
+        // primer gespeeld is, en wat het stille element doet. Hoorbaar is er
+        // aan dat element niets, dus dit is de enige manier om te zien dat het
+        // het mediakanaal daadwerkelijk claimt.
+        primers: primers,
+        stil: stilElement ? (stilElement.paused ? "gepauzeerd" : "speelt") : null
       };
     },
 

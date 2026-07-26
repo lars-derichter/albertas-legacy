@@ -69,10 +69,8 @@ globalThis.AL = globalThis.AL || {};
 "}\n";
 
   var spelerNotitie =
-"// Alberta's notitie — Speler:\n" +
-"//   Een methode is een machine: trechters erin (de parameters), een goot\n" +
-"//   eruit (het returntype) — of niets eruit (void). Zet de koppen recht:\n" +
-"//   wat geeft de methode terug, en wat gaat erin?\n" +
+"// De koppen van Speler heb ik zelf door elkaar gehaald en nooit rechtgezet:\n" +
+"// wat eruit komt staat vooraan, wat erin gaat tussen de haakjes. — A.\n" +
 "\n";
 
   var spelerBeschadigdA = spelerNotitie +

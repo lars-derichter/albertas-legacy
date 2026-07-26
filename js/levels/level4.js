@@ -44,11 +44,14 @@ globalThis.AL = globalThis.AL || {};
 "    }\n" +
 "}\n";
 
+  // Neutraal over wat er mis is: in variant A staat setNoord waar setZuid hoort,
+  // in variant B setOost waar setWest hoort — telkens overal, dus die ene
+  // richting wordt in geen enkele tak meer gelegd.
   var verbindNotitie =
-"// Alberta's notitie — verbindKamers:\n" +
-"//   Twee pijlen, één doos: elke verbinding loopt twee kanten op. Leg je de\n" +
-"//   noord-buur, leg dan meteen de zuid-buur terug. De vier richtingen staan\n" +
-"//   in één if / else if-cascade. Er raakte bedrading los — herstel ze.\n" +
+"// Elke verbinding loopt twee kanten op: leg ik de noord-buur, dan legt de\n" +
+"// andere kamer zuid terug. Vier richtingen in één if / else if-cascade. Hier\n" +
+"// is één van de vier setters overal door een andere vervangen; die richting\n" +
+"// wordt nergens meer gelegd. — A.\n" +
 "\n";
 
   var verbindBeschadigdA = verbindNotitie +

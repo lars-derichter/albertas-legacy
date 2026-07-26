@@ -1,8 +1,9 @@
 // smoke-levels-1-3.mjs — end-to-end rooksmaaktest van de drie echte
 // productielevels (WP 7). Opent de ECHTE index.html (?seed=1, GEEN dev-gate) en
 // speelt voor elk van level 1, 2 en 3 de volledige lus uit spelontwerp-legacy.md:
-//   vind het fragment in de zolder → lees de spread → ga aan de pc zitten →
-//   los de drie puzzels op met de modeloplossingen → level-af → terug de zolder in.
+//   vind het fragment in de zolder → lees de spread (het boek valt dicht waar je
+//   staat) → loop naar de werkhoek → ga aan de pc zitten → los de drie puzzels op
+//   met de modeloplossingen → level-af → terug de zolder in.
 // Daarna bewijst hij de variatie tussen runs: met ?seed=1 tegenover ?seed=2 toont
 // minstens één herstel-puzzel een ANDERE beschadigde variant.
 //
@@ -67,8 +68,9 @@ async function typCommando(page, cmd) {
   await page.waitForTimeout(140);
 }
 
-// Blader een geopende spread helemaal door tot de modus weer "zolder" is (bij de
-// pc in de werkhoek). Sluit eerst het fragment-venster dat boven de spread opent.
+// Blader een geopende spread helemaal door tot de modus weer "zolder" is — sinds
+// WP 44 in de kamer waar de speler het blad vond, op de plek waar hij stond.
+// Sluit eerst het fragment-venster dat boven de spread opent.
 async function doorbladerSpread(page) {
   await sluitVensters(page);
   for (let i = 0; i < 12; i++) {
@@ -82,6 +84,34 @@ async function doorbladerSpread(page) {
 async function wachtView(page, view) {
   await page.waitForFunction((v) => window.AL.pc.debug.view() === v, view,
     { timeout: 8000 });
+}
+
+// De weg naar de werkhoek, per kamer waar het notitieboek je kan achterlaten.
+// Sinds WP 44 legt de spread je neer waar je het blad vond, dus die weg legt de
+// speler zelf af — precies wat de '?'-hint en de walkthrough zeggen.
+const ROUTE_WERKHOEK = {
+  "zolder-west": ["ga oost", "ga oost"],
+  "zolder-midden": ["ga oost"],
+  "overloop": ["ga zuid", "ga oost"],
+  "zolder-oost": []
+};
+
+async function naarWerkhoek(page) {
+  const van = (await state(page)).sceneId;
+  for (const cmd of ROUTE_WERKHOEK[van] || []) await typCommando(page, cmd);
+  return van;
+}
+
+// Loop te voet naar het westen tot de speler op of voorbij doelX staat. Met de
+// pijltoets, niet met een commando: zo staat hij op een plek die géén entry van
+// de kamer is, en dat is precies wat de spread-controle nodig heeft.
+async function loopWestTot(page, doelX) {
+  await sluitVensters(page);
+  await page.keyboard.down("ArrowLeft");
+  await page.waitForFunction((d) => window.AL.debugState.actorX <= d, doelX,
+    { timeout: 10000 }).catch(() => {});
+  await page.keyboard.up("ArrowLeft");
+  await page.waitForTimeout(90);
 }
 
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type.
@@ -123,15 +153,39 @@ async function speelLevel(page, n, naarFragment) {
   check("L" + n + ": het fragment opent de spread", (await state(page)).modus === "spread");
   const ontgr = await ev(page, (id) => window.AL.debugToestand.levels[id].ontgrendeld, String(n));
   check("L" + n + ": fragment ontgrendeld", ontgr === true);
+  // Waar staat de speler terwijl het boek openligt? Daar hoort hij te staan als
+  // het weer dichtvalt.
+  const sBoek = await state(page);
 
-  // 2. Lees de spread → sta bij de pc in de werkhoek.
+  // 2. Lees de spread → het boek valt dicht waar je staat (WP 44). Vroeger
+  //    teleporteerde de laatste bladzijde je naar de werkhoek.
   await doorbladerSpread(page);
   const naSpread = await state(page);
-  check("L" + n + ": na de spread sta je bij de pc (werkhoek)",
-    naSpread.modus === "zolder" && naSpread.sceneId === "zolder-oost",
-    "scene=" + naSpread.sceneId);
+  check("L" + n + ": na de spread sta je waar je het blad vond",
+    naSpread.modus === "zolder" && naSpread.sceneId === sBoek.sceneId &&
+    Math.abs(naSpread.actorX - sBoek.actorX) <= 2 &&
+    Math.abs(naSpread.actorY - sBoek.actorY) <= 2,
+    "scene=" + naSpread.sceneId + " (" + naSpread.actorX + "," + naSpread.actorY +
+    ") vs " + sBoek.sceneId + " (" + sBoek.actorX + "," + sBoek.actorY + ")");
+  if (n === 2) {
+    // Hetzelfde, maar expliciet voor een blad uit een DOOS: de speler is naar
+    // die doos toe gelópen (zie main), dus hij hoort er ná het boek nog naast te
+    // staan — in de doorgang, en niet op een entry van de kamer.
+    const doosX = await ev(page, () => window.AL.scenes["zolder-midden"]
+      .hotspots.filter((h) => h.item === "doos")[0].x);
+    check("L2: het blad uit de doos sluit in de doorgang, bij die doos",
+      naSpread.sceneId === "zolder-midden" &&
+      naSpread.actorX === sBoek.actorX && naSpread.actorY === sBoek.actorY &&
+      Math.abs(naSpread.actorX - doosX) <= 16,
+      "x=" + naSpread.actorX + " doos=" + doosX + " scene=" + naSpread.sceneId);
+  }
 
-  // 3. Ga aan de pc zitten → pc-overlay open op het juiste level.
+  // 3. Loop zélf naar de werkhoek en ga aan de pc zitten → pc-overlay open op
+  //    het juiste level.
+  const vanaf = await naarWerkhoek(page);
+  check("L" + n + ": te voet van " + vanaf + " naar de werkhoek",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
   await typCommando(page, "ga zitten");
   await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });
@@ -192,9 +246,12 @@ async function main() {
   await speelLevel(page, 1, async (p) => { await typCommando(p, "open notitieboek"); });
   await page.screenshot({ path: join(SCRATCH, "wp7-na-level1.png") });
 
-  // Level 2: een gemerkte doos in de doorgang.
+  // Level 2: een gemerkte doos in de doorgang. Naar die doos lopen we te voet:
+  // dan staat de speler op een plek die geen entry is, en bewijst de controle in
+  // speelLevel dat het notitieboek hem daar écht laat staan.
   await speelLevel(page, 2, async (p) => {
     await typCommando(p, "ga west");     // werkhoek → doorgang
+    await loopWestTot(p, 240);           // te voet naar de gemerkte doos
     await typCommando(p, "open doos");
   });
 

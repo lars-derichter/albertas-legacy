@@ -36,11 +36,14 @@ globalThis.AL = globalThis.AL || {};
 "    this.levenspunten = nieuweWaarde;\n" +
 "}\n";
 
+  // De notitie noemt MAX_LEVENSPUNTEN bij naam. Dat is niet decoratief: in
+  // variant B is het hele bovengrens-blok weggevallen, en dan staat de constante
+  // nergens meer in het fragment. Zonder haar naam is de klem niet te herstellen
+  // (de checker aanvaardt MAX_LEVENSPUNTEN of 20).
   var klemNotitie =
-"// Alberta's notitie — setLevenspunten:\n" +
-"//   Denk aan de knikkerbaan: de waarde moet tussen twee randen blijven.\n" +
-"//   Nooit onder 0, nooit boven het maximum. Twee losse controles die de\n" +
-"//   knikker naar binnen duwen voor hij wordt opgeslagen.\n" +
+"// De waarde moet tussen twee randen blijven: nooit onder 0, nooit boven\n" +
+"// MAX_LEVENSPUNTEN. Twee losse controles die de knikker naar binnen duwen\n" +
+"// voor hij wordt opgeslagen. Aan één van de twee randen mankeert iets. — A.\n" +
 "\n";
 
   var klemBovengrensBlok =

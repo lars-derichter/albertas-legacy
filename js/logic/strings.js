@@ -37,8 +37,21 @@ AL.strings = {
   drukEnter: "Druk op Enter",
   openingOverslaan: "Esc: overslaan",
 
-  // De intro: een korte reeks berichtvensters die de kernfictie zet. De laatste
-  // alinea bevat de cruciale zin uit achtergrond.md (de prototype-fase).
+  // De intro: een korte reeks berichtvensters die de kernfictie zet. De vierde
+  // alinea bevat de cruciale zin uit achtergrond.md (de prototype-fase),
+  // verbatim; test-world-hub.mjs rekent daarop.
+  //
+  // Alinea 3 draagt sinds WP 45 het voorgevoel (achtergrond.md, §"De
+  // verdwijning", Beslissing WP 45). Ze zegt niet dát ze iets voelde, ze noemt
+  // geen oorzaak en ze zegt zelfs niet dat ze het wist: ze legt neer wat ze
+  // gedaan heeft. Een boek dat je nummert, van een week voorziet en aan een
+  // onbekende richt, schrijf je niet voor jezelf — de speler maakt die som zelf.
+  // Dat "ze heeft het niet afgemaakt" staat in alinea 2, bij het spel waar het
+  // over gaat, en niet als slotzin bij het bewijs.
+  //
+  // Elke alinea is een onderschrift van hoogstens zes regels op 38 tekens
+  // (js/engine.js, toonOpeningStap). Wat langer is, pagineert — en een
+  // onderschrift dat pagineert leest als een fout. test-typografie.mjs meet het.
   intro: [
     "Je grootmoeder Alberta maakte spellen, in de tijd dat een spel nog op " +
     "één zolder paste. Ze is er niet meer. Haar werk staat er nog: dozen tot " +
@@ -46,11 +59,13 @@ AL.strings = {
     "doet.",
 
     "Tussen de dozen ligt haar notitieboek. Losse bladen, doorgelopen inkt, " +
-    "vlekken waar het vocht bij kon.",
+    "vlekken waar het vocht bij kon. Erin staat Seven Little Goats: zes " +
+    "geitjes die de wolf opslokt, een zevende in de klokkast, en een " +
+    "afrekening aan de rivier. Ze heeft het niet afgemaakt.",
 
-    "Erin staat Seven Little Goats: zes geitjes die de wolf opslokt, een " +
-    "zevende die zich in de klokkast verstopt, en een afrekening aan de " +
-    "rivier. Ze heeft het niet afgemaakt.",
+    "Zeven hoofdstukken, genummerd, elk met een week erbij. Bij elk staat wat " +
+    "er nog aan ontbreekt. Het eerste is gericht aan wie het boek zou vinden — " +
+    "iemand die ze niet kende.",
 
     "Alberta bouwde elk spel eerst als tekstversie in de terminal. Zo begon " +
     "ze altijd. Wat jij herstelt is dus geen tekening, maar haar code — stuk " +
@@ -283,8 +298,7 @@ AL.strings = {
     onderzoek: "Het boek ligt open op een dubbele bladzijde. Een schets van " +
       "een kamer met zeven kruisjes erin, waarvan er zes zijn doorgehaald. " +
       "Daarnaast een halve methode, waar het vocht de andere helft van heeft " +
-      "weggevreten. Onderaan, in haar hand: 'Dit zou je moeten kunnen na " +
-      "week 1.'",
+      "weggevreten. Onderaan, in haar hand: 'Week 1 in mijn schema.'",
     open: "Je slaat het notitieboek open bij de eerste bladzijde die nog " +
       "heel is. Het eerste hoofdstuk van Alberta's spel ligt voor je — " +
       "beschadigd, maar leesbaar genoeg om te herstellen.",
@@ -410,7 +424,7 @@ AL.strings = {
       "Een klasse is een blauwdruk: eerst de velden (wat een Geitje heeft), " +
         "dan de constructor die ze invult, dan de getters.",
       "Je mist minstens één private veld en de toewijzing ervan in de " +
-        "constructor. Vergelijk met wat de notitie vraagt.",
+        "constructor. Vergelijk met wat de notitie opsomt.",
       "Vorm: private <type> <naam>;  en in de constructor this.<naam> = " +
         "<naam>;  en een getter die 'return <naam>;' doet."
     ],
@@ -510,8 +524,8 @@ AL.strings = {
     "l3-vindfout": [
       "De knikkerbaan stuurt met && (en) / || (of): welke van de twee laat de " +
         "knikker door als béide sporen kloppen?",
-      "Lees de notitie: de poort mag maar open als álle voorwaarden waar zijn. " +
-        "Kijk naar de operator in de conditie.",
+      "Lees de vraag nog eens: de poort mag maar open als álle voorwaarden waar " +
+        "zijn. Kijk naar de operator in de conditie.",
       "'Beide moeten waar zijn' vraagt && (en), niet || (of). || opent al bij één " +
         "van de twee."
     ],
@@ -1280,6 +1294,14 @@ AL.strings = {
     // `termen` is de opsomming van cursustermen die op bladzijde 2 als kop
     // staat. Ze herhaalt de scharnierterm van de titel niet: bladzijde 1 zegt
     // "Voorwaarden", bladzijde 2 vult aan met "Validatie ×3, cascade, …".
+    //
+    // Twee sjabloonzinnen zijn hier weg (WP 45). Bladzijde 1 opende met "Voor
+    // jou die dit later leest:", op alle zeven hoofdstukken — een aanhef die
+    // zeven keer opnieuw begint, leest als een formulier en niet als een hand.
+    // Ze staat nu één keer, in haar eigen woorden, in de brief van hoofdstuk 1.
+    // En de voet zei "na week N van de cursus": onze cursus bestaat niet in
+    // 1993, dus dat was meta-lekkage in haar notitieboek. Het is haar eigen
+    // planning geworden (achtergrond.md, §"Het notitieboek").
     function maakSpread(nr, titel, termen, week, briefA, briefB) {
       return {
         nr: nr,
@@ -1289,12 +1311,12 @@ AL.strings = {
         paginas: [
           {
             kop: "Hoofdstuk " + nr + " — " + titel,
-            regels: ["Voor jou die dit later leest:", ""].concat(briefA)
+            regels: briefA
           },
           {
             kop: termen,
             regels: briefB,
-            voet: "Dit zou je moeten kunnen na week " + week + " van de cursus."
+            voet: "Week " + week + " in mijn schema."
           }
         ]
       };
@@ -1311,78 +1333,101 @@ AL.strings = {
       l1: maakSpread(1, "Klasse en instantie: zeven uit één vorm",
         "Velden, constructor, this",
         1,
-        ["Een klasse is een blauwdruk; een object is de doos die je",
-          "ernaar bouwt. De constructor vult de velden van zo'n verse doos.",
-          "'this' is gewoon: déze doos."],
-        ["Ik heb hier Voorwerp en Geitje geschetst, maar de constructor",
-          "is nog maar half ingevuld. Herstel wat de doos hoort te krijgen,",
-          "en schrijf Geitje helemaal uit volgens de schets hieronder."]),
+        ["Wie dit boek vindt: maak het af. Ik kom er niet meer aan toe, dus",
+          "staat bij elk hoofdstuk wat er nog aan ontbreekt.",
+          "",
+          "Voorwerp en Geitje teken ik één keer — de velden, de constructor —",
+          "en daar giet ik er zeven uit, elk met eigen waarden. Veld en",
+          "parameter heten in die constructor hetzelfde; 'this' is het enige",
+          "wat ze uit elkaar houdt."],
+        ["Voorwerp is maar half ingevuld: één veld krijgt nooit wat de",
+          "constructor ervoor klaarzet. Geitje staat er nog helemaal niet —",
+          "naam, schuilplaats, gered (begint op false), en de twee getters.",
+          "— A."]),
 
       l2: maakSpread(2, "Signaturen: wat erin gaat, wat eruit komt",
         "Return vs. void; attribuut / parameter / lokaal",
         2,
-        ["Een methode is een machine: trechters erin (de parameters),",
-          "een goot eruit (return), of niets eruit (void). En drie soorten",
-          "dozen om in te bewaren: attribuut, parameter, lokale variabele."],
-        ["De signaturen van Speler kloppen nog niet — ik heb zelf de koppen",
-          "door elkaar gehaald. Zet ze recht: wat gaat erin, wat komt eruit?",
-          "En let op welke doos je gebruikt — een lokale schaduwt zo een",
-          "attribuut."]),
+        ["Speler is de klasse waar alles langs komt, dus daar hou ik de",
+          "koppen streng: wat eruit komt staat vooraan (int, Voorwerp,",
+          "boolean) of void als er niets uit komt, en wat erin gaat staat",
+          "tussen de haakjes. Let ook op waaruit je leest — attribuut,",
+          "parameter of lokale variabele. In toon() drukt de kale naam de",
+          "parameter af en this.levenspunten het attribuut."],
+        ["De koppen van Speler heb ik zelf door elkaar gehaald en nooit",
+          "rechtgezet: getLevenspunten geeft een int, setLevenspunten neemt",
+          "er een en geeft niets terug, zoek geeft een Voorwerp, verwijder",
+          "een boolean."]),
 
       l3: maakSpread(3, "Voorwaarden: de deur op slot",
         "Validatie ×3, cascade, && / || / !",
         2,
-        ["Denk aan een knikkerbaan. De validatie klemt de knikker tussen",
-          "twee randen; de cascade splitst de baan; && / || / ! sturen",
-          "welke kant hij op rolt."],
-        ["Bij setLevenspunten liep de klem mis en in Gevecht stond een",
-          "&& waar een || hoort. Klem de waarde netjes tussen onder- en",
-          "bovengrens, en kies de juiste operator."]),
+        ["Haar levenspunten blijven tussen 0 en MAX_LEVENSPUNTEN. Een kruik",
+          "geitenmelk geeft +6, en wie op zeventien staat zou daarmee over",
+          "het plafond gaan; onder 0 staat er na de laatste klap een negatief",
+          "getal in de statusregel terwijl ze al dood is. Dus klem ik in de",
+          "setter, met twee losse controles, voor de waarde het veld in gaat.",
+          "Een knikkerbaan met een rand links en een rand rechts."],
+        ["De klem in setLevenspunten is niet meer heel — een rand staat de",
+          "verkeerde kant op of hij is weg. En in de poortcheck staat een ||",
+          "waar && hoort: hij ging bij mij al open op één van de twee."]),
 
       l4: maakSpread(4, "Referenties: twee pijlen, één doos",
         "Twee variabelen, één object; null",
         3,
-        ["Twee variabelen kunnen naar dezelfde doos wijzen: twee pijlen,",
-          "één doos. Verander je de doos via de ene pijl, dan ziet de andere",
-          "het ook. En 'null' is een pijl die naar geen enkele doos wijst."],
-        ["De bedrading tussen de kamers is losgeraakt. Verbind de buren weer",
-          "zodat de pijlen kloppen, en let op waar een kamer nog naar null",
-          "wijst voor je erdoorheen loopt."]),
+        ["Elke gang loopt twee kanten op: twee pijlen, één doos. Leg ik de",
+          "noord-buur van de molen, dan legt de molen zuid terug — anders",
+          "loop je een kamer binnen en nooit meer buiten. Verander ik de kamer",
+          "via de ene verwijzing, dan ziet de andere het ook: het is dezelfde",
+          "doos. En waar geen gang is, blijft de buur null."],
+        ["In verbindKamers is één van de vier setters overal door een andere",
+          "vervangen; die richting wordt nergens meer gelegd. Vier richtingen",
+          "in één if / else if-cascade, elke richting beide kanten."]),
 
       l5: maakSpread(5, "Luspatronen: geitje voor geitje",
         "Tellen, totaliseren, opbouwen, filteren, uiterste",
         4,
-        ["Elke lus volgt een patroonkaart: tellen, totaliseren, opbouwen,",
-          "filteren, of het uiterste zoeken. Kies eerst de kaart, dan schrijf",
-          "je de romp bijna vanzelf."],
-        ["Twee lus-methoden ontbreken. Ik heb de kaarten in de kantlijn",
-          "getekend — schrijf de rompen eronder, en zet de string-builder",
-          "in de juiste volgorde."]),
+        ["Ik kies eerst de kaart, dan schrijft de romp zich bijna zelf:",
+          "tellen, totaliseren, opbouwen, filteren, of het uiterste zoeken.",
+          "De statusregel van toonStats wil twee dingen weten: hoeveel wapens",
+          "Roodkapje op zak heeft, en welk voorwerp het hardst uithaalt.",
+          "Zelfde inventaris, zelfde lus, andere kaart erop."],
+        ["Twee lus-methoden ontbreken nog in Speler: telWapens (een int)",
+          "en sterksteVoorwerp (een Voorwerp, of null bij een lege mand).",
+          "De kaarten staan in de kantlijn, de rompen niet. En de opbouw",
+          "van de kamerregel ligt in stroken door elkaar."]),
 
       l6: maakSpread(6, "Index en off-by-one: de laatste plank",
         "Eerste index 0, laatste size() min 1; welke lus kies ik",
         5,
-        ["Een lijst is een plankenbrug boven een ravijn. De eerste plank is",
-          "nummer 0; de laatste is size() min één. Eén plank te ver en je",
-          "ligt in het water."],
-        ["In verwijderVoorwerp en de gevechtsrondes loopt een lus één plank",
-          "te ver. Zoek de off-by-one en kies de lus die bij de klus past."]),
+        ["Een lijst is een plankenbrug over een ravijn: de eerste plank is",
+          "nummer 0, de laatste size() min één. Eén plank te ver en je ligt",
+          "in het water, en zo'n lus ziet er precies goed uit. Daarom neem ik",
+          "de for-lus: dan staat de grens waar ik ze kan zien."],
+        ["In verwijderVoorwerp klopt de lus niet meer. De vorm die er hoort",
+          "te staan: een for-lus van 0 tot size(), strikt kleiner,",
+          "verwijderen op de index en meteen stoppen. En in de gevechtsrondes",
+          "loopt er één ronde te veel."]),
 
       // De kop van dit spread droeg de volledige keten mee —
       // "(getCategorie().getNaam())" — en dat is één woord van zesentwintig
       // tekens. Een kolom van 136 px kan dat niet breken, dus liep het over de
       // bladrand. Om dezelfde reden staat de keten in de brief hieronder in twee
-      // stukken: "artikel.getCategorie().getNaam()" meet 174 px en past dus
-      // evenmin op één regel.
+      // stukken: één woord van meer dan een twintigtal tekens
+      // ("geitje.getSchuilplaats()") meet al meer dan 136 px.
       l7: maakSpread(7, "Zoeken en de dubbele pijl: waar het jongste zit",
         "Zoeklus geeft object of null; ketting van getters",
         6,
-        ["Een zoeklus is een speurtocht: hij geeft het gevonden object terug,",
-          "of null als er niets is. En soms volg je twee pijlen na elkaar:",
-          "eerst artikel.getCategorie(), dan .getNaam() op wat je terugkrijgt."],
-        ["zoekGeitje en de endgame-keten zijn het laatste stuk. Schrijf de",
-          "zoeklus die een Geitje of null teruggeeft, en maak de getter-",
-          "keten null-veilig voor je de tweede pijl volgt."])
+        ["Het laatste stuk. Ik roep de zeven af tot er één antwoordt: de",
+          "zoeklus geeft dat geitje terug, of null als de tocht doodloopt.",
+          "In het schuilplaatsen-overzicht volg ik daarna pijl na pijl:",
+          "getSchuilplaats(), en op wat dat teruggeeft getKamer() en dan",
+          "getNaam(). Wie nog in de wolf zit heeft geen schuilplaats, en dan",
+          "wijst de eerste pijl naar niets."],
+        ["zoekGeitje en de keten van de endgame zijn wat er nog van mij",
+          "ontbreekt: de lus die een Geitje of null teruggeeft staat er niet,",
+          "en aan de keten mankeert iets — ze mist de null-controle of een",
+          "schakel. Hier stop ik. — A."])
     };
   })(),
 

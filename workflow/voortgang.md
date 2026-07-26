@@ -449,9 +449,195 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
+## Fixronde na de speeltest (afgerond)
+
+Kickoff: `workflow/41-fixronde-kickoff.md`. Lars speelde op iOS; vier
+problemen, twee beslissingen (Alberta wist het; notitiekop weg, "— A.").
+
+Eindstand (gemeten na WP 45, één run): 425/425 headless, 349/349 over
+acht Chromium-smokes, javac + verboden-grep schoon, alle vier de linten
+op nul afwijkingen. Open voor Lars: de iPhone-luistertest (belschakelaar
+in beide standen) en het loopgevoel op het echte toestel.
+
+### - [x] WP 41 — Kickoff fixronde
+
+Entry: `workflow/41-fixronde-kickoff.md` · commit: `cd6513e`
+
+- [x] Feedback verbatim, Q&A, wortels en plan vastgelegd
+- [x] QC: docs only, wrap 80, tests ongewijzigd 400/400
+
+### - [x] WP 42 — Besturing: geen spookrichtingen
+
+Entry: `workflow/42-besturing.md` · commit: `2f9b075`
+
+- [x] `AL.input.reset()` leegt de pijl-stack; gekoppeld aan `blur` en aan
+      `visibilitychange` zodra `document.hidden` waar is — de enige twee
+      momenten waarop een verloren keyup nog op te ruimen valt
+- [x] `stopBesturing()` in `js/engine.js` roept die reset aan bij elke
+      moduswissel weg van de vrije zolder (`startTitel`, `opADeSpread`,
+      `opADePc`, `startSim`, `toonOordeel`, `toonEpiloog`). Bewust níét
+      aan `input.blokkeer` gehangen: een kamerbeschrijving is óók een
+      venster, en dan zou binnenwandelen met de pijl ingedrukt stilvallen
+- [x] `drukPijl` verplaatst een al aanwezige richting naar de top, zodat
+      de speler ook van een spook wint dat er nog wél staat
+- [x] D-pad: `releasePointerCapture` in een `try` plus `pointerenter` met
+      `buttons > 0` — schuiven van ◀ naar ▶ draait de richting mee; de
+      zichtbaarheidspoll laat alles los op de flank waarop de balk weggaat
+- [x] `test/test-input.mjs` (nieuw, 14 keuringen, met window-stub voor de
+      zekering) en `test/smoke-walk.mjs` §8–§9 (13 keuringen erbij:
+      twee-pijlen-arbitrage, spook-na-blur, D-pad-schuif via CDP-aanraking)
+- [x] `docs/engine-architectuur.md`: §"De besturing: de pijl-stack en de
+      spookrichting", met verwijzingen uit de overname-tabel en de
+      aanraakschermparagraaf
+- [x] QC: **414/414** headless (was 400), `lint-scene` schoon, smoke-walk
+      **38/38** (was 25/25), smoke-browser 41/41, smoke-geluid 17/17,
+      smoke-full-playthrough 97/97, smoke-pc 32/32, smoke-sim 13/13.
+      Negatieve controle gemeten: zonder de fixes zakken exact de vier
+      bewakende keuringen, en met het oude `touch.js` loopt de speler na
+      de schuif door naar het westen. `smoke-touch` (WebKit) kon opnieuw
+      niet draaien; de échte iPhone-test blijft bij Lars
+
+### - [x] WP 43 — iOS-audio
+
+Entry: `workflow/43-ios-audio.md` · commit: `c75efa8`
+
+- [x] Unlock op zes oppervlakken: `pointerdown`, `pointerup`,
+      `touchstart`, `touchend` en `click` op het venster (capture) plus de
+      `keydown` in de handler. De oude helft (alleen de begin-events) is
+      precies wat Safari voor audio niet meerekent
+- [x] De ketting in `unlock()` op orde en opgeschreven: context → resume
+      → stille primer (`createBuffer(1, 1, 22050)` naar `destination`) →
+      stil element → vlag en haak. De resume blijft vóór de
+      `ontgrendeld`-uitstap, zodat een later gebaar een opnieuw
+      opgeschorte context wekt; de primer speelt bij het eerste gebaar en
+      bij elk gebaar dat een opgeschorte context aantreft
+- [x] Stil `<audio playsinline loop>` (`#al-stil-audio`) tegen de
+      belschakelaar: WAV-data-URI van 0,1 s stilte, in de code gezet uit
+      een RIFF-kop en 800 samples van 128 — niet gedempt en op volume 1,
+      want anders claimt het het mediakanaal niet. Aangemaakt in het
+      eerste gebaar, gepauzeerd door "geluid uit" en hervat door "geluid
+      aan"
+- [x] `visibilitychange` + `focus`: verborgen pauzeert het element,
+      zichtbaar hervat het en `resume()`t een opgeschorte context — alleen
+      als er al ontgrendeld is, want buiten een gebaar wordt hier nooit
+      een context gemaakt
+- [x] `debug()` meldt `primers` en `stil`; DOM in `js/sound.js`
+      verantwoord (renderlaag, niet `js/logic/`) met dezelfde
+      headless-zekering als de AudioContext-guards
+- [x] Docs: `engine-architectuur.md` §De ontgrendeling (zes oppervlakken)
+      en de nieuwe §De iOS-ketting (vijf stappen, de
+      belschakelaar-redenering, de drie niet-cosmetische
+      elementeigenschappen, de DOM-afweging)
+- [x] QC: **423/423** headless (was 414), `smoke-geluid` **30/30** (was
+      17/17), smoke-browser 41/41, smoke-walk 38/38,
+      smoke-full-playthrough 97/97, lint-scene en check-docpaden schoon.
+      Negatieve controle gemeten: zonder de fixes zakken tien van de
+      dertien nieuwe controles. De luistertest op een échte iPhone blijft
+      bij Lars, met de belschakelaar in **beide** standen
+
+### - [x] WP 44 — Spread sluit waar je staat
+
+Entry: `workflow/44-spread-flow.md` · commit: `464bf28`
+
+- [x] `spreadVerder()` zonder teleport: één regel, `betreedZolder(false,
+      true)`. De scène-toewijzing naar `zolder-oost` is weg
+- [x] Nieuwe `herstelStand()` naast `wisselNaarScene`: zet de kamer klaar
+      rond de speler uit `toestand.speler.x/y`, met de uitgangsgrendel en
+      een terugval op de entry als die stand niet beloopbaar is.
+      `betreedZolder(beschrijf, houdStand)` kiest tussen de twee; de rest
+      van die functie (invoer vrij, bed, save) geldt voor beide paden
+- [x] De `spread`-tak van `hervat()` gebruikt dezelfde helper: herladen
+      mét het boek open en dan sluiten laat je nu ook staan waar je stond.
+      De pc-overlay houdt bewust zijn entry (de stoel ligt in een blok)
+- [x] Chroom nagekeken: "spatie >" en "spatie: terug" kloppen nu allebei
+      letterlijk; geen stringwijziging nodig
+- [x] Docs mee: `spelontwerp-legacy.md` (§De lus per level stap 2–3 met
+      `Beslissing`-blok, modustabel, §Spread), `engine-architectuur.md`
+      (nieuwe §"De stand bewaren"; de `spread`-tag zegt dat er geen
+      sluit-tag is), `save-en-hints.md` (de save draagt `modus`,
+      `sceneId` en `speler`, en waarom dat nu meetelt)
+- [x] Walkthrough: `deel1-hints.md` stap 2 (wat de spatiebalk doet, het
+      boek brengt je nergens) en stap 3 ("loop zelf", `?` wijst de weg);
+      `deel1-hints.pdf` herbouwd met pandoc 3.10 + typst 0.15.0.
+      `deel2-oplossingen.pdf` ook herbouwd maar teruggezet: identiek op
+      108 tijdstempel-bytes na
+- [x] Vier smokes: de teleport-assertie werd "na de spread sta je waar je
+      het blad vond" (zelfde scène én coördinaat, ±2 px) en er staat nu
+      een echte route naar de werkhoek vóór `ga zitten` (`ROUTE_WERKHOEK`
+      per kamer; in `smoke-levels-4-7` ook in `ontgrendel()`). Drie
+      keuringen erbij: het blad uit de doos in de doorgang sluit bij díe
+      doos (te voet naar x240, hotspot 236 — geen entry), na het boek
+      loopt de speler in `smoke-browser` te voet de kamergrens over, en
+      een reload middenin het boek hervat het op zijn plek
+- [x] QC: **423/423** headless ongewijzigd, `lint-scene` schoon,
+      `check-walkthrough` **278 gekeurd, 0 afwijkingen** (was 276),
+      smoke-browser **44/44**, smoke-levels-1-3 **36/36**,
+      smoke-levels-4-7 **52/52**, smoke-full-playthrough **104/104**,
+      smoke-walk 38/38. Negatieve controle gemeten: met `spreadVerder()`
+      teruggedraaid zakt smoke-levels-1-3 naar 32/36, met de `hervat`-tak
+      erbij smoke-browser naar 41/44 — exact de bewakende keuringen
+
+### - [x] WP 45 — De stem: overdracht van een programmeur
+
+Entry: `workflow/45-de-stem.md` · commit: `b57bd2d`
+
+- [x] `achtergrond.md`: nieuw beslissingsblok — Alberta wist dat ze het
+      niet zou afmaken, het notitieboek is een bewuste overdracht, en een
+      voorgevoel is een feit *zonder* uitleg (het staat in wat ze déed).
+      De drie richtlijnen met "nooit een oorzaak noemen" staan er
+      woordelijk ongewijzigd en gelden onverkort. §De verdwijning, §Het
+      notitieboek (twee alinea's + de weekregel-bullet) en §Toon en
+      register mee
+- [x] Opening: beat 2 neemt boek én inhoud samen, beat 3 draagt het
+      voorgevoel ("Ze heeft het niet afgemaakt; dat wist ze toen ze het
+      schreef."), beat 4 houdt de prototype-zin verbatim. Vijf beats van
+      5, 5, 5, 4 en 2 regels — geen onderschrift pagineert, en dat is nu
+      een test in plaats van handwerk
+- [x] `maakSpread` zonder sjabloonzinnen: "Voor jou die dit later leest:"
+      is weg (staat één keer, in haar woorden, in hoofdstuk 1) en de voet
+      is "Week N in mijn schema." Zeven briefA's van definitie naar
+      ontwerpnotitie over haar eigen klassen; zeven briefB's als
+      stand-van-zaken; "— A." in hoofdstuk 1 en 7. Titels, `termen` en
+      weeknummers onaangeraakt
+- [x] Elf stub-notities: kop `// Alberta's notitie — X:` overal weg, elk
+      blok eindigt op "— A.", geen schoolimperatieven meer; de
+      plaatshouder `// schrijf hier je code` is `// hier verder`. Per
+      level nagelezen tegen `checks[]` dat de notitie nog draagt wat de
+      checker eist (level 3 noemt `MAX_LEVENSPUNTEN` nu bij naam, want in
+      variant B staat die constante nergens anders)
+- [x] Verwijzingen: verse grep laat buiten `workflow/` alleen "Alberta's
+      notities als commentaar" over (vier plekken, nog waar). Twee
+      hintteksten die wél logen zijn bijgewerkt ("de notitie *vraagt*" →
+      "somt op"; "Lees de notitie" bij een puzzel zonder editor → "Lees de
+      vraag"). `deel1-hints.md` stap 2 + `deel1-hints.pdf` herbouwd;
+      `deel2-oplossingen.pdf` herbouwd en teruggezet (108
+      tijdstempel-bytes)
+- [x] Tegencontrole (tweede agent, vóór de commit): 15 punten, alle
+      overgenomen behalve één afgewezen door de manager (de cursustermen
+      in de kop van bladzijde 2 blijven — dat is de brug van WP 31). Recht
+      gezet: de klem van hoofdstuk 3 gaat over háár levenspunten en de
+      kruik melk (+6), niet over een geitje; vijf verouderde
+      voet-citaten in `levels-en-scharnieren.md`,
+      `spelontwerp-legacy.md`, `art-stijlgids.md` (twee) en `README.md`;
+      drie klaslokaal-imperatieven in de brieven van 4, 6 en 7; vier
+      restanten definitie-register (1, 2, 4 + `level2.js`); twee
+      variant-onwaarheden (1, 6) en twee verkeerde afzenders (`toonStats`
+      in plaats van "het gevecht", poortcheck in plaats van `Gevecht`); de
+      keten van 7 draagt nu ook `getNaam()`; beat 3 van de opening verliest
+      de vertelde slotzin en het woord "aanhef". **Open, niet door een
+      worker aan te passen:** `CLAUDE.md` documenteert `node --test test/`,
+      wat op Node 22 faalt (module-not-found) — het moet
+      `node --test test/test-*.mjs` zijn
+- [x] QC: **425/425** headless (was 423), `lint-scene` schoon,
+      `check-assets` geen drift, `check-walkthrough` **278 gekeurd, 0
+      afwijkingen** (mét de drift onderweg gemeten), `check-docpaden` 0
+      dood, javac exit 0 + verboden-grep leeg, smoke-browser **44/44**,
+      smoke-levels-1-3 **36/36**, smoke-full-playthrough **104/104**.
+      Elf screenshots in `test-results/wp45-*.png`
+
 ### - [x] WP 40 — Slotcontrole
 
-Entry: `workflow/40-slotcontrole.md` · commit: (nog in te vullen)
+Entry: `workflow/40-slotcontrole.md` · commit: `b3bf55d`
 
 - [x] Alle poorten in één run op één werkkopie: 400/400 headless,
       305/305 over acht Chromium-smokes, javac + verboden-grep schoon,

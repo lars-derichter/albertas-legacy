@@ -411,7 +411,7 @@ test("de weekregels gebruiken de echte cursusweken 1,2,2,3,4,5,6", () => {
     assert.equal(data.week, verwacht[n - 1], "week van l" + n);
     // De weekregel staat als voet op een pagina, met de juiste week.
     const voeten = data.paginas.map((p) => p.voet).filter(Boolean);
-    assert.ok(voeten.some((v) => v.includes("week " + verwacht[n - 1] + " ")),
+    assert.ok(voeten.some((v) => v.toLowerCase().includes("week " + verwacht[n - 1])),
       "weekregel l" + n);
   }
 });

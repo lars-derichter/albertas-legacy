@@ -13,7 +13,8 @@
 // mag tegelijk (King's-Quest-stijl).
 //
 // Aangepast uit remake-90s (js/input.js): ongewijzigd op de namespace na
-// (RRH → AL) en de Escape-toets, die de pc-overlay sluit (onEscape).
+// (RRH → AL), de Escape-toets die de pc-overlay sluit (onEscape), en de
+// spookzekering rond de pijl-stack (reset() bij focusverlies — zie daar).
 //
 // Geen ES-module: alles hangt aan het globale AL-object.
 
@@ -32,6 +33,14 @@ globalThis.AL = globalThis.AL || {};
   // De volgorde waarin pijltjes ingedrukt zijn; het laatst ingedrukte wint
   // (most-recent-pressed priority). Loslaten haalt het pijltje weg, waarna het
   // vorige weer geldt.
+  //
+  // De stack is alleen zo betrouwbaar als de keyups die hem leegmaken, en die
+  // gaan verloren: het venster verliest de focus terwijl een pijl ingedrukt is
+  // (alt-tab, een tik naast het canvas, de app naar de achtergrond op iOS), en
+  // de keyup komt dan nooit meer aan. Wat achterblijft is een spookrichting —
+  // de speler loopt door in een richting die hij allang losgelaten heeft, en
+  // elke andere pijl die hij loslaat valt terug op dat spook. Vandaar reset()
+  // en de her-indruk-regel in drukPijl hieronder.
   var pijlStack = [];
 
   // Hoogstens zo veel tekens op één commandoregel (past in de invoerbalk).
@@ -58,10 +67,28 @@ globalThis.AL = globalThis.AL || {};
       return pijlStack.length > 0 ? pijlStack[pijlStack.length - 1] : null;
     },
 
+    // Vergeet elke ingedrukte richting. Twee soorten aanroepers:
+    //  - hier: het venster verliest de focus of het tabblad gaat naar de
+    //    achtergrond. Dan komt er geen keyup meer, dus is dit de enige plek
+    //    waar het spook opgeruimd kan worden.
+    //  - de engine, bij elke moduswissel (notitieboek, pc, sim, oordeel,
+    //    epiloog, titel): onder een open venster hoort niets te blijven lopen,
+    //    ook niet zodra dat venster weer weg is.
+    reset: function () { pijlStack.length = 0; },
+
     // Koppel de luisteraars aan het venster. Eén keer aanroepen bij het starten.
     init: function () {
       window.addEventListener("keydown", opKeydown);
       window.addEventListener("keyup", opKeyup);
+      // De spookzekering. `blur` vuurt bij alt-tab, bij een klik in de
+      // adresbalk en bij het openen van een ander venster; `visibilitychange`
+      // dekt wat `blur` niet ziet — een tabwissel of een telefoon die naar het
+      // beginscherm gaat, waar iOS de pagina bevriest zonder ooit nog een
+      // keyup af te leveren.
+      window.addEventListener("blur", input.reset);
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) input.reset();
+      });
       // De audio-ontgrendeling hing vroeger alleen aan het toetsenbord. Wie met
       // een muis op het canvas klikte of het spel op een telefoon speelde, gaf
       // dus nooit de gebruikersactie die de browser eist, en hoorde het hele
@@ -69,8 +96,19 @@ globalThis.AL = globalThis.AL || {};
       // gebeurtenis, in de capture-fase zodat het ook telt als iets anders het
       // event daarna tegenhoudt. touch.js ontgrendelt daarnaast expliciet bij
       // zijn eigen knoppen — zie daar waarom dat geen dubbelop is.
+      //
+      // De helft van die set was nog niet genoeg voor iOS (WP 43). Safari
+      // rekent voor audio niet op het begín van de aanraking maar op het einde:
+      // touchend, pointerup en click. Een iPhone-speler tikte dus wel, maar op
+      // een event dat voor de audio niet meetelde, en hoorde het hele spel
+      // niets. Alle zes staan erin, allemaal in de capture-fase; unlock() is
+      // idempotent, dus zes keer luisteren kost niets en één keer te weinig
+      // luisteren kost al het geluid.
       window.addEventListener("pointerdown", ontgrendelGeluid, true);
+      window.addEventListener("pointerup", ontgrendelGeluid, true);
       window.addEventListener("touchstart", ontgrendelGeluid, true);
+      window.addEventListener("touchend", ontgrendelGeluid, true);
+      window.addEventListener("click", ontgrendelGeluid, true);
       return this;
     },
 
@@ -85,8 +123,15 @@ globalThis.AL = globalThis.AL || {};
     if (AL.sound && AL.sound.unlock) AL.sound.unlock();
   }
 
+  // Een indruk wint altijd, ook als de richting al in de stack staat. Vroeger
+  // werd zo'n herhaling genegeerd, en dan verliest de speler van zijn eigen
+  // spook: staat "west" nog als achterstallige ingang onderin, dan brengt
+  // opnieuw west drukken hem niet vooraan. Verplaatsen naar de top in plaats
+  // van negeren. Op het D-pad is dit hetzelfde geval met een vinger.
   function drukPijl(richting) {
-    if (pijlStack.indexOf(richting) === -1) pijlStack.push(richting);
+    var i = pijlStack.indexOf(richting);
+    if (i !== -1) pijlStack.splice(i, 1);
+    pijlStack.push(richting);
   }
 
   function laatPijl(richting) {
@@ -185,6 +230,11 @@ globalThis.AL = globalThis.AL || {};
     }
   }
 
+  // Bewust zónder de tekstveld-uitzondering van opKeydown: een keyup mag nooit
+  // geslikt worden. De asymmetrie is de veilige kant op — in een tekstveld
+  // heeft de keydown de richting niet in de stack gezet, en dan is dit een
+  // laatPijl die niets vindt. Andersom zou een pijl die ingedrukt raakte op de
+  // zolder en losgelaten in de editor van de pc als spook blijven staan.
   function opKeyup(e) {
     var k = e.key;
     if (PIJL[k]) {
@@ -194,5 +244,11 @@ globalThis.AL = globalThis.AL || {};
   }
 
   AL.input = input;
+
+  // Node-export voor de headless tests (test/test-input.mjs). De module raakt
+  // `window` en `document` alleen ín init() aan, dus laden kan zonder DOM.
+  if (typeof module !== "undefined") {
+    module.exports = input;
+  }
 
 })();
