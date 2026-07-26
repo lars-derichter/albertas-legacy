@@ -2,10 +2,11 @@
 // productielevels (WP 8). Opent de ECHTE index.html (?seed=1, GEEN dev-gate),
 // ontgrendelt eerst levels 1–3 (zonder ze op te lossen) zodat de latere fragmenten
 // bereikbaar zijn, en speelt dan voor elk van level 4, 5, 6 en 7 de volledige lus
-// uit spelontwerp-legacy.md: vind het fragment → lees de spread → ga aan de pc
-// zitten → los alle puzzels op met de modeloplossingen → level-af → terug de
-// zolder in. Daarna bewijst hij de seed-variatie: met ?seed=1 tegenover ?seed=2
-// toont elke herstel-puzzel met varianten (levels 4, 6, 7) een ANDERE beschadiging.
+// uit spelontwerp-legacy.md: vind het fragment → lees de spread (het boek valt
+// dicht waar je staat) → loop naar de werkhoek → ga aan de pc zitten → los alle
+// puzzels op met de modeloplossingen → level-af → terug de zolder in. Daarna
+// bewijst hij de seed-variatie: met ?seed=1 tegenover ?seed=2 toont elke
+// herstel-puzzel met varianten (levels 4, 6, 7) een ANDERE beschadiging.
 //
 // Zonder testframework: platte asserties met PASS/FAIL en een exitcode.
 // Chromium vereist (npx playwright install chromium). Techniek uit smoke-levels-1-3.mjs.
@@ -95,13 +96,31 @@ async function wachtView(page, view) {
     { timeout: 8000 });
 }
 
-// Ontgrendel een fragment zonder het op te lossen: open het en blader de spread
-// door (dat brengt de speler naar de pc-werkhoek in het oosten).
+// De weg naar de werkhoek, per kamer waar het notitieboek je kan achterlaten.
+// Sinds WP 44 legt de spread je neer waar je het blad vond, dus die weg legt de
+// speler zelf af — precies wat de '?'-hint en de walkthrough zeggen.
+const ROUTE_WERKHOEK = {
+  "zolder-west": ["ga oost", "ga oost"],
+  "zolder-midden": ["ga oost"],
+  "overloop": ["ga zuid", "ga oost"],
+  "zolder-oost": []
+};
+
+async function naarWerkhoek(page) {
+  const van = (await state(page)).sceneId;
+  for (const cmd of ROUTE_WERKHOEK[van] || []) await typCommando(page, cmd);
+  return van;
+}
+
+// Ontgrendel een fragment zonder het op te lossen: open het, blader de spread
+// door (het boek valt dicht waar de speler staat) en loop terug naar de werkhoek,
+// want daar begint de navigatie naar het volgende fragment hieronder.
 async function ontgrendel(page, naarFragment) {
   await naarFragment(page);
   await page.waitForFunction(() => window.AL.debugState.modus === "spread",
     null, { timeout: 15000 });
   await doorbladerSpread(page);
+  await naarWerkhoek(page);
 }
 
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type.
@@ -142,13 +161,24 @@ async function speelLevel(page, n, naarFragment) {
   check("L" + n + ": het fragment opent de spread", (await state(page)).modus === "spread");
   const ontgr = await ev(page, (id) => window.AL.debugToestand.levels[id].ontgrendeld, String(n));
   check("L" + n + ": fragment ontgrendeld", ontgr === true);
+  const sBoek = await state(page);
 
+  // Het boek valt dicht waar de speler staat (WP 44) — bij de doos in de
+  // doorgang of op de overloop, niet ineens bij de pc.
   await doorbladerSpread(page);
   const naSpread = await state(page);
-  check("L" + n + ": na de spread sta je bij de pc (werkhoek)",
-    naSpread.modus === "zolder" && naSpread.sceneId === "zolder-oost",
-    "scene=" + naSpread.sceneId);
+  check("L" + n + ": na de spread sta je waar je het blad vond",
+    naSpread.modus === "zolder" && naSpread.sceneId === sBoek.sceneId &&
+    Math.abs(naSpread.actorX - sBoek.actorX) <= 2 &&
+    Math.abs(naSpread.actorY - sBoek.actorY) <= 2,
+    "scene=" + naSpread.sceneId + " (" + naSpread.actorX + "," + naSpread.actorY +
+    ") vs " + sBoek.sceneId + " (" + sBoek.actorX + "," + sBoek.actorY + ")");
 
+  // Zelf naar de werkhoek lopen, en dan pas zitten.
+  const vanaf = await naarWerkhoek(page);
+  check("L" + n + ": te voet van " + vanaf + " naar de werkhoek",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
   await typCommando(page, "ga zitten");
   await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });

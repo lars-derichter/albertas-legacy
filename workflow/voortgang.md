@@ -494,7 +494,7 @@ Entry: `workflow/42-besturing.md` · commit: `2f9b075`
 
 ### - [x] WP 43 — iOS-audio
 
-Entry: `workflow/43-ios-audio.md` · commit: (nog in te vullen)
+Entry: `workflow/43-ios-audio.md` · commit: `c75efa8`
 
 - [x] Unlock op zes oppervlakken: `pointerdown`, `pointerup`,
       `touchstart`, `touchend` en `click` op het venster (capture) plus de
@@ -530,11 +530,47 @@ Entry: `workflow/43-ios-audio.md` · commit: (nog in te vullen)
       dertien nieuwe controles. De luistertest op een échte iPhone blijft
       bij Lars, met de belschakelaar in **beide** standen
 
-### - [ ] WP 44 — Spread sluit waar je staat
+### - [x] WP 44 — Spread sluit waar je staat
 
-- [ ] spreadVerder() zonder teleport; positie blijft bewaard
-- [ ] Docs en walkthrough mee; vier smokes lopen echt naar de werkhoek
-- [ ] QC: `node --test` + alle smokes + check-walkthrough groen
+Entry: `workflow/44-spread-flow.md` · commit: (nog in te vullen)
+
+- [x] `spreadVerder()` zonder teleport: één regel, `betreedZolder(false,
+      true)`. De scène-toewijzing naar `zolder-oost` is weg
+- [x] Nieuwe `herstelStand()` naast `wisselNaarScene`: zet de kamer klaar
+      rond de speler uit `toestand.speler.x/y`, met de uitgangsgrendel en
+      een terugval op de entry als die stand niet beloopbaar is.
+      `betreedZolder(beschrijf, houdStand)` kiest tussen de twee; de rest
+      van die functie (invoer vrij, bed, save) geldt voor beide paden
+- [x] De `spread`-tak van `hervat()` gebruikt dezelfde helper: herladen
+      mét het boek open en dan sluiten laat je nu ook staan waar je stond.
+      De pc-overlay houdt bewust zijn entry (de stoel ligt in een blok)
+- [x] Chroom nagekeken: "spatie >" en "spatie: terug" kloppen nu allebei
+      letterlijk; geen stringwijziging nodig
+- [x] Docs mee: `spelontwerp-legacy.md` (§De lus per level stap 2–3 met
+      `Beslissing`-blok, modustabel, §Spread), `engine-architectuur.md`
+      (nieuwe §"De stand bewaren"; de `spread`-tag zegt dat er geen
+      sluit-tag is), `save-en-hints.md` (de save draagt `modus`,
+      `sceneId` en `speler`, en waarom dat nu meetelt)
+- [x] Walkthrough: `deel1-hints.md` stap 2 (wat de spatiebalk doet, het
+      boek brengt je nergens) en stap 3 ("loop zelf", `?` wijst de weg);
+      `deel1-hints.pdf` herbouwd met pandoc 3.10 + typst 0.15.0.
+      `deel2-oplossingen.pdf` ook herbouwd maar teruggezet: identiek op
+      108 tijdstempel-bytes na
+- [x] Vier smokes: de teleport-assertie werd "na de spread sta je waar je
+      het blad vond" (zelfde scène én coördinaat, ±2 px) en er staat nu
+      een echte route naar de werkhoek vóór `ga zitten` (`ROUTE_WERKHOEK`
+      per kamer; in `smoke-levels-4-7` ook in `ontgrendel()`). Drie
+      keuringen erbij: het blad uit de doos in de doorgang sluit bij díe
+      doos (te voet naar x240, hotspot 236 — geen entry), na het boek
+      loopt de speler in `smoke-browser` te voet de kamergrens over, en
+      een reload middenin het boek hervat het op zijn plek
+- [x] QC: **423/423** headless ongewijzigd, `lint-scene` schoon,
+      `check-walkthrough` **278 gekeurd, 0 afwijkingen** (was 276),
+      smoke-browser **44/44**, smoke-levels-1-3 **36/36**,
+      smoke-levels-4-7 **52/52**, smoke-full-playthrough **104/104**,
+      smoke-walk 38/38. Negatieve controle gemeten: met `spreadVerder()`
+      teruggedraaid zakt smoke-levels-1-3 naar 32/36, met de `hervat`-tak
+      erbij smoke-browser naar 41/44 — exact de bewakende keuringen
 
 ### - [ ] WP 45 — De stem: overdracht van een programmeur
 

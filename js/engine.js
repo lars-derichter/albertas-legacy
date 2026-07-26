@@ -174,6 +174,37 @@ globalThis.AL = globalThis.AL || {};
     loopt = false;
   }
 
+  // Zet de huidige kamer weer klaar zonder de speler te verplaatsen: het
+  // tegendeel van wisselNaarScene, die hem op de entry van de kamer neerzet.
+  //
+  // Nodig waar een modus dichtvalt op de plek waar de speler stond. Het
+  // notitieboek is het geval waarvoor dit gemaakt is (WP 44): je slaat het open
+  // bij de kist in de westhoek of bij een doos in de doorgang, en na de laatste
+  // bladzijde hoor je daar nog te staan. wisselNaarScene gooide dat weg — de
+  // speler stond plots ergens anders in de kamer, en vóór WP 44 zelfs in een
+  // andere kamer.
+  function herstelStand() {
+    var id = toestand.sceneId;
+    zorgVoorScene(id);
+    var scene = haalScene(id);
+    var x = toestand.speler.x, y = toestand.speler.y;
+    if (beloopbaar(scene, x, y)) {
+      actorX = x;
+      actorY = y;
+      // Zelfde grendel als in positioneerActor: sta je bij het terugkomen in een
+      // uitgangszone, dan mag die niet meteen vuren.
+      inUitgang = AL.loopveld.uitgangBij(scene, actorX, actorY) !== null;
+    } else {
+      // Vangnet: een stand die hier niet (meer) beloopbaar is — een save van een
+      // oudere versie, een hertekende kamer — valt terug op de entry. Beter op
+      // de drempel dan in een muur.
+      positioneerActor(scene, "start");
+      toestand.speler.x = actorX;
+      toestand.speler.y = actorY;
+    }
+    loopt = false;
+  }
+
   // Mag de speler hier staan? De meetkunde zelf staat in js/loopveld.js: de
   // walkboxes min de blokken (de voetafdrukken van de voorwerpen). Die splitsing
   // is er omdat de engine niet te testen valt zonder browser en de meetkunde
@@ -445,12 +476,15 @@ globalThis.AL = globalThis.AL || {};
   }
 
   // Ga (of keer terug) naar de zolder-modus. beschrijf = toon de openings-
-  // beschrijving (alleen bij een verse start).
-  function betreedZolder(beschrijf) {
+  // beschrijving (alleen bij een verse start). houdStand = laat de speler staan
+  // waar hij staat in plaats van hem op de entry van de kamer te zetten (het
+  // notitieboek dat dichtvalt, zie spreadVerder).
+  function betreedZolder(beschrijf, houdStand) {
     toestand.modus = "zolder";
     verbergOverlay();
     spreadLevelId = null;
-    wisselNaarScene(toestand.sceneId, "start");
+    if (houdStand) herstelStand();
+    else wisselNaarScene(toestand.sceneId, "start");
     // Het zolderbed. Hetzelfde bed opnieuw starten doet niets, dus een
     // kamerwissel laat de loop gewoon doorlopen in plaats van hem te herstarten.
     AL.sound.muziek("ambient-zolder");
@@ -498,13 +532,22 @@ globalThis.AL = globalThis.AL || {};
     }
   }
 
-  // Einde van een level-spread: de speler gaat naar de pc in de werkhoek
-  // (spelontwerp-legacy.md, §"De lus per level", stap 3). De spread-modus draagt
-  // sinds de opwaardering alleen nog de zeven level-spreads; de intro loopt niet
-  // meer via een bladzijde van het notitieboek (zie titelVerder).
+  // Einde van een level-spread: het boek gaat dicht en de speler staat precies
+  // waar hij het blad vond — bij het notitieboek in de westhoek, bij de doos in
+  // de doorgang, bij een doos op de overloop. De weg naar de pc loopt hij zelf,
+  // en `?` wijst hem die desnoods (spelontwerp-legacy.md, §"De lus per level",
+  // stap 3; save-en-hints.md, §"De zolder-hint").
+  //
+  // Vóór WP 44 zette deze functie de scène op "zolder-oost" en liet
+  // betreedZolder de speler op de entry van de werkhoek neer: het boek dichtdoen
+  // teleporteerde je naar de pc. Dat las als een bug ("It is strange that after
+  // reading the notebook you are automatically transported to the computer") en
+  // het sprak het chroom van de laatste bladzijde tegen, dat "spatie: terug"
+  // belooft. De spread-modus draagt sinds de opwaardering alleen nog de zeven
+  // level-spreads; de intro loopt niet meer via een bladzijde van het
+  // notitieboek (zie titelVerder).
   function spreadVerder() {
-    toestand.sceneId = "zolder-oost";
-    betreedZolder(false);
+    betreedZolder(false, true);
   }
 
   // Toon of verberg de gesimuleerde-pc-overlay (DOM). De echte editor/terminal/
@@ -1133,9 +1176,10 @@ globalThis.AL = globalThis.AL || {};
     // twee regels ging — wat sinds het handschrift proportioneel gezet wordt
     // altijd zo is. De onderrand van het rechterblad is nu van haar; het
     // linkerblad draagt de chroom (bladwijzer links, hint rechts ertegenaan).
-    // De laatste-pagina-versie zei "spatie: pc >", en dat klopte maar half: de
-    // spatie doet het boek dicht en zet je in de werkhoek — de pc gaat pas open
-    // als je daar 'ga zitten' typt. De teksten staan nu in AL.strings.spread.
+    // De laatste-pagina-versie zei "spatie: pc >", en dat klopte niet: de spatie
+    // doet alleen het boek dicht. Sinds WP 44 doet ze dat ook echt alleen dat —
+    // je staat daarna waar je stond, en naar de pc loop je zelf. De teksten
+    // staan in AL.strings.spreadChroom.
     var laatste = spreadPagina >= spreadAantalPaginas() - 1;
     var hint = laatste ? AL.strings.spreadChroom.bladerLaatste
       : AL.strings.spreadChroom.bladerVerder;
@@ -1377,7 +1421,10 @@ globalThis.AL = globalThis.AL || {};
     else if (modus === "spread") { /* de spread hertekent uit spreadLevelId */
       spreadLevelId = "l" + (toestand.levelActief || 1);
       spreadPagina = 0;
-      wisselNaarScene(toestand.sceneId, "start");
+      // Niet naar de entry: wie het boek na een reload dichtdoet, hoort net als
+      // anders te staan waar hij het blad vond (WP 44). De save draagt daar de
+      // stand voor — speler.x/y hoort bij overdraagbaar in js/logic/world.js.
+      herstelStand();
     } else if (modus === "oordeel" || modus === "epiloog") {
       wisselNaarScene(toestand.sceneId, "start");
     } else if (modus === "sim") {

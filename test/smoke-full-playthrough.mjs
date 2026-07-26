@@ -6,7 +6,8 @@
 //
 //   verse start (localStorage gewist, ?seed=1) → titel + intro → zolder →
 //   voor level 1..7: vind het fragment via échte bewegingscommando's → lees de
-//   spread → ga aan de pc zitten → los de drie puzzels op met de modeloplossingen
+//   spread (het boek valt dicht waar je staat) → loop naar de werkhoek → ga aan
+//   de pc zitten → los de drie puzzels op met de modeloplossingen
 //   → level-af → keer terug → volgend fragment → ... → level-af:7 boot de sim
 //   ECHT (geen debugSimVoltooid) → speel een winnend script → sim:einde →
 //   oordeel → epiloog.
@@ -97,6 +98,22 @@ async function wachtView(page, view) {
     { timeout: 8000 });
 }
 
+// De weg naar de werkhoek, per kamer waar het notitieboek je kan achterlaten.
+// Sinds WP 44 legt de spread je neer waar je het blad vond, dus die weg legt de
+// speler zelf af — precies wat de '?'-hint en de walkthrough zeggen.
+const ROUTE_WERKHOEK = {
+  "zolder-west": ["ga oost", "ga oost"],
+  "zolder-midden": ["ga oost"],
+  "overloop": ["ga zuid", "ga oost"],
+  "zolder-oost": []
+};
+
+async function naarWerkhoek(page) {
+  const van = (await state(page)).sceneId;
+  for (const cmd of ROUTE_WERKHOEK[van] || []) await typCommando(page, cmd);
+  return van;
+}
+
 // Los één puzzel op met de modeloplossing / het juiste antwoord, per type. De
 // juiste antwoorden komen uit de level-definitie zelf (model / verwacht /
 // parsonsVolgorde) — hetzelfde mechanisme als in de deel-smoketests; er wordt
@@ -143,15 +160,24 @@ async function speelLevel(page, n, naarFragment) {
   check("L" + n + ": het fragment opent de spread", (await state(page)).modus === "spread");
   const ontgr = await ev(page, (id) => window.AL.debugToestand.levels[id].ontgrendeld, String(n));
   check("L" + n + ": fragment ontgrendeld", ontgr === true);
+  const sBoek = await state(page);
 
-  // 2. Lees de spread → sta bij de pc in de werkhoek.
+  // 2. Lees de spread → het boek valt dicht waar je staat (WP 44).
   await doorbladerSpread(page);
   const naSpread = await state(page);
-  check("L" + n + ": na de spread sta je bij de pc (werkhoek)",
-    naSpread.modus === "zolder" && naSpread.sceneId === "zolder-oost",
-    "scene=" + naSpread.sceneId);
+  check("L" + n + ": na de spread sta je waar je het blad vond",
+    naSpread.modus === "zolder" && naSpread.sceneId === sBoek.sceneId &&
+    Math.abs(naSpread.actorX - sBoek.actorX) <= 2 &&
+    Math.abs(naSpread.actorY - sBoek.actorY) <= 2,
+    "scene=" + naSpread.sceneId + " (" + naSpread.actorX + "," + naSpread.actorY +
+    ") vs " + sBoek.sceneId + " (" + sBoek.actorX + "," + sBoek.actorY + ")");
 
-  // 3. Ga aan de pc zitten → pc-overlay op het juiste level.
+  // 3. Loop zelf naar de werkhoek en ga aan de pc zitten → pc-overlay op het
+  //    juiste level.
+  const vanaf = await naarWerkhoek(page);
+  check("L" + n + ": te voet van " + vanaf + " naar de werkhoek",
+    (await state(page)).sceneId === "zolder-oost",
+    "scene=" + (await state(page)).sceneId);
   await typCommando(page, "ga zitten");
   await page.waitForFunction(() => (window.AL.debugState.modus === "pc" && window.AL.debugState.overlayOpen),
     null, { timeout: 15000 });

@@ -404,6 +404,27 @@ Het volledige veldformaat staat in `scene-schema.md`; wat de engine ermee doet:
 `AL.world.betreed` is bij dit alles niet veranderd: de logica kent alleen de
 zolderkaart en de richting, niet de rechthoeken.
 
+### De stand bewaren
+
+De speler heeft twee manieren om in een kamer te belanden, en de engine houdt ze
+apart:
+
+- `wisselNaarScene(id, entry)` zet hem op een **entry** van die kamer. Dat is de
+  juiste zet bij een kamerwissel: wie van het westen binnenkomt, hoort aan de
+  westkant te staan.
+- `herstelStand()` zet de kamer klaar **rond de speler**: ze leest
+  `toestand.speler.x/y` uit de staat en verplaatst niets. Dat is de juiste zet
+  als er geen kamerwissel is maar alleen een modus die dichtvalt — het
+  notitieboek. Is die stand niet (meer) beloopbaar (een save van een oudere
+  versie, een hertekende kamer), dan valt ze terug op de entry: liever op de
+  drempel dan in een muur.
+
+`betreedZolder(beschrijf, houdStand)` kiest tussen de twee. `houdStand` is waar
+op precies twee plaatsen: `spreadVerder` (het boek gaat dicht, WP 44) en de
+`spread`-tak van `hervat` (herladen mét het boek open, en dan dichtdoen). Het
+sluiten van de pc-overlay gebruikt bewust de entry: de speler zat op de stoel,
+en die staat in een blok.
+
 ## Effect-tag-woordenlijst
 
 Dit is de volledige, gezaghebbende lijst. `spelontwerp-legacy.md` mag geen
@@ -416,7 +437,7 @@ reageert; de logica produceert ze alleen.
 | Tag | Wanneer |
 |---|---|
 | `scene:<id>` | wissel naar een zolder-/huisscène (scène-id uit `art-stijlgids.md`) |
-| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md` |
+| `spread:<levelId>` | open een notitieboek-spread; levelId is `l1` … `l7` en niets anders (dus `spread:l1`). Er is géén `spread:intro` en géén `spread:outro`: de opening is een reeks van drie beelden met onderschriften (`OPENING` in `js/engine.js`), niet een bladzijde van het boek — zie `spelontwerp-legacy.md`. Er is ook geen tag voor het sluiten: na de laatste bladzijde valt het boek dicht in de kamer waar de speler staat, op de plek waar hij staat (`spreadVerder` → `betreedZolder(false, true)`; zie §De vloer, "de stand bewaren") |
 | `titel` | toon de titelkaart |
 | `betreed:<richting>` | de speler ging te voet naar de buurkamer (`noord`/`oost`/`zuid`/`west`): over de oost-/westrand of door een uitgangszone; engine-hint voor de camera |
 | `fragment-gevonden:<levelId>` | het notitieboek-fragment voor dit level is ontgrendeld in de adventure |
