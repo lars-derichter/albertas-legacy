@@ -449,6 +449,46 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
+# Programma 4 — lineariteit en spec-notities (actief)
+
+Kickoff: `workflow/46-lineariteit-kickoff.md`. Branch:
+`claude/lineariteit-en-notities` (vanaf main fb70ed7); schone PR aan het
+einde. Twee beslissingen: de poort zit aan de doos (blad N+1 pas
+vindbaar als hoofdstuk N hersteld is) en de notities worden pure spec.
+
+### - [x] WP 46 — Kickoff programma 4
+
+Entry: `workflow/46-lineariteit-kickoff.md` · commit: (nog in te vullen)
+
+- [x] Feedback verbatim, Q&A, wortels en plan vastgelegd; branch staat
+- [x] QC: docs only, wrap 80, tests ongewijzigd 425/425
+
+### - [ ] WP 47 — De poort aan de doos
+
+- [ ] Voortgangspoort in _openFragmentDoos (n alleen als n-1 afgerond);
+      notitieboek blijft vrij; kamercheck blijft eerst
+- [ ] Weigering-string dozen.nogDicht in Alberta-register
+- [ ] Comments "geen harde sloten" + docs + walkthrough deel 1 mee
+- [ ] Tests: volgorde-tests met afronding, poort-tests, smoke-assert;
+      smoke-levels-4-7-sneltoets wordt een expliciete testhaak
+- [ ] QC: `node --test` + linten + alle smokes groen
+
+### - [ ] WP 48 — Notities als spec
+
+- [ ] Zeven briefA's naar steno-spec; spoilers uit briefB's en
+      stub-notities; MAX_LEVENSPUNTEN/int/Voorwerp/variantneutraliteit
+      bewaard
+- [ ] l1-schets richting klassendiagram (haalbaarheid eerst gemeten)
+- [ ] Checker-dekking per level geverifieerd
+- [ ] Walkthrough + PDF's mee
+- [ ] Adversariële checker-agent vóór manager-QC
+- [ ] QC: alle poorten + screenshots beoordeeld door manager
+
+### - [ ] WP 49 — Slot en PR
+
+- [ ] Alle poorten in één run; screenshots naar Lars
+- [ ] Eindstand hier; draft-PR naar main
+
 ## Fixronde na de speeltest (afgerond)
 
 Kickoff: `workflow/41-fixronde-kickoff.md`. Lars speelde op iOS; vier
