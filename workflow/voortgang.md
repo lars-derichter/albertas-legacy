@@ -449,7 +449,7 @@ Commit: (nog in te vullen) — entry: `workflow/39-walkthrough-herbouwd.md`
       `bouw-walkthrough.sh` exit 0 (deel 1 149 KB / 8 p., deel 2 190 KB /
       13 p., inhoud met `pdftotext` nagelezen)
 
-# Programma 4 — lineariteit en spec-notities (actief)
+# Programma 4 — lineariteit en spec-notities (afgerond)
 
 Kickoff: `workflow/46-lineariteit-kickoff.md`. Branch:
 `claude/lineariteit-en-notities` (vanaf main fb70ed7); schone PR aan het
@@ -568,7 +568,7 @@ docent als WP 47, één niveau lager.
 
 ### - [x] WP 48c — De diskette
 
-Entry: `workflow/48c-de-diskette.md` · commit: (nog in te vullen)
+Entry: `workflow/48c-de-diskette.md` · commit: `c114725`
 
 Ingelast door de manager op vraag van de docent, tussen WP 48b en WP 49.
 Lars: de afgewerkte broncode kon er niet "de hele tijd al" geweest zijn;
@@ -618,10 +618,16 @@ etiket in Alberta's handschrift.
       niet: geen WebKit-build) — screenshots `wp48c-diskette.png`,
       `wp48c-epiloog.png`, `wp48c-menu-titels.png`
 
-### - [ ] WP 49 — Slot en PR
+### - [x] WP 49 — Slot en PR
 
-- [ ] Alle poorten in één run; screenshots naar Lars
-- [ ] Eindstand hier; draft-PR naar main
+Entry: `workflow/49-slot-programma-4.md` · commit: (nog in te vullen)
+
+- [x] Alle poorten in één run: 450/450 headless, 380/380 over acht
+      smokes, javac + grep schoon, vier linten op nul
+- [x] Screenshots naar Lars; draft-PR aangemaakt
+
+**Programma 4 is hiermee af.** Open blijven: de iPhone-luistertest,
+smoke-touch (geen WebKit) en de PDF-fontterugval.
 
 ## Fixronde na de speeltest (afgerond)
 
