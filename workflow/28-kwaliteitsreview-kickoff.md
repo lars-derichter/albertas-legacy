@@ -156,7 +156,7 @@ getypte zelfstandige naamwoorden (js/logic/world.js:54-82).
   worden geciteerd (o.a. tools/lint-scene.mjs:1) maar bestaan niet.
 - **Levelnamen:** de spread-koppen gebruiken metafoortitels uit de
   cursus-hub ("De knikkerbaan", "De plankenbrug boven het ravijn", "De
-  speurtocht…") — docs/levels-en-scharnieren.md:25-36 zegt letterlijk
+  speurtocht…") — docs/levels-en-checkpoints.md:25-36 zegt letterlijk
   dat ze uit `hub-data.js` komen. De scharnierterminologie staat wél
   correct op p2 van elke spread.
 
@@ -324,7 +324,7 @@ tests ongewijzigd groen.
   6. Index en off-by-one: de laatste plank
   7. Zoeken en de dubbele pijl: waar het jongste zit
 - Doorvoeren in strings.js (spreads-IIFE en lN.naam),
-  docs/levels-en-scharnieren.md, walkthrough deel2-titels.
+  docs/levels-en-checkpoints.md, walkthrough deel2-titels.
 - js/pc/pc.js:95-98: de levelnaam echt tonen.
 - Week-clash strings.js:185-186 vs spread-voet gelijktrekken.
 - Spread-lengtebewaking: pagina's ≤ 24 gewrapte regels; test toevoegen

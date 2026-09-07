@@ -2,7 +2,7 @@
 // de prop-interacties, de fragment-progressie west → midden → overloop, de pc-
 // opening, de spread-data (paging + weekregels), en de endgame-sequence (sim →
 // Alberta's oordeel → epiloog). Getoetst aan spelontwerp-legacy.md,
-// levels-en-scharnieren.md, save-en-hints.md en achtergrond.md.
+// levels-en-checkpoints.md, save-en-hints.md en achtergrond.md.
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

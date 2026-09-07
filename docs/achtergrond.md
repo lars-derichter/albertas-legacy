@@ -31,7 +31,7 @@ spel — en scherpt precies de programmeervaardigheid aan die je op dat moment i
   aan — in hoofdstuk 1 — en daarna werkt ze door.
 - **Vakmanschap:** ze bouwde elk spel eerst als tekstversie in de terminal.
   "Zo begon ik altijd," staat ergens in de kantlijn. Pas als het tekstspel
-  klopte, tekende ze eroverheen. Die gewoonte is het scharnier van de hele
+  klopte, tekende ze eroverheen. Die gewoonte is het checkpoint van de hele
   fictie (zie _Prototype-fase_ hieronder).
 - **Nalatenschap:** de zolder. Dozen, stof, een pc die nog aanslaat, en het
   notitieboek. De echte broncode is de hoofdprijs, maar ze ligt er niet: ze
@@ -122,7 +122,7 @@ Vaste elementen die in de prose en de scènes terugkomen:
 
 ## Het notitieboek
 
-Het notitieboek is het scharnier tussen de zolder-adventure en het codewerk.
+Het notitieboek is het checkpoint tussen de zolder-adventure en het codewerk.
 Het was Alberta's werkboek voor _Seven Little Goats_: schetsen, klasseontwerpen,
 lijstjes, halve methoden, en in de kantlijn haar losse gedachten. Ze heeft het
 tot een overdracht omgebouwd — zeven genummerde hoofdstukken in bouwvolgorde,
@@ -150,10 +150,10 @@ spread bevat:
 - Alberta's schets of diagram voor dat stuk van het spel — voor hoofdstuk 1 is
   dat letterlijk een klassekaart met de velden van `Geitje` erop.
 - Haar spec voor dat stuk: bladzijde 1 wat het moet zijn, bladzijde 2 wat er
-  stuk of onaf is. De bindende vorm staat in `levels-en-scharnieren.md`,
+  stuk of onaf is. De bindende vorm staat in `levels-en-checkpoints.md`,
   §"Wat een spread draagt".
 - De regel "Week X in mijn schema" — haar eigen planning voor dat hoofdstuk.
-  Buiten de fictie is het de cursusweek uit `levels-en-scharnieren.md`; in haar
+  Buiten de fictie is het de cursusweek uit `levels-en-checkpoints.md`; in haar
   hand is het niets van onze cursus, alleen de week waarin zij dat stuk wilde
   bouwen. Het spel zegt nergens "van de cursus" op papier van 1993.
 - De beschadiging zelf: precies dáár waar de puzzel zit.
@@ -219,7 +219,7 @@ De frame-logica die elk stukje prose moet respecteren:
 - **De pc is de brug.** Ga je zitten, dan stap je Alberta's terminal-wereld in
   en werk je aan haar code.
 - **Elk hersteld hoofdstuk is dubbel winst.** Het herstelt een stuk van _Seven
-  Little Goats_ én markeert dat de speler een scharnier van de cursus beheerst.
+  Little Goats_ én markeert dat de speler een checkpoint van de cursus beheerst.
 - **Het einde geeft de prijs.** Level 7 af = Alberta's spel draait. De pc boot
   _Seven Little Goats_ als speelbare simulatie. Daarna schrijft hij de herstelde
   broncode weg naar de diskette in de drive; de speler klikt ze eruit en neemt

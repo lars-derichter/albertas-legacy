@@ -33,7 +33,7 @@ gevarieerd, en hoe de hints en het eindoordeel werken.
 - **Draagt géén poortvelden.** De twee lineariteitspoorten worden uitgerekend,
   niet opgeslagen: de doos kijkt naar `levels[n-1].afgerond` (WP 47) en het
   pc-menu naar `levels[n].puzzels[*].status` van de taken erboven (WP 48b, zie
-  `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"). Een save van
+  `levels-en-checkpoints.md`, §"Puzzelvolgorde binnen een level"). Een save van
   vóór die pakketten laadt daardoor ongewijzigd en hervat halverwege een
   hoofdstuk op precies de juiste taak.
 
@@ -109,7 +109,7 @@ consistente, herhaalbare wereld in zijn save. Met `?seed=N` overschrijft
 de parameter altijd de opgeslagen seed en start effectief een deterministische
 run (in combinatie met `herbegin` voor een schone lei).
 
-De variatie is puur cosmetisch/positioneel: dezelfde scharnier, dezelfde
+De variatie is puur cosmetisch/positioneel: dezelfde checkpoint, dezelfde
 leerdoelen, dezelfde asserties — alleen de oppervlaktevorm wisselt. Twee spelers
 met verschillende seeds leren hetzelfde; ze zien alleen niet exact dezelfde
 beschadiging of dezelfde getallen.
@@ -132,8 +132,8 @@ oordeel).
 
 De drie stadia per puzzel:
 
-1. **Metafoor-duw.** Herhaalt de scharnier-metafoor uit de cursus (zie de
-   woordenschat in `levels-en-scharnieren.md`): "Denk aan de blauwdruk en de
+1. **Metafoor-duw.** Herhaalt de checkpoint-metafoor uit de cursus (zie de
+   woordenschat in `levels-en-checkpoints.md`): "Denk aan de blauwdruk en de
    doos", "Twee pijlen, één doos", "Welke patroonkaart?", "Eén plank te
    ver en je ligt in het water." Geen verwijzing naar de concrete code — alleen
    het mentale model.

@@ -100,7 +100,7 @@ je hebt ze zo in de vingers.
 
 # Level 1 — Klasse en instantie: zeven uit één vorm
 
-*Scharnier: klasse en instantie, velden, constructor, `this`. Speelbaar na
+*Checkpoint: klasse en instantie, velden, constructor, `this`. Speelbaar na
 week 1.*
 
 Het startpunt, en meteen het fundament van álles. Je herstelt Alberta's
@@ -137,7 +137,7 @@ daarna zelf tegen Alberta's model.
 
 # Level 2 — Signaturen: wat erin gaat, wat eruit komt
 
-*Scharnier: signaturen (return vs. `void`), en het verschil tussen attribuut,
+*Checkpoint: signaturen (return vs. `void`), en het verschil tussen attribuut,
 parameter en lokale variabele. Speelbaar na week 2.*
 
 Nu draait alles om methode-koppen. Het beeld: een methode is een machine.
@@ -172,7 +172,7 @@ getallen die verschijnen.
 
 # Level 3 — Voorwaarden: de deur op slot
 
-*Scharnier: voorwaarden — validatie, cascade, `&&` / `||` / `!`. Speelbaar na
+*Checkpoint: voorwaarden — validatie, cascade, `&&` / `||` / `!`. Speelbaar na
 week 2.*
 
 De kern van toets 1. Het beeld: een knikkerbaan. De validatie klemt de knikker
@@ -205,9 +205,9 @@ verschijnt? Let op de randen.
 
 # Level 4 — Referenties: twee pijlen, één doos
 
-*Scharnier: referenties (aliasing) en `null`. Speelbaar na week 3.*
+*Checkpoint: referenties (aliasing) en `null`. Speelbaar na week 3.*
 
-Dit scharnier draagt alle latere lessen. Het beeld: twee variabelen kunnen naar
+Dit checkpoint draagt alle latere lessen. Het beeld: twee variabelen kunnen naar
 dezelfde doos wijzen — twee pijlen, één doos. Verander je de doos via de ene
 pijl, dan ziet de andere het ook. En `null` is een pijl die naar geen enkele
 doos wijst.
@@ -238,7 +238,7 @@ zet de buur via de ene en leest hem via de andere.
 
 # Level 5 — Luspatronen: geitje voor geitje
 
-*Scharnier: de lus-romp + patroonkeuze (tellen, totaliseren, opbouwen,
+*Checkpoint: de lus-romp + patroonkeuze (tellen, totaliseren, opbouwen,
 filteren, het uiterste). Speelbaar na week 4.*
 
 De kern van toets 2. Elke lus volgt een patroonkaart. Kies eerst de kaart, dan
@@ -270,7 +270,7 @@ tellen, totaliseren, opbouwen of het uiterste.
 
 # Level 6 — Index en off-by-one: de laatste plank
 
-*Scharnier: index en off-by-one; welke lus kies ik. Speelbaar na week 5.*
+*Checkpoint: index en off-by-one; welke lus kies ik. Speelbaar na week 5.*
 
 Toets 2 en de eindtoets, allebei. Het beeld: een lijst is een plankenbrug boven
 een ravijn. De eerste plank is nummer 0; de laatste is `size()` min één. Eén
@@ -299,7 +299,7 @@ rondes te spelen (0 tot en met 4). Toch klopt er iets niet.
 
 # Level 7 — Zoeken en de dubbele pijl: waar het jongste zit
 
-*Scharnier: zoeken + de dubbele pijl (een ketting van getters). Speelbaar na
+*Checkpoint: zoeken + de dubbele pijl (een ketting van getters). Speelbaar na
 week 6.*
 
 Het laatste hoofdstuk, en de kern van de eindtoets. Een zoeklus is een

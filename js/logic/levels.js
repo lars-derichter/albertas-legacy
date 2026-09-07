@@ -78,7 +78,7 @@ globalThis.AL = globalThis.AL || {};
     // hardgecodeerde waarden die niemand las, en `week` was in de testfixture
     // hieronder al naar 3 gedreven terwijl level 1 na week 1 komt. De week van
     // een hoofdstuk staat in AL.strings.spreads.lN.week (de voet van bladzijde
-    // 2) en in docs/levels-en-scharnieren.md, en nergens anders.
+    // 2) en in docs/levels-en-checkpoints.md, en nergens anders.
     registreer: function (levelId, def) {
       registry[String(levelId)] = def || { puzzels: [] };
       return this;

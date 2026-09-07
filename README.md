@@ -49,12 +49,12 @@ antwoord.
 
 Voor studenten van **Programming Fundamentals** (graduaat Programmeren,
 Thomas More). Het spel telt zeven levels, elk gekoppeld aan één van de zeven
-scharnieren van de cursus. Samen goed voor ongeveer twee uur spelen.
+checkpoints van de cursus. Samen goed voor ongeveer twee uur spelen.
 
 Onderaan elk notitieboek-fragment staat de regel "Week X in mijn schema." —
 Alberta's eigen planning, en tegelijk de cursusweek waarna je eraan toe bent.
-De koppeling level ↔ scharnier ↔ week staat volledig in
-[`docs/levels-en-scharnieren.md`](docs/levels-en-scharnieren.md).
+De koppeling level ↔ checkpoint ↔ week staat volledig in
+[`docs/levels-en-checkpoints.md`](docs/levels-en-checkpoints.md).
 
 Alle code in de puzzels blijft binnen de grenzen van de cursus: geen
 constructies die je nog niet gezien hebt. Concreet betekent dat onder meer

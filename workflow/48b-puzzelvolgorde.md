@@ -174,7 +174,7 @@ Wat er aan bestaande smokes veranderde, en waarom:
 
 ### Docs en walkthrough
 
-- `docs/levels-en-scharnieren.md` — nieuwe, bindende §"Puzzelvolgorde binnen
+- `docs/levels-en-checkpoints.md` — nieuwe, bindende §"Puzzelvolgorde binnen
   een level" (de defs-volgorde ís de speelvolgorde; de poort kijkt vooruit; ze
   staat in de staat en niet naast de staat; wat de oplossing van een andere
   puzzel toont komt erná; een titel verklapt de fout niet). De leveltabel zegt

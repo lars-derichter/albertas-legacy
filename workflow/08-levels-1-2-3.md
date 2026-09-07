@@ -4,7 +4,7 @@
 
 Werkpakket 7: de eerste drie echte, speelbare levels bouwen — scharnier 1
 (klasse/instantie/constructor/this), scharnier 2 (signaturen) en scharnier
-3 (voorwaarden/validatie/cascade). Bindend: levels-en-scharnieren.md voor
+3 (voorwaarden/validatie/cascade). Bindend: levels-en-checkpoints.md voor
 de exacte puzzelvormen en herstelde bestanden, checker-contract.md en de
 WP4-corpus voor de verificatie, save-en-hints.md voor de drie hint-stadia
 en de geseede variatie.

@@ -57,7 +57,7 @@ voortaan bladspiegel, kopbreedte, titelvorm en het weeknummer.
   Geen lezers buiten de IIFE (gegrept).
 - **Week-clash beslecht richting de koppeltabel**: het notitieboek zegt
   nu "na week 1", zoals de voet van het level-1-spread en
-  `docs/levels-en-scharnieren.md` al zeiden.
+  `docs/levels-en-checkpoints.md` al zeiden.
 - **Bijvangst gefixt:** `artikel.getCategorie().getNaam()` in de brief
   van level 7 meet 174 px — onbreekbaar voor `_wrap`, en liep dus over
   de rug op het rechterblad. In twee stukken gezet (max 120 px); de

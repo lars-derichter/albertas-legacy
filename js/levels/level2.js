@@ -1,7 +1,7 @@
-// level2.js — "Level 2 — Signaturen: wat erin gaat, wat eruit komt" (scharnier
+// level2.js — "Level 2 — Signaturen: wat erin gaat, wat eruit komt" (checkpoint
 // 2: signaturen — return vs. void, attribuut / parameter / lokale variabele).
 // Herstelt Speler. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): herstel de signaturen, orden een echte
+// (docs/levels-en-checkpoints.md): herstel de signaturen, orden een echte
 // Speler-methode (Parsons), en voorspel de output van een scenario waarin een
 // parameter een attribuut schaduwt (trace).
 //
@@ -111,7 +111,7 @@ globalThis.AL = globalThis.AL || {};
   // ===========================================================================
   // Parsons — de zoeklus-methode van Speler ordenen (met de signatuurregel).
   //   De afleider geeft de PARAMETER terug in plaats van het gevonden object:
-  //   een klassieke doos-verwarring van scharnier 2.
+  //   een klassieke doos-verwarring van checkpoint 2.
   // ===========================================================================
   var parsons = {
     id: "l2-parsons",
@@ -163,7 +163,7 @@ globalThis.AL = globalThis.AL || {};
   // kwam, kreeg de speler de oplossing van de Parsons cadeau. Andersom lekt er
   // niets: wie de stroken geordend heeft, ziet daarna een `zoek` die hij zelf
   // net gebouwd heeft, en de vier signatuur-checks van de editor gaan over de
-  // koppen erboven. De regel staat in docs/levels-en-scharnieren.md,
+  // koppen erboven. De regel staat in docs/levels-en-checkpoints.md,
   // §"Puzzelvolgorde binnen een level": wat de oplossing van een andere puzzel
   // tóónt, komt erná.
   var definitie = {

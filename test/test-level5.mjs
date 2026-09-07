@@ -1,4 +1,4 @@
-// test-level5.mjs — Level 5 (scharnier 5: de lus-romp + patroonkeuze). Toetst:
+// test-level5.mjs — Level 5 (checkpoint 5: de lus-romp + patroonkeuze). Toetst:
 // registratie, de twee-lus-schrijfopdracht (model slaagt, stub zakt, gecureerde
 // fouten falen gericht), de string-builder-Parsons (opbouw-kaart, de overschrijf-
 // afleider), de welke-patroonkaart-keuze (totaliseren), en de hint-staging.

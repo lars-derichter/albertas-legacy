@@ -1,7 +1,7 @@
-// level1.js — "Level 1 — Klasse en instantie: zeven uit één vorm" (scharnier 1:
+// level1.js — "Level 1 — Klasse en instantie: zeven uit één vorm" (checkpoint 1:
 // klasse vs. instantie, velden, constructor, this). Herstelt Voorwerp en Geitje
 // uit Alberta's beschadigde notitieboek. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): herstel de constructor, schrijf Geitje uit
+// (docs/levels-en-checkpoints.md): herstel de constructor, schrijf Geitje uit
 // de notities, en verklaar het verschil tussen blauwdruk (klasse) en doos
 // (instantie).
 //

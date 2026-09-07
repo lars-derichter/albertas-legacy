@@ -1,7 +1,7 @@
-// level3.js — "Level 3 — Voorwaarden: de deur op slot" (scharnier 3:
+// level3.js — "Level 3 — Voorwaarden: de deur op slot" (checkpoint 3:
 // voorwaarden — validatie, cascade, && / || / !). Herstelt
 // Speler.setLevenspunten en raakt aan Gevecht. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): herstel de klemmende validatie, vind de && /
+// (docs/levels-en-checkpoints.md): herstel de klemmende validatie, vind de && /
 // || -fout in een Gevecht-achtige poortcheck, en voorspel de uitkomst van een
 // validatie-cascade op een randwaarde.
 //

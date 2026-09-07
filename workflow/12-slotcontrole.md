@@ -28,7 +28,7 @@ speelt zonder één debug-sneltoets — van de titelkaart tot de epiloog.
 - `engine-architectuur.md`: `js/pc/pc.js` en `js/pc/sim-terminal.js`
   (allebei echte, eerder gebouwde bestanden) ontbraken in de bestandskaart
   en de laadvolgorde; toegevoegd.
-- `levels-en-scharnieren.md` en `save-en-hints.md`: gecontroleerd tegen de
+- `levels-en-checkpoints.md` en `save-en-hints.md`: gecontroleerd tegen de
   code, geen drift gevonden.
 
 ## QC-resultaat

@@ -225,7 +225,7 @@ albertas-legacy/
 │                                    #   Gevecht, Geitje, Schuilplaats,
 │                                    #   TestSpeler, TestGeitje,
 │                                    #   TestGevecht
-├── docs/   achtergrond.md  roberta-williams.md  levels-en-scharnieren.md
+├── docs/   achtergrond.md  roberta-williams.md  levels-en-checkpoints.md
 │           engine-architectuur.md  checker-contract.md  art-stijlgids.md
 │           spelontwerp-legacy.md  spelontwerp-seven-little-goats.md
 │           save-en-hints.md
@@ -293,7 +293,7 @@ IntelliJ ("de broncode ligt op zolder — neem ze mee").
 | 7 | zoeken + dubbele pijl (6) | Spel.zoekGeitje, endgame chain | write search loop returning Geitje/null; repair null-safe getter chain; trace chain |
 
 Levels 1–3 before toets 1, 4–6 before toets 2, 7 before eindtoets; table
-lives in `docs/levels-en-scharnieren.md`. All puzzle Java = fragments of
+lives in `docs/levels-en-checkpoints.md`. All puzzle Java = fragments of
 the real `seven-little-goats/src` files; a Node tool (`tools/check-assets`)
 verifies model-repaired puzzle code ≡ the pristine Java fragment.
 

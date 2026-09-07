@@ -68,7 +68,7 @@ Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: `14987a8`
 
 - [x] Doceercommentaar in seven-little-goats/src/*.java (incl. de drie
       Test*-klassen) herschreven naar Alberta's notitieboekstem;
-      klaslokaal-"we" en "scharnier 7" weg; diff bevat uitsluitend
+      klaslokaal-"we" en "checkpoint 7" weg; diff bevat uitsluitend
       commentaarregels
 - [x] js/levels/level5.js en level7.js notitie-register hersteld (level 7
       verklapt hintfase 3 niet meer)
@@ -80,9 +80,9 @@ Entry: `workflow/30-albertas-stem-in-de-java.md` · commit: `14987a8`
 
 Entry: `workflow/31-levelnamen-en-spreads.md` · commit: `54f61d3`
 
-- [x] Zeven nieuwe hoofdstuktitels (scharnierterm vooraan, dan het beeld
+- [x] Zeven nieuwe hoofdstuktitels (checkpointterm vooraan, dan het beeld
       uit het verhaal) in strings.js (spread-titel + `lN.naam` +
-      bestandskoppen), js/levels/level*.js, docs/levels-en-scharnieren.md,
+      bestandskoppen), js/levels/level*.js, docs/levels-en-checkpoints.md,
       walkthrough deel1 én deel2
 - [x] Bladzijde 2 draagt de losse cursustermen, zonder de term van de
       titel te herhalen
@@ -392,7 +392,7 @@ Commit: (nog in te vullen) — entry: `workflow/38-doc-drift-en-dood-hout.md`
       `save-en-hints.md` (`voortgang:opgeslagen` is een verzoek, geen
       verslag; F1 werkt in beide pc-panelen), `engine-architectuur.md`
       (`spread:intro`/`outro` bestaan niet, laadvolgorde, `font-hand.js`,
-      `input.js`), `levels-en-scharnieren.md` (7 spreads geen 8; de
+      `input.js`), `levels-en-checkpoints.md` (7 spreads geen 8; de
       1+2-mix is niet bindend voor de levels 1 en 7; 23 commando's),
       `achtergrond.md` (de sprite heeft wél een vooraanzicht; geen
       "dusk-ramp"; geen einde héét "koud en onaf"), `README.md` (28+9
@@ -501,7 +501,7 @@ Entry: `workflow/48-notities-als-spec.md` · commit: `3585163`
       reparatie van variant A) en die van l7-write (ongewijzigd)
 - [x] Hints nagekeken: stadium 1 van l4-verklaar en l4-trace was het
       antwoord zelf en is een vraag geworden; l2-trace was al een vraag
-- [x] Docs mee (levels-en-scharnieren §"Wat een spread draagt",
+- [x] Docs mee (levels-en-checkpoints §"Wat een spread draagt",
       achtergrond §"Het notitieboek", art-stijlgids) + walkthrough deel 1
       (PDF herbouwd; deel 2 verschilde enkel in datums, teruggezet)
 - [x] Adversariële checker-agent gedraaid (drie passen). Bevestigd: de
@@ -554,7 +554,7 @@ docent als WP 47, één niveau lager.
       `ontgrendelTot` (directe state-manipulatie, geen spelpad, zoals
       `zetVoortgangKlaar` in WP 47); full-playthrough en smoke-browser
       ongewijzigd
-- [x] Docs mee: levels-en-scharnieren §"Puzzelvolgorde binnen een level"
+- [x] Docs mee: levels-en-checkpoints §"Puzzelvolgorde binnen een level"
       + leveltabel (rij 2 en 6), spelontwerp-legacy §"De gesimuleerde pc"
       (het menu stond er niet in) + stap 4, save-en-hints (de save draagt
       geen poortvelden); walkthrough deel 1 én deel 2 (level 2 omgewisseld
@@ -631,12 +631,24 @@ smoke-touch (geen WebKit) en de PDF-fontterugval.
 
 ### - [x] Na het programma: de ide kent geen zolder
 
-Entry: `workflow/50-esc-zonder-zolder.md` · commit: (nog in te vullen)
+Entry: `workflow/50-esc-zonder-zolder.md` · commit: `fa1173b`
 
 - [x] Vier chrome-teksten van de pc spreken programmataal ("Esc —
       afsluiten", balk "Afsluiten") — het programma weet niet dat het
       op een zolder staat
 - [x] QC: 450/450 groen, check-walkthrough 0, smoke-pc 44/44
+
+### - [x] Na het programma: scharnieren heten checkpoints
+
+Entry: `workflow/51-checkpoints.md` · commit: (nog in te vullen)
+
+- [x] De cursusterm "scharnier" is overal "checkpoint": docs (het
+      koppelingsdocument heet nu `docs/levels-en-checkpoints.md`), README,
+      CLAUDE.md, commentaar in js/ en test/, de checker-corpus, de
+      walkthrough (beide PDF's herbouwd). Genummerde entries blijven
+      geschiedenis.
+- [x] QC: 454/454 groen, check-docpaden 0 in contracten, check-walkthrough
+      277/0, lint-scene en check-assets schoon, smoke geslaagd
 
 ## Fixronde na de speeltest (afgerond)
 
@@ -806,7 +818,7 @@ Entry: `workflow/45-de-stem.md` · commit: `b57bd2d`
       in de kop van bladzijde 2 blijven — dat is de brug van WP 31). Recht
       gezet: de klem van hoofdstuk 3 gaat over háár levenspunten en de
       kruik melk (+6), niet over een geitje; vijf verouderde
-      voet-citaten in `levels-en-scharnieren.md`,
+      voet-citaten in `levels-en-checkpoints.md`,
       `spelontwerp-legacy.md`, `art-stijlgids.md` (twee) en `README.md`;
       drie klaslokaal-imperatieven in de brieven van 4, 6 en 7; vier
       restanten definitie-register (1, 2, 4 + `level2.js`); twee
@@ -1102,7 +1114,7 @@ honderd nieuwe glyphs). De vlekken die onder de spread-tekst liggen horen bij
 
 Entry: `workflow/23-het-notitieboek.md` · commit: `76f6ebb`
 
-- [x] Zeven schetsen, één per scharnier-metafoor, in
+- [x] Zeven schetsen, één per checkpoint-metafoor, in
       `js/scenes/spread-schetsen.js` — blauwdruk-en-doos, trechters-en-goot,
       knikkerbaan met klem en splitsing, twee-pijlen-één-doos, patroonkaart met
       turfjes, plankenbrug met genummerde planken, zoekspoor en dubbele pijl

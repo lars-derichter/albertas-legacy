@@ -1,4 +1,4 @@
-// test-level4.mjs — Level 4 (scharnier 4: referenties — twee pijlen, één doos,
+// test-level4.mjs — Level 4 (checkpoint 4: referenties — twee pijlen, één doos,
 // null). Toetst: registratie, de verbindKamers-modeloplossing en beide beschadigde
 // varianten, de aliasing-trace, de null-verklaar-zelf-check, en de hint-staging.
 

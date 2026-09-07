@@ -54,7 +54,7 @@ Door de manager zelf uitgevoerd:
   (titel iets krap in beeld, cosmetisch, geen blokkerend probleem voor
   deze fase van de art).
 - Weeknummers rechtstreeks in `strings.js` nagelezen tegen
-  `docs/levels-en-scharnieren.md`: 1, 2, 2, 3, 4, 5, 6 voor level 1–7 —
+  `docs/levels-en-checkpoints.md`: 1, 2, 2, 3, 4, 5, 6 voor level 1–7 —
   klopt exact met de eerder gecorrigeerde tabel.
 
 Commit: zolder-adventure, werkpakket 6.

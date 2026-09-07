@@ -1,4 +1,4 @@
-// test-level1.mjs — Level 1 (scharnier 1: klasse/instantie, constructor, this).
+// test-level1.mjs — Level 1 (checkpoint 1: klasse/instantie, constructor, this).
 // Toetst: registratie, beide seed-varianten bereikbaar én verschillend, de
 // modeloplossingen slagen door hun eigen checker-pijplijn met nul diagnostiek,
 // elke gecureerde studentfout faalt met de bedoelde meldingKey, de verklaar-

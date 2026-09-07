@@ -3,7 +3,7 @@
 An educational browser game for the Java course Programming Fundamentals
 (Thomas More). You inherit grandmother Alberta's attic and finish her
 unfinished Java text-game sequel "Seven Little Goats"; each of 7 levels
-drills one scharnier of the course by repairing or writing course-bounded
+drills one checkpoint of the course by repairing or writing course-bounded
 Java. The repo doubles as a genAI-workflow showcase.
 
 ## Hard constraints
@@ -56,7 +56,7 @@ Java. The repo doubles as a genAI-workflow showcase.
 ## Design contracts
 
 The authoritative design lives in `docs/` (backstory, roberta-williams,
-both spelontwerpen, levels-en-scharnieren, engine-architectuur,
+both spelontwerpen, levels-en-checkpoints, engine-architectuur,
 checker-contract, art-stijlgids, save-en-hints). Code must honor these
 documents; when code and a doc diverge, fix one of them in the same work
 package. Keep them in sync — the docs are the contract, not commentary.

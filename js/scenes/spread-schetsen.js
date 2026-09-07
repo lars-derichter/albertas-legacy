@@ -3,10 +3,10 @@
 //
 // Waarom dit bestand bestaat: `docs/spelontwerp-legacy.md` zegt dat de spreads
 // "de meeste nieuwe beelden" dragen, en `docs/art-stijlgids.md` somt per level
-// een schets op die de scharnier-metafoor spiegelt — trechters, knikkerbaan,
+// een schets op die de checkpoint-metafoor spiegelt — trechters, knikkerbaan,
 // twee pijlen, patroonkaart, plankenbrug, dubbele pijl.
 // Dat is de metafoor-woordenschat van de cursus; sinds WP 31 dragen de
-// hoofdstukken zelf een titel met de scharnierterm vooraan. De schetsen tonen
+// hoofdstukken zelf een titel met de checkpointterm vooraan. De schetsen tonen
 // nog altijd het beeld, want dat is wat Alberta in de kantlijn tekende.
 // Uitzondering sinds WP 48: level 1 tekent geen metafoor meer maar een
 // klassekaart met de velden van Geitje erop, op vraag van de docent.
@@ -186,7 +186,7 @@ AL.spreadSchetsen = {
       // Er stond tot WP 48 een rode doorhaling náást die twee, en op acht
       // pixels breed leest die als "niet ||" — precies het antwoord van
       // l3-vindfout, in de kantlijn van de bladzijde die de vraag stelt. De
-      // twee operatoren blijven staan (het is het scharnier van dit
+      // twee operatoren blijven staan (het is het checkpoint van dit
       // hoofdstuk), het kruis niet.
       ["px", 41, [[174, 148], [174, 150], [174, 152], [174, 154],
         [178, 148], [178, 150], [178, 152], [178, 154]]],

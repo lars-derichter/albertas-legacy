@@ -15,7 +15,7 @@ statistieken, twee gevechten en vier verschillende eindes.
 In de meta-game _The Legacy of Alberta_ is dit de hoofdprijs. _Seven Little
 Goats_ is het vervolg dat grootmoeder Alberta plande maar nooit afmaakte. Op
 zolder ligt de broncode in stukken; doorheen de zeven levels herstel je ze,
-scharnier per scharnier, tot dit spel weer draait. Wat je hier voor je hebt, is
+checkpoint per checkpoint, tot dit spel weer draait. Wat je hier voor je hebt, is
 dat prototype, heel en werkend — de echte, draaibare Java. Draai ze, lees ze,
 en kijk hoe de losse stukken uit de levels één geheel vormen.
 

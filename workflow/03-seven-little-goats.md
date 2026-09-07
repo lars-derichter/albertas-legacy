@@ -5,7 +5,7 @@
 Werkpakket 2: het volledige Java-spel _Seven Little Goats_ bouwen in
 `seven-little-goats/` — de hoofdprijs. Bindend contract:
 `docs/spelontwerp-seven-little-goats.md`. Extra eis uit
-`docs/levels-en-scharnieren.md`: de scharnier-ankermethoden moeten bestaan
+`docs/levels-en-checkpoints.md`: de scharnier-ankermethoden moeten bestaan
 met exact die namen en schoolvoorbeelden van hun scharnier zijn, want de
 levels van het meta-spel knippen er later hun puzzelfragmenten uit.
 

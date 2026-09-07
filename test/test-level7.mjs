@@ -1,4 +1,4 @@
-// test-level7.mjs — Level 7 (scharnier 7: zoeken + de dubbele pijl). Toetst:
+// test-level7.mjs — Level 7 (checkpoint 7: zoeken + de dubbele pijl). Toetst:
 // registratie (twee editor-puzzels + één terminal), de zoeklus-schrijfopdracht
 // (model slaagt, stub zakt, gecureerde fouten falen), de null-veilige keten-
 // reparatie en beide beschadigde varianten, de geketende-getter-trace inclusief
@@ -166,7 +166,7 @@ for (const id of ["l7-editor-write", "l7-editor-repair", "l7-trace"]) {
       teksten.push(h.tekst[0]);
     }
     assert.equal(new Set(teksten).size, 3);
-    assert.ok(/speurtocht|pijl/i.test(teksten[0]), "stap 1 hergebruikt de scharnier-metafoor");
+    assert.ok(/speurtocht|pijl/i.test(teksten[0]), "stap 1 hergebruikt de checkpoint-metafoor");
     const h4 = AL.levels.hint(t, "7", id);
     assert.deepEqual(h4.effecten, ["hint:geen-meer"]);
     assert.equal(t.levels["7"].puzzels[id].hints, 3);

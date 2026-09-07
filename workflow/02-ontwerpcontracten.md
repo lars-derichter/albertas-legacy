@@ -50,7 +50,7 @@ Drie correcties door de manager:
 1. **"Na week X" was verkeerd geïnterpreteerd** als een spelinterne schaal.
    Het zijn de echte cursusweken (drie lessen per week: les 2–3 = week 1,
    les 4 = week 2, … les 17–18 = week 6). Het Beslissing-blok in
-   levels-en-scharnieren.md is herschreven; de tabel heet nu "Na
+   levels-en-checkpoints.md is herschreven; de tabel heet nu "Na
    cursusweek".
 2. Namespace-slip in engine-architectuur.md: `RRH.palet.lengte` →
    `AL.palet.KLEUREN.length`.

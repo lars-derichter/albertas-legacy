@@ -425,7 +425,7 @@ AL.strings = {
   // Placeholder-hints per puzzel (drie stadia, oplopend, nooit het antwoord;
   // save-en-hints.md, §"Het hint-contract"). De echte level-hints komen bij de
   // level-WP's; deze horen bij de placeholder-puzzel 'l1-editor' waarmee het
-  // framework getest wordt. Stap 1 hergebruikt de scharnier-metafoor, stap 2
+  // framework getest wordt. Stap 1 hergebruikt de checkpoint-metafoor, stap 2
   // lokaliseert, stap 3 geeft de structurele vorm met plaatshouders.
   puzzelHints: {
     "l1-editor": [
@@ -483,7 +483,7 @@ AL.strings = {
       "Een lus die één passend element opzoekt en teruggeeft, is de zoeklus."
     ],
 
-    // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1).
+    // Level 1 — Klasse en instantie: zeven uit één vorm (checkpoint 1).
     // De hints hieronder houden Alberta's beeldspraak (blauwdruk en doos);
     // alleen de hoofdstuktitel is naar de cursusterm verhuisd.
     "l1-editor-repair": [
@@ -511,7 +511,7 @@ AL.strings = {
         "bouwt (het object). Zeg dat verschil in je eigen zin."
     ],
 
-    // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2).
+    // Level 2 — Signaturen: wat erin gaat, wat eruit komt (checkpoint 2).
     "l2-editor-repair": [
       "Denk aan de machine: trechters erin (parameters), een goot eruit (return) " +
         "of niets eruit (void).",
@@ -537,7 +537,7 @@ AL.strings = {
         "attribuut (20) af. Geef beide getallen."
     ],
 
-    // Level 3 — Voorwaarden: de deur op slot (scharnier 3).
+    // Level 3 — Voorwaarden: de deur op slot (checkpoint 3).
     "l3-editor-repair": [
       "Denk aan de knikkerbaan: de waarde moet tussen twee randen blijven, nooit " +
         "onder de ene, nooit boven de andere.",
@@ -563,7 +563,7 @@ AL.strings = {
         "Typ de tekst die die tak afdrukt."
     ],
 
-    // Level 4 — Referenties: twee pijlen, één doos (scharnier 4).
+    // Level 4 — Referenties: twee pijlen, één doos (checkpoint 4).
     "l4-editor-repair": [
       "Twee pijlen, één doos: elke verbinding tussen kamers loopt twee kanten " +
         "op. Wat de ene kant legt, moet de andere kant terugleggen.",
@@ -594,7 +594,7 @@ AL.strings = {
         "geen buurkamer, dus geen uitgang. Zeg dat in je eigen zin."
     ],
 
-    // Level 5 — Luspatronen: geitje voor geitje (scharnier 5).
+    // Level 5 — Luspatronen: geitje voor geitje (checkpoint 5).
     "l5-editor-write": [
       "Welke patroonkaart? telWapens telt (een teller die ophoogt); " +
         "sterksteVoorwerp zoekt het uiterste (onthoud de beste tot nog toe).",
@@ -620,7 +620,7 @@ AL.strings = {
         "totaliseer-kaart."
     ],
 
-    // Level 6 — Index en off-by-one: de laatste plank (scharnier 6).
+    // Level 6 — Index en off-by-one: de laatste plank (checkpoint 6).
     "l6-editor-repair": [
       "De plankenbrug boven het ravijn: de eerste plank is 0, de laatste is " +
         "size() min één. Eén plank te ver en je ligt in het water.",
@@ -643,7 +643,7 @@ AL.strings = {
         "speelt er zes."
     ],
 
-    // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7).
+    // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (checkpoint 7).
     "l7-editor-write": [
       "De speurtocht: een zoeklus loopt de lijst af, geeft het gevonden object " +
         "terug, of null als de tocht doodloopt.",
@@ -940,7 +940,7 @@ AL.strings = {
     }
   },
 
-  // Level 1 — Klasse en instantie: zeven uit één vorm (scharnier 1:
+  // Level 1 — Klasse en instantie: zeven uit één vorm (checkpoint 1:
   // klasse/instantie, velden, constructor, this). De Java-fragmenten leven in
   // js/levels/level1.js.
   l1: {
@@ -967,7 +967,7 @@ AL.strings = {
     }
   },
 
-  // Level 2 — Signaturen: wat erin gaat, wat eruit komt (scharnier 2:
+  // Level 2 — Signaturen: wat erin gaat, wat eruit komt (checkpoint 2:
   // signaturen, attribuut / parameter / lokaal). De Java-fragmenten leven in
   // js/levels/level2.js.
   l2: {
@@ -1016,7 +1016,7 @@ AL.strings = {
     }
   },
 
-  // Level 3 — Voorwaarden: de deur op slot (scharnier 3: voorwaarden,
+  // Level 3 — Voorwaarden: de deur op slot (checkpoint 3: voorwaarden,
   // validatie, cascade, && / || / !). De Java-fragmenten leven in
   // js/levels/level3.js.
   l3: {
@@ -1068,7 +1068,7 @@ AL.strings = {
     }
   },
 
-  // Level 4 — Referenties: twee pijlen, één doos (scharnier 4: referenties,
+  // Level 4 — Referenties: twee pijlen, één doos (checkpoint 4: referenties,
   // aliasing, null). De Java-fragmenten leven in js/levels/level4.js.
   l4: {
     naam: "Level 4 — Referenties: twee pijlen, één doos",
@@ -1116,7 +1116,7 @@ AL.strings = {
     }
   },
 
-  // Level 5 — Luspatronen: geitje voor geitje (scharnier 5: lus-romp +
+  // Level 5 — Luspatronen: geitje voor geitje (checkpoint 5: lus-romp +
   // patroonkeuze). De Java-fragmenten leven in js/levels/level5.js; de twee
   // lus-methoden zijn echt aan seven-little-goats/src/Speler.java toegevoegd
   // (zie de Beslissing daar).
@@ -1167,7 +1167,7 @@ AL.strings = {
     }
   },
 
-  // Level 6 — Index en off-by-one: de laatste plank (scharnier 6: index,
+  // Level 6 — Index en off-by-one: de laatste plank (checkpoint 6: index,
   // off-by-one, welke lus). De Java-fragmenten leven in js/levels/level6.js.
   l6: {
     naam: "Level 6 — Index en off-by-one: de laatste plank",
@@ -1216,7 +1216,7 @@ AL.strings = {
     }
   },
 
-  // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (scharnier 7:
+  // Level 7 — Zoeken en de dubbele pijl: waar het jongste zit (checkpoint 7:
   // zoeken + de dubbele pijl). De Java-fragmenten leven in js/levels/level7.js.
   l7: {
     naam: "Level 7 — Zoeken en de dubbele pijl: waar het jongste zit",
@@ -1365,13 +1365,13 @@ AL.strings = {
   // stijlgids.md, §"Het notitieboek-spread"). Eén spread per level plus een
   // intro-spread. De inhoud is data (de spread-template-renderer leest ze uit;
   // hij is niet per level hardgecodeerd). De weekregel gebruikt de kolom
-  // "Na cursusweek" uit levels-en-scharnieren.md: 1, 2, 2, 3, 4, 5, 6.
+  // "Na cursusweek" uit levels-en-checkpoints.md: 1, 2, 2, 3, 4, 5, 6.
   spreads: (function () {
     // Bouw één spread-teaser als een generiek pagina-object dat de renderer
     // dom kan aflopen: elke pagina heeft een kop (inkt-titel), regels
     // (handschrift) en optioneel een voet (de weekregel, rechtsonder).
     //
-    // `titel` is de hoofdstuktitel: eerst de scharnierterm zoals de cursus die
+    // `titel` is de hoofdstuktitel: eerst de checkpointterm zoals de cursus die
     // noemt, dan een dubbelpunt, dan het beeld uit Alberta's eigen verhaal
     // ("Voorwaarden: de deur op slot"). Vroeger stond hier een metafoornaam die
     // uit de andere minigames van de cursus geleend was ("De knikkerbaan"), en
@@ -1380,7 +1380,7 @@ AL.strings = {
     // spread-test bewaakt dat de twee gelijk blijven.
     //
     // `termen` is de opsomming van cursustermen die op bladzijde 2 als kop
-    // staat. Ze herhaalt de scharnierterm van de titel niet: bladzijde 1 zegt
+    // staat. Ze herhaalt de checkpointterm van de titel niet: bladzijde 1 zegt
     // "Voorwaarden", bladzijde 2 vult aan met "Validatie ×3, cascade, …".
     //
     // Twee sjabloonzinnen zijn hier weg (WP 45). Bladzijde 1 opende met "Voor

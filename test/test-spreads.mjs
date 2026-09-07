@@ -222,8 +222,8 @@ test("de bladerhint past naast het paginanummer op het linkerblad", () => {
 
 // ---- De zeven hoofdstuktitels ---------------------------------------------
 
-// De vorm is vast (docs/levels-en-scharnieren.md, §"De zeven hoofdstuktitels"):
-// eerst de scharnierterm zoals de cursus die noemt, dan een dubbelpunt, dan een
+// De vorm is vast (docs/levels-en-checkpoints.md, §"De zeven hoofdstuktitels"):
+// eerst de checkpointterm zoals de cursus die noemt, dan een dubbelpunt, dan een
 // beeld uit het verhaal van de zeven geitjes.
 const TITELS = {
   l1: "Klasse en instantie: zeven uit één vorm",
@@ -235,7 +235,7 @@ const TITELS = {
   l7: "Zoeken en de dubbele pijl: waar het jongste zit"
 };
 
-test("de zeven hoofdstuktitels staan er, met de scharnierterm vooraan", () => {
+test("de zeven hoofdstuktitels staan er, met de checkpointterm vooraan", () => {
   for (const n of NIVEAUS) {
     const sleutel = "l" + n;
     const data = strings.spreads[sleutel];
@@ -261,7 +261,7 @@ test("de levelnaam in de pc-kop is dezelfde titel als op bladzijde 1", () => {
   assert.ok(strings.l0 && strings.l0.naam, "testlevel 0 heeft ook een naam");
 });
 
-test("bladzijde 2 herhaalt de scharnierterm van de titel niet", () => {
+test("bladzijde 2 herhaalt de checkpointterm van de titel niet", () => {
   // Bladzijde 1 zegt "Voorwaarden", bladzijde 2 vult aan met "Validatie ×3,
   // cascade, …". Stond de term op allebei, dan las het spread als een echo.
   for (const n of NIVEAUS) {
@@ -278,7 +278,7 @@ test("bladzijde 2 herhaalt de scharnierterm van de titel niet", () => {
 test("het notitieboek op zolder noemt dezelfde week als het spread eronder", () => {
   // Het boek ligt open op het spread van level 1. De onderzoektekst citeerde
   // Alberta's weekregel met week 3, terwijl de voet van dat spread week 1 zegt
-  // (docs/levels-en-scharnieren.md, §"Volledige koppeltabel").
+  // (docs/levels-en-checkpoints.md, §"Volledige koppeltabel").
   // Het citaat in de onderzoektekst is de voet van dat spread, woord voor
   // woord: de speler leest twee keer hetzelfde blad.
   const week = strings.spreads.l1.week;

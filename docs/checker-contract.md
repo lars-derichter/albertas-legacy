@@ -90,17 +90,17 @@ De namen hieronder zijn de **echte functienamen** uit `asserts.js` (het
 | `methodeSignatuur({retour, naam, params[], zichtbaarheid?})` | een methode met exact dit returntype, deze naam en deze parametertypes/-volgorde; met `zichtbaarheid` ook `public`/`private` |
 | `heeftReturn({methode, retourVorm?})` | de methode bevat minstens één `return`; optioneel in een bepaalde vorm (bv. `return <veld>;` of `return null;`) |
 | `conditieGebruikt({methode, operator, structuur?})` | een `if`-conditie gebruikt de gevraagde operator (`&&`, `\|\|`, `!`); `structuur: "cascade"` eist bovendien een `else if` |
-| `validatieKlem({methode, onder, boven})` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (scharnier 3; level 3 zet er twee beschadigde varianten tegenover) |
-| `lusVorm({methode, soort})` | de lus is van de juiste soort: `for` / `foreach` / `while` (scharnier 5–6) |
-| `lusGrenzen({methode, vergelijk?, grensBevat?})` | de `for`-grens klopt; `<` vs `<=` telt (off-by-one van scharnier 6), en `grensBevat` eist een term in de conditie (bv. `size`) |
-| `aanroepKeten({methode?, stappen[], nullVeilig?, contigue?})` | een ketting `a.getX().getY()...` met de juiste opeenvolgende getters, eventueel null-veilig gesplitst (scharnier 7) |
-| `methodeAanroep({methode, naam})` | binnen `<methode>` wordt `<naam>` aangeroepen (bv. `setNoord` binnen `verbindKamers`, of `remove`; scharnier 4/6) |
+| `validatieKlem({methode, onder, boven})` | de validatie-clamp: `if (x < onder) x = onder;` en `if (x > boven) x = boven;` (checkpoint 3; level 3 zet er twee beschadigde varianten tegenover) |
+| `lusVorm({methode, soort})` | de lus is van de juiste soort: `for` / `foreach` / `while` (checkpoint 5–6) |
+| `lusGrenzen({methode, vergelijk?, grensBevat?})` | de `for`-grens klopt; `<` vs `<=` telt (off-by-one van checkpoint 6), en `grensBevat` eist een term in de conditie (bv. `size`) |
+| `aanroepKeten({methode?, stappen[], nullVeilig?, contigue?})` | een ketting `a.getX().getY()...` met de juiste opeenvolgende getters, eventueel null-veilig gesplitst (checkpoint 7) |
+| `methodeAanroep({methode, naam})` | binnen `<methode>` wordt `<naam>` aangeroepen (bv. `setNoord` binnen `verbindKamers`, of `remove`; checkpoint 4/6) |
 | `geenVerbodenConstructies({methode?})` | geen buiten-cursus-constructie: `switch`, `enum`, `var`, lambda (`->`), ternary (`?`) of `.stream(` |
 
 Elke assertie is opzettelijk lokaal: ze zoekt één patroon, niet een hele
 programmabetekenis. Een puzzel stapelt er enkele zodat samen de bedoelde vorm
 wordt afgedwongen zonder de speler in een keurslijf te dwingen. De patroonkaart-
-romp van scharnier 5 (`lusRomp`) en de zoeklus van scharnier 7 (`zoeklus`) zijn
+romp van checkpoint 5 (`lusRomp`) en de zoeklus van checkpoint 7 (`zoeklus`) zijn
 géén losse asserties: ze worden **samengesteld** uit `lusVorm` + `lusGrenzen`
 + `heeftReturn` (+ `methodeSignatuur`), zoals de noot hieronder toelicht.
 
@@ -140,16 +140,16 @@ zelf en zet ze hier in de tabel — een puzzel kan ze niet aanzetten.
 
 Wat **nooit** getolereerd wordt, want het is precies de leerstof:
 
-- `<` versus `<=` in een lusgrens (off-by-one, scharnier 6).
-- `&&` versus `||` versus `!` in een conditie (scharnier 3).
-- return vs. `void`, of een ontbrekende `return` (scharnier 2).
-- `this.veld = parameter` versus omgekeerd of ontbrekend (scharnier 1).
-- Een gemiste `null`-controle in een getter-keten (scharnier 7).
+- `<` versus `<=` in een lusgrens (off-by-one, checkpoint 6).
+- `&&` versus `||` versus `!` in een conditie (checkpoint 3).
+- return vs. `void`, of een ontbrekende `return` (checkpoint 2).
+- `this.veld = parameter` versus omgekeerd of ontbrekend (checkpoint 1).
+- Een gemiste `null`-controle in een getter-keten (checkpoint 7).
 
-De grens is eenvoudig: opmaak en irrelevante naamgeving zijn vrij; de scharnier-
+De grens is eenvoudig: opmaak en irrelevante naamgeving zijn vrij; de checkpoint-
 inhoud is strikt. De tolerantie zit in de asserties zelf, niet in een instelling
 per puzzel; wat een level kiest, is wélke asserties het stapelt en met welke
-`config`. De checker-corpus (`test/checker-corpus/`) legt per scharnier vast wat
+`config`. De checker-corpus (`test/checker-corpus/`) legt per checkpoint vast wat
 er moet slagen en wat moet zakken.
 
 ## Falen → feedback (twee lagen)
@@ -201,7 +201,7 @@ CHECK_FAIL de constructor kent 'naam' nog niet toe aan het veld.
 
 Effect-tags: `check:ok:<puzzleId>` en `check:fout:<puzzleId>`. De feedbacktekst
 leeft in `js/logic/strings.js` (nooit inline in de checker), verwijst waar
-nuttig naar de scharnier-metafoor (blauwdruk/doos, twee pijlen, patroonkaart …),
+nuttig naar de checkpoint-metafoor (blauwdruk/doos, twee pijlen, patroonkaart …),
 en escaleert nooit tot het letterlijke antwoord — dat is de taak van de
 hint-stadia (zie `save-en-hints.md`), niet van de checker.
 
@@ -220,7 +220,7 @@ Feedback-toon:
 De terminal-puzzels (trace, vind-de-fout, verklaar-in-één-zin, Parsons,
 welke-patroonkaart) lopen niet altijd via de tokenizer. Het zijn er twee per
 level, behalve in de levels 1 en 7: die dragen twee editor-puzzels en dus maar
-één terminal-puzzel (zie `levels-en-scharnieren.md`, §Tijdsbudget per level).
+één terminal-puzzel (zie `levels-en-checkpoints.md`, §Tijdsbudget per level).
 
 - **Trace / voorspel-de-output**: de speler geeft een waarde of een reeks
   waarden; de checker vergelijkt met de verwachte uitkomst (exacte string- of

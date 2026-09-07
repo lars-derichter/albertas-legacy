@@ -9,7 +9,7 @@ src/` (dezelfde klassenstructuur, dezelfde commentaarstijl, dezelfde
 Gevecht-mechaniek). WP 2 bouwt tegen dit document; de JS-simulatie in `js/sim/`
 (WP 9) spiegelt het één-op-één.
 
-De klassenamen hier zijn identiek aan die in `levels-en-scharnieren.md`
+De klassenamen hier zijn identiek aan die in `levels-en-checkpoints.md`
 (kolom "herstelt") en `checker-contract.md` (de checker-doelen). Die drie
 documenten mogen nooit uiteenlopen.
 
@@ -89,7 +89,7 @@ de rivier.
 De verbindingen worden in beide richtingen gelegd, net als in de predecessor
 (`Spel.verbindNoordZuid` / `verbindOostWest`). De methode `Spel.verbindKamers`
 uit level 4 is de sequel-naam voor dat bedradingswerk (zie
-`levels-en-scharnieren.md`).
+`levels-en-checkpoints.md`).
 
 ### Kamers, voorwerpen en rollen
 
@@ -154,8 +154,8 @@ cursus.
 
 ### Waarom Geitje en Schuilplaats bestaan
 
-Deze twee klassen bestaan om **scharnier 7** (zoeken + de dubbele pijl) een
-verhaal-gedragen anker te geven. De cursus vat scharnier 7 samen als de ketting
+Deze twee klassen bestaan om **checkpoint 7** (zoeken + de dubbele pijl) een
+verhaal-gedragen anker te geven. De cursus vat checkpoint 7 samen als de ketting
 `artikel.getCategorie().getNaam()`. In _Seven Little Goats_ is dat:
 
 ```java
@@ -173,10 +173,10 @@ tot ze aan de rivier bevrijd worden. Na de bevrijding vertelt het jongste geitje
 waar elk broertje voortaan zal schuilen; die opsomming is de endgame-keten die
 level 7 herstelt.
 
-`Spel.zoekGeitje(String naam)` is de zoeklus van scharnier 7: doorloop de
+`Spel.zoekGeitje(String naam)` is de zoeklus van checkpoint 7: doorloop de
 `ArrayList<Geitje>`, geef het `Geitje` met die naam terug, of `null` als het er
 niet is. Level 7 laat de speler die lus schrijven, de null-veilige getter-keten
-herstellen, en de keten tracen (zie `levels-en-scharnieren.md`).
+herstellen, en de keten tracen (zie `levels-en-checkpoints.md`).
 
 ## Gevecht
 

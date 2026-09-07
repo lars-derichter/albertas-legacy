@@ -118,7 +118,7 @@ blijft.** Hier zaten twee velden met dezelfde naam en niet dezelfde status. De
 `week` in `js/levels/levelN.js` werd door niets gelezen: `AL.levels.registreer`
 raakt alleen `def.puzzels` aan. De `week` in de spread-data is wél in gebruik —
 `maakSpread` bakt hem in de voetregel van bladzijde 2, en twee tests keuren hem
-tegen de kolom "Na cursusweek" uit `levels-en-scharnieren.md`.
+tegen de kolom "Na cursusweek" uit `levels-en-checkpoints.md`.
 
 Dat het level-veld dood was, is niet theoretisch: de testfixture onderaan
 `js/logic/levels.js` registreerde level 1 met `week: 3` terwijl level 1 na week
@@ -219,7 +219,7 @@ tekst zei dat `engine.js` als laatste laadt (dat is `touch.js`), de kaart van
 `js/` miste `font-hand.js`, en `js/input.js` heette "ongewijzigd overgenomen"
 terwijl er vier dingen bij zijn gekomen.
 
-**`docs/levels-en-scharnieren.md`** — "8 spreads (de intro plus één per level)":
+**`docs/levels-en-checkpoints.md`** — "8 spreads (de intro plus één per level)":
 het zijn er zeven. De regel "1 editor-puzzel + 2 terminal-puzzels" stond als
 bindend geformuleerd terwijl de eigen leveltabel van datzelfde document voor de
 levels 1 en 7 twee editor-puzzels opgeeft; het contract luidt nu "drie puzzels,
@@ -273,7 +273,7 @@ van schrijven heetten. De poort zijn `docs/`, `walkthrough/` en de README's.
 22 in `workflow/` (allemaal cursusrepo-paden of paden uit een verhaal over hoe
 iets vroeger heette). Twee echte vondsten zijn onderweg hersteld:
 `docs/achtergrond.md` had ``spelontwerp-\nlegacy.md`` over twee regels gebroken
-binnen de backticks, en `docs/levels-en-scharnieren.md` haalde
+binnen de backticks, en `docs/levels-en-checkpoints.md` haalde
 `games/home/hub-data.js` aan alsof het een pad in deze repo was.
 
 ### Kleine restanten

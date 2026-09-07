@@ -511,8 +511,8 @@ scène-vorm (één herkleed sjabloon in plaats van nieuwe kamers).
     Alberta zegt wat er nog niet af is, en de schets hoort bij díe stand van
     zaken: wie leest dat twee lus-methoden ontbreken (level 5), ziet eronder de
     kaarten waar ze het over heeft. De eerste bladzijde is de brief.
-  - De schetsstijl spiegelt de scharnier-metaforen (zie de
-    metafoor-woordenschat in `levels-en-scharnieren.md`): de klassekaart (1),
+  - De schetsstijl spiegelt de checkpoint-metaforen (zie de
+    metafoor-woordenschat in `levels-en-checkpoints.md`): de klassekaart (1),
     trechters-en-goot (2), knikkerbaan met klem en splitsing (3),
     twee-pijlen-één-doos (4), de patroonkaart met turfjes (5), de plankenbrug
     met genummerde planken (6), het zoekspoor en de dubbele pijl (7).

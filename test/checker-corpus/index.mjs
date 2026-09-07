@@ -1,5 +1,5 @@
 // checker-corpus/index.mjs — de WP 4-corpus (checker-contract.md §"De test-
-// corpus"). Per scharnier-anker een fragment met:
+// corpus"). Per checkpoint-anker een fragment met:
 //   - de MODELOPLOSSING (verbatim uit seven-little-goats/src/), plus geldige
 //     varianten (opmaak, lokale namen, gelijkwaardige vorm) die MOETEN slagen;
 //   - typische studentfouten die MOETEN falen met de bedoelde melding
@@ -10,7 +10,7 @@
 // corpus-runner (test/test-checker-corpus.mjs) elk fragment uniform draait.
 //
 // Elk fragment:
-//   { id, scharnier, bron,
+//   { id, checkpoint, bron,
 //     checks:  [ { fn, config } ]                 // de assertie-pijplijn (in volgorde)
 //     passen:  [ { naam, code } ]                 // MOETEN javac-schoon + alle checks ok
 //     falen:   [ { naam, code, verwacht } ]       // verwacht:
@@ -23,7 +23,7 @@
 // het model de bron van waarheid blijft.
 
 // ===========================================================================
-// Scharnier 1a — Voorwerp: velden + constructor (this.x = x)
+// Checkpoint 1a — Voorwerp: velden + constructor (this.x = x)
 // ===========================================================================
 const voorwerpModel = `class Voorwerp {
 
@@ -54,7 +54,7 @@ const voorwerpModel = `class Voorwerp {
 
 const voorwerp = {
   id: "s1-voorwerp-constructor",
-  scharnier: 1,
+  checkpoint: 1,
   bron: "Voorwerp.java",
   checks: [
     { fn: "veldDeclaratie", config: { type: "String", naam: "naam", privaat: true } },
@@ -110,7 +110,7 @@ String getNaam(){return naam;} int getKracht(){return kracht;} }` },
 };
 
 // ===========================================================================
-// Scharnier 1b — Geitje: klasse uit de notities schrijven
+// Checkpoint 1b — Geitje: klasse uit de notities schrijven
 // ===========================================================================
 const geitjeModel = `class Geitje {
 
@@ -135,7 +135,7 @@ const geitjeModel = `class Geitje {
 
 const geitje = {
   id: "s1-geitje-klasse",
-  scharnier: 1,
+  checkpoint: 1,
   bron: "Geitje.java",
   checks: [
     { fn: "veldDeclaratie", config: { type: "String", naam: "naam", privaat: true } },
@@ -186,7 +186,7 @@ String getNaam(){return naam;} Schuilplaats getSchuilplaats(){return schuilplaat
 };
 
 // ===========================================================================
-// Scharnier 2 — Speler: signaturen (return vs void, parametertypes)
+// Checkpoint 2 — Speler: signaturen (return vs void, parametertypes)
 // ===========================================================================
 const spelerModel = `import java.util.ArrayList;
 
@@ -238,7 +238,7 @@ class Speler {
 
 const speler = {
   id: "s2-speler-signaturen",
-  scharnier: 2,
+  checkpoint: 2,
   bron: "Speler.java",
   checks: [
     { fn: "methodeSignatuur", config: { retour: "int", naam: "getLevenspunten", params: [] } },
@@ -276,7 +276,7 @@ const speler = {
 };
 
 // ===========================================================================
-// Scharnier 3 — Speler.setLevenspunten: de klemmende validatie
+// Checkpoint 3 — Speler.setLevenspunten: de klemmende validatie
 // ===========================================================================
 const klemModel = `void setLevenspunten(int nieuweWaarde) {
     if (nieuweWaarde < 0) {
@@ -290,7 +290,7 @@ const klemModel = `void setLevenspunten(int nieuweWaarde) {
 
 const klem = {
   id: "s3-setlevenspunten-clamp",
-  scharnier: 3,
+  checkpoint: 3,
   bron: "Speler.java",
   checks: [
     { fn: "geenVerbodenConstructies", config: { methode: "setLevenspunten" } },
@@ -334,7 +334,7 @@ const klem = {
 };
 
 // ===========================================================================
-// Scharnier 4 — Spel.verbindKamers: buur-bedrading (twee pijlen, cascade)
+// Checkpoint 4 — Spel.verbindKamers: buur-bedrading (twee pijlen, cascade)
 // ===========================================================================
 const verbindModel = `private void verbindKamers(Kamer eerste, String richting, Kamer tweede) {
     if (richting.equals("noord")) {
@@ -354,7 +354,7 @@ const verbindModel = `private void verbindKamers(Kamer eerste, String richting, 
 
 const verbind = {
   id: "s4-verbindkamers-bedrading",
-  scharnier: 4,
+  checkpoint: 4,
   bron: "Spel.java",
   checks: [
     { fn: "conditieGebruikt", config: { methode: "verbindKamers", structuur: "cascade" } },
@@ -400,7 +400,7 @@ const verbind = {
 };
 
 // ===========================================================================
-// Scharnier 6 — Kamer.verwijderVoorwerp: de lus + off-by-one
+// Checkpoint 6 — Kamer.verwijderVoorwerp: de lus + off-by-one
 // ===========================================================================
 const verwijderModel = `void verwijderVoorwerp(String teVerwijderenNaam) {
     for (int i = 0; i < voorwerpen.size(); i++) {
@@ -413,7 +413,7 @@ const verwijderModel = `void verwijderVoorwerp(String teVerwijderenNaam) {
 
 const verwijder = {
   id: "s6-verwijdervoorwerp-lus",
-  scharnier: 6,
+  checkpoint: 6,
   bron: "Kamer.java",
   checks: [
     { fn: "lusVorm", config: { methode: "verwijderVoorwerp", soort: "for" } },
@@ -455,7 +455,7 @@ const verwijder = {
 };
 
 // ===========================================================================
-// Scharnier 7a — Spel.zoekGeitje: de zoeklus (geeft object of null)
+// Checkpoint 7a — Spel.zoekGeitje: de zoeklus (geeft object of null)
 // ===========================================================================
 const zoekModel = `Geitje zoekGeitje(String gezochteNaam) {
     for (int i = 0; i < geitjes.size(); i++) {
@@ -469,7 +469,7 @@ const zoekModel = `Geitje zoekGeitje(String gezochteNaam) {
 
 const zoek = {
   id: "s7-zoekgeitje-zoeklus",
-  scharnier: 7,
+  checkpoint: 7,
   bron: "Spel.java",
   checks: [
     { fn: "lusVorm", config: { methode: "zoekGeitje", soort: "for" } },
@@ -513,7 +513,7 @@ const zoek = {
 };
 
 // ===========================================================================
-// Scharnier 7b — Spel.toonSchuilplaatsen: de null-veilige getter-keten
+// Checkpoint 7b — Spel.toonSchuilplaatsen: de null-veilige getter-keten
 // ===========================================================================
 const ketenModel = `private void toonSchuilplaatsen() {
     System.out.println("Het jongste geitje vertelt waar elk voortaan schuilt:");
@@ -531,7 +531,7 @@ const ketenModel = `private void toonSchuilplaatsen() {
 
 const keten = {
   id: "s7-toonschuilplaatsen-keten",
-  scharnier: 7,
+  checkpoint: 7,
   bron: "Spel.java",
   checks: [
     { fn: "aanroepKeten", config: { methode: "toonSchuilplaatsen",
@@ -600,7 +600,7 @@ const keten = {
 };
 
 // ===========================================================================
-// Scharnier 5 — Speler: de twee lus-methoden (tel-kaart + uiterste-kaart)
+// Checkpoint 5 — Speler: de twee lus-methoden (tel-kaart + uiterste-kaart)
 //   Nieuw in WP 8: telWapens() en sterksteVoorwerp() zijn echt toegevoegd aan
 //   seven-little-goats/src/Speler.java. De lus-controle is SAMENGESTELD uit
 //   lusVorm + lusGrenzen + heeftReturn + methodeSignatuur (checker-contract.md
@@ -632,7 +632,7 @@ const luspatroonModel = `class Speler {
 
 const luspatroon = {
   id: "s5-speler-luspatronen",
-  scharnier: 5,
+  checkpoint: 5,
   bron: "Speler.java",
   checks: [
     { fn: "methodeSignatuur", config: { retour: "int", naam: "telWapens", params: [] } },

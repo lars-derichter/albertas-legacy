@@ -3,7 +3,7 @@
 Het ontwerp van het meta-spel: de zolder-adventure die de zeven code-levels aan
 elkaar rijgt. De verhaalinhoud staat in `achtergrond.md`; de engine en de
 effect-tags in `engine-architectuur.md`; de code-levels in
-`levels-en-scharnieren.md`. Dit document beschrijft de speelervaring: schermen,
+`levels-en-checkpoints.md`. Dit document beschrijft de speelervaring: schermen,
 scènes, de lus per level, de commando's en de eindes. WP 6 (zolderinhoud) bouwt
 hier tegenaan.
 
@@ -12,7 +12,7 @@ hier tegenaan.
 Een grafisch adventure in vroege-jaren-negentig-stijl: je loopt met de
 pijltjestoetsen door Alberta's zolder en typt commando's, je leest fragmenten
 van haar notitieboek als full-screen spreads, en je werkt aan haar Java-code op
-een gesimuleerde pc — zeven keer, één keer per scharnier van de cursus.
+een gesimuleerde pc — zeven keer, één keer per checkpoint van de cursus.
 
 ## Schermen en modi
 
@@ -136,7 +136,7 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    notitieboek van level 1 heeft geen voorganger en blijft vrij.
 2. **Lees de spread.** De notitieboek-spread opent: Alberta's schets, haar
    spec voor dat stuk (bladzijde 1 wat het moet zijn, bladzijde 2 wat er stuk
-   of onaf is — zie `levels-en-scharnieren.md`, §"Wat een spread draagt"), en
+   of onaf is — zie `levels-en-checkpoints.md`, §"Wat een spread draagt"), en
    de regel "Week X in mijn schema." (haar eigen planning; zie
    `achtergrond.md`, §"Het notitieboek"). Effect: `spread:<levelId>`,
    `geluid:pagina`. Na de laatste bladzijde gaat het boek dicht en staat de
@@ -148,7 +148,7 @@ Elk van de zeven levels doorloopt dezelfde vijf stappen. De stappen mappen
    je opensloeg, is nog niet hersteld. Dat werk ligt op de pc, in de werkhoek
    aan de oostkant van de zolder." (`save-en-hints.md`, §"De zolder-hint").
 4. **Los de puzzels op, op volgorde.** Eén editor-puzzel + twee
-   terminal-puzzels (zie het tijdsbudget in `levels-en-scharnieren.md`). Het
+   terminal-puzzels (zie het tijdsbudget in `levels-en-checkpoints.md`). Het
    menu geeft ze één voor één vrij (zie §"De gesimuleerde pc" hieronder). Elke
    opgeloste puzzel: `puzzle-af:<puzzleId>`. Alle drie af: `level-af:<n>` —
    "dit hoofdstuk van Alberta's spel is hersteld".
@@ -209,10 +209,10 @@ de volgorde.
 > oplossing van een andere puzzel uit hetzelfde hoofdstuk (de trace van level 6
 > drukt de herstelde for-kop af, die van level 7 de null-veilige keten), en met
 > vrije keuze begon een speler daar. De regel en het bewijs per level staan in
-> `levels-en-scharnieren.md`, §"Puzzelvolgorde binnen een level"; de poort
+> `levels-en-checkpoints.md`, §"Puzzelvolgorde binnen een level"; de poort
 > voegt geen veld aan de save toe (`save-en-hints.md`).
 
-De puzzelvormen per level staan in `levels-en-scharnieren.md`; de checker-
+De puzzelvormen per level staan in `levels-en-checkpoints.md`; de checker-
 semantiek in `checker-contract.md`.
 
 ## Commando's en effecten
@@ -309,5 +309,5 @@ zolder-tussenwerk (fragmenten zoeken, spreads lezen, lopen, intro/outro), en
 ~10–15 minuten voor de endgame-sim van _Seven Little Goats_. WP 11 bevestigt
 dit met de doorlopende playthrough (`test/smoke-full-playthrough.mjs`): de
 headline ± 2 uur houdt stand, met de sim erbij realistisch richting ± 2 u 10.
-De volledige telling en onderbouwing staat in `levels-en-scharnieren.md`,
+De volledige telling en onderbouwing staat in `levels-en-checkpoints.md`,
 §"Getimede controle".

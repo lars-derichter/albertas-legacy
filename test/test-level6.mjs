@@ -1,4 +1,4 @@
-// test-level6.mjs — Level 6 (scharnier 6: index & off-by-one; welke lus). Toetst:
+// test-level6.mjs — Level 6 (checkpoint 6: index & off-by-one; welke lus). Toetst:
 // registratie, de verwijderVoorwerp-modeloplossing en beide beschadigde varianten
 // (off-by-one en de verkeerde luskeuze), de index-trace (laatste index = size()-1),
 // de vind-de-fout op de gevechtslus, en de hint-staging.
@@ -45,7 +45,7 @@ test("level 6 registreert zich met drie puzzels in de juiste vormen", () => {
 // De trace toont de HERSTELDE lus-kop van de editor-puzzel, teken voor teken.
 // Dat mag — maar alleen nadat de speler die kop zelf geschreven heeft. De
 // volgorde-poort van WP 48b maakt dat hard; deze test pint de volgorde die de
-// poort moet afdwingen (docs/levels-en-scharnieren.md, §"Puzzelvolgorde binnen
+// poort moet afdwingen (docs/levels-en-checkpoints.md, §"Puzzelvolgorde binnen
 // een level").
 test("volgorde: de index-trace komt ná de reparatie waarvan ze de kop toont", () => {
   const defs = AL.levels.puzzelDefs("6");

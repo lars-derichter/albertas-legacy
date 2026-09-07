@@ -1,4 +1,4 @@
-// test-level3.mjs — Level 3 (scharnier 3: voorwaarden — validatie, cascade,
+// test-level3.mjs — Level 3 (checkpoint 3: voorwaarden — validatie, cascade,
 // && / || / !). Toetst: registratie, de clamp-modeloplossing en beide
 // beschadigde varianten, de && / || -vind-de-fout, de cascade-trace op de
 // randwaarden (0 en 10 als valstrikken), en de hint-staging.

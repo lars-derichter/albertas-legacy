@@ -1,7 +1,7 @@
-// level5.js — "Level 5 — Luspatronen: geitje voor geitje" (scharnier 5: de
+// level5.js — "Level 5 — Luspatronen: geitje voor geitje" (checkpoint 5: de
 // lus-romp + patroonkeuze — tellen, totaliseren, opbouwen, filteren, uiterste).
 // Herstelt de lus-methoden van Speler. Puzzelvormen uit de leveltabel
-// (docs/levels-en-scharnieren.md): schrijf twee lussen uit de notities, orden
+// (docs/levels-en-checkpoints.md): schrijf twee lussen uit de notities, orden
 // een string-builder (Parsons), en kies de juiste patroonkaart.
 //
 // Beslissing (level-5-special-case, zie het werkpakket + checker-contract.md
@@ -15,7 +15,7 @@
 // niet uit een nieuwe patroonkaart-classifier — precies zoals het contract vraagt.
 //
 // De "schrijf 2 lussen"-opgave is één editor-puzzel met beide methoden, zodat de
-// mix één editor + twee terminal blijft (docs/levels-en-scharnieren.md,
+// mix één editor + twee terminal blijft (docs/levels-en-checkpoints.md,
 // §"Tijdsbudget"). De prose leeft in js/logic/strings.js (AL.strings.l5 e.a.).
 //
 // Draait in de browser (registreert bij AL.levels) en in Node (module.exports).

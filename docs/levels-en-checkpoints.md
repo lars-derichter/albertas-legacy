@@ -1,18 +1,18 @@
-# Levels en scharnieren
+# Levels en checkpoints
 
-Het gezaghebbende koppelingsdocument: level ↔ scharnier ↔ "speelbaar na week
+Het gezaghebbende koppelingsdocument: level ↔ checkpoint ↔ "speelbaar na week
 X" ↔ welke bestanden en methoden van _Seven Little Goats_ het herstelt ↔
 puzzelvormen. Elke level-worker (WP 7 en 8) bouwt tegen deze tabel. De
-scharnieren komen letterlijk uit de cursus (de zeven scharnieren van
+checkpoints komen letterlijk uit de cursus (de zeven checkpoints van
 Programming Fundamentals); de kolommen "restores" en "vormen" komen uit het
 goedgekeurde plan. Wijkt een level-implementatie hiervan af, dan is dit document
 de bron van waarheid, niet de code.
 
-## De zeven scharnieren (cursus)
+## De zeven checkpoints (cursus)
 
-Verbatim uit de cursusleidraad, _De zeven scharnieren_:
+Verbatim uit de cursusleidraad, _De zeven checkpoints_:
 
-| # | Na les | Scharnier | Waarom kritiek |
+| # | Na les | Checkpoint | Waarom kritiek |
 |---|--------|-----------|----------------|
 | 1 | 2–3 | Klasse vs. instantie, velden, constructor, `this` | Fundament van álles |
 | 2 | 4 | Signaturen: return vs. `void`, attribuut / parameter / lokale variabele | Draagt "schrijf de methode" |
@@ -28,7 +28,7 @@ Elk level draagt één naam, en die naam staat op drie plaatsen tegelijk: de kop
 van bladzijde 1 van het notitieboek-spread ("Hoofdstuk 3 — Voorwaarden: de deur
 op slot"), de kop van de gesimuleerde pc ("Alberta's pc — Level 3 —
 Voorwaarden: de deur op slot") en de hoofdstukkoppen van de walkthrough. De
-vorm ligt vast: **eerst de scharnierterm zoals de cursus die noemt, dan een
+vorm ligt vast: **eerst de checkpointterm zoals de cursus die noemt, dan een
 dubbelpunt, dan een beeld uit Alberta's eigen verhaal.**
 
 | L | Hoofdstuktitel | Waar het beeld vandaan komt |
@@ -44,7 +44,7 @@ dubbelpunt, dan een beeld uit Alberta's eigen verhaal.**
 Tot WP 31 droegen de levels de titels van de andere minigames van de cursus
 ("De knikkerbaan", "De plankenbrug boven het ravijn", "De speurtocht…",
 letterlijk uit `games/home/hub-data.js` in de cursusrepo — niet in deze repo).
-Die namen zeggen een speler niets over de leerstof: het scharnier stond wél op
+Die namen zeggen een speler niets over de leerstof: het checkpoint stond wél op
 bladzijde 2, maar de titel zelf had geen enkele band met de cursusterminologie.
 De nieuwe titels zetten de term vooraan, zodat een speler die vastzit weet
 waarnaar hij in zijn cursus moet zoeken, en houden het verhaal in de tweede
@@ -72,7 +72,7 @@ een klassekaart geworden in plaats van de blauwdruk-en-doos.
 Overgenomen uit het goedgekeurde plan. Deze tabel is bindend; de
 `Beslissing`-blokken eronder verklaren de open keuzes.
 
-| L | Scharnier (na week) | Herstelt (Java-bestanden) | Puzzelvormen |
+| L | Checkpoint (na week) | Herstelt (Java-bestanden) | Puzzelvormen |
 |---|---------------------|---------------------------|--------------|
 | 1 | klasse/instantie, velden, constructor, this (1) | `Voorwerp`, `Geitje` | herstel constructor; schrijf `Geitje` uit de notities; verklaar blauwdruk/doos |
 | 2 | signaturen: return vs void, param/lokaal (2) | `Speler` | Parsons-methode; herstel signaturen; trace shadowing |
@@ -90,14 +90,14 @@ modeloplossing herstelde puzzelcode identiek is aan het ongeschonden Java-
 fragment.
 
 > Toelichting: "na week X" is de **echte cursusweek**. De cursus geeft drie
-> lessen per week; de scharnieren vallen na les 2–3, 4, 5–6, 8, 10–11, 12–13
+> lessen per week; de checkpoints vallen na les 2–3, 4, 5–6, 8, 10–11, 12–13
 > en 17–18 (zie de eerste tabel), en dat komt overeen met de weken 1, 2, 2,
-> 3, 4, 5 en 6. Scharnier 6 overspant les 12 (week 4) en les 13 (week 5); we
-> ronden af naar week 5, de week waarin het scharnier volledig gezien is.
+> 3, 4, 5 en 6. Checkpoint 6 overspant les 12 (week 4) en les 13 (week 5); we
+> ronden af naar week 5, de week waarin het checkpoint volledig gezien is.
 
 ### Volledige koppeltabel (bindend voor de UI)
 
-| L | Scharnier # | Na cursusweek | Cursusles | Toetsblok |
+| L | Checkpoint # | Na cursusweek | Cursusles | Toetsblok |
 |---|-------------|---------------|-----------|-----------|
 | 1 | 1 | 1 | les 2–3 | vóór toets 1 |
 | 2 | 2 | 2 | les 4 | vóór toets 1 |
@@ -136,7 +136,7 @@ Een spread is **spec, geen les**. De verdeling ligt vast:
   twee de speler voor zich heeft. Geen operator, geen grens, geen modeloplossing
   in proza.
 - **De schets** (bladzijde 2) mag een klassekaart zijn — level 1 is er een — of
-  het scharnierbeeld. Zie `art-stijlgids.md`.
+  het checkpointbeeld. Zie `art-stijlgids.md`.
 - **Nul conceptuitleg.** Niet wat `this` doet, niet wat aliasing is, niet waarom
   een index bij 0 begint, niet welke patroonkaart bij welke lus hoort. Die
   uitleg staat in de **gefaseerde hints**, en die tellen mee voor het oordeel
@@ -196,9 +196,9 @@ regel legt ze binnen een hoofdstuk vast.
 Het spel volgt het tempo-schema van de cursus (de leidraad koppelt de checks
 aan de drie toetsen, om uitstelgedrag te vermijden):
 
-- **Levels 1–3** horen bij scharnieren 1–3 en zijn bedoeld vóór **toets 1**.
-- **Levels 4–6** horen bij scharnieren 4–6 en zijn bedoeld vóór **toets 2**.
-- **Level 7** hoort bij scharnier 7 en is bedoeld vóór de **eindtoets**.
+- **Levels 1–3** horen bij checkpoints 1–3 en zijn bedoeld vóór **toets 1**.
+- **Levels 4–6** horen bij checkpoints 4–6 en zijn bedoeld vóór **toets 2**.
+- **Level 7** hoort bij checkpoint 7 en is bedoeld vóór de **eindtoets**.
 
 Het spel dwingt dit niet af (geen sloten op latere levels op basis van datum),
 maar de "na week"-regel en Alberta's oordeel op het einde maken zichtbaar
@@ -216,7 +216,7 @@ Elk level is ontworpen op **± 15 minuten** en **precies 3 puzzels**, meestal:
 Twee levels wijken af, en de leveltabel hierboven zegt dat ook: **level 1** en
 **level 7** dragen twee editor-puzzels en één terminal-puzzel. Level 1 laat de
 speler een klasse eerst herstellen en dan zelf schrijven — dat is precies het
-scharnier; level 7 heeft de zoeklus én de getter-keten nodig voor de endgame.
+checkpoint; level 7 heeft de zoeklus én de getter-keten nodig voor de endgame.
 
 Zeven levels × ~15 min codewerk ≈ 90 minuten puzzels. Met de zolder-
 verbindingsstukjes (spread lezen, lopen, intro/outro) erbij komt een volledige
@@ -267,4 +267,4 @@ nodig had) zouden dat alleen verlengen.
   output, verklaar-in-één-zin, welke-kaart, vind-de-fout, schrijf-de-body) en
   met de effect-tags voor de gesimuleerde pc in `engine-architectuur.md`.
 - De hint-stadia per puzzel volgen `save-en-hints.md`: stap 1 hergebruikt de
-  metafoor uit de scharnier-woordenschat hierboven.
+  metafoor uit de checkpoint-woordenschat hierboven.

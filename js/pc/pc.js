@@ -95,7 +95,7 @@ globalThis.AL.pc = globalThis.AL.pc || {};
   // De kop van het scherm draagt de échte hoofdstuknaam ("Level 3 —
   // Voorwaarden: de deur op slot"), niet enkel "Level 3". Tot WP 31 werd
   // lN.naam alleen voor testlevel 0 gelezen en was hij voor de zeven echte
-  // levels dode data: de speler kreeg nergens te zien welk scharnier hij aan
+  // levels dode data: de speler kreeg nergens te zien welk checkpoint hij aan
   // het oefenen was. De naam staat in de strings (AL.strings.lN.naam) en is
   // woord voor woord dezelfde als de kop van bladzijde 1 van het spread.
   //

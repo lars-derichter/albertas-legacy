@@ -1,4 +1,4 @@
-// test-level2.mjs — Level 2 (scharnier 2: signaturen, return vs. void,
+// test-level2.mjs — Level 2 (checkpoint 2: signaturen, return vs. void,
 // attribuut / parameter / lokaal). Toetst: registratie, de signatuur-
 // modeloplossing en beide beschadigde varianten, de Parsons-methode (juiste
 // volgorde slaagt, de afleider valt buiten het aantal), de shadowing-trace, en

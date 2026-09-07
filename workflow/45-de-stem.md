@@ -52,7 +52,7 @@ stub-notities — plus de walkthrough die ze citeert.
   af is.
 - **De weekregel-bullet** (§Het notitieboek) is haar eigen planning
   geworden en benoemt de dubbele boekhouding: buiten de fictie is het de
-  cursusweek uit `levels-en-scharnieren.md`, in haar hand is het de week
+  cursusweek uit `levels-en-checkpoints.md`, in haar hand is het de week
   waarin zíj dat stuk wilde bouwen. Op papier van 1993 staat het woord
   "cursus" niet meer.
 - **§Toon en register** (Alberta's stem) en de toon-bullet in §Wie is
@@ -309,7 +309,7 @@ entry beschrijft de eindtoestand. Wat de ronde opleverde:
   over `MAX_LEVENSPUNTEN`, en onder 0 komt er een negatief getal in de
   statusregel terwijl ze al dood is. Dat staat er nu.
 - **Vijf verouderde citaten in contractdocumenten.** De oude voetzin stond
-  nog letterlijk in `levels-en-scharnieren.md`, `spelontwerp-legacy.md`,
+  nog letterlijk in `levels-en-checkpoints.md`, `spelontwerp-legacy.md`,
   `art-stijlgids.md` en `README.md`; `art-stijlgids.md` motiveerde de
   drie-regels-ruimte met díe lange zin en verwees bovendien naar een
   brieffragment dat dit pakket had geschrapt ("volgens de schets

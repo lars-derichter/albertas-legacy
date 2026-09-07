@@ -139,7 +139,7 @@ oordeel.
 
 ### Docs en walkthrough
 
-- `docs/levels-en-scharnieren.md` — nieuwe, bindende §"Wat een spread
+- `docs/levels-en-checkpoints.md` — nieuwe, bindende §"Wat een spread
   draagt" (verdeling bladzijde 1/2, variantneutraliteit, nul
   conceptuitleg, nooit een antwoord van hetzelfde level, en de
   dekkingsplicht die zegt dat de kantlijnnotitie de dragende laag is).
