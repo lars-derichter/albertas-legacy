@@ -1,10 +1,10 @@
 # Roberta Williams
 
-Alberta is een eerbetoon aan Roberta Williams. Dit document legt vast wie
-Roberta Williams was, waarom ze ertoe doet, en precies hoe Alberta haar
-spiegelt. Het dient twee doelen: de feiten kloppen (zodat het spel en de README
-niets verkeerds beweren), en de homage blijft homage — een liefdevolle echo,
-geen biografie en geen naamsverwarring.
+Alberta is een eerbetoon aan Roberta Williams. Dit document legt uit wie Roberta
+Williams was, waarom ze ertoe doet, en precies hoe Alberta haar spiegelt. Het
+dient twee doelen: de feiten kloppen (zodat het spel en de README niets
+verkeerds beweren), en de homage blijft homage — een liefdevolle echo, geen
+biografie en geen naamsverwarring.
 
 ## Wie was Roberta Williams
 
@@ -56,37 +56,37 @@ Alberta is geen Roberta Williams. Ze is een verzonnen grootmoeder die dezelfde
 plek in de geschiedenis inneemt. De spiegeling is bewust en herkenbaar, maar
 nooit een claim over de echte persoon.
 
-| Roberta Williams | Alberta (fictie) |
-|---|---|
-| Medeoprichter Sierra On-Line | Ontwerpster uit dezelfde vroege golf |
-| _Mystery House_: eerste grafische adventure | Bouwde haar spellen eerst als tekst, dan grafisch |
-| _King's Quest_-reeks | _Revenge of Red Riding Hood_ + het geplande vervolg |
-| Auteur-ontwerpster, droeg zelf het geheel | Schreef, tekende en programmeerde zelf |
-| Pionier, vrouw in een mannenveld | Half-legendarische grootmoeder van de speler |
-| Reëel, gedocumenteerd | Verzonnen, zonder achternaam, half-mythisch |
+| Roberta Williams                            | Alberta (fictie)                                    |
+| ------------------------------------------- | --------------------------------------------------- |
+| Medeoprichter Sierra On-Line                | Ontwerpster uit dezelfde vroege golf                |
+| _Mystery House_: eerste grafische adventure | Bouwde haar spellen eerst als tekst, dan grafisch   |
+| _King's Quest_-reeks                        | _Revenge of Red Riding Hood_ + het geplande vervolg |
+| Auteur-ontwerpster, droeg zelf het geheel   | Schreef, tekende en programmeerde zelf              |
+| Pionier, vrouw in een mannenveld            | Half-legendarische grootmoeder van de speler        |
+| Reëel, gedocumenteerd                       | Verzonnen, zonder achternaam, half-mythisch         |
 
 Vaste regels voor de homage:
 
 - **Naam als knipoog, niet als verwarring.** "Alberta" rijmt op "Roberta"; dat
-  is de hele grap. Het spel maakt de link expliciet in de README en één keer
-  in de epiloog, maar doet in de fictie zelf nooit alsof Alberta echt bestaan
-  heeft of echt Sierra-spellen maakte.
+  is de hele grap. Het spel maakt de link expliciet in de README en één keer in
+  de epiloog, maar doet in de fictie zelf nooit alsof Alberta echt bestaan heeft
+  of echt Sierra-spellen maakte.
 - **Geen echte titels in Alberta's mond.** Alberta's werk heet _Revenge of Red
   Riding Hood_ en _Seven Little Goats_. Ze verwijst nooit naar _King's Quest_,
   _Mystery House_ of Sierra als haar eigen werk. Roberta's echte titels horen
   alleen in dit document en in de README-uitleg over de homage thuis.
 - **De stijl is de echte homage.** Waar Alberta het meest op Roberta lijkt, is
-  in de vorm: het vroege grafische adventure, de EGA/VGA-look,
-  de auteur die alles zelf droeg, de tekst-eerst-werkwijze. Dat komt in de
-  art-stijl en het spelontwerp terug, niet in biografische beweringen.
+  in de vorm: het vroege grafische adventure, de EGA/VGA-look, de auteur die
+  alles zelf droeg, de tekst-eerst-werkwijze. Dat komt in de art-stijl en het
+  spelontwerp terug, niet in biografische beweringen.
 - **Respect, geen parodie.** De toon is affectief. Alberta is bewonderd, niet
   belachelijk gemaakt.
 
 > Beslissing: het spel noemt Roberta Williams één keer bij naam, in de epiloog,
 > als expliciete opdracht ("Voor Roberta Williams, en voor iedereen die de
-> spellen maakte waar dit vak vandaan komt"). In de rest van de fictie blijft
-> ze onuitgesproken aanwezig via de vorm. Zo eert het spel haar zonder haar
-> leven te fictionaliseren.
+> spellen maakte waar dit vak vandaan komt"). In de rest van de fictie blijft ze
+> onuitgesproken aanwezig via de vorm. Zo eert het spel haar zonder haar leven
+> te fictionaliseren.
 
 ## Referenties
 
