@@ -16,9 +16,12 @@
 // ---------------------------------------------------------------------------
 // Pandoc-Typst-hulpstukken (nodig door de gegenereerde body).
 // ---------------------------------------------------------------------------
+// De drie sterretjes zijn de gewone asterisk (U+002A), niet `sym.ast.op`
+// (U+2217): zie de noot over de tekendekking bij `typemachine`. `#"*"` en niet
+// `[*]`, want een kale asterisk in markup opent nadruk.
 #let horizontalrule = align(center)[
   #box(width: 40%)[
-    #text(fill: rgb("#8a7f6c"))[#sym.ast.op #h(0.6em) #sym.ast.op #h(0.6em) #sym.ast.op]
+    #text(fill: rgb("#8a7f6c"))[#"*" #h(0.6em) #"*" #h(0.6em) #"*"]
   ]
 ]
 
@@ -43,8 +46,25 @@
 // New (het is er de vrije tegenhanger van), dus de bladspiegel blijft gelijk;
 // de laatste twee zijn er voor systemen die ook die niet hebben. Typst neemt de
 // eerste font uit de lijst die hij vindt.
+//
+// Lees de waarschuwingen van typst niet als een fout: hij meldt élke schakel
+// van deze ketting die hij niet vindt, ook wanneer hij de eerste schakel wél
+// gebruikt. Wat er echt in de PDF zit, lees je met `pdffonts` (WP 52).
 #let typemachine = ("Courier New", "Liberation Mono", "Nimbus Mono PS",
   "DejaVu Sans Mono")
+
+// De tekens van de opmaak blijven binnen wat Courier New draagt (WP 53). Een
+// glyph die de font niet heeft, haalt typst stilzwijgend uit een ándere font,
+// en dan staat er midden in een typemachine-bladzijde een teken uit een serif
+// of uit DejaVu. Drie decoratieve tekens deden dat: `sym.ast.op` (U+2217) in
+// de scheidingsregel en `sym.gt.double` (U+21D2) voor de H2 vielen terug op
+// Libertinus Serif, `sym.triangle.filled.small.r` (U+25B8) als opsommingsteken
+// op DejaVu Sans Mono. Ze zijn vervangen door `*` (U+002A), `»` (U+00BB) en
+// `•` (U+2022), die Courier New alle drie in romein, vet én cursief heeft.
+// Kies een nieuw teken dus niet op het oog: test het eerst met een probe-PDF
+// (één glyph per pagina, `pdffonts -f N -l N`) en houd het binnen de dekking.
+// `sym.dash.en` (U+2013) in de voettekst en `sym.dot` (U+00B7) als tweede
+// opsommingsniveau zijn zo nagemeten en blijven staan.
 
 #let papier = rgb("#f3efe3")   // licht vergeeld fotokopie-papier
 #let inkt   = rgb("#1c1a17")   // bijna-zwart, als een verse kopie
@@ -97,7 +117,7 @@
 #show heading.where(level: 2): it => block(breakable: false)[
   #v(0.5em)
   #set text(size: 12.5pt)
-  #box[#sym.gt.double #h(0.3em) #it.body]
+  #box[» #h(0.3em) #it.body]
   #v(0.05em)
 ]
 #show heading.where(level: 3): it => block(breakable: false)[
@@ -105,6 +125,13 @@
   #set text(size: 11pt)
   #box[#it.body]
 ]
+
+// Code op de typemachine. Dit moet een `show raw`-regel zijn: het
+// `raw`-element draagt zijn eigen standaardfont (DejaVu Sans Mono) en die
+// wint van een `set text` erbuiten, ook van eentje in de blokregel hieronder.
+// Zonder deze regel stond elk Java-fragment en elk commando in DejaVu terwijl
+// de rest van de bladzijde Courier New was; `pdffonts` liet dat zien (WP 53).
+#show raw: set text(font: typemachine)
 
 // Codeblokken: een gefotokopieerd kader met lichte binnenvulling.
 #show raw.where(block: true): it => block(
@@ -127,7 +154,7 @@
   stroke: (left: 2pt + flets),
 )[#set text(style: "italic"); #it.body]
 
-#set list(marker: ([#text(fill: flets)[#sym.triangle.filled.small.r]], [#sym.dot]))
+#set list(marker: ([#text(fill: flets)[•]], [#sym.dot]))
 #set enum(numbering: "1.")
 
 // ---------------------------------------------------------------------------

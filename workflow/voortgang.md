@@ -654,7 +654,7 @@ Entry: `workflow/51-checkpoints.md` · commit: `4c9a5fe`
 
 ### - [x] Na het programma: de docs over de PDF-fontterugval
 
-Entry: `workflow/52-fontterugval-en-de-docs.md` · commit: (nog in te vullen)
+Entry: `workflow/52-fontterugval-en-de-docs.md` · commit: `3dc4dd6`
 
 - [x] Lars vroeg de twee walkthrough-PDF's te herbouwen omdat ze "in een
       omgeving zonder alle lettertypes" gemaakt zouden zijn. Nagemeten: dat
@@ -674,6 +674,28 @@ Entry: `workflow/52-fontterugval-en-de-docs.md` · commit: (nog in te vullen)
 - [x] QC: docs en één shell-commentaar, geen inhoudelijke wijziging;
       `bash -n` op het script schoon, `check-docpaden` 0 dode paden in een
       contractdocument, wrap 80 gemeten, tests ongewijzigd 454/454
+
+### - [x] Na het programma: alles uit Courier New
+
+Entry: `workflow/53-alles-uit-courier-new.md` · commit: (nog in te vullen)
+
+- [x] Drie decoratieve tekens in `zine.typ` die Courier New niet draagt,
+      vervangen door tekens die hij wél heeft: `∗` U+2217 → `*`, `⇒` U+21D2
+      → `»`, `▸` U+25B8 → `•`. Elk teken eerst nagemeten met een probe-PDF,
+      één glyph per bladzijde, `pdffonts` per bladzijde
+- [x] De echte oorzaak van de DejaVu-inbedding zat elders: het
+      `raw`-element van typst draagt zijn eigen standaardfont, die van een
+      `set text` erbuiten wint. Elk codeblok en elk stuk inline code in
+      beide gidsen stond dus in DejaVu Sans Mono. `#show raw: set
+      text(font: typemachine)` verhelpt het; de blokregel vroeg de
+      typemachine-font al, maar zonder effect
+- [x] Beide PDF's herbouwd. `pdffonts` toont nu **alleen** CourierNewPS\*.
+      Deel 1 blijft 8 bladzijden, deel 2 gaat van 13 naar 12: de
+      terugvalfonts hadden andere letterbreedtes, dus de tekst
+      herverdeelt. Tekstinhoud woord voor woord gelijk gebleven
+- [x] QC: script exit 0, check-walkthrough 277/0, check-docpaden 0 in
+      contracten, tekstlaag tegen HEAD gelegd, drie bladzijden visueel
+      nagekeken (kaft, zegelpagina, codeblok), tests ongewijzigd 454/454
 
 ## Fixronde na de speeltest (afgerond)
 
