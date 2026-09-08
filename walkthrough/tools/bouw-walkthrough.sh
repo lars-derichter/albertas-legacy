@@ -24,9 +24,18 @@
 #     draagt ze niet en de gids is monochroom.
 #   - De typemachine-font is Courier New, en die staat niet op elke machine.
 #     `stijl/zine.typ` draagt daarom een fallback-ketting (Liberation Mono
-#     heeft dezelfde metrieken). Waarschuwt typst tóch over een ontbrekende
-#     font, dan is de bladspiegel niet meer die van het ontwerp: installeer een
-#     van de fonts uit die ketting voor je de PDF's vastlegt.
+#     heeft dezelfde metrieken). LET OP bij het lezen van de uitvoer: typst
+#     waarschuwt over elke schakel van die ketting die hij niet vindt, ook als
+#     hij de eerste schakel wél gevonden heeft. Op een machine mét Courier New
+#     geeft een geslaagde build dus tientallen regels "unknown font family:
+#     liberation mono / nimbus mono ps". Die waarschuwingen zeggen niets over
+#     de bladspiegel; ze zijn geen reden om iets te installeren.
+#   - Wil je vóór het vastleggen weten welke font er echt in de PDF zit, kijk
+#     dan naar het ingebedde font, niet naar de waarschuwingen:
+#     `pdffonts deel1-hints.pdf` hoort alleen CourierNewPS* te tonen (poppler,
+#     `brew install poppler`). Staat er LiberationMono, dan is de PDF op een
+#     machine zonder Courier New gebouwd: metrisch gelijk, maar niet de font
+#     van het ontwerp.
 
 set -euo pipefail
 

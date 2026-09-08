@@ -626,8 +626,10 @@ Entry: `workflow/49-slot-programma-4.md` · commit: `31a1451`
       smokes, javac + grep schoon, vier linten op nul
 - [x] Screenshots naar Lars; draft-PR aangemaakt
 
-**Programma 4 is hiermee af.** Open blijven: de iPhone-luistertest,
-smoke-touch (geen WebKit) en de PDF-fontterugval.
+**Programma 4 is hiermee af.** Open blijven: de iPhone-luistertest en
+smoke-touch (geen WebKit). De PDF-fontterugval is niet meer open: de herbouw
+in WP 51 liep op een machine mét Courier New, en sindsdien dragen beide
+vastgelegde PDF's die font (nagemeten met `pdffonts` in WP 52).
 
 ### - [x] Na het programma: de ide kent geen zolder
 
@@ -640,7 +642,7 @@ Entry: `workflow/50-esc-zonder-zolder.md` · commit: `fa1173b`
 
 ### - [x] Na het programma: scharnieren heten checkpoints
 
-Entry: `workflow/51-checkpoints.md` · commit: (nog in te vullen)
+Entry: `workflow/51-checkpoints.md` · commit: `4c9a5fe`
 
 - [x] De cursusterm "scharnier" is overal "checkpoint": docs (het
       koppelingsdocument heet nu `docs/levels-en-checkpoints.md`), README,
@@ -649,6 +651,29 @@ Entry: `workflow/51-checkpoints.md` · commit: (nog in te vullen)
       geschiedenis.
 - [x] QC: 454/454 groen, check-docpaden 0 in contracten, check-walkthrough
       277/0, lint-scene en check-assets schoon, smoke geslaagd
+
+### - [x] Na het programma: de docs over de PDF-fontterugval
+
+Entry: `workflow/52-fontterugval-en-de-docs.md` · commit: (nog in te vullen)
+
+- [x] Lars vroeg de twee walkthrough-PDF's te herbouwen omdat ze "in een
+      omgeving zonder alle lettertypes" gemaakt zouden zijn. Nagemeten: dat
+      klopt niet meer sinds WP 51. Een verse build geeft dezelfde 8 en 13
+      pagina's, dezelfde ingebedde fonts, dezelfde subset-tags en een
+      identieke tekstlaag (`pdftotext -layout`); alleen de `CreationDate`
+      verschilt. De PDF's zijn daarom níét overschreven
+- [x] Drie levende uitspraken in dit bestand rechtgezet (slot programma 3,
+      slot programma 4, "Nog open na programma 2"). De historische
+      `- [x]`-regels van WP 39 en WP 48b blijven staan: die meten correct
+      wat er tóén gebouwd is
+- [x] `walkthrough/tools/bouw-walkthrough.sh`: de kop beweerde dat een
+      font-waarschuwing betekent dat de bladspiegel niet die van het ontwerp
+      is. Dat is onwaar: typst waarschuwt over elke ontbrekende schakel van
+      de ketting, ook als de eerste schakel gevonden is. De kop wijst nu naar
+      `pdffonts` als de echte controle
+- [x] QC: docs en één shell-commentaar, geen inhoudelijke wijziging;
+      `bash -n` op het script schoon, `check-docpaden` 0 dode paden in een
+      contractdocument, wrap 80 gemeten, tests ongewijzigd 454/454
 
 ## Fixronde na de speeltest (afgerond)
 
@@ -848,9 +873,9 @@ Entry: `workflow/40-slotcontrole.md` · commit: `b3bf55d`
       sim, oordeel en epiloog aan Lars bezorgd
 - [x] Slotentry geschreven; PR-beschrijving bijgewerkt
 
-**Programma 3 is hiermee af.** Open blijven: de luistertest op speakers,
-smoke-touch (WebKit ontbreekt), en de PDF-fontterugval (Liberation Mono
-tot een machine met Courier New herbouwt).
+**Programma 3 is hiermee af.** Open blijven: de luistertest op speakers en
+smoke-touch (WebKit ontbreekt). De PDF-fontterugval stond hier ook, en is
+intussen weg: WP 51 bouwde de PDF's op een machine met Courier New.
 
 # Programma 2 — opwaardering van presentatie en verhaal (afgerond)
 
@@ -1314,10 +1339,12 @@ in programma 3:
 
 - ~~De walkthrough-PDF's zijn niet herbouwd.~~ **Opgelost in WP 39**: pandoc
   3.10 en typst 0.15.0 opgehaald, beide PDF's herbouwd uit de bijgewerkte
-  Markdown (8 en 13 pagina's). Wat er wél voor in de plaats komt: Courier New
-  staat niet meer op deze machine, dus de vastgelegde PDF's zijn in Liberation
-  Mono gezet — metrisch identiek, en het sjabloon vraagt Courier New nog altijd
-  als eerste, dus een machine die hem heeft bouwt het origineel terug.
+  Markdown (8 en 13 pagina's). Die build zette ze in Liberation Mono, want
+  Courier New stond toen niet op de bouwmachine. Metrisch identiek, en het
+  sjabloon vroeg Courier New nog altijd als eerste. ~~Terugval nog open.~~
+  **Weg sinds WP 51** (`4c9a5fe`): die herbouw liep wél op een machine met
+  Courier New. Nagemeten in WP 52 over de hele PDF-geschiedenis: 710061a,
+  27bdd21 en c114725 dragen LiberationMono, 4c9a5fe draagt CourierNewPS*.
 - **`smoke-touch` is nooit gedraaid.** Die test vraagt WebKit, en dat
   ontbreekt hier. `js/touch.js` is in WP 37 aangeraakt (unlock op D-pad,
   commandobalk en canvas-tik); die kant is gedekt door `smoke-geluid`, dat
